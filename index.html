@@ -1,1 +1,112 @@
-Hello World
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thien Nguyen - Developer</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .container {
+            text-align: center;
+            color: white;
+            max-width: 600px;
+            padding: 2rem;
+        }
+
+        h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            font-weight: 700;
+        }
+
+        p {
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            text-decoration: none;
+            padding: 1rem 2rem;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+        }
+
+        .feature-list {
+            text-align: left;
+            margin-top: 1rem;
+        }
+
+        .feature-list li {
+            margin-bottom: 0.5rem;
+            opacity: 0.9;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>👋 Hi, I'm Thien Nguyen</h1>
+        <p>Full-stack developer passionate about TypeScript, AI, and developer tools</p>
+        
+        <div class="card">
+            <h2>🔒 Guardz MCP</h2>
+            <p>TypeScript Type Guard Generator - Powered by Model Context Protocol</p>
+            <a href="guardz-mcp.html" class="btn">Try Guardz MCP</a>
+            
+            <div class="feature-list">
+                <h3>Features:</h3>
+                <ul>
+                    <li>✨ Generate runtime validation functions from TypeScript types</li>
+                    <li>🔍 Automatic file discovery and TypeScript validation</li>
+                    <li>🎨 Beautiful, modern web interface</li>
+                    <li>⚡ Real-time processing with instant feedback</li>
+                    <li>📱 Responsive design for all devices</li>
+                    <li>🛠️ Advanced configuration options</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>🚀 Projects</h2>
+            <p>Check out my latest work and contributions</p>
+            <a href="https://github.com/thiennp" class="btn">View GitHub</a>
+        </div>
+    </div>
+</body>
+</html>
