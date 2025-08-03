@@ -3,109 +3,261 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Thien Nguyen - Developer</title>
+    <title>Thien NP - Software Engineer</title>
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
-
+        
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            line-height: 1.6;
+            color: #333;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
-            color: #333;
-            display: flex;
-            align-items: center;
-            justify-content: center;
         }
-
+        
         .container {
-            text-align: center;
-            color: white;
-            max-width: 600px;
+            max-width: 1200px;
+            margin: 0 auto;
             padding: 2rem;
         }
-
-        h1 {
+        
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+            color: white;
+        }
+        
+        .header h1 {
             font-size: 3rem;
             margin-bottom: 1rem;
             font-weight: 700;
         }
-
-        p {
+        
+        .header p {
             font-size: 1.2rem;
-            margin-bottom: 2rem;
             opacity: 0.9;
         }
-
-        .card {
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-            border-radius: 12px;
+        
+        .content {
+            background: white;
+            border-radius: 15px;
+            padding: 3rem;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+        }
+        
+        .section {
+            margin-bottom: 3rem;
+        }
+        
+        .section h2 {
+            color: #667eea;
+            font-size: 2rem;
+            margin-bottom: 1.5rem;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 0.5rem;
+        }
+        
+        .project-card {
+            background: #f8f9fa;
+            border-radius: 10px;
             padding: 2rem;
             margin-bottom: 2rem;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            border-left: 5px solid #667eea;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
-
-        .btn {
+        
+        .project-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+        }
+        
+        .project-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 1rem;
+        }
+        
+        .project-description {
+            color: #666;
+            margin-bottom: 1rem;
+        }
+        
+        .project-features {
+            list-style: none;
+            margin-bottom: 1.5rem;
+        }
+        
+        .project-features li {
+            padding: 0.5rem 0;
+            color: #555;
+            position: relative;
+            padding-left: 1.5rem;
+        }
+        
+        .project-features li::before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: #667eea;
+            font-weight: bold;
+        }
+        
+        .tech-stack {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .tech-tag {
+            background: #667eea;
+            color: white;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+        
+        .links {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+        
+        .link {
             display: inline-block;
-            background: rgba(255, 255, 255, 0.2);
+            padding: 0.5rem 1rem;
+            background: #667eea;
             color: white;
             text-decoration: none;
-            padding: 1rem 2rem;
-            border-radius: 8px;
-            font-size: 1.1rem;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 5px;
+            transition: background 0.3s ease;
         }
-
-        .btn:hover {
-            background: rgba(255, 255, 255, 0.3);
-            transform: translateY(-2px);
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+        
+        .link:hover {
+            background: #5a6fd8;
         }
-
-        .feature-list {
-            text-align: left;
-            margin-top: 1rem;
+        
+        .about-section {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 2rem;
+            margin-bottom: 2rem;
         }
-
-        .feature-list li {
-            margin-bottom: 0.5rem;
-            opacity: 0.9;
+        
+        .about-section h3 {
+            color: #667eea;
+            margin-bottom: 1rem;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .content {
+                padding: 2rem;
+            }
+            
+            .project-card {
+                padding: 1.5rem;
+            }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>👋 Hi, I'm Thien Nguyen</h1>
-        <p>Full-stack developer passionate about TypeScript, AI, and developer tools</p>
-        
-        <div class="card">
-            <h2>🔒 Guardz MCP</h2>
-            <p>TypeScript Type Guard Generator - Powered by Model Context Protocol</p>
-            <a href="guardz-mcp.html" class="btn">Try Guardz MCP</a>
-            
-            <div class="feature-list">
-                <h3>Features:</h3>
-                <ul>
-                    <li>✨ Generate runtime validation functions from TypeScript types</li>
-                    <li>🔍 Automatic file discovery and TypeScript validation</li>
-                    <li>🎨 Beautiful, modern web interface</li>
-                    <li>⚡ Real-time processing with instant feedback</li>
-                    <li>📱 Responsive design for all devices</li>
-                    <li>🛠️ Advanced configuration options</li>
-                </ul>
-            </div>
+        <div class="header">
+            <h1>Thien NP</h1>
+            <p>Software Engineer & Open Source Contributor</p>
         </div>
-
-        <div class="card">
-            <h2>🚀 Projects</h2>
-            <p>Check out my latest work and contributions</p>
-            <a href="https://github.com/thiennp" class="btn">View GitHub</a>
+        
+        <div class="content">
+            <div class="section">
+                <h2>About Me</h2>
+                <div class="about-section">
+                    <p>I'm a passionate software engineer focused on building robust, scalable applications and developer tools. I specialize in TypeScript, Node.js, and modern web technologies. My work emphasizes clean architecture, functional programming principles, and creating tools that improve developer productivity.</p>
+                </div>
+            </div>
+            
+            <div class="section">
+                <h2>Featured Projects</h2>
+                
+                <div class="project-card">
+                    <h3 class="project-title">Structure Validation</h3>
+                    <p class="project-description">
+                        A powerful Node.js CLI tool for validating and maintaining consistent codebase folder and file structure using declarative configuration. Part of the guardz ecosystem for comprehensive TypeScript development.
+                    </p>
+                    
+                    <h4>Key Features:</h4>
+                    <ul class="project-features">
+                        <li>Declarative configuration with TypeScript support</li>
+                        <li>Automatic import updates when files are moved or renamed</li>
+                        <li>Auto-fix mode with smart file operations</li>
+                        <li>Git integration for staged, changed, or all files</li>
+                        <li>Pattern matching with glob patterns and variable placeholders</li>
+                        <li>Husky integration for pre-commit hooks</li>
+                        <li>Comprehensive error reporting and suggestions</li>
+                        <li>Batch operations for efficient handling of multiple files</li>
+                    </ul>
+                    
+                    <div class="tech-stack">
+                        <span class="tech-tag">TypeScript</span>
+                        <span class="tech-tag">Node.js</span>
+                        <span class="tech-tag">CLI</span>
+                        <span class="tech-tag">Git Integration</span>
+                        <span class="tech-tag">File Operations</span>
+                        <span class="tech-tag">Domain-Driven Design</span>
+                    </div>
+                    
+                    <div class="links">
+                        <a href="https://github.com/guardz/structure-validation" class="link" target="_blank">View on GitHub</a>
+                        <a href="https://www.npmjs.com/package/structure-validation" class="link" target="_blank">NPM Package</a>
+                    </div>
+                </div>
+                
+                <div class="project-card">
+                    <h3 class="project-title">Guardz Ecosystem</h3>
+                    <p class="project-description">
+                        A comprehensive suite of TypeScript development tools designed to improve code quality, developer productivity, and project maintainability.
+                    </p>
+                    
+                    <div class="tech-stack">
+                        <span class="tech-tag">TypeScript</span>
+                        <span class="tech-tag">Development Tools</span>
+                        <span class="tech-tag">Code Quality</span>
+                        <span class="tech-tag">Developer Experience</span>
+                    </div>
+                    
+                    <div class="links">
+                        <a href="https://github.com/guardz" class="link" target="_blank">View Organization</a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="section">
+                <h2>Development Philosophy</h2>
+                <div class="about-section">
+                    <h3>Core Principles</h3>
+                    <ul class="project-features">
+                        <li><strong>Domain-Driven Design (DDD):</strong> Clean separation of concerns with domain, application, infrastructure, and presentation layers</li>
+                        <li><strong>Functional Programming:</strong> Prefer pure functions, immutable data structures, and composition over inheritance</li>
+                        <li><strong>SOLID Principles:</strong> Write maintainable, extensible, and testable code</li>
+                        <li><strong>Clean Architecture:</strong> Depend on abstractions, not concretions</li>
+                        <li><strong>Developer Experience:</strong> Create tools that make development more enjoyable and productive</li>
+                    </ul>
+                </div>
+            </div>
         </div>
     </div>
 </body>
