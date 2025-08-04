@@ -1,0 +1,16 @@
+{
+  "date": "2025-08-04",
+  "timestamp": "2025-08-04T15:23:06.498Z",
+  "packages": {
+    "guardz": {
+      "daily": 9,
+      "weekly": 624,
+      "monthly": 3279
+    },
+    "guardz-generator": {
+      "daily": 12,
+      "weekly": 560,
+      "monthly": 3319
+    }
+  }
+}

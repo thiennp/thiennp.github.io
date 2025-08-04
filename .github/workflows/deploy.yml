@@ -26,7 +26,7 @@ jobs:
     - name: Deploy to Vercel
       run: |
         cd server
-        npx vercel --prod --token ${{ secrets.VERCEL_TOKEN }} --scope ${{ secrets.ORG_ID }}
+        npx vercel --prod --token ${{ secrets.VERCEL_TOKEN }} --scope team_5UfMd5h29yN3a7uitdIY6dE5
       env:
-        VERCEL_ORG_ID: ${{ secrets.ORG_ID }}
-        VERCEL_PROJECT_ID: ${{ secrets.PROJECT_ID }}
+        VERCEL_ORG_ID: team_5UfMd5h29yN3a7uitdIY6dE5
+        VERCEL_PROJECT_ID: prj_DaNXiGcMQz4JvNuecTQXCpx70A70

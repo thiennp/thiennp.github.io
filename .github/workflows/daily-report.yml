@@ -1,0 +1,47 @@
+name: Daily NPM Download Report
+
+on:
+  schedule:
+    # Run daily at 9:00 AM UTC
+    - cron: '0 9 * * *'
+  workflow_dispatch: # Allow manual triggering
+
+jobs:
+  generate-report:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+        
+    - name: Install dependencies
+      run: |
+        cd server
+        npm install
+        
+    - name: Generate daily report
+      run: |
+        cd server
+        npm run report
+        
+    - name: Upload reports as artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: daily-npm-report-${{ github.run_number }}
+        path: server/reports/
+        retention-days: 30
+        
+    - name: Commit and push report
+      run: |
+        cd server
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+        git add reports/
+        git commit -m "📊 Daily NPM download report - ${{ github.run_number }}" || echo "No changes to commit"
+        git push || echo "No changes to push" 

@@ -6,7 +6,9 @@
   "type": "module",
   "scripts": {
     "start": "node server.js",
-    "dev": "nodemon server.js"
+    "dev": "nodemon server.js",
+    "report": "node daily-report.js",
+    "report:schedule": "node daily-report.js --schedule"
   },
   "dependencies": {
     "cors": "^2.8.5",
@@ -15,6 +17,7 @@
     "guardz": "^1.12.1",
     "guardz-generator": "^1.12.3",
     "multer": "^1.4.5-lts.1",
+    "node-fetch": "^3.3.2",
     "prettier": "^3.6.2"
   },
   "devDependencies": {
