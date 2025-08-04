@@ -200,3 +200,4 @@ MIT License - see the [LICENSE](LICENSE) file for details.
 # Test with clean secrets
 # Test with cleaned secrets
 # Test secret verification
+# Test current workflow
