@@ -9,11 +9,13 @@
     "dev": "nodemon server.js"
   },
   "dependencies": {
-    "express": "^4.18.2",
     "cors": "^2.8.5",
-    "multer": "^1.4.5-lts.1",
+    "eslint": "^9.32.0",
+    "express": "^4.18.2",
     "guardz": "^1.12.1",
-    "guardz-generator": "^1.12.3"
+    "guardz-generator": "^1.12.3",
+    "multer": "^1.4.5-lts.1",
+    "prettier": "^3.6.2"
   },
   "devDependencies": {
     "nodemon": "^3.0.1"
@@ -21,4 +23,4 @@
   "engines": {
     "node": ">=18.0.0"
   }
-} 
+}

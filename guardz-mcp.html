@@ -259,10 +259,32 @@
                 <h2>Generate TypeScript Type Guards</h2>
                 <form id="generateForm">
                     <div class="form-group">
+                        <label>Input Method:</label>
+                        <div style="margin-bottom: 1rem;">
+                            <label style="display: inline-block; margin-right: 2rem;">
+                                <input type="radio" name="inputMethod" value="files" checked> Upload Files
+                            </label>
+                            <label style="display: inline-block;">
+                                <input type="radio" name="inputMethod" value="text"> Paste Code
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- File Upload Section -->
+                    <div id="fileUploadSection" class="form-group">
                         <label for="files">TypeScript Files:</label>
                         <input type="file" id="files" multiple accept=".ts,.tsx" class="file-input">
                         <label for="files" class="file-label">Choose TypeScript files...</label>
                         <div class="file-list" id="fileList"></div>
+                    </div>
+
+                    <!-- Text Input Section -->
+                    <div id="textInputSection" class="form-group" style="display: none;">
+                        <label for="typescriptCode">TypeScript Code:</label>
+                        <textarea id="typescriptCode" placeholder="Paste your TypeScript code here...&#10;&#10;Example:&#10;interface User {&#10;  id: number;&#10;  name: string;&#10;  email: string;&#10;}&#10;&#10;type Product = {&#10;  id: string;&#10;  title: string;&#10;  price: number;&#10;};"></textarea>
+                        <div style="margin-top: 0.5rem; font-size: 0.9rem; color: #666;">
+                            💡 Tip: You can paste multiple TypeScript interfaces, types, or classes. Each will be processed separately.
+                        </div>
                     </div>
 
                     <div class="form-group">
@@ -362,10 +384,32 @@
                 <h2>Validate TypeScript Files</h2>
                 <form id="validateForm">
                     <div class="form-group">
+                        <label>Input Method:</label>
+                        <div style="margin-bottom: 1rem;">
+                            <label style="display: inline-block; margin-right: 2rem;">
+                                <input type="radio" name="validateInputMethod" value="files" checked> Upload Files
+                            </label>
+                            <label style="display: inline-block;">
+                                <input type="radio" name="validateInputMethod" value="text"> Paste Code
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- File Upload Section -->
+                    <div id="validateFileUploadSection" class="form-group">
                         <label for="validateFiles">TypeScript Files:</label>
                         <input type="file" id="validateFiles" multiple accept=".ts,.tsx" class="file-input">
                         <label for="validateFiles" class="file-label">Choose TypeScript files...</label>
                         <div class="file-list" id="validateFileList"></div>
+                    </div>
+
+                    <!-- Text Input Section -->
+                    <div id="validateTextInputSection" class="form-group" style="display: none;">
+                        <label for="validateTypeScriptCode">TypeScript Code:</label>
+                        <textarea id="validateTypeScriptCode" placeholder="Paste your TypeScript code here to validate...&#10;&#10;Example:&#10;interface User {&#10;  id: number;&#10;  name: string;&#10;  email: string;&#10;}&#10;&#10;const user: User = {&#10;  id: 1,&#10;  name: 'John',&#10;  email: 'john@example.com'&#10;};"></textarea>
+                        <div style="margin-top: 0.5rem; font-size: 0.9rem; color: #666;">
+                            💡 Tip: Paste your TypeScript code to check for syntax errors and type issues.
+                        </div>
                     </div>
 
                     <button type="submit" class="btn" id="validateBtn">
@@ -384,10 +428,32 @@
                 <h2>Format Code with Prettier</h2>
                 <form id="formatForm">
                     <div class="form-group">
+                        <label>Input Method:</label>
+                        <div style="margin-bottom: 1rem;">
+                            <label style="display: inline-block; margin-right: 2rem;">
+                                <input type="radio" name="formatInputMethod" value="files" checked> Upload Files
+                            </label>
+                            <label style="display: inline-block;">
+                                <input type="radio" name="formatInputMethod" value="text"> Paste Code
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- File Upload Section -->
+                    <div id="formatFileUploadSection" class="form-group">
                         <label for="formatFiles">Files to Format:</label>
                         <input type="file" id="formatFiles" multiple accept=".ts,.tsx,.js,.jsx" class="file-input">
                         <label for="formatFiles" class="file-label">Choose files to format...</label>
                         <div class="file-list" id="formatFileList"></div>
+                    </div>
+
+                    <!-- Text Input Section -->
+                    <div id="formatTextInputSection" class="form-group" style="display: none;">
+                        <label for="formatCode">Code to Format:</label>
+                        <textarea id="formatCode" placeholder="Paste your code here to format with Prettier...&#10;&#10;Example:&#10;const user={id:1,name:'John',email:'john@example.com'};&#10;&#10;function greet(name){return `Hello, ${name}!`;}&#10;&#10;const products=[{id:'1',title:'Product 1',price:10},{id:'2',title:'Product 2',price:20}];"></textarea>
+                        <div style="margin-top: 0.5rem; font-size: 0.9rem; color: #666;">
+                            💡 Tip: Paste your code to format it with Prettier. Supports TypeScript, JavaScript, and JSX.
+                        </div>
                     </div>
 
                     <button type="submit" class="btn" id="formatBtn">
@@ -406,10 +472,32 @@
                 <h2>Lint Code with ESLint</h2>
                 <form id="lintForm">
                     <div class="form-group">
+                        <label>Input Method:</label>
+                        <div style="margin-bottom: 1rem;">
+                            <label style="display: inline-block; margin-right: 2rem;">
+                                <input type="radio" name="lintInputMethod" value="files" checked> Upload Files
+                            </label>
+                            <label style="display: inline-block;">
+                                <input type="radio" name="lintInputMethod" value="text"> Paste Code
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- File Upload Section -->
+                    <div id="lintFileUploadSection" class="form-group">
                         <label for="lintFiles">Files to Lint:</label>
                         <input type="file" id="lintFiles" multiple accept=".ts,.tsx,.js,.jsx" class="file-input">
                         <label for="lintFiles" class="file-label">Choose files to lint...</label>
                         <div class="file-list" id="lintFileList"></div>
+                    </div>
+
+                    <!-- Text Input Section -->
+                    <div id="lintTextInputSection" class="form-group" style="display: none;">
+                        <label for="lintCode">Code to Lint:</label>
+                        <textarea id="lintCode" placeholder="Paste your code here to lint with ESLint...&#10;&#10;Example:&#10;const user = {&#10;  id: 1,&#10;  name: 'John',&#10;  email: 'john@example.com'&#10;};&#10;&#10;function greet(name) {&#10;  return `Hello, ${name}!`;&#10;}&#10;&#10;const products = [&#10;  { id: '1', title: 'Product 1', price: 10 },&#10;  { id: '2', title: 'Product 2', price: 20 }&#10;];"></textarea>
+                        <div style="margin-top: 0.5rem; font-size: 0.9rem; color: #666;">
+                            💡 Tip: Paste your code to lint it with ESLint. Supports TypeScript, JavaScript, and JSX.
+                        </div>
                     </div>
 
                     <div class="form-group">
@@ -504,6 +592,70 @@
         setupFileInput('formatFiles', 'formatFileList');
         setupFileInput('lintFiles', 'lintFileList');
 
+        // Input method switching for generate form
+        document.querySelectorAll('input[name="inputMethod"]').forEach(radio => {
+            radio.addEventListener('change', (e) => {
+                const fileSection = document.getElementById('fileUploadSection');
+                const textSection = document.getElementById('textInputSection');
+                
+                if (e.target.value === 'files') {
+                    fileSection.style.display = 'block';
+                    textSection.style.display = 'none';
+                } else {
+                    fileSection.style.display = 'none';
+                    textSection.style.display = 'block';
+                }
+            });
+        });
+
+        // Input method switching for validate form
+        document.querySelectorAll('input[name="validateInputMethod"]').forEach(radio => {
+            radio.addEventListener('change', (e) => {
+                const fileSection = document.getElementById('validateFileUploadSection');
+                const textSection = document.getElementById('validateTextInputSection');
+                
+                if (e.target.value === 'files') {
+                    fileSection.style.display = 'block';
+                    textSection.style.display = 'none';
+                } else {
+                    fileSection.style.display = 'none';
+                    textSection.style.display = 'block';
+                }
+            });
+        });
+
+        // Input method switching for format form
+        document.querySelectorAll('input[name="formatInputMethod"]').forEach(radio => {
+            radio.addEventListener('change', (e) => {
+                const fileSection = document.getElementById('formatFileUploadSection');
+                const textSection = document.getElementById('formatTextInputSection');
+                
+                if (e.target.value === 'files') {
+                    fileSection.style.display = 'block';
+                    textSection.style.display = 'none';
+                } else {
+                    fileSection.style.display = 'none';
+                    textSection.style.display = 'block';
+                }
+            });
+        });
+
+        // Input method switching for lint form
+        document.querySelectorAll('input[name="lintInputMethod"]').forEach(radio => {
+            radio.addEventListener('change', (e) => {
+                const fileSection = document.getElementById('lintFileUploadSection');
+                const textSection = document.getElementById('lintTextInputSection');
+                
+                if (e.target.value === 'files') {
+                    fileSection.style.display = 'block';
+                    textSection.style.display = 'none';
+                } else {
+                    fileSection.style.display = 'none';
+                    textSection.style.display = 'block';
+                }
+            });
+        });
+
         // Form submissions
         document.getElementById('generateForm').addEventListener('submit', async (e) => {
             e.preventDefault();
@@ -516,10 +668,24 @@
             result.style.display = 'none';
 
             try {
-                const files = Array.from(document.getElementById('files').files);
-                const fileContents = await Promise.all(
-                    files.map(file => file.text())
-                );
+                let fileContents = [];
+                const inputMethod = document.querySelector('input[name="inputMethod"]:checked').value;
+
+                if (inputMethod === 'files') {
+                    const files = Array.from(document.getElementById('files').files);
+                    if (files.length === 0) {
+                        throw new Error('Please select at least one TypeScript file');
+                    }
+                    fileContents = await Promise.all(
+                        files.map(file => file.text())
+                    );
+                } else {
+                    const typescriptCode = document.getElementById('typescriptCode').value.trim();
+                    if (!typescriptCode) {
+                        throw new Error('Please paste some TypeScript code');
+                    }
+                    fileContents = [typescriptCode];
+                }
 
                 const options = {
                     files: fileContents,
@@ -534,6 +700,151 @@
                 };
 
                 const response = await mcpClient.generateTypeGuards(options);
+                result.textContent = JSON.stringify(response, null, 2);
+                result.className = 'result success';
+            } catch (error) {
+                result.textContent = `Error: ${error.message}`;
+                result.className = 'result error';
+            } finally {
+                btn.disabled = false;
+                loading.style.display = 'none';
+                result.style.display = 'block';
+            }
+        });
+
+        // Validate form submission
+        document.getElementById('validateForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('validateBtn');
+            const loading = btn.querySelector('.loading');
+            const result = document.getElementById('validateResult');
+
+            btn.disabled = true;
+            loading.style.display = 'inline-block';
+            result.style.display = 'none';
+
+            try {
+                let fileContents = [];
+                const inputMethod = document.querySelector('input[name="validateInputMethod"]:checked').value;
+
+                if (inputMethod === 'files') {
+                    const files = Array.from(document.getElementById('validateFiles').files);
+                    if (files.length === 0) {
+                        throw new Error('Please select at least one TypeScript file');
+                    }
+                    fileContents = await Promise.all(
+                        files.map(file => file.text())
+                    );
+                } else {
+                    const typescriptCode = document.getElementById('validateTypeScriptCode').value.trim();
+                    if (!typescriptCode) {
+                        throw new Error('Please paste some TypeScript code');
+                    }
+                    fileContents = [typescriptCode];
+                }
+
+                const options = {
+                    files: fileContents
+                };
+
+                const response = await mcpClient.validateTypeScript(options);
+                result.textContent = JSON.stringify(response, null, 2);
+                result.className = 'result success';
+            } catch (error) {
+                result.textContent = `Error: ${error.message}`;
+                result.className = 'result error';
+            } finally {
+                btn.disabled = false;
+                loading.style.display = 'none';
+                result.style.display = 'block';
+            }
+        });
+
+        // Format form submission
+        document.getElementById('formatForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('formatBtn');
+            const loading = btn.querySelector('.loading');
+            const result = document.getElementById('formatResult');
+
+            btn.disabled = true;
+            loading.style.display = 'inline-block';
+            result.style.display = 'none';
+
+            try {
+                let fileContents = [];
+                const inputMethod = document.querySelector('input[name="formatInputMethod"]:checked').value;
+
+                if (inputMethod === 'files') {
+                    const files = Array.from(document.getElementById('formatFiles').files);
+                    if (files.length === 0) {
+                        throw new Error('Please select at least one file');
+                    }
+                    fileContents = await Promise.all(
+                        files.map(file => file.text())
+                    );
+                } else {
+                    const code = document.getElementById('formatCode').value.trim();
+                    if (!code) {
+                        throw new Error('Please paste some code');
+                    }
+                    fileContents = [code];
+                }
+
+                const options = {
+                    files: fileContents
+                };
+
+                const response = await mcpClient.formatCode(options);
+                result.textContent = JSON.stringify(response, null, 2);
+                result.className = 'result success';
+            } catch (error) {
+                result.textContent = `Error: ${error.message}`;
+                result.className = 'result error';
+            } finally {
+                btn.disabled = false;
+                loading.style.display = 'none';
+                result.style.display = 'block';
+            }
+        });
+
+        // Lint form submission
+        document.getElementById('lintForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('lintBtn');
+            const loading = btn.querySelector('.loading');
+            const result = document.getElementById('lintResult');
+
+            btn.disabled = true;
+            loading.style.display = 'inline-block';
+            result.style.display = 'none';
+
+            try {
+                let fileContents = [];
+                const inputMethod = document.querySelector('input[name="lintInputMethod"]:checked').value;
+
+                if (inputMethod === 'files') {
+                    const files = Array.from(document.getElementById('lintFiles').files);
+                    if (files.length === 0) {
+                        throw new Error('Please select at least one file');
+                    }
+                    fileContents = await Promise.all(
+                        files.map(file => file.text())
+                    );
+                } else {
+                    const code = document.getElementById('lintCode').value.trim();
+                    if (!code) {
+                        throw new Error('Please paste some code');
+                    }
+                    fileContents = [code];
+                }
+
+                const options = {
+                    files: fileContents,
+                    fix: document.getElementById('fixLint').checked
+                };
+
+                const response = await mcpClient.lintCode(options);
                 result.textContent = JSON.stringify(response, null, 2);
                 result.className = 'result success';
             } catch (error) {
