@@ -204,3 +204,4 @@ MIT License - see the [LICENSE](LICENSE) file for details.
 # Test API deployment
 # Test alternative deployment
 # Test with cleaned secrets
+# Test with correct environment variables
