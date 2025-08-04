@@ -207,3 +207,4 @@ MIT License - see the [LICENSE](LICENSE) file for details.
 # Test with correct environment variables
 # Test with VERCEL_* secret names
 # Test with simplified deployment
+# Test with Vercel action
