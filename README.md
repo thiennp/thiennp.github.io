@@ -210,3 +210,4 @@ MIT License - see the [LICENSE](LICENSE) file for details.
 # Test with Vercel action
 # Test without scope argument
 # Test with correct Vercel CLI arguments
+# Test with Vercel action
