@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blog - Thien NP</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            line-height: 1.6;
+            color: #1a1a1a;
+            background: #ffffff;
+            min-height: 100vh;
+            font-size: 16px;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+        
+        .navigation {
+            background: #ffffff;
+            border-bottom: 1px solid #e9ecef;
+            padding: 1rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .nav-logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #1a1a1a;
+            text-decoration: none;
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+        }
+        
+        .nav-links a {
+            text-decoration: none;
+            color: #6c757d;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+        
+        .nav-links a:hover {
+            color: #1a1a1a;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 4rem;
+            padding: 4rem 0;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        }
+        
+        .header h1 {
+            font-size: 3.5rem;
+            margin-bottom: 1rem;
+            font-weight: 800;
+            color: #1a1a1a;
+            letter-spacing: -0.02em;
+        }
+        
+        .header p {
+            font-size: 1.3rem;
+            color: #6c757d;
+            max-width: 600px;
+            margin: 0 auto 2rem;
+            font-weight: 400;
+        }
+        
+        .blog-section {
+            margin-bottom: 4rem;
+        }
+        
+        .blog-section h2 {
+            color: #1a1a1a;
+            font-size: 2rem;
+            margin-bottom: 2rem;
+            font-weight: 700;
+            letter-spacing: -0.01em;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 0.5rem;
+        }
+        
+        .article-card {
+            background: #ffffff;
+            border: 1px solid #e9ecef;
+            border-radius: 12px;
+            padding: 2.5rem;
+            margin-bottom: 2rem;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .article-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        .article-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.08);
+            border-color: #667eea;
+        }
+        
+        .article-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #1a1a1a;
+            margin-bottom: 1rem;
+            letter-spacing: -0.01em;
+        }
+        
+        .article-publication {
+            font-size: 0.9rem;
+            color: #667eea;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .article-date {
+            color: #6c757d;
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+        }
+        
+        .article-excerpt {
+            color: #495057;
+            line-height: 1.7;
+            margin-bottom: 1.5rem;
+        }
+        
+        .article-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .article-tag {
+            background: #f8f9fa;
+            color: #495057;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            border: 1px solid #e9ecef;
+        }
+        
+        .read-more {
+            display: inline-block;
+            padding: 0.5rem 1rem;
+            background: #1a1a1a;
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: 500;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            border: 2px solid #1a1a1a;
+        }
+        
+        .read-more:hover {
+            background: transparent;
+            color: #1a1a1a;
+            transform: translateY(-1px);
+        }
+        
+        .featured-section {
+            background: #f8f9fa;
+            border-radius: 16px;
+            padding: 3rem;
+            margin: 4rem 0;
+            border: 1px solid #e9ecef;
+        }
+        
+        .featured-section h2 {
+            color: #1a1a1a;
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            font-weight: 700;
+        }
+        
+        .featured-section p {
+            color: #6c757d;
+            font-size: 1.1rem;
+            margin-bottom: 2rem;
+        }
+        
+        .medium-button {
+            display: inline-block;
+            padding: 1rem 2rem;
+            background: #1a1a1a;
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            border: 2px solid #1a1a1a;
+        }
+        
+        .medium-button:hover {
+            background: transparent;
+            color: #1a1a1a;
+            transform: translateY(-2px);
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+            
+            .nav-container {
+                padding: 0 1rem;
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            .nav-links {
+                gap: 1rem;
+            }
+            
+            .header {
+                padding: 2rem 0;
+            }
+            
+            .header h1 {
+                font-size: 2.5rem;
+            }
+            
+            .header p {
+                font-size: 1.1rem;
+            }
+            
+            .blog-section h2 {
+                font-size: 1.8rem;
+            }
+            
+            .article-card {
+                padding: 2rem;
+            }
+            
+            .article-title {
+                font-size: 1.3rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navigation">
+        <div class="nav-container">
+            <a href="index.html" class="nav-logo">Thien NP</a>
+            <ul class="nav-links">
+                <li><a href="resume.html">Resume</a></li>
+                <li><a href="blog.html">Blog</a></li>
+                <li><a href="index.html">Projects</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="header">
+            <h1>Technical Blog</h1>
+            <p>Thoughts on TypeScript, React, Clean Architecture, and Developer Experience</p>
+        </div>
+        
+        <div class="blog-section">
+            <h2>Featured Articles</h2>
+            
+            <div class="article-card">
+                <div class="article-publication">JavaScript in Plain English</div>
+                <div class="article-title">Assert Nothing. Guard Everything. Why Runtime Type Safety Matters</div>
+                <div class="article-date">June 29, 2024</div>
+                <div class="article-excerpt">
+                    TypeScript gives you types — but at runtime, it just shrugs. guardz helps you stop pretending as is safe, ditch the endless typeof checks, and embrace true runtime type safety.
+                </div>
+                <div class="article-tags">
+                    <span class="article-tag">TypeScript</span>
+                    <span class="article-tag">Runtime Safety</span>
+                    <span class="article-tag">Guardz</span>
+                </div>
+                <a href="https://nguyenphongthien.medium.com/" class="read-more" target="_blank">Read on Medium</a>
+            </div>
+            
+            <div class="article-card">
+                <div class="article-publication">CodeToDeploy</div>
+                <div class="article-title">Distinguishing Type Guards and Validators in TypeScript: A Practical and Conceptual Guide</div>
+                <div class="article-date">5 days ago</div>
+                <div class="article-excerpt">
+                    Type guards and validators are often used interchangeably — but should they be? At a glance, they seem to solve the same problem: checking types at runtime. But they serve different purposes and have different implications.
+                </div>
+                <div class="article-tags">
+                    <span class="article-tag">TypeScript</span>
+                    <span class="article-tag">Type Guards</span>
+                    <span class="article-tag">Validators</span>
+                </div>
+                <a href="https://nguyenphongthien.medium.com/" class="read-more" target="_blank">Read on Medium</a>
+            </div>
+            
+            <div class="article-card">
+                <div class="article-publication">Medium</div>
+                <div class="article-title">"SOLID & React — Chapter 4(I): I Is for "I Don't Need That Prop"</div>
+                <div class="article-date">6 days ago</div>
+                <div class="article-excerpt">
+                    "One component to rule them all" sounds cool — until it starts ruling your sanity. Learn how to apply the Interface Segregation Principle to React components and create more maintainable code.
+                </div>
+                <div class="article-tags">
+                    <span class="article-tag">React</span>
+                    <span class="article-tag">SOLID</span>
+                    <span class="article-tag">Clean Code</span>
+                </div>
+                <a href="https://nguyenphongthien.medium.com/" class="read-more" target="_blank">Read on Medium</a>
+            </div>
+            
+            <div class="article-card">
+                <div class="article-publication">Medium</div>
+                <div class="article-title">Efficient Teamwork Isn't One-Size-Fits-All: Leading with Structure, Trust, and Adaptability</div>
+                <div class="article-date">6 days ago</div>
+                <div class="article-excerpt">
+                    When you work with multiple teams — each with different sizes, maturity levels, and domain focus — you quickly realize: efficiency isn't one-size-fits-all. Learn how to adapt your leadership approach.
+                </div>
+                <div class="article-tags">
+                    <span class="article-tag">Leadership</span>
+                    <span class="article-tag">Team Management</span>
+                    <span class="article-tag">Agile</span>
+                </div>
+                <a href="https://nguyenphongthien.medium.com/" class="read-more" target="_blank">Read on Medium</a>
+            </div>
+            
+            <div class="article-card">
+                <div class="article-publication">JavaScript in Plain English</div>
+                <div class="article-title">The TypeScript Hack That Remembers Your Checks So You Don't Have To</div>
+                <div class="article-date">6 days ago</div>
+                <div class="article-excerpt">
+                    Have you ever found yourself writing repetitive type checks? Learn a clever TypeScript pattern that can remember your checks and reduce boilerplate code while maintaining type safety.
+                </div>
+                <div class="article-tags">
+                    <span class="article-tag">TypeScript</span>
+                    <span class="article-tag">Type Safety</span>
+                    <span class="article-tag">Developer Experience</span>
+                </div>
+                <a href="https://nguyenphongthien.medium.com/" class="read-more" target="_blank">Read on Medium</a>
+            </div>
+        </div>
+        
+        <div class="featured-section">
+            <h2>More Articles on Medium</h2>
+            <p>I write about TypeScript, React, clean architecture, and developer experience. Follow me on Medium for regular insights and practical tips for building better software.</p>
+            <a href="https://nguyenphongthien.medium.com/" class="medium-button" target="_blank">View All Articles on Medium</a>
+        </div>
+    </div>
+</body>
+</html> 

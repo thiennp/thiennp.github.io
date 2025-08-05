@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resume - Thien NP</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            line-height: 1.6;
+            color: #1a1a1a;
+            background: #ffffff;
+            min-height: 100vh;
+            font-size: 16px;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+        
+        .navigation {
+            background: #ffffff;
+            border-bottom: 1px solid #e9ecef;
+            padding: 1rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .nav-logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #1a1a1a;
+            text-decoration: none;
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+        }
+        
+        .nav-links a {
+            text-decoration: none;
+            color: #6c757d;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+        
+        .nav-links a:hover {
+            color: #1a1a1a;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 4rem;
+            padding: 4rem 0;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        }
+        
+        .header h1 {
+            font-size: 3.5rem;
+            margin-bottom: 1rem;
+            font-weight: 800;
+            color: #1a1a1a;
+            letter-spacing: -0.02em;
+        }
+        
+        .header p {
+            font-size: 1.3rem;
+            color: #6c757d;
+            max-width: 600px;
+            margin: 0 auto 2rem;
+            font-weight: 400;
+        }
+        
+        .resume-section {
+            margin-bottom: 4rem;
+        }
+        
+        .resume-section h2 {
+            color: #1a1a1a;
+            font-size: 2rem;
+            margin-bottom: 2rem;
+            font-weight: 700;
+            letter-spacing: -0.01em;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 0.5rem;
+        }
+        
+        .experience-card {
+            background: #ffffff;
+            border: 1px solid #e9ecef;
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            transition: all 0.3s ease;
+        }
+        
+        .experience-card:hover {
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+            border-color: #667eea;
+        }
+        
+        .experience-title {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #1a1a1a;
+            margin-bottom: 0.5rem;
+        }
+        
+        .experience-company {
+            font-size: 1.1rem;
+            color: #667eea;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+        
+        .experience-date {
+            color: #6c757d;
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+        }
+        
+        .experience-description {
+            color: #495057;
+            line-height: 1.7;
+        }
+        
+        .skills-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+        
+        .skill-category {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 2rem;
+            border: 1px solid #e9ecef;
+        }
+        
+        .skill-category h3 {
+            color: #1a1a1a;
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+        
+        .skill-list {
+            list-style: none;
+        }
+        
+        .skill-list li {
+            padding: 0.5rem 0;
+            color: #495057;
+            position: relative;
+            padding-left: 1.5rem;
+        }
+        
+        .skill-list li::before {
+            content: "•";
+            position: absolute;
+            left: 0;
+            color: #667eea;
+            font-weight: bold;
+        }
+        
+        .cta-section {
+            text-align: center;
+            background: #f8f9fa;
+            border-radius: 16px;
+            padding: 3rem;
+            margin: 4rem 0;
+            border: 1px solid #e9ecef;
+        }
+        
+        .cta-section h2 {
+            color: #1a1a1a;
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            font-weight: 700;
+        }
+        
+        .cta-section p {
+            color: #6c757d;
+            font-size: 1.1rem;
+            margin-bottom: 2rem;
+        }
+        
+        .cta-button {
+            display: inline-block;
+            padding: 1rem 2rem;
+            background: #1a1a1a;
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            border: 2px solid #1a1a1a;
+        }
+        
+        .cta-button:hover {
+            background: transparent;
+            color: #1a1a1a;
+            transform: translateY(-2px);
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+            
+            .nav-container {
+                padding: 0 1rem;
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            .nav-links {
+                gap: 1rem;
+            }
+            
+            .header {
+                padding: 2rem 0;
+            }
+            
+            .header h1 {
+                font-size: 2.5rem;
+            }
+            
+            .header p {
+                font-size: 1.1rem;
+            }
+            
+            .resume-section h2 {
+                font-size: 1.8rem;
+            }
+            
+            .experience-card {
+                padding: 1.5rem;
+            }
+            
+            .skills-grid {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+            
+            .skill-category {
+                padding: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navigation">
+        <div class="nav-container">
+            <a href="index.html" class="nav-logo">Thien NP</a>
+            <ul class="nav-links">
+                <li><a href="resume.html">Resume</a></li>
+                <li><a href="blog.html">Blog</a></li>
+                <li><a href="index.html">Projects</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="header">
+            <h1>Professional Resume</h1>
+            <p>Software Engineer & Front-end Architect with expertise in TypeScript, React, and modern web technologies</p>
+        </div>
+        
+        <div class="resume-section">
+            <h2>Professional Experience</h2>
+            
+            <div class="experience-card">
+                <div class="experience-title">Senior Software Engineer</div>
+                <div class="experience-company">Various Companies</div>
+                <div class="experience-date">2020 - Present</div>
+                <div class="experience-description">
+                    Specialized in front-end architecture, TypeScript development, and building scalable applications. 
+                    Led development of multiple projects including the Guardz ecosystem, AI tools, and various web applications.
+                    Focused on clean architecture, domain-driven design, and developer experience.
+                </div>
+            </div>
+            
+            <div class="experience-card">
+                <div class="experience-title">Front-end Architect</div>
+                <div class="experience-company">Open Source & Consulting</div>
+                <div class="experience-date">2018 - Present</div>
+                <div class="experience-description">
+                    Designed and implemented scalable front-end architectures. Created developer tools and libraries 
+                    that improve code quality and developer productivity. Contributed to open source projects and 
+                    mentored other developers.
+                </div>
+            </div>
+        </div>
+        
+        <div class="resume-section">
+            <h2>Technical Skills</h2>
+            
+            <div class="skills-grid">
+                <div class="skill-category">
+                    <h3>Programming Languages</h3>
+                    <ul class="skill-list">
+                        <li>TypeScript/JavaScript</li>
+                        <li>Python</li>
+                        <li>Node.js</li>
+                        <li>React/Next.js</li>
+                    </ul>
+                </div>
+                
+                <div class="skill-category">
+                    <h3>Development Tools</h3>
+                    <ul class="skill-list">
+                        <li>Git & GitHub</li>
+                        <li>Docker</li>
+                        <li>CI/CD</li>
+                        <li>Testing (Jest, Vitest)</li>
+                    </ul>
+                </div>
+                
+                <div class="skill-category">
+                    <h3>Architecture & Design</h3>
+                    <ul class="skill-list">
+                        <li>Domain-Driven Design</li>
+                        <li>Clean Architecture</li>
+                        <li>SOLID Principles</li>
+                        <li>Functional Programming</li>
+                    </ul>
+                </div>
+                
+                <div class="skill-category">
+                    <h3>Specializations</h3>
+                    <ul class="skill-list">
+                        <li>Runtime Type Safety</li>
+                        <li>Developer Tools</li>
+                        <li>AI/ML Integration</li>
+                        <li>Performance Optimization</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        
+        <div class="cta-section">
+            <h2>View Full Resume</h2>
+            <p>For a complete professional history, detailed experience, and full skill set, please visit my LinkedIn profile.</p>
+            <a href="https://www.linkedin.com/in/thiennp/" class="cta-button" target="_blank">View on LinkedIn</a>
+        </div>
+    </div>
+</body>
+</html> 

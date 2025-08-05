@@ -26,6 +26,48 @@
             padding: 0 2rem;
         }
         
+        .navigation {
+            background: #ffffff;
+            border-bottom: 1px solid #e9ecef;
+            padding: 1rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .nav-logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #1a1a1a;
+            text-decoration: none;
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+        }
+        
+        .nav-links a {
+            text-decoration: none;
+            color: #6c757d;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+        
+        .nav-links a:hover {
+            color: #1a1a1a;
+        }
+        
         .header {
             text-align: center;
             margin-bottom: 6rem;
@@ -200,6 +242,16 @@
                 padding: 1rem;
             }
             
+            .nav-container {
+                padding: 0 1rem;
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            .nav-links {
+                gap: 1rem;
+            }
+            
             .header {
                 padding: 2rem 0;
                 margin-bottom: 3rem;
@@ -247,52 +299,55 @@
     </style>
 </head>
 <body>
+    <nav class="navigation">
+        <div class="nav-container">
+            <a href="index.html" class="nav-logo">Thien NP</a>
+            <ul class="nav-links">
+                <li><a href="resume.html">Resume</a></li>
+                <li><a href="blog.html">Blog</a></li>
+                <li><a href="index.html">Projects</a></li>
+            </ul>
+        </div>
+    </nav>
+
     <div class="container">
         <div class="header">
             <h1>Thien NP</h1>
-            <p>Software Engineer & Open Source Contributor</p>
+            <p>Software Engineer & Front-end Architect</p>
         </div>
         
         <div class="content">
             <div class="section">
-                <h2>About Me</h2>
-                <div class="about-section">
-                    <p>I'm a passionate software engineer focused on building robust, scalable applications and developer tools. I specialize in TypeScript, Node.js, and modern web technologies. My work emphasizes clean architecture, functional programming principles, and creating tools that improve developer productivity.</p>
-                </div>
-            </div>
-            
-            <div class="section">
                 <h2>Featured Projects</h2>
                 
                 <div class="project-card">
-                    <h3 class="project-title">Structure Validation</h3>
+                    <h3 class="project-title">🛡️ Guardz Ecosystem</h3>
                     <p class="project-description">
-                        A powerful Node.js CLI tool for validating and maintaining consistent codebase folder and file structure using declarative configuration. Part of the guardz ecosystem for comprehensive TypeScript development.
+                        A comprehensive suite of TypeScript development tools designed to improve code quality, developer productivity, and project maintainability. Features runtime type safety, validation, and development utilities.
                     </p>
                     
                     <h4>Key Features:</h4>
                     <ul class="project-features">
-                        <li>Declarative configuration with TypeScript support</li>
-                        <li>Automatic import updates when files are moved or renamed</li>
-                        <li>Auto-fix mode with smart file operations</li>
-                        <li>Git integration for staged, changed, or all files</li>
-                        <li>Pattern matching with glob patterns and variable placeholders</li>
-                        <li>Husky integration for pre-commit hooks</li>
-                        <li>Comprehensive error reporting and suggestions</li>
-                        <li>Batch operations for efficient handling of multiple files</li>
+                        <li>Runtime type safety without schemas or boilerplate</li>
+                        <li>Type guards and validators for TypeScript</li>
+                        <li>Development tools for code quality</li>
+                        <li>Multiple packages: Guardz, Generator, Axios, Event</li>
+                        <li>Online tool for interactive development</li>
                     </ul>
                     
                     <div class="tech-stack">
                         <span class="tech-tag">TypeScript</span>
-                        <span class="tech-tag">Node.js</span>
-                        <span class="tech-tag">CLI</span>
-                        <span class="tech-tag">Git Integration</span>
-                        <span class="tech-tag">File Operations</span>
-                        <span class="tech-tag">Domain-Driven Design</span>
+                        <span class="tech-tag">Development Tools</span>
+                        <span class="tech-tag">Code Quality</span>
+                        <span class="tech-tag">Runtime Safety</span>
                     </div>
                     
                     <div class="links">
-                        <a href="https://www.npmjs.com/package/structure-validation" class="link" target="_blank">NPM Package</a>
+                        <a href="guardz-mcp.html" class="link">Online Tool</a>
+                        <a href="https://www.npmjs.com/package/guardz" class="link" target="_blank">Guardz</a>
+                        <a href="https://www.npmjs.com/package/guardz-generator" class="link" target="_blank">Generator</a>
+                        <a href="https://www.npmjs.com/package/guardz-axios" class="link" target="_blank">Axios</a>
+                        <a href="https://www.npmjs.com/package/guardz-event" class="link" target="_blank">Event</a>
                     </div>
                 </div>
                 
@@ -309,9 +364,6 @@
                         <li>Three interface options: Desktop GUI, Web Interface, and CLI</li>
                         <li>AI-powered file creation and editing with automatic backups</li>
                         <li>Code debugging, optimization, and review assistance</li>
-                        <li>Web integration for search, weather, news, and translation</li>
-                        <li>System tools for Docker, Git, SSH, and command analysis</li>
-                        <li>Context-aware model selection and automatic fallback</li>
                     </ul>
                     
                     <div class="tech-stack">
@@ -319,7 +371,6 @@
                         <span class="tech-tag">AI/ML</span>
                         <span class="tech-tag">CLI</span>
                         <span class="tech-tag">GUI</span>
-                        <span class="tech-tag">Web Interface</span>
                         <span class="tech-tag">Local Models</span>
                     </div>
                     
@@ -330,24 +381,30 @@
                 </div>
                 
                 <div class="project-card">
-                    <h3 class="project-title">Guardz Ecosystem</h3>
+                    <h3 class="project-title">📁 Structure Validation</h3>
                     <p class="project-description">
-                        A comprehensive suite of TypeScript development tools designed to improve code quality, developer productivity, and project maintainability.
+                        A TypeScript CLI tool for validating and maintaining project structure. Automatically updates imports when files are moved or renamed, ensuring code integrity.
                     </p>
+                    
+                    <h4>Key Features:</h4>
+                    <ul class="project-features">
+                        <li>Declarative configuration with TypeScript support</li>
+                        <li>Automatic import updates when files are moved or renamed</li>
+                        <li>Auto-fix mode with smart file operations</li>
+                        <li>Git integration for staged, changed, or all files</li>
+                        <li>Pattern matching with glob patterns and variable placeholders</li>
+                    </ul>
                     
                     <div class="tech-stack">
                         <span class="tech-tag">TypeScript</span>
-                        <span class="tech-tag">Development Tools</span>
-                        <span class="tech-tag">Code Quality</span>
-                        <span class="tech-tag">Developer Experience</span>
+                        <span class="tech-tag">Node.js</span>
+                        <span class="tech-tag">CLI</span>
+                        <span class="tech-tag">Git Integration</span>
+                        <span class="tech-tag">File Operations</span>
                     </div>
                     
                     <div class="links">
-                        <a href="guardz-mcp.html" class="link">Online Tool</a>
-                        <a href="https://www.npmjs.com/package/guardz" class="link" target="_blank">Guardz</a>
-                        <a href="https://www.npmjs.com/package/guardz-generator" class="link" target="_blank">Guardz Generator</a>
-                        <a href="https://www.npmjs.com/package/guardz-axios" class="link" target="_blank">Guardz Axios</a>
-                        <a href="https://www.npmjs.com/package/guardz-event" class="link" target="_blank">Guardz Event</a>
+                        <a href="https://www.npmjs.com/package/structure-validation" class="link" target="_blank">NPM Package</a>
                     </div>
                 </div>
             </div>
