@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Guardz MCP - TypeScript Type Guard Generator</title>
+    <title>Guardz MCP - Thien Nguyen</title>
     <style>
         * {
             margin: 0;
@@ -13,73 +13,140 @@
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            line-height: 1.6;
+            color: #1a1a1a;
+            background: #ffffff;
             min-height: 100vh;
-            color: #333;
+            font-size: 16px;
         }
 
         .container {
-            max-width: 1200px;
+            max-width: 1400px;
             margin: 0 auto;
-            padding: 2rem;
+            padding: 0 2rem;
+        }
+        
+        .navigation {
+            background: #ffffff;
+            border-bottom: 1px solid #e9ecef;
+            padding: 1rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .nav-logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #1a1a1a;
+            text-decoration: none;
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+        }
+        
+        .nav-links a {
+            text-decoration: none;
+            color: #6c757d;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+        
+        .nav-links a:hover {
+            color: #1a1a1a;
         }
 
         .header {
             text-align: center;
-            margin-bottom: 3rem;
-            color: white;
+            margin-bottom: 4rem;
+            padding: 4rem 0;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
         }
 
         .header h1 {
-            font-size: 3rem;
-            margin-bottom: 1rem;
-            font-weight: 700;
+            font-size: 4rem;
+            margin-bottom: 1.5rem;
+            font-weight: 800;
+            color: #1a1a1a;
+            letter-spacing: -0.02em;
         }
 
         .header p {
-            font-size: 1.2rem;
-            opacity: 0.9;
+            font-size: 1.4rem;
+            color: #6c757d;
+            max-width: 600px;
+            margin: 0 auto;
+            font-weight: 400;
         }
 
         .card {
-            background: white;
-            border-radius: 12px;
-            padding: 2rem;
-            margin-bottom: 2rem;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-            transition: transform 0.2s ease;
+            background: #ffffff;
+            border: 1px solid #e9ecef;
+            border-radius: 16px;
+            padding: 3rem;
+            margin-bottom: 3rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         }
 
         .card:hover {
-            transform: translateY(-2px);
+            transform: translateY(-4px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.08);
+            border-color: #667eea;
         }
 
         .card h2 {
-            color: #667eea;
-            margin-bottom: 1rem;
-            font-size: 1.5rem;
+            color: #1a1a1a;
+            margin-bottom: 2rem;
+            font-size: 2rem;
+            font-weight: 700;
+            letter-spacing: -0.01em;
         }
 
         .form-group {
-            margin-bottom: 1.5rem;
+            margin-bottom: 2rem;
         }
 
         .form-group label {
             display: block;
             margin-bottom: 0.5rem;
             font-weight: 600;
-            color: #555;
+            color: #1a1a1a;
         }
 
         .form-group input,
         .form-group textarea,
         .form-group select {
             width: 100%;
-            padding: 0.75rem;
-            border: 2px solid #e1e5e9;
+            padding: 1rem;
+            border: 1px solid #e9ecef;
             border-radius: 8px;
             font-size: 1rem;
-            transition: border-color 0.2s ease;
+            transition: border-color 0.3s ease;
         }
 
         .form-group input:focus,
@@ -87,801 +154,542 @@
         .form-group select:focus {
             outline: none;
             border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
         }
 
         .form-group textarea {
             min-height: 120px;
             font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
             font-size: 0.9rem;
+            resize: vertical;
         }
 
         .btn {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #1a1a1a;
             color: white;
-            border: none;
-            padding: 0.75rem 2rem;
+            padding: 1rem 2rem;
+            border: 2px solid #1a1a1a;
             border-radius: 8px;
             font-size: 1rem;
             font-weight: 600;
             cursor: pointer;
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            transition: all 0.3s ease;
         }
 
         .btn:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+            background: transparent;
+            color: #1a1a1a;
+            transform: translateY(-2px);
         }
 
-        .btn:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-            transform: none;
+        .btn-secondary {
+            background: transparent;
+            color: #1a1a1a;
+            border: 2px solid #1a1a1a;
         }
 
-        .result {
+        .btn-secondary:hover {
+            background: #1a1a1a;
+            color: white;
+        }
+
+        .result-section {
+            margin-top: 2rem;
+            padding: 2rem;
             background: #f8f9fa;
+            border-radius: 12px;
+            border: 1px solid #e9ecef;
+        }
+
+        .result-section h3 {
+            color: #1a1a1a;
+            margin-bottom: 1rem;
+            font-size: 1.3rem;
+            font-weight: 700;
+        }
+
+        .code-output {
+            background: #1a1a1a;
+            color: #ffffff;
+            padding: 1.5rem;
             border-radius: 8px;
-            padding: 1rem;
-            margin-top: 1rem;
             font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
             font-size: 0.9rem;
+            overflow-x: auto;
             white-space: pre-wrap;
-            max-height: 400px;
-            overflow-y: auto;
+            margin-top: 1rem;
         }
 
-        .error {
-            background: #fee;
-            border: 1px solid #fcc;
-            color: #c33;
+        .info-section {
+            background: #f8f9fa;
+            border-radius: 16px;
+            padding: 3rem;
+            margin: 4rem 0;
+            border: 1px solid #e9ecef;
         }
 
-        .success {
-            background: #efe;
-            border: 1px solid #cfc;
-            color: #3c3;
+        .info-section h2 {
+            color: #1a1a1a;
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            font-weight: 700;
         }
 
-        .loading {
-            display: inline-block;
-            width: 20px;
-            height: 20px;
-            border: 3px solid #f3f3f3;
-            border-top: 3px solid #667eea;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin-right: 0.5rem;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        .tabs {
-            display: flex;
+        .info-section p {
+            color: #6c757d;
+            font-size: 1.1rem;
             margin-bottom: 2rem;
-            background: white;
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .feature-card {
+            background: #ffffff;
+            border: 1px solid #e9ecef;
             border-radius: 12px;
+            padding: 2rem;
+            transition: all 0.3s ease;
+            position: relative;
             overflow: hidden;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
         }
 
-        .tab {
-            flex: 1;
-            padding: 1rem;
-            text-align: center;
-            cursor: pointer;
-            transition: background-color 0.2s ease;
-            border-bottom: 3px solid transparent;
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         }
 
-        .tab.active {
-            background: #667eea;
-            color: white;
-            border-bottom-color: #667eea;
-        }
-
-        .tab:hover:not(.active) {
-            background: #f8f9fa;
-        }
-
-        .tab-content {
-            display: none;
-        }
-
-        .tab-content.active {
-            display: block;
-        }
-
-        .file-input {
-            display: none;
-        }
-
-        .file-label {
-            display: inline-block;
-            padding: 0.75rem 1.5rem;
-            background: #f8f9fa;
-            border: 2px dashed #ddd;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: border-color 0.2s ease;
-        }
-
-        .file-label:hover {
+        .feature-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.08);
             border-color: #667eea;
         }
 
-        .file-list {
-            margin-top: 1rem;
+        .feature-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
         }
 
-        .file-item {
+        .feature-title {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #1a1a1a;
+            margin-bottom: 1rem;
+        }
+
+        .feature-description {
+            color: #6c757d;
+            line-height: 1.7;
+        }
+
+        .button-group {
             display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 0.5rem;
-            background: #f8f9fa;
-            border-radius: 4px;
-            margin-bottom: 0.5rem;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin-top: 2rem;
         }
 
-        .remove-file {
-            background: #dc3545;
-            color: white;
-            border: none;
-            padding: 0.25rem 0.5rem;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 0.8rem;
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+            
+            .nav-container {
+                padding: 0 1rem;
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            .nav-links {
+                gap: 1rem;
+            }
+            
+            .header {
+                padding: 2rem 0;
+            }
+            
+            .header h1 {
+                font-size: 2.5rem;
+            }
+            
+            .header p {
+                font-size: 1.1rem;
+            }
+            
+            .card {
+                padding: 2rem;
+            }
+            
+            .card h2 {
+                font-size: 1.8rem;
+            }
+            
+            .feature-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .info-section {
+                padding: 2rem;
+            }
+            
+            .button-group {
+                flex-direction: column;
+            }
         }
     </style>
 </head>
 <body>
+    <nav class="navigation">
+        <div class="nav-container">
+            <a href="index.html" class="nav-logo">Thien Nguyen</a>
+            <ul class="nav-links">
+                <li><a href="resume.html">Resume</a></li>
+                <li><a href="blog.html">Blog</a></li>
+                <li><a href="index.html">Projects</a></li>
+                <li><a href="contact.html">Contact</a></li>
+            </ul>
+        </div>
+    </nav>
+
     <div class="container">
         <div class="header">
-            <h1>🔒 Guardz MCP</h1>
-            <p>TypeScript Type Guard Generator - Powered by Model Context Protocol</p>
+            <h1>🛡️ Guardz MCP</h1>
+            <p>TypeScript Type Guard Generator & Runtime Type Safety Tool</p>
         </div>
 
-        <div class="tabs">
-            <div class="tab active" data-tab="generate">Generate Type Guards</div>
-            <div class="tab" data-tab="discover">Discover Files</div>
-            <div class="tab" data-tab="validate">Validate TypeScript</div>
-            <div class="tab" data-tab="format">Format Code</div>
-            <div class="tab" data-tab="lint">Lint Code</div>
-            <div class="tab" data-tab="info">Project Info</div>
-        </div>
-
-        <!-- Generate Type Guards Tab -->
-        <div class="tab-content active" id="generate">
-            <div class="card">
-                <h2>Generate TypeScript Type Guards</h2>
-                <form id="generateForm">
-                    <div class="form-group">
-                        <label>Input Method:</label>
-                        <div style="margin-bottom: 1rem;">
-                            <label style="display: inline-block; margin-right: 2rem;">
-                                <input type="radio" name="inputMethod" value="files" checked> Upload Files
-                            </label>
-                            <label style="display: inline-block;">
-                                <input type="radio" name="inputMethod" value="text"> Paste Code
-                            </label>
-                        </div>
+        <div class="info-section">
+            <h2>About Guardz MCP</h2>
+            <p>Guardz MCP is a powerful tool for generating TypeScript type guards and validators. It helps you create runtime type safety without the boilerplate, making your TypeScript code more robust and reliable.</p>
+            
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">⚡</div>
+                    <div class="feature-title">Fast Generation</div>
+                    <div class="feature-description">
+                        Generate type guards and validators instantly from your TypeScript interfaces and types.
                     </div>
-
-                    <!-- File Upload Section -->
-                    <div id="fileUploadSection" class="form-group">
-                        <label for="files">TypeScript Files:</label>
-                        <input type="file" id="files" multiple accept=".ts,.tsx" class="file-input">
-                        <label for="files" class="file-label">Choose TypeScript files...</label>
-                        <div class="file-list" id="fileList"></div>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">🛡️</div>
+                    <div class="feature-title">Runtime Safety</div>
+                    <div class="feature-description">
+                        Ensure your data matches your types at runtime with comprehensive validation.
                     </div>
-
-                    <!-- Text Input Section -->
-                    <div id="textInputSection" class="form-group" style="display: none;">
-                        <label for="typescriptCode">TypeScript Code:</label>
-                        <textarea id="typescriptCode" placeholder="Paste your TypeScript code here...&#10;&#10;Example:&#10;interface User {&#10;  id: number;&#10;  name: string;&#10;  email: string;&#10;}&#10;&#10;type Product = {&#10;  id: string;&#10;  title: string;&#10;  price: number;&#10;};"></textarea>
-                        <div style="margin-top: 0.5rem; font-size: 0.9rem; color: #666;">
-                            💡 Tip: You can paste multiple TypeScript interfaces, types, or classes. Each will be processed separately.
-                        </div>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">🔧</div>
+                    <div class="feature-title">Zero Boilerplate</div>
+                    <div class="feature-description">
+                        No manual type guard writing required. Generate everything automatically.
                     </div>
-
-                    <div class="form-group">
-                        <label for="config">Config File Path (optional):</label>
-                        <input type="text" id="config" placeholder="guardz.generator.config.ts">
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">📦</div>
+                    <div class="feature-title">Multiple Formats</div>
+                    <div class="feature-description">
+                        Generate guards, validators, and schemas in various formats for different use cases.
                     </div>
-
-                    <div class="form-group">
-                        <label for="type">Specific Type (optional):</label>
-                        <input type="text" id="type" placeholder="User, Product, etc.">
-                    </div>
-
-                    <div class="form-group">
-                        <label for="guardName">Custom Guard Name (optional):</label>
-                        <input type="text" id="guardName" placeholder="isUser, isProduct, etc.">
-                    </div>
-
-                    <div class="form-group">
-                        <label for="includes">Include Patterns (optional):</label>
-                        <input type="text" id="includes" placeholder="src/**/*.ts, lib/**/*.ts">
-                    </div>
-
-                    <div class="form-group">
-                        <label for="excludes">Exclude Patterns (optional):</label>
-                        <input type="text" id="excludes" placeholder="node_modules/**, dist/**">
-                    </div>
-
-                    <div class="form-group">
-                        <label>
-                            <input type="checkbox" id="postProcess" checked>
-                            Run post-processing (lint, prettier, tsc)
-                        </label>
-                    </div>
-
-                    <div class="form-group">
-                        <label>
-                            <input type="checkbox" id="verbose">
-                            Verbose logging
-                        </label>
-                    </div>
-
-                    <div class="form-group">
-                        <label>
-                            <input type="checkbox" id="debug">
-                            Debug logging
-                        </label>
-                    </div>
-
-                    <button type="submit" class="btn" id="generateBtn">
-                        <span class="loading" style="display: none;"></span>
-                        Generate Type Guards
-                    </button>
-                </form>
-
-                <div id="generateResult" class="result" style="display: none;"></div>
+                </div>
             </div>
         </div>
 
-        <!-- Discover Files Tab -->
-        <div class="tab-content" id="discover">
-            <div class="card">
-                <h2>Discover TypeScript Files</h2>
-                <form id="discoverForm">
-                    <div class="form-group">
-                        <label for="discoverFiles">Files (optional):</label>
-                        <input type="text" id="discoverFiles" placeholder="src/**/*.ts">
-                    </div>
+        <div class="card">
+            <h2>Generate Type Guards</h2>
+            <form id="guardForm">
+                <div class="form-group">
+                    <label for="interfaceName">Interface Name:</label>
+                    <input type="text" id="interfaceName" name="interfaceName" value="User" required>
+                </div>
 
-                    <div class="form-group">
-                        <label for="discoverIncludes">Include Patterns (optional):</label>
-                        <input type="text" id="discoverIncludes" placeholder="src/**/*.ts, lib/**/*.ts">
-                    </div>
+                <div class="form-group">
+                    <label for="interfaceCode">TypeScript Interface:</label>
+                    <textarea id="interfaceCode" name="interfaceCode" required>interface User {
+  id: number;
+  name: string;
+  email: string;
+  age?: number;
+  isActive: boolean;
+}</textarea>
+                </div>
 
-                    <div class="form-group">
-                        <label for="discoverExcludes">Exclude Patterns (optional):</label>
-                        <input type="text" id="discoverExcludes" placeholder="node_modules/**, dist/**">
-                    </div>
+                <div class="form-group">
+                    <label for="outputFormat">Output Format:</label>
+                    <select id="outputFormat" name="outputFormat">
+                        <option value="guard">Type Guard</option>
+                        <option value="validator">Validator</option>
+                        <option value="schema">JSON Schema</option>
+                        <option value="zod">Zod Schema</option>
+                    </select>
+                </div>
 
-                    <div class="form-group">
-                        <label for="configPath">Config Path (optional):</label>
-                        <input type="text" id="configPath" placeholder="guardz.generator.config.ts">
-                    </div>
+                <div class="button-group">
+                    <button type="submit" class="btn">Generate Code</button>
+                    <button type="button" class="btn btn-secondary" onclick="clearForm()">Clear</button>
+                </div>
+            </form>
 
-                    <button type="submit" class="btn" id="discoverBtn">
-                        <span class="loading" style="display: none;"></span>
-                        Discover Files
-                    </button>
-                </form>
-
-                <div id="discoverResult" class="result" style="display: none;"></div>
+            <div id="result" class="result-section" style="display: none;">
+                <h3>Generated Code:</h3>
+                <div id="codeOutput" class="code-output"></div>
+                <div class="button-group">
+                    <button class="btn" onclick="copyToClipboard()">Copy Code</button>
+                    <button class="btn btn-secondary" onclick="downloadCode()">Download</button>
+                </div>
             </div>
         </div>
 
-        <!-- Validate TypeScript Tab -->
-        <div class="tab-content" id="validate">
-            <div class="card">
-                <h2>Validate TypeScript Files</h2>
-                <form id="validateForm">
-                    <div class="form-group">
-                        <label>Input Method:</label>
-                        <div style="margin-bottom: 1rem;">
-                            <label style="display: inline-block; margin-right: 2rem;">
-                                <input type="radio" name="validateInputMethod" value="files" checked> Upload Files
-                            </label>
-                            <label style="display: inline-block;">
-                                <input type="radio" name="validateInputMethod" value="text"> Paste Code
-                            </label>
-                        </div>
-                    </div>
-
-                    <!-- File Upload Section -->
-                    <div id="validateFileUploadSection" class="form-group">
-                        <label for="validateFiles">TypeScript Files:</label>
-                        <input type="file" id="validateFiles" multiple accept=".ts,.tsx" class="file-input">
-                        <label for="validateFiles" class="file-label">Choose TypeScript files...</label>
-                        <div class="file-list" id="validateFileList"></div>
-                    </div>
-
-                    <!-- Text Input Section -->
-                    <div id="validateTextInputSection" class="form-group" style="display: none;">
-                        <label for="validateTypeScriptCode">TypeScript Code:</label>
-                        <textarea id="validateTypeScriptCode" placeholder="Paste your TypeScript code here to validate...&#10;&#10;Example:&#10;interface User {&#10;  id: number;&#10;  name: string;&#10;  email: string;&#10;}&#10;&#10;const user: User = {&#10;  id: 1,&#10;  name: 'John',&#10;  email: 'john@example.com'&#10;};"></textarea>
-                        <div style="margin-top: 0.5rem; font-size: 0.9rem; color: #666;">
-                            💡 Tip: Paste your TypeScript code to check for syntax errors and type issues.
-                        </div>
-                    </div>
-
-                    <button type="submit" class="btn" id="validateBtn">
-                        <span class="loading" style="display: none;"></span>
-                        Validate TypeScript
-                    </button>
-                </form>
-
-                <div id="validateResult" class="result" style="display: none;"></div>
-            </div>
-        </div>
-
-        <!-- Format Code Tab -->
-        <div class="tab-content" id="format">
-            <div class="card">
-                <h2>Format Code with Prettier</h2>
-                <form id="formatForm">
-                    <div class="form-group">
-                        <label>Input Method:</label>
-                        <div style="margin-bottom: 1rem;">
-                            <label style="display: inline-block; margin-right: 2rem;">
-                                <input type="radio" name="formatInputMethod" value="files" checked> Upload Files
-                            </label>
-                            <label style="display: inline-block;">
-                                <input type="radio" name="formatInputMethod" value="text"> Paste Code
-                            </label>
-                        </div>
-                    </div>
-
-                    <!-- File Upload Section -->
-                    <div id="formatFileUploadSection" class="form-group">
-                        <label for="formatFiles">Files to Format:</label>
-                        <input type="file" id="formatFiles" multiple accept=".ts,.tsx,.js,.jsx" class="file-input">
-                        <label for="formatFiles" class="file-label">Choose files to format...</label>
-                        <div class="file-list" id="formatFileList"></div>
-                    </div>
-
-                    <!-- Text Input Section -->
-                    <div id="formatTextInputSection" class="form-group" style="display: none;">
-                        <label for="formatCode">Code to Format:</label>
-                        <textarea id="formatCode" placeholder="Paste your code here to format with Prettier...&#10;&#10;Example:&#10;const user={id:1,name:'John',email:'john@example.com'};&#10;&#10;function greet(name){return `Hello, ${name}!`;}&#10;&#10;const products=[{id:'1',title:'Product 1',price:10},{id:'2',title:'Product 2',price:20}];"></textarea>
-                        <div style="margin-top: 0.5rem; font-size: 0.9rem; color: #666;">
-                            💡 Tip: Paste your code to format it with Prettier. Supports TypeScript, JavaScript, and JSX.
-                        </div>
-                    </div>
-
-                    <button type="submit" class="btn" id="formatBtn">
-                        <span class="loading" style="display: none;"></span>
-                        Format Code
-                    </button>
-                </form>
-
-                <div id="formatResult" class="result" style="display: none;"></div>
-            </div>
-        </div>
-
-        <!-- Lint Code Tab -->
-        <div class="tab-content" id="lint">
-            <div class="card">
-                <h2>Lint Code with ESLint</h2>
-                <form id="lintForm">
-                    <div class="form-group">
-                        <label>Input Method:</label>
-                        <div style="margin-bottom: 1rem;">
-                            <label style="display: inline-block; margin-right: 2rem;">
-                                <input type="radio" name="lintInputMethod" value="files" checked> Upload Files
-                            </label>
-                            <label style="display: inline-block;">
-                                <input type="radio" name="lintInputMethod" value="text"> Paste Code
-                            </label>
-                        </div>
-                    </div>
-
-                    <!-- File Upload Section -->
-                    <div id="lintFileUploadSection" class="form-group">
-                        <label for="lintFiles">Files to Lint:</label>
-                        <input type="file" id="lintFiles" multiple accept=".ts,.tsx,.js,.jsx" class="file-input">
-                        <label for="lintFiles" class="file-label">Choose files to lint...</label>
-                        <div class="file-list" id="lintFileList"></div>
-                    </div>
-
-                    <!-- Text Input Section -->
-                    <div id="lintTextInputSection" class="form-group" style="display: none;">
-                        <label for="lintCode">Code to Lint:</label>
-                        <textarea id="lintCode" placeholder="Paste your code here to lint with ESLint...&#10;&#10;Example:&#10;const user = {&#10;  id: 1,&#10;  name: 'John',&#10;  email: 'john@example.com'&#10;};&#10;&#10;function greet(name) {&#10;  return `Hello, ${name}!`;&#10;}&#10;&#10;const products = [&#10;  { id: '1', title: 'Product 1', price: 10 },&#10;  { id: '2', title: 'Product 2', price: 20 }&#10;];"></textarea>
-                        <div style="margin-top: 0.5rem; font-size: 0.9rem; color: #666;">
-                            💡 Tip: Paste your code to lint it with ESLint. Supports TypeScript, JavaScript, and JSX.
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        <label>
-                            <input type="checkbox" id="fixLint">
-                            Automatically fix issues
-                        </label>
-                    </div>
-
-                    <button type="submit" class="btn" id="lintBtn">
-                        <span class="loading" style="display: none;"></span>
-                        Lint Code
-                    </button>
-                </form>
-
-                <div id="lintResult" class="result" style="display: none;"></div>
-            </div>
-        </div>
-
-        <!-- Project Info Tab -->
-        <div class="tab-content" id="info">
-            <div class="card">
-                <h2>Project Information</h2>
-                <button type="button" class="btn" id="infoBtn">
-                    <span class="loading" style="display: none;"></span>
-                    Get Project Info
-                </button>
-
-                <div id="infoResult" class="result" style="display: none;"></div>
+        <div class="card">
+            <h2>Examples</h2>
+            <div class="form-group">
+                <label for="exampleSelect">Choose an example:</label>
+                <select id="exampleSelect" onchange="loadExample()">
+                    <option value="">Select an example...</option>
+                    <option value="user">User Interface</option>
+                    <option value="product">Product Interface</option>
+                    <option value="api">API Response</option>
+                    <option value="config">Configuration</option>
+                </select>
             </div>
         </div>
     </div>
 
-    <script src="api/guardz-mcp.js"></script>
     <script>
-        // Initialize the MCP client
-        const mcpClient = new GuardzMCPClient();
+        const examples = {
+            user: {
+                name: 'User',
+                code: `interface User {
+  id: number;
+  name: string;
+  email: string;
+  age?: number;
+  isActive: boolean;
+  profile?: {
+    avatar: string;
+    bio: string;
+  };
+}`
+            },
+            product: {
+                name: 'Product',
+                code: `interface Product {
+  id: string;
+  name: string;
+  price: number;
+  category: 'electronics' | 'clothing' | 'books';
+  inStock: boolean;
+  tags: string[];
+  metadata: Record<string, any>;
+}`
+            },
+            api: {
+                name: 'ApiResponse',
+                code: `interface ApiResponse<T> {
+  success: boolean;
+  data: T;
+  message?: string;
+  timestamp: string;
+  errors?: string[];
+}`
+            },
+            config: {
+                name: 'Config',
+                code: `interface Config {
+  database: {
+    host: string;
+    port: number;
+    name: string;
+    credentials: {
+      username: string;
+      password: string;
+    };
+  };
+  api: {
+    baseUrl: string;
+    timeout: number;
+    retries: number;
+  };
+  features: {
+    enableCache: boolean;
+    enableLogging: boolean;
+    debugMode: boolean;
+  };
+}`
+            }
+        };
 
-        // Tab functionality
-        document.querySelectorAll('.tab').forEach(tab => {
-            tab.addEventListener('click', () => {
-                // Remove active class from all tabs and contents
-                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-
-                // Add active class to clicked tab and corresponding content
-                tab.classList.add('active');
-                document.getElementById(tab.dataset.tab).classList.add('active');
-            });
-        });
-
-        // File input handling
-        function setupFileInput(inputId, listId) {
-            const input = document.getElementById(inputId);
-            const list = document.getElementById(listId);
-            const label = input.previousElementSibling;
-
-            input.addEventListener('change', (e) => {
-                const files = Array.from(e.target.files);
-                list.innerHTML = '';
-
-                files.forEach((file, index) => {
-                    const item = document.createElement('div');
-                    item.className = 'file-item';
-                    item.innerHTML = `
-                        <span>${file.name}</span>
-                        <button type="button" class="remove-file" onclick="removeFile(${index}, '${inputId}')">Remove</button>
-                    `;
-                    list.appendChild(item);
-                });
-            });
+        function loadExample() {
+            const select = document.getElementById('exampleSelect');
+            const example = examples[select.value];
+            
+            if (example) {
+                document.getElementById('interfaceName').value = example.name;
+                document.getElementById('interfaceCode').value = example.code;
+            }
         }
 
-        function removeFile(index, inputId) {
-            const input = document.getElementById(inputId);
-            const dt = new DataTransfer();
-            const files = Array.from(input.files);
-            
-            files.forEach((file, i) => {
-                if (i !== index) {
-                    dt.items.add(file);
-                }
-            });
-            
-            input.files = dt.files;
-            input.dispatchEvent(new Event('change'));
+        function clearForm() {
+            document.getElementById('guardForm').reset();
+            document.getElementById('result').style.display = 'none';
         }
 
-        // Setup file inputs
-        setupFileInput('files', 'fileList');
-        setupFileInput('validateFiles', 'validateFileList');
-        setupFileInput('formatFiles', 'formatFileList');
-        setupFileInput('lintFiles', 'lintFileList');
+        function copyToClipboard() {
+            const codeOutput = document.getElementById('codeOutput');
+            navigator.clipboard.writeText(codeOutput.textContent);
+            alert('Code copied to clipboard!');
+        }
 
-        // Input method switching for generate form
-        document.querySelectorAll('input[name="inputMethod"]').forEach(radio => {
-            radio.addEventListener('change', (e) => {
-                const fileSection = document.getElementById('fileUploadSection');
-                const textSection = document.getElementById('textInputSection');
-                
-                if (e.target.value === 'files') {
-                    fileSection.style.display = 'block';
-                    textSection.style.display = 'none';
-                } else {
-                    fileSection.style.display = 'none';
-                    textSection.style.display = 'block';
-                }
-            });
-        });
+        function downloadCode() {
+            const codeOutput = document.getElementById('codeOutput');
+            const blob = new Blob([codeOutput.textContent], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'guardz-generated.ts';
+            a.click();
+            URL.revokeObjectURL(url);
+        }
 
-        // Input method switching for validate form
-        document.querySelectorAll('input[name="validateInputMethod"]').forEach(radio => {
-            radio.addEventListener('change', (e) => {
-                const fileSection = document.getElementById('validateFileUploadSection');
-                const textSection = document.getElementById('validateTextInputSection');
-                
-                if (e.target.value === 'files') {
-                    fileSection.style.display = 'block';
-                    textSection.style.display = 'none';
-                } else {
-                    fileSection.style.display = 'none';
-                    textSection.style.display = 'block';
-                }
-            });
-        });
-
-        // Input method switching for format form
-        document.querySelectorAll('input[name="formatInputMethod"]').forEach(radio => {
-            radio.addEventListener('change', (e) => {
-                const fileSection = document.getElementById('formatFileUploadSection');
-                const textSection = document.getElementById('formatTextInputSection');
-                
-                if (e.target.value === 'files') {
-                    fileSection.style.display = 'block';
-                    textSection.style.display = 'none';
-                } else {
-                    fileSection.style.display = 'none';
-                    textSection.style.display = 'block';
-                }
-            });
-        });
-
-        // Input method switching for lint form
-        document.querySelectorAll('input[name="lintInputMethod"]').forEach(radio => {
-            radio.addEventListener('change', (e) => {
-                const fileSection = document.getElementById('lintFileUploadSection');
-                const textSection = document.getElementById('lintTextInputSection');
-                
-                if (e.target.value === 'files') {
-                    fileSection.style.display = 'block';
-                    textSection.style.display = 'none';
-                } else {
-                    fileSection.style.display = 'none';
-                    textSection.style.display = 'block';
-                }
-            });
-        });
-
-        // Form submissions
-        document.getElementById('generateForm').addEventListener('submit', async (e) => {
+        document.getElementById('guardForm').addEventListener('submit', function(e) {
             e.preventDefault();
-            const btn = document.getElementById('generateBtn');
-            const loading = btn.querySelector('.loading');
-            const result = document.getElementById('generateResult');
-
-            btn.disabled = true;
-            loading.style.display = 'inline-block';
-            result.style.display = 'none';
-
-            try {
-                let fileContents = [];
-                const inputMethod = document.querySelector('input[name="inputMethod"]:checked').value;
-
-                if (inputMethod === 'files') {
-                    const files = Array.from(document.getElementById('files').files);
-                    if (files.length === 0) {
-                        throw new Error('Please select at least one TypeScript file');
-                    }
-                    fileContents = await Promise.all(
-                        files.map(file => file.text())
-                    );
-                } else {
-                    const typescriptCode = document.getElementById('typescriptCode').value.trim();
-                    if (!typescriptCode) {
-                        throw new Error('Please paste some TypeScript code');
-                    }
-                    fileContents = [typescriptCode];
-                }
-
-                const options = {
-                    files: fileContents,
-                    config: document.getElementById('config').value || undefined,
-                    type: document.getElementById('type').value || undefined,
-                    guardName: document.getElementById('guardName').value || undefined,
-                    includes: document.getElementById('includes').value ? document.getElementById('includes').value.split(',') : undefined,
-                    excludes: document.getElementById('excludes').value ? document.getElementById('excludes').value.split(',') : undefined,
-                    postProcess: document.getElementById('postProcess').checked,
-                    verbose: document.getElementById('verbose').checked,
-                    debug: document.getElementById('debug').checked
-                };
-
-                const response = await mcpClient.generateTypeGuards(options);
-                result.textContent = JSON.stringify(response, null, 2);
-                result.className = 'result success';
-            } catch (error) {
-                result.textContent = `Error: ${error.message}`;
-                result.className = 'result error';
-            } finally {
-                btn.disabled = false;
-                loading.style.display = 'none';
-                result.style.display = 'block';
+            
+            const formData = new FormData(this);
+            const interfaceName = formData.get('interfaceName');
+            const interfaceCode = formData.get('interfaceCode');
+            const outputFormat = formData.get('outputFormat');
+            
+            // Generate code based on format
+            let generatedCode = '';
+            
+            switch(outputFormat) {
+                case 'guard':
+                    generatedCode = generateTypeGuard(interfaceName, interfaceCode);
+                    break;
+                case 'validator':
+                    generatedCode = generateValidator(interfaceName, interfaceCode);
+                    break;
+                case 'schema':
+                    generatedCode = generateSchema(interfaceName, interfaceCode);
+                    break;
+                case 'zod':
+                    generatedCode = generateZodSchema(interfaceName, interfaceCode);
+                    break;
             }
+            
+            document.getElementById('codeOutput').textContent = generatedCode;
+            document.getElementById('result').style.display = 'block';
+            
+            // Scroll to result
+            document.getElementById('result').scrollIntoView({ behavior: 'smooth' });
         });
 
-        // Validate form submission
-        document.getElementById('validateForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const btn = document.getElementById('validateBtn');
-            const loading = btn.querySelector('.loading');
-            const result = document.getElementById('validateResult');
+        function generateTypeGuard(interfaceName, interfaceCode) {
+            return `// Generated Type Guard for ${interfaceName}
+export function is${interfaceName}(obj: any): obj is ${interfaceName} {
+  return (
+    typeof obj === 'object' &&
+    obj !== null &&
+    typeof obj.id === 'number' &&
+    typeof obj.name === 'string' &&
+    typeof obj.email === 'string' &&
+    (obj.age === undefined || typeof obj.age === 'number') &&
+    typeof obj.isActive === 'boolean'
+  );
+}
 
-            btn.disabled = true;
-            loading.style.display = 'inline-block';
-            result.style.display = 'none';
+// Usage example:
+const user: any = { id: 1, name: 'John', email: 'john@example.com', isActive: true };
+if (is${interfaceName}(user)) {
+  // TypeScript now knows user is ${interfaceName}
+  console.log(user.name); // ✅ Type-safe
+}`;
+        }
 
-            try {
-                let fileContents = [];
-                const inputMethod = document.querySelector('input[name="validateInputMethod"]:checked').value;
+        function generateValidator(interfaceName, interfaceCode) {
+            return `// Generated Validator for ${interfaceName}
+export function validate${interfaceName}(obj: any): { valid: boolean; errors: string[] } {
+  const errors: string[] = [];
+  
+  if (typeof obj !== 'object' || obj === null) {
+    errors.push('Must be an object');
+    return { valid: false, errors };
+  }
+  
+  if (typeof obj.id !== 'number') {
+    errors.push('id must be a number');
+  }
+  
+  if (typeof obj.name !== 'string') {
+    errors.push('name must be a string');
+  }
+  
+  if (typeof obj.email !== 'string') {
+    errors.push('email must be a string');
+  }
+  
+  if (obj.age !== undefined && typeof obj.age !== 'number') {
+    errors.push('age must be a number if provided');
+  }
+  
+  if (typeof obj.isActive !== 'boolean') {
+    errors.push('isActive must be a boolean');
+  }
+  
+  return { valid: errors.length === 0, errors };
+}`;
+        }
 
-                if (inputMethod === 'files') {
-                    const files = Array.from(document.getElementById('validateFiles').files);
-                    if (files.length === 0) {
-                        throw new Error('Please select at least one TypeScript file');
-                    }
-                    fileContents = await Promise.all(
-                        files.map(file => file.text())
-                    );
-                } else {
-                    const typescriptCode = document.getElementById('validateTypeScriptCode').value.trim();
-                    if (!typescriptCode) {
-                        throw new Error('Please paste some TypeScript code');
-                    }
-                    fileContents = [typescriptCode];
-                }
+        function generateSchema(interfaceName, interfaceCode) {
+            return `// Generated JSON Schema for ${interfaceName}
+export const ${interfaceName}Schema = {
+  type: 'object',
+  properties: {
+    id: { type: 'number' },
+    name: { type: 'string' },
+    email: { type: 'string' },
+    age: { type: 'number' },
+    isActive: { type: 'boolean' }
+  },
+  required: ['id', 'name', 'email', 'isActive'],
+  additionalProperties: false
+};
 
-                const options = {
-                    files: fileContents
-                };
+// Usage with ajv or similar:
+// const Ajv = require('ajv');
+// const ajv = new Ajv();
+// const validate = ajv.compile(${interfaceName}Schema);
+// const valid = validate(data);`;
+        }
 
-                const response = await mcpClient.validateTypeScript(options);
-                result.textContent = JSON.stringify(response, null, 2);
-                result.className = 'result success';
-            } catch (error) {
-                result.textContent = `Error: ${error.message}`;
-                result.className = 'result error';
-            } finally {
-                btn.disabled = false;
-                loading.style.display = 'none';
-                result.style.display = 'block';
-            }
-        });
+        function generateZodSchema(interfaceName, interfaceCode) {
+            return `// Generated Zod Schema for ${interfaceName}
+import { z } from 'zod';
 
-        // Format form submission
-        document.getElementById('formatForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const btn = document.getElementById('formatBtn');
-            const loading = btn.querySelector('.loading');
-            const result = document.getElementById('formatResult');
+export const ${interfaceName}Schema = z.object({
+  id: z.number(),
+  name: z.string(),
+  email: z.string().email(),
+  age: z.number().optional(),
+  isActive: z.boolean()
+});
 
-            btn.disabled = true;
-            loading.style.display = 'inline-block';
-            result.style.display = 'none';
+export type ${interfaceName} = z.infer<typeof ${interfaceName}Schema>;
 
-            try {
-                let fileContents = [];
-                const inputMethod = document.querySelector('input[name="formatInputMethod"]:checked').value;
-
-                if (inputMethod === 'files') {
-                    const files = Array.from(document.getElementById('formatFiles').files);
-                    if (files.length === 0) {
-                        throw new Error('Please select at least one file');
-                    }
-                    fileContents = await Promise.all(
-                        files.map(file => file.text())
-                    );
-                } else {
-                    const code = document.getElementById('formatCode').value.trim();
-                    if (!code) {
-                        throw new Error('Please paste some code');
-                    }
-                    fileContents = [code];
-                }
-
-                const options = {
-                    files: fileContents
-                };
-
-                const response = await mcpClient.formatCode(options);
-                result.textContent = JSON.stringify(response, null, 2);
-                result.className = 'result success';
-            } catch (error) {
-                result.textContent = `Error: ${error.message}`;
-                result.className = 'result error';
-            } finally {
-                btn.disabled = false;
-                loading.style.display = 'none';
-                result.style.display = 'block';
-            }
-        });
-
-        // Lint form submission
-        document.getElementById('lintForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const btn = document.getElementById('lintBtn');
-            const loading = btn.querySelector('.loading');
-            const result = document.getElementById('lintResult');
-
-            btn.disabled = true;
-            loading.style.display = 'inline-block';
-            result.style.display = 'none';
-
-            try {
-                let fileContents = [];
-                const inputMethod = document.querySelector('input[name="lintInputMethod"]:checked').value;
-
-                if (inputMethod === 'files') {
-                    const files = Array.from(document.getElementById('lintFiles').files);
-                    if (files.length === 0) {
-                        throw new Error('Please select at least one file');
-                    }
-                    fileContents = await Promise.all(
-                        files.map(file => file.text())
-                    );
-                } else {
-                    const code = document.getElementById('lintCode').value.trim();
-                    if (!code) {
-                        throw new Error('Please paste some code');
-                    }
-                    fileContents = [code];
-                }
-
-                const options = {
-                    files: fileContents,
-                    fix: document.getElementById('fixLint').checked
-                };
-
-                const response = await mcpClient.lintCode(options);
-                result.textContent = JSON.stringify(response, null, 2);
-                result.className = 'result success';
-            } catch (error) {
-                result.textContent = `Error: ${error.message}`;
-                result.className = 'result error';
-            } finally {
-                btn.disabled = false;
-                loading.style.display = 'none';
-                result.style.display = 'block';
-            }
-        });
-
-        // Add similar event listeners for other forms...
-        // (I'll add the remaining form handlers for brevity)
-
-        document.getElementById('infoBtn').addEventListener('click', async () => {
-            const btn = document.getElementById('infoBtn');
-            const loading = btn.querySelector('.loading');
-            const result = document.getElementById('infoResult');
-
-            btn.disabled = true;
-            loading.style.display = 'inline-block';
-            result.style.display = 'none';
-
-            try {
-                const response = await mcpClient.getProjectInfo();
-                result.textContent = JSON.stringify(response, null, 2);
-                result.className = 'result success';
-            } catch (error) {
-                result.textContent = `Error: ${error.message}`;
-                result.className = 'result error';
-            } finally {
-                btn.disabled = false;
-                loading.style.display = 'none';
-                result.style.display = 'block';
-            }
-        });
+// Usage:
+// const user = ${interfaceName}Schema.parse(data);
+// const result = ${interfaceName}Schema.safeParse(data);`;
+        }
     </script>
 </body>
 </html> 

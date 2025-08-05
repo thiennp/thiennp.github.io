@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🤖 AI Bot Agent - Intelligent CLI Assistant</title>
+    <title>🤖 AI Bot Agent - Thien Nguyen</title>
     <style>
         * {
             margin: 0;
@@ -14,38 +14,81 @@
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
             line-height: 1.6;
-            color: #333;
-            background: linear-gradient(135deg, #1e1e1e 0%, #2d2d30 100%);
+            color: #1a1a1a;
+            background: #ffffff;
             min-height: 100vh;
-            color: #ffffff;
+            font-size: 16px;
         }
         
         .container {
-            max-width: 1200px;
+            max-width: 1400px;
             margin: 0 auto;
-            padding: 2rem;
+            padding: 0 2rem;
+        }
+        
+        .navigation {
+            background: #ffffff;
+            border-bottom: 1px solid #e9ecef;
+            padding: 1rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .nav-logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #1a1a1a;
+            text-decoration: none;
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+        }
+        
+        .nav-links a {
+            text-decoration: none;
+            color: #6c757d;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+        
+        .nav-links a:hover {
+            color: #1a1a1a;
         }
         
         .header {
             text-align: center;
-            margin-bottom: 3rem;
-            color: white;
+            margin-bottom: 4rem;
+            padding: 4rem 0;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
         }
         
         .header h1 {
-            font-size: 3.5rem;
-            margin-bottom: 1rem;
-            font-weight: 700;
-            background: linear-gradient(45deg, #007acc, #00ff88);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
+            font-size: 4rem;
+            margin-bottom: 1.5rem;
+            font-weight: 800;
+            color: #1a1a1a;
+            letter-spacing: -0.02em;
         }
         
         .header p {
-            font-size: 1.3rem;
-            opacity: 0.9;
-            margin-bottom: 2rem;
+            font-size: 1.4rem;
+            color: #6c757d;
+            max-width: 600px;
+            margin: 0 auto 2rem;
+            font-weight: 400;
         }
         
         .hero-buttons {
@@ -53,202 +96,201 @@
             gap: 1rem;
             justify-content: center;
             flex-wrap: wrap;
-            margin-bottom: 3rem;
+            margin-top: 2rem;
         }
         
         .btn {
             display: inline-block;
             padding: 1rem 2rem;
-            background: linear-gradient(45deg, #007acc, #005a9e);
+            background: #1a1a1a;
             color: white;
             text-decoration: none;
-            border-radius: 10px;
+            border-radius: 8px;
             font-weight: 600;
             font-size: 1.1rem;
             transition: all 0.3s ease;
-            border: none;
-            cursor: pointer;
+            border: 2px solid #1a1a1a;
         }
         
         .btn:hover {
+            background: transparent;
+            color: #1a1a1a;
             transform: translateY(-2px);
-            box-shadow: 0 10px 30px rgba(0, 122, 204, 0.3);
         }
         
         .btn-secondary {
-            background: linear-gradient(45deg, #3c3c3c, #2d2d30);
-            border: 2px solid #007acc;
+            background: transparent;
+            color: #1a1a1a;
+            border: 2px solid #1a1a1a;
+        }
+        
+        .btn-secondary:hover {
+            background: #1a1a1a;
+            color: white;
         }
         
         .content {
-            background: rgba(45, 45, 48, 0.8);
-            border-radius: 15px;
-            padding: 3rem;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
-            margin-bottom: 2rem;
-            backdrop-filter: blur(10px);
+            background: transparent;
+            padding: 0;
+            margin-bottom: 4rem;
         }
         
         .section {
-            margin-bottom: 3rem;
+            margin-bottom: 4rem;
         }
         
         .section h2 {
-            color: #007acc;
-            font-size: 2.2rem;
-            margin-bottom: 1.5rem;
-            border-bottom: 3px solid #007acc;
+            color: #1a1a1a;
+            font-size: 2.5rem;
+            margin-bottom: 2rem;
+            font-weight: 700;
+            letter-spacing: -0.01em;
+            border-bottom: 2px solid #667eea;
             padding-bottom: 0.5rem;
         }
         
-        .features-grid {
+        .feature-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
             gap: 2rem;
-            margin-bottom: 2rem;
+            margin-bottom: 3rem;
         }
         
         .feature-card {
-            background: rgba(60, 60, 60, 0.5);
-            border-radius: 10px;
+            background: #ffffff;
+            border: 1px solid #e9ecef;
+            border-radius: 12px;
             padding: 2rem;
-            border-left: 5px solid #007acc;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         }
         
         .feature-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            transform: translateY(-4px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.08);
+            border-color: #667eea;
+        }
+        
+        .feature-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
         }
         
         .feature-title {
-            font-size: 1.3rem;
-            font-weight: 600;
-            color: #007acc;
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #1a1a1a;
             margin-bottom: 1rem;
         }
         
         .feature-description {
-            color: #cccccc;
-            margin-bottom: 1rem;
+            color: #6c757d;
+            line-height: 1.7;
         }
         
-        .feature-list {
-            list-style: none;
-            margin-bottom: 1rem;
+        .model-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 3rem;
         }
         
-        .feature-list li {
-            padding: 0.5rem 0;
-            color: #cccccc;
-            position: relative;
-            padding-left: 1.5rem;
+        .model-card {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            padding: 1.5rem;
+            text-align: center;
+            transition: all 0.3s ease;
         }
         
-        .feature-list li::before {
-            content: "🤖";
-            position: absolute;
-            left: 0;
-            color: #007acc;
+        .model-card:hover {
+            border-color: #667eea;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
         }
         
-        .tech-stack {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 0.5rem;
-            margin-bottom: 1rem;
+        .model-name {
+            font-weight: 600;
+            color: #1a1a1a;
+            margin-bottom: 0.5rem;
         }
         
-        .tech-tag {
-            background: #007acc;
-            color: white;
-            padding: 0.3rem 0.8rem;
-            border-radius: 20px;
-            font-size: 0.8rem;
-            font-weight: 500;
+        .model-description {
+            color: #6c757d;
+            font-size: 0.9rem;
         }
         
-        .installation-section {
-            background: rgba(30, 30, 30, 0.8);
-            border-radius: 10px;
+        .command-list {
+            background: #f8f9fa;
+            border-radius: 12px;
             padding: 2rem;
             margin-bottom: 2rem;
         }
         
-        .code-block {
-            background: #1e1e1e;
-            border-radius: 8px;
-            padding: 1.5rem;
-            margin: 1rem 0;
-            font-family: 'Courier New', monospace;
-            color: #00ff88;
-            overflow-x: auto;
-        }
-        
-        .interface-showcase {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 2rem;
-            margin-bottom: 2rem;
-        }
-        
-        .interface-card {
-            background: rgba(60, 60, 60, 0.5);
-            border-radius: 10px;
-            padding: 1.5rem;
-            text-align: center;
-            transition: transform 0.3s ease;
-        }
-        
-        .interface-card:hover {
-            transform: translateY(-3px);
-        }
-        
-        .interface-icon {
-            font-size: 3rem;
+        .command-list h3 {
+            color: #1a1a1a;
+            font-size: 1.3rem;
+            font-weight: 700;
             margin-bottom: 1rem;
         }
         
-        .stats-grid {
+        .command-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 1.5rem;
-            margin-bottom: 2rem;
+            gap: 1rem;
         }
         
-        .stat-card {
-            background: rgba(60, 60, 60, 0.5);
-            border-radius: 10px;
-            padding: 1.5rem;
-            text-align: center;
+        .command-item {
+            background: white;
+            border: 1px solid #e9ecef;
+            border-radius: 6px;
+            padding: 1rem;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            color: #495057;
         }
         
-        .stat-number {
-            font-size: 2.5rem;
+        .installation-section {
+            background: #f8f9fa;
+            border-radius: 16px;
+            padding: 3rem;
+            margin: 4rem 0;
+            border: 1px solid #e9ecef;
+        }
+        
+        .installation-section h2 {
+            color: #1a1a1a;
+            font-size: 2rem;
+            margin-bottom: 1rem;
             font-weight: 700;
-            color: #00ff88;
-            margin-bottom: 0.5rem;
         }
         
-        .stat-label {
-            color: #cccccc;
-            font-size: 1rem;
-        }
-        
-        .back-link {
-            display: inline-block;
-            padding: 0.8rem 1.5rem;
-            background: rgba(60, 60, 60, 0.5);
-            color: #cccccc;
-            text-decoration: none;
-            border-radius: 8px;
-            transition: all 0.3s ease;
+        .installation-section p {
+            color: #6c757d;
+            font-size: 1.1rem;
             margin-bottom: 2rem;
         }
         
-        .back-link:hover {
-            background: rgba(80, 80, 80, 0.5);
-            color: white;
+        .code-block {
+            background: #1a1a1a;
+            color: #ffffff;
+            padding: 1.5rem;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            overflow-x: auto;
+            margin: 1rem 0;
         }
         
         @media (max-width: 768px) {
@@ -256,348 +298,187 @@
                 padding: 1rem;
             }
             
+            .nav-container {
+                padding: 0 1rem;
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            .nav-links {
+                gap: 1rem;
+            }
+            
+            .header {
+                padding: 2rem 0;
+            }
+            
             .header h1 {
                 font-size: 2.5rem;
             }
             
-            .content {
+            .header p {
+                font-size: 1.1rem;
+            }
+            
+            .section h2 {
+                font-size: 2rem;
+            }
+            
+            .feature-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .model-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .command-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .installation-section {
                 padding: 2rem;
-            }
-            
-            .feature-card {
-                padding: 1.5rem;
-            }
-            
-            .hero-buttons {
-                flex-direction: column;
-                align-items: center;
             }
         }
     </style>
 </head>
 <body>
+    <nav class="navigation">
+        <div class="nav-container">
+            <a href="index.html" class="nav-logo">Thien Nguyen</a>
+            <ul class="nav-links">
+                <li><a href="resume.html">Resume</a></li>
+                <li><a href="blog.html">Blog</a></li>
+                <li><a href="index.html">Projects</a></li>
+                <li><a href="contact.html">Contact</a></li>
+            </ul>
+        </div>
+    </nav>
+
     <div class="container">
-        <a href="index.html" class="back-link">← Back to Portfolio</a>
-        
         <div class="header">
             <h1>🤖 AI Bot Agent</h1>
-            <p>Intelligent CLI Assistant with 7 Local Models & 30+ Commands</p>
-            
+            <p>Intelligent CLI Assistant with 7 Local Models and 30+ Commands</p>
             <div class="hero-buttons">
-                <a href="#download" class="btn">🚀 Download Now</a>
-                <a href="https://github.com/thiennp/cli-smart" class="btn btn-secondary" target="_blank">📁 View Source</a>
-                <a href="https://pypi.org/project/ai-bot-agent/" class="btn btn-secondary" target="_blank">📦 PyPI Package</a>
+                <a href="https://pypi.org/project/ai-bot-agent/" class="btn" target="_blank">Install from PyPI</a>
+                <a href="https://github.com/thiennp/ai-bot-agent" class="btn btn-secondary" target="_blank">View on GitHub</a>
             </div>
         </div>
         
         <div class="content">
             <div class="section">
-                <h2>🎯 What is AI Bot Agent?</h2>
-                <p style="font-size: 1.2rem; color: #cccccc; margin-bottom: 2rem;">
-                    A powerful command-line AI assistant that runs locally with 7 different AI models. 
-                    Features include file operations, code debugging, optimization, and much more - all 
-                    accessible through a beautiful GUI or command line interface.
-                </p>
+                <h2>Key Features</h2>
+                <div class="feature-grid">
+                    <div class="feature-card">
+                        <div class="feature-icon">🧠</div>
+                        <div class="feature-title">7 Local AI Models</div>
+                        <div class="feature-description">
+                            CodeLlama, Mistral, Llama2, Phi3, Gemma, and more. Run AI locally without internet dependency.
+                        </div>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <div class="feature-icon">⚡</div>
+                        <div class="feature-title">30+ Commands</div>
+                        <div class="feature-description">
+                            File operations, code debugging, optimization, and development assistance with AI-powered automation.
+                        </div>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <div class="feature-icon">🖥️</div>
+                        <div class="feature-title">Three Interfaces</div>
+                        <div class="feature-description">
+                            Desktop GUI, Web Interface, and CLI. Choose your preferred way to interact with AI.
+                        </div>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <div class="feature-icon">🔧</div>
+                        <div class="feature-title">Smart Automation</div>
+                        <div class="feature-description">
+                            AI-powered file creation, editing, and code review with automatic backups and version control.
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="section">
+                <h2>Available Models</h2>
+                <div class="model-grid">
+                    <div class="model-card">
+                        <div class="model-name">CodeLlama</div>
+                        <div class="model-description">Specialized in code generation and analysis</div>
+                    </div>
+                    <div class="model-card">
+                        <div class="model-name">Mistral</div>
+                        <div class="model-description">Fast and efficient general-purpose model</div>
+                    </div>
+                    <div class="model-card">
+                        <div class="model-name">Llama2</div>
+                        <div class="model-description">Meta's powerful language model</div>
+                    </div>
+                    <div class="model-card">
+                        <div class="model-name">Phi3</div>
+                        <div class="model-description">Microsoft's lightweight model</div>
+                    </div>
+                    <div class="model-card">
+                        <div class="model-name">Gemma</div>
+                        <div class="model-description">Google's open model</div>
+                    </div>
+                    <div class="model-card">
+                        <div class="model-name">Custom Models</div>
+                        <div class="model-description">Support for additional local models</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="section">
+                <h2>Command Categories</h2>
+                <div class="command-list">
+                    <h3>File Operations</h3>
+                    <div class="command-grid">
+                        <div class="command-item">create file</div>
+                        <div class="command-item">edit file</div>
+                        <div class="command-item">delete file</div>
+                        <div class="command-item">move file</div>
+                        <div class="command-item">copy file</div>
+                    </div>
+                </div>
                 
-                <div class="stats-grid">
-                    <div class="stat-card">
-                        <div class="stat-number">7</div>
-                        <div class="stat-label">Local AI Models</div>
+                <div class="command-list">
+                    <h3>Code Development</h3>
+                    <div class="command-grid">
+                        <div class="command-item">debug code</div>
+                        <div class="command-item">optimize code</div>
+                        <div class="command-item">review code</div>
+                        <div class="command-item">generate code</div>
+                        <div class="command-item">test code</div>
                     </div>
-                    <div class="stat-card">
-                        <div class="stat-number">30+</div>
-                        <div class="stat-label">Commands</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-number">3</div>
-                        <div class="stat-label">Interface Options</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-number">100%</div>
-                        <div class="stat-label">Local & Free</div>
+                </div>
+                
+                <div class="command-list">
+                    <h3>System Tools</h3>
+                    <div class="command-grid">
+                        <div class="command-item">docker commands</div>
+                        <div class="command-item">git operations</div>
+                        <div class="command-item">ssh management</div>
+                        <div class="command-item">system info</div>
+                        <div class="command-item">process management</div>
                     </div>
                 </div>
             </div>
             
-            <div class="section">
-                <h2>🚀 Quick Installation</h2>
-                <div class="installation-section">
-                    <h3 style="color: #007acc; margin-bottom: 1rem;">Install via pip:</h3>
-                    <div class="code-block">
+            <div class="installation-section">
+                <h2>Quick Installation</h2>
+                <p>Install AI Bot Agent with pip and start using it immediately:</p>
+                <div class="code-block">
 pip install ai-bot-agent
-                    </div>
-                    
-                    <h3 style="color: #007acc; margin-bottom: 1rem;">Start using:</h3>
-                    <div class="code-block">
-# Interactive chat
-ai chat
-
-# Ask a question
-ai ask "How do I create a Python function?"
-
-# Create files with AI
-ai create app.py "A web application with Flask"
-
-# Edit existing files
-ai edit main.py "Add error handling"
-                    </div>
+ai-bot-agent --help
                 </div>
-            </div>
-            
-            <div class="section">
-                <h2>🎨 Interface Options</h2>
-                <div class="interface-showcase">
-                    <div class="interface-card">
-                        <div class="interface-icon">🖥️</div>
-                        <h3>Desktop GUI</h3>
-                        <p>Modern Tkinter interface with tabbed layout, file browser, and real-time chat</p>
-                        <div class="tech-stack">
-                            <span class="tech-tag">Tkinter</span>
-                            <span class="tech-tag">Cross-platform</span>
-                        </div>
-                    </div>
-                    
-                    <div class="interface-card">
-                        <div class="interface-icon">🌐</div>
-                        <h3>Web Interface</h3>
-                        <p>Responsive web app with modern design, mobile support, and real-time updates</p>
-                        <div class="tech-stack">
-                            <span class="tech-tag">Flask</span>
-                            <span class="tech-tag">Mobile-friendly</span>
-                        </div>
-                    </div>
-                    
-                    <div class="interface-card">
-                        <div class="interface-icon">💻</div>
-                        <h3>Command Line</h3>
-                        <p>Fast CLI with 30+ commands, perfect for automation and scripting</p>
-                        <div class="tech-stack">
-                            <span class="tech-tag">CLI</span>
-                            <span class="tech-tag">Scriptable</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="section">
-                <h2>✨ Key Features</h2>
-                <div class="features-grid">
-                    <div class="feature-card">
-                        <h3 class="feature-title">🤖 Multi-Model AI</h3>
-                        <p class="feature-description">Switch between 7 local AI models for different tasks</p>
-                        <ul class="feature-list">
-                            <li>CodeLlama 7B (Coding tasks)</li>
-                            <li>Mistral 7B (Fast responses)</li>
-                            <li>Llama2 13B (High quality)</li>
-                            <li>Llama2 7B (General use)</li>
-                            <li>Phi3 (Lightweight)</li>
-                            <li>Gemma (Google's model)</li>
-                            <li>Custom models support</li>
-                        </ul>
-                    </div>
-                    
-                    <div class="feature-card">
-                        <h3 class="feature-title">📁 File Operations</h3>
-                        <p class="feature-description">Create and edit files with AI assistance</p>
-                        <ul class="feature-list">
-                            <li>AI-powered file creation</li>
-                            <li>Smart file editing</li>
-                            <li>Automatic backups</li>
-                            <li>File browser integration</li>
-                            <li>Batch operations</li>
-                            <li>Version control friendly</li>
-                        </ul>
-                    </div>
-                    
-                    <div class="feature-card">
-                        <h3 class="feature-title">🛠️ Developer Tools</h3>
-                        <p class="feature-description">Comprehensive development assistance</p>
-                        <ul class="feature-list">
-                            <li>Code debugging help</li>
-                            <li>Performance optimization</li>
-                            <li>Code review suggestions</li>
-                            <li>Unit test generation</li>
-                            <li>Documentation creation</li>
-                            <li>Refactoring assistance</li>
-                        </ul>
-                    </div>
-                    
-                    <div class="feature-card">
-                        <h3 class="feature-title">🌐 Web Integration</h3>
-                        <p class="feature-description">Access web services and information</p>
-                        <ul class="feature-list">
-                            <li>Web search capabilities</li>
-                            <li>Weather information</li>
-                            <li>News updates</li>
-                            <li>Translation services</li>
-                            <li>Real-time data</li>
-                            <li>API integration</li>
-                        </ul>
-                    </div>
-                    
-                    <div class="feature-card">
-                        <h3 class="feature-title">⚙️ System Tools</h3>
-                        <p class="feature-description">System administration and management</p>
-                        <ul class="feature-list">
-                            <li>Docker command assistance</li>
-                            <li>Git workflow help</li>
-                            <li>SSH connection guidance</li>
-                            <li>System command analysis</li>
-                            <li>Safety checks</li>
-                            <li>Best practices</li>
-                        </ul>
-                    </div>
-                    
-                    <div class="feature-card">
-                        <h3 class="feature-title">🎯 Smart Features</h3>
-                        <p class="feature-description">Intelligent automation and assistance</p>
-                        <ul class="feature-list">
-                            <li>Context-aware model selection</li>
-                            <li>Automatic provider fallback</li>
-                            <li>Benchmarking tools</li>
-                            <li>Model comparison</li>
-                            <li>Performance monitoring</li>
-                            <li>Usage analytics</li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="section" id="download">
-                <h2>📥 Download & Installation</h2>
-                <div class="installation-section">
-                    <h3 style="color: #007acc; margin-bottom: 1rem;">Option 1: PyPI Installation (Recommended)</h3>
-                    <div class="code-block">
-# Install the package
-pip install ai-bot-agent
-
-# Start using immediately
-ai chat
-                    </div>
-                    
-                    <h3 style="color: #007acc; margin-bottom: 1rem;">Option 2: From Source</h3>
-                    <div class="code-block">
-# Clone the repository
-git clone https://github.com/thiennp/cli-smart.git
-cd cli-smart
-
-# Install in development mode
-pip install -e .
-
-# Run the launcher
-python ai_bot_launcher.py
-                    </div>
-                    
-                    <h3 style="color: #007acc; margin-bottom: 1rem;">Option 3: GUI Applications</h3>
-                    <div class="code-block">
-# Desktop GUI (requires tkinter)
-python ai_bot_gui.py
-
-# Web Interface (requires flask)
-python ai_bot_web.py
-# Then open: http://localhost:5000
-                    </div>
-                </div>
-            </div>
-            
-            <div class="section">
-                <h2>🔧 Quick Start Guide</h2>
-                <div class="installation-section">
-                    <h3 style="color: #007acc; margin-bottom: 1rem;">1. Install the Package</h3>
-                    <div class="code-block">
-pip install ai-bot-agent
-                    </div>
-                    
-                    <h3 style="color: #007acc; margin-bottom: 1rem;">2. Set Up Local Models (Optional)</h3>
-                    <div class="code-block">
-# Install Ollama for local models
-brew install ollama
-
-# Pull some models
-ollama pull codellama:7b
-ollama pull mistral:7b
-ollama pull llama2:13b
-                    </div>
-                    
-                    <h3 style="color: #007acc; margin-bottom: 1rem;">3. Start Using</h3>
-                    <div class="code-block">
-# Interactive chat
-ai chat
-
-# Single question
-ai ask "How do I create a Python function?"
-
-# Create a file
-ai create app.py "A Flask web application"
-
-# Edit a file
-ai edit main.py "Add error handling"
-
-# Debug code
-ai debug "ModuleNotFoundError: No module named 'requests'"
-
-# Switch models
-ai switch codellama:7b
-                    </div>
-                </div>
-            </div>
-            
-            <div class="section">
-                <h2>📊 Available Commands</h2>
-                <div class="features-grid">
-                    <div class="feature-card">
-                        <h3 class="feature-title">💬 Chat Commands</h3>
-                        <ul class="feature-list">
-                            <li><code>ai chat</code> - Interactive chat</li>
-                            <li><code>ai ask "question"</code> - Single question</li>
-                            <li><code>ai switch model</code> - Change AI model</li>
-                            <li><code>ai models</code> - List available models</li>
-                            <li><code>ai benchmark</code> - Test model performance</li>
-                        </ul>
-                    </div>
-                    
-                    <div class="feature-card">
-                        <h3 class="feature-title">📁 File Commands</h3>
-                        <ul class="feature-list">
-                            <li><code>ai create file desc</code> - Create files</li>
-                            <li><code>ai edit file inst</code> - Edit files</li>
-                            <li><code>ai refactor file</code> - Refactor code</li>
-                            <li><code>ai test file</code> - Generate tests</li>
-                            <li><code>ai docs file</code> - Create documentation</li>
-                        </ul>
-                    </div>
-                    
-                    <div class="feature-card">
-                        <h3 class="feature-title">🛠️ Developer Commands</h3>
-                        <ul class="feature-list">
-                            <li><code>ai debug error</code> - Debug help</li>
-                            <li><code>ai optimize code</code> - Optimize code</li>
-                            <li><code>ai review file</code> - Code review</li>
-                            <li><code>ai init project</code> - Initialize project</li>
-                            <li><code>ai setup tool</code> - Setup assistance</li>
-                        </ul>
-                    </div>
-                    
-                    <div class="feature-card">
-                        <h3 class="feature-title">🌐 Web Commands</h3>
-                        <ul class="feature-list">
-                            <li><code>ai search query</code> - Web search</li>
-                            <li><code>ai weather location</code> - Weather info</li>
-                            <li><code>ai news topic</code> - News updates</li>
-                            <li><code>ai translate text lang</code> - Translation</li>
-                            <li><code>ai system command</code> - System help</li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="section">
-                <h2>🔗 Links & Resources</h2>
                 <div class="hero-buttons">
-                    <a href="https://github.com/thiennp/cli-smart" class="btn" target="_blank">📁 GitHub Repository</a>
-                    <a href="https://pypi.org/project/ai-bot-agent/" class="btn" target="_blank">📦 PyPI Package</a>
-                    <a href="https://github.com/thiennp/cli-smart/blob/main/README.md" class="btn btn-secondary" target="_blank">📖 Documentation</a>
-                    <a href="https://github.com/thiennp/cli-smart/issues" class="btn btn-secondary" target="_blank">🐛 Report Issues</a>
+                    <a href="https://pypi.org/project/ai-bot-agent/" class="btn" target="_blank">Install Now</a>
+                    <a href="https://github.com/thiennp/ai-bot-agent" class="btn btn-secondary" target="_blank">Documentation</a>
                 </div>
             </div>
         </div>
