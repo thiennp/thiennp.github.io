@@ -18,6 +18,7 @@
     "guardz": "^1.12.1",
     "guardz-generator": "^1.12.3",
     "multer": "^1.4.5-lts.1",
+    "node-cron": "^3.0.3",
     "node-fetch": "^3.3.2",
     "nodemailer": "^6.9.7",
     "prettier": "^3.6.2"

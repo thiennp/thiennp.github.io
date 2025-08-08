@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Download Reports - Thien Nguyen</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            line-height: 1.6;
+            color: #1a1a1a;
+            background: #ffffff;
+            min-height: 100vh;
+            font-size: 16px;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+        
+        .navigation {
+            background: #ffffff;
+            border-bottom: 1px solid #e9ecef;
+            padding: 1rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .nav-logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #1a1a1a;
+            text-decoration: none;
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+        }
+        
+        .nav-links a {
+            text-decoration: none;
+            color: #6c757d;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+        
+        .nav-links a:hover, .nav-links a.active {
+            color: #1a1a1a;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 4rem;
+            padding: 4rem 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .header h1 {
+            font-size: 3.5rem;
+            margin-bottom: 1rem;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+        }
+        
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .stats-controls {
+            background: #f8f9fa;
+            border-radius: 16px;
+            padding: 2rem;
+            margin-bottom: 3rem;
+            border: 1px solid #e9ecef;
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+        
+        .btn:hover {
+            background: #5a6fd8;
+            transform: translateY(-2px);
+        }
+        
+        .btn:disabled {
+            background: #6c757d;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .loading {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 3rem;
+            color: #6c757d;
+            font-size: 1.1rem;
+        }
+        
+        .loading::before {
+            content: '';
+            width: 20px;
+            height: 20px;
+            border: 2px solid #e9ecef;
+            border-top: 2px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-right: 0.75rem;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .stats-summary {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+        
+        .summary-card {
+            background: white;
+            border: 1px solid #e9ecef;
+            border-radius: 12px;
+            padding: 1.5rem;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+        
+        .summary-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+        
+        .summary-number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #667eea;
+            margin-bottom: 0.5rem;
+        }
+        
+        .summary-label {
+            color: #6c757d;
+            font-weight: 500;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+            letter-spacing: 0.5px;
+        }
+        
+        .package-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+        
+        .package-card {
+            background: white;
+            border: 1px solid #e9ecef;
+            border-radius: 16px;
+            padding: 2rem;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .package-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        .package-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.08);
+            border-color: #667eea;
+        }
+        
+        .package-name {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #1a1a1a;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .package-name::before {
+            content: '📦';
+            font-size: 1.2rem;
+        }
+        
+        .stats-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid #f8f9fa;
+        }
+        
+        .stats-row:last-child {
+            border-bottom: none;
+        }
+        
+        .stats-label {
+            color: #6c757d;
+            font-weight: 500;
+        }
+        
+        .stats-value {
+            font-weight: 700;
+            color: #1a1a1a;
+            font-size: 1.1rem;
+        }
+        
+        .error-message {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 1rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .success-message {
+            background: #d4edda;
+            color: #155724;
+            padding: 1rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .report-history {
+            background: white;
+            border: 1px solid #e9ecef;
+            border-radius: 16px;
+            padding: 2rem;
+            margin-top: 3rem;
+        }
+        
+        .report-history h3 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #1a1a1a;
+            margin-bottom: 1.5rem;
+        }
+        
+        .history-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            border-bottom: 1px solid #f8f9fa;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+        
+        .history-item:hover {
+            background: #f8f9fa;
+        }
+        
+        .history-item:last-child {
+            border-bottom: none;
+        }
+        
+        .history-date {
+            font-weight: 600;
+            color: #1a1a1a;
+        }
+        
+        .history-summary {
+            color: #6c757d;
+            font-size: 0.9rem;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+            
+            .nav-container {
+                padding: 0 1rem;
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            .nav-links {
+                gap: 1rem;
+            }
+            
+            .header {
+                padding: 2rem 0;
+                margin-bottom: 2rem;
+            }
+            
+            .header h1 {
+                font-size: 2.5rem;
+            }
+            
+            .stats-controls {
+                flex-direction: column;
+                gap: 0.75rem;
+            }
+            
+            .package-grid {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+            
+            .package-card {
+                padding: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navigation">
+        <div class="nav-container">
+            <a href="index.html" class="nav-logo">Thien Nguyen</a>
+            <ul class="nav-links">
+                <li><a href="resume.html">Resume</a></li>
+                <li><a href="blog.html">Blog</a></li>
+                <li><a href="index.html">Projects</a></li>
+                <li><a href="reports.html" class="active">Reports</a></li>
+                <li><a href="contact.html">Contact</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="header">
+            <h1>📊 Download Reports</h1>
+            <p>Real-time NPM package download statistics for the Guardz ecosystem</p>
+        </div>
+        
+        <div class="stats-controls">
+            <button id="refreshBtn" class="btn">🔄 Refresh Data</button>
+            <button id="generateBtn" class="btn">📈 Generate New Report</button>
+            <span id="lastUpdated" style="color: #6c757d; font-size: 0.9rem;"></span>
+        </div>
+
+        <div id="loadingIndicator" class="loading">
+            Loading latest download statistics...
+        </div>
+
+        <div id="errorContainer"></div>
+        <div id="successContainer"></div>
+
+        <div id="statsContainer" style="display: none;">
+            <div class="stats-summary" id="statsSummary"></div>
+            <div class="package-grid" id="packageGrid"></div>
+        </div>
+
+        <div class="report-history">
+            <h3>📋 Report History</h3>
+            <div id="reportHistory">
+                <div class="loading">Loading report history...</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        class ReportsApp {
+            constructor() {
+                this.apiBase = '/api/stats';
+                this.init();
+            }
+
+            async init() {
+                this.bindEvents();
+                await this.loadLatestStats();
+                await this.loadReportHistory();
+            }
+
+            bindEvents() {
+                document.getElementById('refreshBtn').addEventListener('click', () => this.loadLatestStats());
+                document.getElementById('generateBtn').addEventListener('click', () => this.generateNewReport());
+            }
+
+            async loadLatestStats() {
+                this.showLoading(true);
+                this.clearMessages();
+
+                try {
+                    const response = await fetch(`${this.apiBase}/latest`);
+                    const result = await response.json();
+
+                    if (result.success) {
+                        this.displayStats(result.data);
+                        this.updateLastUpdated(result.data.timestamp);
+                    } else {
+                        this.showError('Failed to load statistics: ' + (result.error || 'Unknown error'));
+                    }
+                } catch (error) {
+                    this.showError('Error connecting to the server: ' + error.message);
+                }
+
+                this.showLoading(false);
+            }
+
+            async generateNewReport() {
+                const generateBtn = document.getElementById('generateBtn');
+                generateBtn.disabled = true;
+                generateBtn.textContent = '⏳ Generating...';
+                this.clearMessages();
+
+                try {
+                    const response = await fetch(`${this.apiBase}/generate`, { method: 'POST' });
+                    const result = await response.json();
+
+                    if (result.success) {
+                        this.showSuccess('New report generated successfully!');
+                        this.displayStats(result.data);
+                        this.updateLastUpdated(result.data.timestamp);
+                        await this.loadReportHistory();
+                    } else {
+                        this.showError('Failed to generate report: ' + (result.error || 'Unknown error'));
+                    }
+                } catch (error) {
+                    this.showError('Error generating report: ' + error.message);
+                }
+
+                generateBtn.disabled = false;
+                generateBtn.textContent = '📈 Generate New Report';
+            }
+
+            async loadReportHistory() {
+                try {
+                    const response = await fetch(`${this.apiBase}/all`);
+                    const result = await response.json();
+
+                    if (result.success) {
+                        this.displayReportHistory(result.data);
+                    }
+                } catch (error) {
+                    console.error('Error loading report history:', error);
+                }
+            }
+
+            displayStats(data) {
+                const { packages } = data;
+                
+                // Calculate totals
+                let totalDaily = 0;
+                let totalWeekly = 0;
+                let totalMonthly = 0;
+
+                Object.values(packages).forEach(pkg => {
+                    totalDaily += pkg.daily || 0;
+                    totalWeekly += pkg.weekly || 0;
+                    totalMonthly += pkg.monthly || 0;
+                });
+
+                // Display summary
+                const summaryHtml = `
+                    <div class="summary-card">
+                        <div class="summary-number">${totalDaily}</div>
+                        <div class="summary-label">Today</div>
+                    </div>
+                    <div class="summary-card">
+                        <div class="summary-number">${totalWeekly.toLocaleString()}</div>
+                        <div class="summary-label">This Week</div>
+                    </div>
+                    <div class="summary-card">
+                        <div class="summary-number">${totalMonthly.toLocaleString()}</div>
+                        <div class="summary-label">This Month</div>
+                    </div>
+                    <div class="summary-card">
+                        <div class="summary-number">${Object.keys(packages).length}</div>
+                        <div class="summary-label">Packages</div>
+                    </div>
+                `;
+                document.getElementById('statsSummary').innerHTML = summaryHtml;
+
+                // Display individual packages
+                const packageHtml = Object.entries(packages).map(([name, stats]) => `
+                    <div class="package-card">
+                        <div class="package-name">${name}</div>
+                        <div class="stats-row">
+                            <span class="stats-label">Today</span>
+                            <span class="stats-value">${(stats.daily || 0).toLocaleString()}</span>
+                        </div>
+                        <div class="stats-row">
+                            <span class="stats-label">This Week</span>
+                            <span class="stats-value">${(stats.weekly || 0).toLocaleString()}</span>
+                        </div>
+                        <div class="stats-row">
+                            <span class="stats-label">This Month</span>
+                            <span class="stats-value">${(stats.monthly || 0).toLocaleString()}</span>
+                        </div>
+                    </div>
+                `).join('');
+                document.getElementById('packageGrid').innerHTML = packageHtml;
+
+                document.getElementById('statsContainer').style.display = 'block';
+            }
+
+            displayReportHistory(reports) {
+                if (reports.length === 0) {
+                    document.getElementById('reportHistory').innerHTML = '<p style="color: #6c757d; text-align: center; padding: 2rem;">No reports available</p>';
+                    return;
+                }
+
+                const historyHtml = reports.slice(0, 10).map(report => {
+                    const totalDownloads = Object.values(report.packages).reduce((sum, pkg) => sum + (pkg.daily || 0), 0);
+                    const date = new Date(report.date).toLocaleDateString('en-US', { 
+                        year: 'numeric', 
+                        month: 'long', 
+                        day: 'numeric' 
+                    });
+                    
+                    return `
+                        <div class="history-item" onclick="window.open('/server/reports/daily-report-${report.date}.md', '_blank')">
+                            <div>
+                                <div class="history-date">${date}</div>
+                                <div class="history-summary">${totalDownloads} total downloads</div>
+                            </div>
+                            <div style="color: #667eea;">📄 View Report</div>
+                        </div>
+                    `;
+                }).join('');
+
+                document.getElementById('reportHistory').innerHTML = historyHtml;
+            }
+
+            updateLastUpdated(timestamp) {
+                const date = new Date(timestamp);
+                const formatted = date.toLocaleString('en-US', {
+                    year: 'numeric',
+                    month: 'short',
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    timeZoneName: 'short'
+                });
+                document.getElementById('lastUpdated').textContent = `Last updated: ${formatted}`;
+            }
+
+            showLoading(show) {
+                document.getElementById('loadingIndicator').style.display = show ? 'flex' : 'none';
+            }
+
+            showError(message) {
+                document.getElementById('errorContainer').innerHTML = `<div class="error-message">${message}</div>`;
+            }
+
+            showSuccess(message) {
+                document.getElementById('successContainer').innerHTML = `<div class="success-message">${message}</div>`;
+                setTimeout(() => {
+                    document.getElementById('successContainer').innerHTML = '';
+                }, 5000);
+            }
+
+            clearMessages() {
+                document.getElementById('errorContainer').innerHTML = '';
+                document.getElementById('successContainer').innerHTML = '';
+            }
+        }
+
+        // Initialize the app when the page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            new ReportsApp();
+        });
+    </script>
+</body>
+</html>

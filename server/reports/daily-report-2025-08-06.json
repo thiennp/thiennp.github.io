@@ -1,0 +1,38 @@
+{
+  "date": "2025-08-06",
+  "timestamp": "2025-08-06T09:00:00.441Z",
+  "packages": {
+    "guardz": {
+      "daily": 15,
+      "weekly": 477,
+      "monthly": 3317,
+      "dailyError": null,
+      "weeklyError": null,
+      "monthlyError": null
+    },
+    "guardz-generator": {
+      "daily": 23,
+      "weekly": 466,
+      "monthly": 3411,
+      "dailyError": null,
+      "weeklyError": null,
+      "monthlyError": null
+    },
+    "guardz-axios": {
+      "daily": 2,
+      "weekly": 14,
+      "monthly": 460,
+      "dailyError": null,
+      "weeklyError": null,
+      "monthlyError": null
+    },
+    "guardz-event": {
+      "daily": 2,
+      "weekly": 13,
+      "monthly": 309,
+      "dailyError": null,
+      "weeklyError": null,
+      "monthlyError": null
+    }
+  }
+}

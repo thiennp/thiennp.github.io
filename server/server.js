@@ -1,6 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import multer from 'multer';
+import cron from 'node-cron';
 import { TypeGuardGenerator } from 'guardz-generator/dist/core/generators/type-guard/type-guard-generator.js';
 import { ServiceFactory } from 'guardz-generator/dist/infrastructure/factories/service-factory.js';
 import {
@@ -10,6 +11,7 @@ import {
 import fs from 'fs/promises';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import fetch from 'node-fetch';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -363,6 +365,192 @@ app.get('/api/guardz/project-info', async (req, res) => {
   }
 });
 
+// Download statistics functionality
+class NpmStatsService {
+  constructor() {
+    this.packages = ['guardz', 'guardz-generator', 'guardz-axios', 'guardz-event'];
+    this.reportsDir = path.join(__dirname, 'reports');
+  }
+
+  async getDailyDownloads(packageName, date = null) {
+    const endpoint = date
+      ? `https://api.npmjs.org/downloads/point/${date}/${packageName}`
+      : `https://api.npmjs.org/downloads/point/last-day/${packageName}`;
+    
+    try {
+      const response = await fetch(endpoint);
+      const data = await response.json();
+      return { downloads: data.downloads || 0, error: null };
+    } catch (error) {
+      console.error(`Error fetching daily downloads for ${packageName}:`, error);
+      return { downloads: 0, error: error.message };
+    }
+  }
+
+  async getWeeklyDownloads(packageName) {
+    const endpoint = `https://api.npmjs.org/downloads/point/last-week/${packageName}`;
+    try {
+      const response = await fetch(endpoint);
+      const data = await response.json();
+      return { downloads: data.downloads || 0, error: null };
+    } catch (error) {
+      console.error(`Error fetching weekly downloads for ${packageName}:`, error);
+      return { downloads: 0, error: error.message };
+    }
+  }
+
+  async getMonthlyDownloads(packageName) {
+    const endpoint = `https://api.npmjs.org/downloads/point/last-month/${packageName}`;
+    try {
+      const response = await fetch(endpoint);
+      const data = await response.json();
+      return { downloads: data.downloads || 0, error: null };
+    } catch (error) {
+      console.error(`Error fetching monthly downloads for ${packageName}:`, error);
+      return { downloads: 0, error: error.message };
+    }
+  }
+
+  async generateDailyReport() {
+    const today = new Date().toISOString().split('T')[0];
+    const report = {
+      date: today,
+      timestamp: new Date().toISOString(),
+      packages: {}
+    };
+
+    console.log('📊 Generating daily npm download report...');
+
+    for (const packageName of this.packages) {
+      console.log(`📦 Fetching data for ${packageName}...`);
+      
+      const [daily, weekly, monthly] = await Promise.all([
+        this.getDailyDownloads(packageName),
+        this.getWeeklyDownloads(packageName),
+        this.getMonthlyDownloads(packageName)
+      ]);
+
+      report.packages[packageName] = {
+        daily: daily.downloads || 0,
+        weekly: weekly.downloads || 0,
+        monthly: monthly.downloads || 0,
+        dailyError: daily.error,
+        weeklyError: weekly.error,
+        monthlyError: monthly.error
+      };
+    }
+
+    // Create reports directory if it doesn't exist
+    await fs.mkdir(this.reportsDir, { recursive: true });
+
+    // Save JSON report
+    const jsonPath = path.join(this.reportsDir, `daily-report-${today}.json`);
+    await fs.writeFile(jsonPath, JSON.stringify(report, null, 2));
+
+    // Generate markdown report
+    const markdownPath = path.join(this.reportsDir, `daily-report-${today}.md`);
+    const markdown = this.generateMarkdownReport(report);
+    await fs.writeFile(markdownPath, markdown);
+
+    console.log(`📈 Report generated: ${jsonPath}`);
+    return report;
+  }
+
+  generateMarkdownReport(report) {
+    let markdown = `# 📊 NPM Daily Download Report - ${report.date}\n\n`;
+    markdown += `**Generated:** ${report.timestamp}\n\n`;
+    markdown += `## 📦 Package Statistics\n\n`;
+
+    let totalDaily = 0;
+    let totalWeekly = 0;
+    let totalMonthly = 0;
+
+    for (const [packageName, stats] of Object.entries(report.packages)) {
+      markdown += `### ${packageName}\n\n`;
+      markdown += `| Period | Downloads |\n`;
+      markdown += `|--------|----------|\n`;
+      markdown += `| Today | ${stats.daily} |\n`;
+      markdown += `| This Week | ${stats.weekly} |\n`;
+      markdown += `| This Month | ${stats.monthly} |\n\n`;
+
+      totalDaily += stats.daily;
+      totalWeekly += stats.weekly;
+      totalMonthly += stats.monthly;
+    }
+
+    markdown += `## 📈 Summary\n\n`;
+    markdown += `- **Total Daily Downloads:** ${totalDaily}\n`;
+    markdown += `- **Total Weekly Downloads:** ${totalWeekly}\n`;
+    markdown += `- **Total Monthly Downloads:** ${totalMonthly}\n\n`;
+
+    return markdown;
+  }
+
+  async getAllReports() {
+    try {
+      const files = await fs.readdir(this.reportsDir);
+      const jsonFiles = files.filter(file => file.endsWith('.json') && file.startsWith('daily-report-'));
+      
+      const reports = [];
+      for (const file of jsonFiles.sort().reverse()) {
+        try {
+          const content = await fs.readFile(path.join(this.reportsDir, file), 'utf-8');
+          const report = JSON.parse(content);
+          reports.push(report);
+        } catch (error) {
+          console.error(`Error reading report ${file}:`, error);
+        }
+      }
+      
+      return reports;
+    } catch (error) {
+      console.error('Error reading reports directory:', error);
+      return [];
+    }
+  }
+
+  async getLatestReport() {
+    const reports = await this.getAllReports();
+    return reports.length > 0 ? reports[0] : null;
+  }
+}
+
+const npmStatsService = new NpmStatsService();
+
+// API endpoints for download statistics
+app.get('/api/stats/latest', async (req, res) => {
+  try {
+    const report = await npmStatsService.getLatestReport();
+    if (!report) {
+      return res.status(404).json({ error: 'No reports available' });
+    }
+    res.json({ success: true, data: report });
+  } catch (error) {
+    console.error('Error getting latest stats:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+app.get('/api/stats/all', async (req, res) => {
+  try {
+    const reports = await npmStatsService.getAllReports();
+    res.json({ success: true, data: reports });
+  } catch (error) {
+    console.error('Error getting all stats:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+app.post('/api/stats/generate', async (req, res) => {
+  try {
+    const report = await npmStatsService.generateDailyReport();
+    res.json({ success: true, data: report });
+  } catch (error) {
+    console.error('Error generating report:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
 // Health check
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
@@ -377,6 +565,23 @@ app.listen(PORT, () => {
   console.log(`🚀 Guardz MCP API Server running on port ${PORT}`);
   console.log(`📱 Web interface available at http://localhost:${PORT}/guardz-mcp.html`);
   console.log(`🔧 API endpoints available at http://localhost:${PORT}/api/guardz/*`);
+  console.log(`📊 Download stats available at http://localhost:${PORT}/reports.html`);
+  
+  // Set up cron job for daily reports (runs at 9:00 AM UTC every day)
+  cron.schedule('0 9 * * *', async () => {
+    try {
+      console.log('🕘 Running scheduled daily report generation...');
+      await npmStatsService.generateDailyReport();
+      console.log('✅ Scheduled daily report generated successfully');
+    } catch (error) {
+      console.error('❌ Error in scheduled daily report generation:', error);
+    }
+  }, {
+    scheduled: true,
+    timezone: "UTC"
+  });
+  
+  console.log('⏰ Daily report cron job scheduled for 9:00 AM UTC');
 });
 
 // Graceful shutdown
