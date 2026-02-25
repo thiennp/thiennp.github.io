@@ -18,7 +18,7 @@
     "multer": "^1.4.5-lts.1",
     "node-cron": "^3.0.3",
     "node-fetch": "^3.3.2",
-    "nodemailer": "^6.9.7",
+    "nodemailer": "^8.0.1",
     "prettier": "^3.6.2"
   },
   "devDependencies": {
@@ -26,5 +26,8 @@
   },
   "engines": {
     "node": ">=18.0.0"
+  },
+  "overrides": {
+    "lodash": "^4.17.22"
   }
 }
