@@ -1,32 +1,14 @@
-name: Deploy to Vercel
+# GitHub Pages: with "Deploy from a branch" (Settings → Pages),
+# the site is published automatically from the master branch root.
+# This workflow runs on push; no Vercel or external deploy step.
+name: CI
 
 on:
   push:
     branches: [ master ]
-  pull_request:
-    branches: [ master ]
 
 jobs:
-  deploy:
+  check:
     runs-on: ubuntu-latest
-    
     steps:
-    - uses: actions/checkout@v3
-    
-    - name: Setup Node.js
-      uses: actions/setup-node@v3
-      with:
-        node-version: '18'
-        
-    - name: Install dependencies
-      run: |
-        cd server
-        npm install
-        
-    - name: Deploy to Vercel
-      run: |
-        cd server
-        npx vercel --prod --token ${{ secrets.VERCEL_TOKEN }} --scope team_5UfMd5h29yN3a7uitdIY6dE5
-      env:
-        VERCEL_ORG_ID: team_5UfMd5h29yN3a7uitdIY6dE5
-        VERCEL_PROJECT_ID: prj_DaNXiGcMQz4JvNuecTQXCpx70A70
+      - uses: actions/checkout@v4
