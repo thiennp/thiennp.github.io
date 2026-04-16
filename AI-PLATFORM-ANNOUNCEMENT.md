@@ -60,7 +60,7 @@ Guardz MCP is a **Model Context Protocol (MCP) server** that generates TypeScrip
 ### 1. Claude AI Integration
 ```javascript
 // Claude can use this directly in conversations
-const response = await fetch('https://guardz-mcp-api.vercel.app/api/guardz/generate-type-guards', {
+const response = await fetch('http://localhost:3000/api/guardz/generate-type-guards', {
   method: 'POST',
   headers: { 'Content-Type': 'application/json' },
   body: JSON.stringify({
@@ -121,7 +121,7 @@ vscode.commands.registerCommand('guardz.generateTypeGuards', async () => {
 
 ## 📊 Technical Specifications
 
-- **Base URL**: `https://guardz-mcp-api.vercel.app`
+- **Base URL**: `https://thiennp.github.io`
 - **Response Time**: < 2 seconds average
 - **File Size Limit**: 50MB per request
 - **Supported Formats**: .ts, .tsx, .js, .jsx
@@ -132,12 +132,12 @@ vscode.commands.registerCommand('guardz.generateTypeGuards', async () => {
 
 ### 1. Test the API
 ```bash
-curl -X GET https://guardz-mcp-api.vercel.app/api/health
+curl -X GET http://localhost:3000/api/health
 ```
 
 ### 2. Generate Type Guards
 ```bash
-curl -X POST https://guardz-mcp-api.vercel.app/api/guardz/generate-type-guards \
+curl -X POST http://localhost:3000/api/guardz/generate-type-guards \
   -H "Content-Type: application/json" \
   -d '{"files":["interface User { name: string; }"]}'
 ```
@@ -171,7 +171,7 @@ curl -X POST https://guardz-mcp-api.vercel.app/api/guardz/generate-type-guards \
 ## 🚀 Deployment Status
 
 - ✅ **Frontend**: Deployed to GitHub Pages
-- ✅ **API Backend**: Ready for deployment to Vercel/Railway
+- ✅ **Site**: Deployed on GitHub Pages only
 - ✅ **Documentation**: Complete and comprehensive
 - ✅ **Examples**: Working integration examples
 - ✅ **Testing**: API tested and validated

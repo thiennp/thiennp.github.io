@@ -75,7 +75,7 @@
 ## 🎯 Next Steps
 
 ### Immediate (This Week)
-1. **Deploy API**: Use Vercel to deploy the backend
+1. **Deploy**: Push to master for GitHub Pages (no separate API deployment)
 2. **Send Emails**: Use generated email templates
 3. **Post to Social Media**: Use generated content
 4. **Engage Community**: Use generated materials

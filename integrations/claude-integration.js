@@ -7,7 +7,7 @@
 
 class ClaudeGuardzIntegration {
   constructor() {
-    this.baseUrl = 'https://guardz-mcp-api.vercel.app';
+    this.baseUrl = typeof window !== 'undefined' ? window.location.origin : (process.env.API_URL || '');
     this.endpoints = {
       generateTypeGuards: '/api/guardz/generate-type-guards',
       validateTypeScript: '/api/guardz/validate-typescript',

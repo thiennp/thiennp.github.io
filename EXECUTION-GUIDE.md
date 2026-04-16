@@ -7,7 +7,7 @@
 - **Social Media Content**: Twitter, LinkedIn, Reddit posts
 - **Community Engagement**: Reddit posts, GitHub issues, showcase
 - **Documentation**: Complete integration guides
-- **Deployment Config**: Vercel and GitHub Actions setup
+- **Deployment Config**: GitHub Pages only
 
 ### 📁 Generated Files
 ```
@@ -32,19 +32,11 @@ outreach/
 
 ## 🎯 Next Steps (Manual Execution Required)
 
-### 1. Deploy API Backend
+### 1. Deploy site (GitHub Pages only)
 ```bash
-# Option A: Deploy to Vercel
-cd server
-vercel --prod
-
-# Option B: Deploy to Railway
-railway up
-
-# Option C: Deploy to Heroku
-heroku create guardz-mcp-api
-git push heroku main
+git push origin master
 ```
+Site updates at https://thiennp.github.io. No separate API deployment.
 
 ### 2. Send Outreach Emails
 Use the generated email templates in `outreach/emails/`:
@@ -92,14 +84,11 @@ Use the generated materials in `outreach/community/`:
 
 ## 🚀 Quick Commands
 
-### Deploy API
+### Deploy site
 ```bash
-# Deploy to Vercel
-cd server && vercel --prod
-
-# Or use GitHub Actions (already configured)
 git push origin master
 ```
+GitHub Pages serves the site from the master branch.
 
 ### Send Emails
 ```bash

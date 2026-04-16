@@ -13,7 +13,7 @@ import path from 'path';
 class AutomationRunner {
   constructor() {
     this.config = {
-      apiUrl: 'https://guardz-mcp-api.vercel.app',
+      apiUrl: 'http://localhost:3000',
       webUrl: 'https://thiennp.github.io/guardz-mcp.html',
       docsUrl: 'https://thiennp.github.io/README.md',
       integrationsUrl: 'https://thiennp.github.io/AI-PLATFORM-INTEGRATION.md'
@@ -44,7 +44,7 @@ class AutomationRunner {
       
       console.log('\n🎉 Automation completed successfully!');
       console.log('\n📋 Next Steps:');
-      console.log('1. Deploy API to Vercel (manual step)');
+      console.log('1. Push to master to update GitHub Pages');
       console.log('2. Send outreach emails (use generated templates)');
       console.log('3. Post to social media (use generated content)');
       console.log('4. Engage with community (use generated materials)');
@@ -183,66 +183,30 @@ class AutomationRunner {
   }
 
   /**
-   * 🔧 Create deployment configuration
+   * 🔧 Create deployment configuration (GitHub Pages only)
    */
   async createDeploymentConfig() {
-    const vercelConfig = {
-      version: 2,
-      builds: [
-        {
-          src: "server/server.js",
-          use: "@vercel/node"
-        }
-      ],
-      routes: [
-        {
-          src: "/api/(.*)",
-          dest: "/server/server.js"
-        }
-      ]
-    };
-    
-    await fs.writeFile('server/vercel.json', JSON.stringify(vercelConfig, null, 2));
+    // No Vercel config; site deploys from master branch on GitHub Pages
   }
 
   /**
-   * 🔧 Setup GitHub Actions
+   * 🔧 Setup GitHub Actions (CI only; Pages deploys from branch)
    */
   async setupGitHubActions() {
     await fs.mkdir('.github/workflows', { recursive: true });
     
-    const workflow = `name: Deploy Guardz MCP API
+    const workflow = `# GitHub Pages: deploy from branch (Settings → Pages)
+name: CI
 
 on:
   push:
     branches: [ master ]
-  pull_request:
-    branches: [ master ]
 
 jobs:
-  deploy:
+  check:
     runs-on: ubuntu-latest
-    
     steps:
-    - uses: actions/checkout@v3
-    
-    - name: Setup Node.js
-      uses: actions/setup-node@v3
-      with:
-        node-version: '18'
-        
-    - name: Install dependencies
-      run: |
-        cd server
-        npm install
-        
-    - name: Deploy to Vercel
-      uses: amondnet/vercel-action@v25
-      with:
-        vercel-token: \${{ secrets.VERCEL_TOKEN }}
-        vercel-org-id: \${{ secrets.ORG_ID }}
-        vercel-project-id: \${{ secrets.PROJECT_ID }}
-        working-directory: ./server`;
+      - uses: actions/checkout@v4`;
     
     await fs.writeFile('.github/workflows/deploy.yml', workflow);
   }
@@ -384,7 +348,7 @@ Perfect for AI platforms to enhance TypeScript support:
 ### 🔧 Technical Details
 - **API**: RESTful with 7 endpoints
 - **Language**: TypeScript/JavaScript
-- **Deployment**: Vercel (serverless)
+- **Deployment**: GitHub Pages
 - **Documentation**: Comprehensive guides
 - **Examples**: Platform-specific integration code
 
@@ -549,7 +513,7 @@ Let's make TypeScript development even better! 🚀`;
 ## 🎯 Next Steps
 
 ### Immediate (This Week)
-1. **Deploy API**: Use Vercel to deploy the backend
+1. **Deploy site**: Push to master for GitHub Pages
 2. **Send Emails**: Use generated email templates
 3. **Post to Social Media**: Use generated content
 4. **Engage Community**: Use generated materials

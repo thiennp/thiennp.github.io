@@ -4,7 +4,9 @@ This guide provides comprehensive documentation for integrating the Guardz MCP A
 
 ## 🌐 API Overview
 
-**Base URL**: `https://guardz-mcp-api.vercel.app` (once deployed)
+**Site**: `https://thiennp.github.io` — static UI on GitHub Pages.
+
+**API base URL** (run `cd server && npm start` locally): `http://localhost:3000`
 
 **Web Interface**: `https://thiennp.github.io/guardz-mcp.html`
 
@@ -31,7 +33,7 @@ This guide provides comprehensive documentation for integrating the Guardz MCP A
 #### Direct API Usage
 ```javascript
 // Claude can use the API directly in code blocks
-const response = await fetch('https://guardz-mcp-api.vercel.app/api/guardz/generate-type-guards', {
+const response = await fetch('http://localhost:3000/api/guardz/generate-type-guards', {
   method: 'POST',
   headers: {
     'Content-Type': 'application/json',
@@ -57,7 +59,7 @@ API Endpoints:
 - POST /api/guardz/format-code - Format code with Prettier
 - POST /api/guardz/lint-code - Lint code with ESLint
 
-Base URL: https://guardz-mcp-api.vercel.app
+Base URL: https://thiennp.github.io
 
 When users need TypeScript type guards, you can:
 1. Use the API directly in code examples
@@ -105,7 +107,7 @@ Always include the API base URL and proper error handling.
 ```javascript
 // ChatGPT can use this function to call the API
 async function generateTypeGuards(files, options = {}) {
-  const response = await fetch('https://guardz-mcp-api.vercel.app/api/guardz/generate-type-guards', {
+  const response = await fetch('http://localhost:3000/api/guardz/generate-type-guards', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ files, ...options })
@@ -132,7 +134,7 @@ interface GuardzMCPClient {
 }
 
 class GuardzMCPIntegration {
-  private baseUrl = 'https://guardz-mcp-api.vercel.app';
+  private baseUrl = 'https://thiennp.github.io';
   
   async generateTypeGuards(files: string[], options: TypeGuardOptions = {}): Promise<TypeGuardResult> {
     const response = await fetch(`${this.baseUrl}/api/guardz/generate-type-guards`, {
@@ -276,7 +278,7 @@ export function activate(context: vscode.ExtensionContext) {
 
 ### Basic Type Guard Generation
 ```javascript
-const response = await fetch('https://guardz-mcp-api.vercel.app/api/guardz/generate-type-guards', {
+const response = await fetch('http://localhost:3000/api/guardz/generate-type-guards', {
   method: 'POST',
   headers: { 'Content-Type': 'application/json' },
   body: JSON.stringify({
@@ -298,7 +300,7 @@ console.log(result.files); // Generated type guard files
 
 ### TypeScript Validation
 ```javascript
-const response = await fetch('https://guardz-mcp-api.vercel.app/api/guardz/validate-typescript', {
+const response = await fetch('http://localhost:3000/api/guardz/validate-typescript', {
   method: 'POST',
   headers: { 'Content-Type': 'application/json' },
   body: JSON.stringify({
@@ -316,7 +318,7 @@ console.log(result.success); // true if valid
 
 ### Code Formatting
 ```javascript
-const response = await fetch('https://guardz-mcp-api.vercel.app/api/guardz/format-code', {
+const response = await fetch('http://localhost:3000/api/guardz/format-code', {
   method: 'POST',
   headers: { 'Content-Type': 'application/json' },
   body: JSON.stringify({
@@ -372,12 +374,12 @@ console.log(result.files[0].content); // Formatted code
 
 1. **Test the API**:
    ```bash
-   curl -X POST https://guardz-mcp-api.vercel.app/api/health
+   curl -X POST http://localhost:3000/api/health
    ```
 
 2. **Generate Type Guards**:
    ```bash
-   curl -X POST https://guardz-mcp-api.vercel.app/api/guardz/generate-type-guards \
+   curl -X POST http://localhost:3000/api/guardz/generate-type-guards \
      -H "Content-Type: application/json" \
      -d '{"files":["interface User { name: string; }"]}'
    ```

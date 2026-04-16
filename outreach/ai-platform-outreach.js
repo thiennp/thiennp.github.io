@@ -46,7 +46,7 @@ class AIPlatformOutreach {
     };
     
     this.apiInfo = {
-      baseUrl: 'https://guardz-mcp-api.vercel.app',
+      baseUrl: process.env.API_URL || 'https://thiennp.github.io',
       documentation: 'https://thiennp.github.io/README.md',
       webInterface: 'https://thiennp.github.io/guardz-mcp.html',
       announcement: 'https://thiennp.github.io/AI-PLATFORM-ANNOUNCEMENT.md'

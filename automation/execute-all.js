@@ -126,7 +126,7 @@ class GuardzExecutor {
 - **Social Media Content**: Twitter, LinkedIn, Reddit posts
 - **Community Engagement**: Reddit posts, GitHub issues, showcase
 - **Documentation**: Complete integration guides
-- **Deployment Config**: Vercel and GitHub Actions setup
+- **Deployment Config**: GitHub Pages only
 
 ### 📁 Generated Files
 \`\`\`
@@ -151,19 +151,11 @@ outreach/
 
 ## 🎯 Next Steps (Manual Execution Required)
 
-### 1. Deploy API Backend
+### 1. Deploy site (GitHub Pages only)
 \`\`\`bash
-# Option A: Deploy to Vercel
-cd server
-vercel --prod
-
-# Option B: Deploy to Railway
-railway up
-
-# Option C: Deploy to Heroku
-heroku create guardz-mcp-api
-git push heroku main
+git push origin master
 \`\`\`
+Site updates at https://thiennp.github.io
 
 ### 2. Send Outreach Emails
 Use the generated email templates in \`outreach/emails/\`:
@@ -211,14 +203,11 @@ Use the generated materials in \`outreach/community/\`:
 
 ## 🚀 Quick Commands
 
-### Deploy API
+### Deploy site
 \`\`\`bash
-# Deploy to Vercel
-cd server && vercel --prod
-
-# Or use GitHub Actions (already configured)
 git push origin master
 \`\`\`
+GitHub Pages serves from the master branch.
 
 ### Send Emails
 \`\`\`bash
@@ -271,9 +260,9 @@ All materials are generated and ready. Just follow the steps above to:
    */
   async showNextSteps() {
     console.log('\n📋 Next Steps:');
-    console.log('\n1. 🔧 Deploy API Backend:');
-    console.log('   cd server && vercel --prod');
-    console.log('   (or use Railway/Heroku)');
+    console.log('\n1. 🔧 Deploy site:');
+    console.log('   git push origin master');
+    console.log('   (GitHub Pages serves from master)');
     
     console.log('\n2. 📧 Send Outreach Emails:');
     console.log('   - Use templates in outreach/emails/');
@@ -299,80 +288,29 @@ All materials are generated and ready. Just follow the steps above to:
   createDeploymentGuide() {
     return `# 🔧 Deployment Guide
 
-## 🚀 Deploy API Backend
+## 🌐 Deploy to GitHub Pages
 
-### Option 1: Vercel (Recommended)
 \`\`\`bash
-# Install Vercel CLI
-npm install -g vercel
-
-# Deploy
-cd server
-vercel --prod
+git push origin master
 \`\`\`
 
-### Option 2: Railway
-\`\`\`bash
-# Install Railway CLI
-npm install -g @railway/cli
+- **URL**: https://thiennp.github.io
+- **Guardz MCP**: https://thiennp.github.io/guardz-mcp.html
 
-# Deploy
-railway up
+In **Settings → Pages**, use **Deploy from a branch** with branch \`master\` and folder \`/(root)\`.
+
+## 🖥️ Local development (optional)
+
+\`\`\`bash
+cd server && npm install && npm start
 \`\`\`
 
-### Option 3: Heroku
-\`\`\`bash
-# Install Heroku CLI
-# Deploy
-heroku create guardz-mcp-api
-git push heroku main
-\`\`\`
-
-## 🌐 Deploy Web Interface
-
-The web interface is already deployed on GitHub Pages:
-- **URL**: https://thiennp.github.io/guardz-mcp.html
-- **Status**: Live and functional
-
-## 📊 Monitor Deployment
-
-### Health Check
-\`\`\`bash
-curl https://your-api-url.vercel.app/api/health
-\`\`\`
-
-### Test API
-\`\`\`bash
-curl -X POST https://your-api-url.vercel.app/api/guardz/generate-type-guards \\
-  -H "Content-Type: application/json" \\
-  -d '{"files":["interface User { name: string; age: number; }"]}'
-\`\`\`
+Then open http://localhost:3000/guardz-mcp.html
 
 ## 🔧 Configuration
 
-### Environment Variables
-- \`NODE_ENV\`: production
-- \`PORT\`: 3000 (or platform default)
-
-### Dependencies
 - Node.js 18+
-- Express.js
-- CORS
-- Multer
-- Guardz packages
-
-## 📈 Monitoring
-
-### Logs
-- Vercel: Dashboard logs
-- Railway: CLI logs
-- Heroku: heroku logs --tail
-
-### Metrics
-- Response times
-- Error rates
-- Usage patterns
-- API calls per day`;
+- Express.js, CORS, Multer, Guardz packages (see server/package.json)`;
   }
 
   /**

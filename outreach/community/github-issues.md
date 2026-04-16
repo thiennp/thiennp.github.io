@@ -14,7 +14,7 @@ Guardz MCP is a specialized API for TypeScript type guard generation that enhanc
 - **Live Demo**: https://thiennp.github.io/guardz-mcp.html
 - **Documentation**: https://thiennp.github.io/README.md
 - **AI Integration Guide**: https://thiennp.github.io/AI-PLATFORM-INTEGRATION.md
-- **API Endpoints**: https://guardz-mcp-api.vercel.app
+- **API Endpoints**: https://thiennp.github.io
 
 ### 🚀 Quick Start
 1. Visit the live demo: https://thiennp.github.io/guardz-mcp.html
@@ -41,7 +41,7 @@ Perfect for AI platforms to enhance TypeScript support:
 ### 🔧 Technical Details
 - **API**: RESTful with 7 endpoints
 - **Language**: TypeScript/JavaScript
-- **Deployment**: Vercel (serverless)
+- **Deployment**: GitHub Pages
 - **Documentation**: Comprehensive guides
 - **Examples**: Platform-specific integration code
 

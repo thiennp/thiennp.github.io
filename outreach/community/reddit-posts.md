@@ -24,7 +24,7 @@
 
 **Quick test:**
 ```bash
-curl -X POST https://guardz-mcp-api.vercel.app/api/guardz/generate-type-guards \
+curl -X POST http://localhost:3000/api/guardz/generate-type-guards \
   -H "Content-Type: application/json" \
   -d '{"files":["interface User { name: string; age: number; }"]}'
 ```
@@ -59,7 +59,7 @@ Would love to hear your feedback and use cases! 🚀
 
 **Quick test:**
 ```bash
-curl -X POST https://guardz-mcp-api.vercel.app/api/guardz/generate-type-guards \
+curl -X POST http://localhost:3000/api/guardz/generate-type-guards \
   -H "Content-Type: application/json" \
   -d '{"files":["interface User { name: string; age: number; }"]}'
 ```
@@ -94,7 +94,7 @@ Would love to hear your feedback and use cases! 🚀
 
 **Quick test:**
 ```bash
-curl -X POST https://guardz-mcp-api.vercel.app/api/guardz/generate-type-guards \
+curl -X POST http://localhost:3000/api/guardz/generate-type-guards \
   -H "Content-Type: application/json" \
   -d '{"files":["interface User { name: string; age: number; }"]}'
 ```
@@ -129,7 +129,7 @@ Would love to hear your feedback and use cases! 🚀
 
 **Quick test:**
 ```bash
-curl -X POST https://guardz-mcp-api.vercel.app/api/guardz/generate-type-guards \
+curl -X POST http://localhost:3000/api/guardz/generate-type-guards \
   -H "Content-Type: application/json" \
   -d '{"files":["interface User { name: string; age: number; }"]}'
 ```

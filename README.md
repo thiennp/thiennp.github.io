@@ -150,18 +150,13 @@ GET /api/health
 
 ## 🌐 Deployment
 
-### GitHub Pages (Static)
-The web interface is deployed on GitHub Pages and available at:
-https://thiennp.github.io/guardz-mcp.html
+The site is deployed on **GitHub Pages only**. Push to the `master` branch and the site updates at:
 
-### Backend API Deployment
-For the backend API, you can deploy to:
+**https://thiennp.github.io**
 
-1. **Vercel**: Serverless deployment
-2. **Railway**: Easy deployment with database
-3. **Heroku**: Traditional hosting
-4. **DigitalOcean**: VPS hosting
-5. **AWS/GCP**: Cloud hosting
+- Guardz MCP: https://thiennp.github.io/guardz-mcp.html
+
+In **Settings → Pages**, use **Deploy from a branch** with branch `master` and folder `/(root)`. The backend API in `server/` is for local use only; run it with `cd server && npm start` when developing.
 
 ## 🤝 Contributing
 
@@ -191,23 +186,3 @@ MIT License - see the [LICENSE](LICENSE) file for details.
 ---
 
 **Made with ❤️ by Thien Nguyen**
-# Test deployment
-# Test deployment 2
-# Final test - secrets updated
-# Test with verified token
-# Final verification - secrets updated
-# Test workflow trigger
-# Test with clean secrets
-# Test with cleaned secrets
-# Test secret verification
-# Test current workflow
-# Test API deployment
-# Test alternative deployment
-# Test with cleaned secrets
-# Test with correct environment variables
-# Test with VERCEL_* secret names
-# Test with simplified deployment
-# Test with Vercel action
-# Test without scope argument
-# Test with correct Vercel CLI arguments
-# Test with Vercel action

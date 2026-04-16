@@ -18,14 +18,13 @@ class FullAutomation {
     });
     
     this.config = {
-      apiUrl: 'https://guardz-mcp-api.vercel.app',
+      apiUrl: 'http://localhost:3000',
       webUrl: 'https://thiennp.github.io/guardz-mcp.html',
       docsUrl: 'https://thiennp.github.io/README.md',
       integrationsUrl: 'https://thiennp.github.io/AI-PLATFORM-INTEGRATION.md'
     };
     
     this.credentials = {
-      vercel: process.env.VERCEL_TOKEN,
       github: process.env.GITHUB_TOKEN,
       email: process.env.EMAIL_SERVICE_KEY,
       twitter: process.env.TWITTER_API_KEY,
@@ -79,7 +78,6 @@ class FullAutomation {
     console.log('🔐 Checking credentials...');
     
     const required = [
-      { name: 'VERCEL_TOKEN', key: 'vercel', description: 'Vercel deployment token' },
       { name: 'GITHUB_TOKEN', key: 'github', description: 'GitHub API token' },
       { name: 'EMAIL_SERVICE_KEY', key: 'email', description: 'Email service API key' },
       { name: 'TWITTER_API_KEY', key: 'twitter', description: 'Twitter API credentials' },
@@ -109,30 +107,10 @@ class FullAutomation {
   }
 
   /**
-   * 🔧 Deploy API
+   * 🔧 Deploy (GitHub Pages only)
    */
   async deployAPI() {
-    console.log('🔧 Deploying API...');
-    
-    if (!this.credentials.vercel) {
-      console.log('⚠️ VERCEL_TOKEN not available, skipping API deployment');
-      return;
-    }
-    
-    try {
-      // Set Vercel token
-      process.env.VERCEL_TOKEN = this.credentials.vercel;
-      
-      // Deploy to Vercel
-      const result = await this.runCommand('cd server && vercel --prod --yes');
-      
-      console.log('✅ API deployed successfully');
-      console.log('API URL:', result.match(/https:\/\/[^\s]+/)?.[0] || 'Deployed successfully');
-      
-    } catch (error) {
-      console.log('⚠️ API deployment failed:', error.message);
-      console.log('You can deploy manually with: cd server && vercel --prod');
-    }
+    console.log('🔧 Site deploys from master on GitHub Pages (no separate API)');
   }
 
   /**
@@ -466,7 +444,7 @@ Perfect for AI platforms to enhance TypeScript support:
 ### 🔧 Technical Details
 - **API**: RESTful with 7 endpoints
 - **Language**: TypeScript/JavaScript
-- **Deployment**: Vercel (serverless)
+- **Deployment**: GitHub Pages
 - **Documentation**: Comprehensive guides
 - **Examples**: Platform-specific integration code
 
@@ -565,12 +543,6 @@ Let's make TypeScript development even better! 🚀`;
     
     const requirements = [
       {
-        name: 'VERCEL_TOKEN',
-        description: 'Vercel deployment token',
-        howTo: 'Get from https://vercel.com/account/tokens',
-        required: 'For API deployment'
-      },
-      {
         name: 'GITHUB_TOKEN',
         description: 'GitHub API token',
         howTo: 'Get from https://github.com/settings/tokens',
@@ -613,7 +585,6 @@ Let's make TypeScript development even better! 🚀`;
     console.log('📝 SETUP INSTRUCTIONS:');
     console.log('1. Get the credentials above');
     console.log('2. Set them as environment variables:');
-    console.log('   export VERCEL_TOKEN=your_token');
     console.log('   export GITHUB_TOKEN=your_token');
     console.log('   export EMAIL_SERVICE_KEY=your_key');
     console.log('   export TWITTER_API_KEY=your_key');

@@ -246,7 +246,7 @@ class CodeGenerator {
 ## 🎯 **Priority Actions**
 
 ### **High Priority (This Week)**
-1. **Deploy API Backend**: Get the API live on Vercel
+1. **Deploy site**: Push to master for GitHub Pages
 2. **Send Outreach Emails**: Contact AI platform teams
 3. **Launch Social Media Campaign**: Start building awareness
 4. **Create Demo Videos**: Show the tool in action
@@ -274,13 +274,13 @@ class CodeGenerator {
 ### **What You Need to Do**
 - ✅ Provide email addresses for outreach
 - ✅ Share social media account access
-- ✅ Deploy the API to Vercel/Railway
+- ✅ Push to master for GitHub Pages
 - ✅ Contact AI platform teams directly
 
 ## 💡 **Recommendations**
 
 ### **Immediate Next Steps**
-1. **Deploy the API**: Use Vercel to get the backend live
+1. **Deploy the site**: Push to master for GitHub Pages
 2. **Send Outreach Emails**: Use the templates I created
 3. **Launch Social Campaign**: Use the content I prepared
 4. **Build Community**: Start engaging with developers

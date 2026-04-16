@@ -99,7 +99,7 @@ const GUARDZ_FUNCTIONS = [
 
 class ChatGPTGuardzIntegration {
   constructor() {
-    this.baseUrl = 'https://guardz-mcp-api.vercel.app';
+    this.baseUrl = typeof window !== 'undefined' ? window.location.origin : (process.env.API_URL || '');
     this.functions = GUARDZ_FUNCTIONS;
   }
 
@@ -294,7 +294,7 @@ You have access to the Guardz MCP API for TypeScript type guard generation.
 Available Functions:
 ${GUARDZ_FUNCTIONS.map(f => `- ${f.name}: ${f.description}`).join('\n')}
 
-API Base URL: https://guardz-mcp-api.vercel.app
+API Base URL: same-origin (or set API_URL when running server elsewhere)
 
 When users need TypeScript type guards:
 1. Use the generate_type_guards function with their TypeScript code

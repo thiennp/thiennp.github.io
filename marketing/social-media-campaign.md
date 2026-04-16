@@ -109,7 +109,7 @@ Try it now! 🚀
 🔧 Integrating Guardz MCP API:
 
 ```javascript
-const response = await fetch('https://guardz-mcp-api.vercel.app/api/guardz/generate-type-guards', {
+const response = await fetch('http://localhost:3000/api/guardz/generate-type-guards', {
   method: 'POST',
   headers: { 'Content-Type': 'application/json' },
   body: JSON.stringify({

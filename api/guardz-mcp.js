@@ -5,10 +5,10 @@
 
 class GuardzMCPClient {
   constructor() {
-    // Try local server first, then fallback to Vercel
-    this.baseUrl = window.location.hostname === 'localhost' 
-      ? 'http://localhost:3000' 
-      : 'https://guardz-mcp-api.vercel.app';
+    // Same-origin on GitHub Pages; localhost for local dev with server
+    this.baseUrl = window.location.hostname === 'localhost'
+      ? 'http://localhost:3000'
+      : window.location.origin;
     this.endpoints = {
       generateTypeGuards: '/api/guardz/generate-type-guards',
       discoverFiles: '/api/guardz/discover-files',

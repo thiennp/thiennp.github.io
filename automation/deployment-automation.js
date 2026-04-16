@@ -11,7 +11,7 @@ import path from 'path';
 class GuardzAutomation {
   constructor() {
     this.config = {
-      apiUrl: 'https://guardz-mcp-api.vercel.app',
+      apiUrl: 'http://localhost:3000',
       webUrl: 'https://thiennp.github.io/guardz-mcp.html',
       docsUrl: 'https://thiennp.github.io/README.md',
       integrationsUrl: 'https://thiennp.github.io/AI-PLATFORM-INTEGRATION.md'
@@ -64,7 +64,7 @@ class GuardzAutomation {
     console.log('🚀 Starting automated deployment...');
     
     try {
-      // 1. Deploy API to Vercel
+      // 1. Deploy (GitHub Pages only)
       await this.deployAPI();
       
       // 2. Update GitHub Pages
@@ -88,28 +88,12 @@ class GuardzAutomation {
   }
 
   /**
-   * 🔧 Deploy API to Vercel
+   * 🔧 Deploy (GitHub Pages only; no separate API deployment)
    */
   async deployAPI() {
-    console.log('🔧 Deploying API to Vercel...');
-    
-    try {
-      // Check if Vercel CLI is installed
-      await this.runCommand('vercel --version');
-      
-      // Deploy to Vercel
-      const deployResult = await this.runCommand('cd server && vercel --prod --yes');
-      
-      console.log('✅ API deployed successfully');
-      return deployResult;
-      
-    } catch (error) {
-      console.log('⚠️ Vercel CLI not found, using alternative deployment...');
-      
-      // Alternative: Deploy using GitHub Actions
-      await this.setupGitHubActions();
-      return 'Deployment scheduled via GitHub Actions';
-    }
+    console.log('🔧 Site deploys from master branch on GitHub Pages (no Vercel)');
+    await this.setupGitHubActions();
+    return 'Push to master to update site';
   }
 
   /**
@@ -389,7 +373,7 @@ Perfect for AI platforms to enhance TypeScript support:
 ### 🔧 Technical Details
 - **API**: RESTful with 7 endpoints
 - **Language**: TypeScript/JavaScript
-- **Deployment**: Vercel (serverless)
+- **Deployment**: GitHub Pages
 - **Documentation**: Comprehensive guides
 - **Examples**: Platform-specific integration code
 
@@ -481,40 +465,19 @@ Let's make TypeScript development even better! 🚀`;
    * 🔧 Setup GitHub Actions
    */
   async setupGitHubActions() {
-    const workflow = `
-name: Deploy Guardz MCP API
+    const workflow = `# GitHub Pages: deploy from branch (Settings → Pages)
+name: CI
 
 on:
   push:
     branches: [ master ]
-  pull_request:
-    branches: [ master ]
 
 jobs:
-  deploy:
+  check:
     runs-on: ubuntu-latest
-    
     steps:
-    - uses: actions/checkout@v3
-    
-    - name: Setup Node.js
-      uses: actions/setup-node@v3
-      with:
-        node-version: '18'
-        
-    - name: Install dependencies
-      run: |
-        cd server
-        npm install
-        
-    - name: Deploy to Vercel
-      uses: amondnet/vercel-action@v25
-      with:
-        vercel-token: \${{ secrets.VERCEL_TOKEN }}
-        vercel-org-id: \${{ secrets.ORG_ID }}
-        vercel-project-id: \${{ secrets.PROJECT_ID }}
-        working-directory: ./server
-    `;
+      - uses: actions/checkout@v4
+`;
     
     await fs.writeFile('.github/workflows/deploy.yml', workflow);
     

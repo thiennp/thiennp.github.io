@@ -49,4 +49,4 @@
 - **Live Demo**: https://thiennp.github.io/guardz-mcp.html
 - **Documentation**: https://thiennp.github.io/README.md
 - **AI Integration**: https://thiennp.github.io/AI-PLATFORM-INTEGRATION.md
-- **API Endpoints**: https://guardz-mcp-api.vercel.app
+- **API Endpoints**: https://thiennp.github.io

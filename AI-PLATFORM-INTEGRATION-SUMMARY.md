@@ -76,7 +76,7 @@ I've successfully created a comprehensive AI platform integration system for you
 #### Backend API
 - `server/server.js` - Express API server
 - `server/package.json` - Dependencies
-- `server/vercel.json` - Vercel deployment config
+- No Vercel; site deploys from master on GitHub Pages
 
 ### 🚀 **Deployment Status**
 
@@ -87,7 +87,7 @@ I've successfully created a comprehensive AI platform integration system for you
 - **Web Interface**: Live and functional
 
 #### 🔄 **Ready for Deployment**
-- **API Backend**: Ready to deploy to Vercel/Railway/Heroku
+- **Site**: GitHub Pages only; API for local use
 - **Database**: No database required (stateless API)
 - **Monitoring**: Health check endpoint available
 
@@ -105,19 +105,18 @@ I've successfully created a comprehensive AI platform integration system for you
 
 ### 🎯 **Next Steps for AI Platforms**
 
-#### 1. **Deploy the API Backend**
+#### 1. **Deploy the site**
 ```bash
-cd thiennp.github.io/server
-npm install -g vercel
-vercel
+git push origin master
 ```
+GitHub Pages serves from the master branch.
 
 #### 2. **Update API URL**
-Once deployed, update the `baseUrl` in integration files with your Vercel URL.
+Site is at https://thiennp.github.io; API runs locally or elsewhere.
 
 #### 3. **Test the Integration**
 ```bash
-curl -X POST https://your-api-url.vercel.app/api/guardz/generate-type-guards \
+curl -X POST http://localhost:3000/api/guardz/generate-type-guards \
   -H "Content-Type: application/json" \
   -d '{"files":["interface User { name: string; }"]}'
 ```
