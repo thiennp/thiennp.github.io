@@ -1,6 +1,5 @@
 import express from 'express';
 import cors from 'cors';
-import multer from 'multer';
 import { TypeGuardGenerator } from 'guardz-generator/dist/core/generators/type-guard/type-guard-generator.js';
 import { ServiceFactory } from 'guardz-generator/dist/infrastructure/factories/service-factory.js';
 import {
@@ -15,7 +14,6 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const app = express();
-const upload = multer({ storage: multer.memoryStorage() });
 
 // Middleware
 app.use(cors());
@@ -350,7 +348,7 @@ app.get('/api/guardz/project-info', async (req, res) => {
       success: true,
       data: {
         availableConfigFiles: existingConfigs,
-        guardzGeneratorVersion: '1.12.3',
+        guardzGeneratorVersion: '1.12.4',
         mcpVersion: '1.0.0'
       }
     });
