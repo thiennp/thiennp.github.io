@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sentry Cursor Agent</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #172033;
+      --muted: #5d6678;
+      --line: #d9dee8;
+      --paper: #f7f9fc;
+      --panel: #ffffff;
+      --accent: #116b5f;
+      --accent-soft: #dff4ef;
+      --warn: #9a5b00;
+      --warn-soft: #fff1d7;
+      --danger: #9d2b3d;
+      --danger-soft: #ffe4e8;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: var(--paper);
+      color: var(--ink);
+      line-height: 1.5;
+    }
+
+    main {
+      width: min(1120px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 40px 0 56px;
+    }
+
+    .masthead {
+      display: grid;
+      gap: 18px;
+      padding: 32px 0 28px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .eyebrow {
+      width: fit-content;
+      padding: 4px 10px;
+      border-radius: 999px;
+      background: var(--accent-soft);
+      color: var(--accent);
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(2rem, 4vw, 4rem);
+      line-height: 1;
+      letter-spacing: 0;
+    }
+
+    .lede {
+      max-width: 760px;
+      margin: 0;
+      color: var(--muted);
+      font-size: 1.08rem;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(12, 1fr);
+      gap: 18px;
+      margin-top: 24px;
+    }
+
+    section {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 22px;
+      box-shadow: 0 10px 24px rgba(23, 32, 51, 0.05);
+    }
+
+    .span-7 {
+      grid-column: span 7;
+    }
+
+    .span-5 {
+      grid-column: span 5;
+    }
+
+    .span-12 {
+      grid-column: span 12;
+    }
+
+    h2 {
+      margin: 0 0 14px;
+      font-size: 1.05rem;
+      letter-spacing: 0;
+    }
+
+    .steps {
+      display: grid;
+      gap: 12px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .step {
+      display: grid;
+      grid-template-columns: 34px 1fr;
+      gap: 12px;
+      align-items: start;
+    }
+
+    .num {
+      display: grid;
+      place-items: center;
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      background: #182235;
+      color: white;
+      font-weight: 800;
+      font-size: 0.86rem;
+    }
+
+    .step strong,
+    .metric strong {
+      display: block;
+      margin-bottom: 2px;
+    }
+
+    .step p,
+    .metric p {
+      margin: 0;
+      color: var(--muted);
+    }
+
+    .metrics {
+      display: grid;
+      gap: 12px;
+    }
+
+    .metric {
+      padding: 14px;
+      border-radius: 8px;
+      border: 1px solid var(--line);
+      background: #fbfcff;
+    }
+
+    .metric.ok {
+      border-color: #a8d7cb;
+      background: var(--accent-soft);
+    }
+
+    .metric.warn {
+      border-color: #f0c36a;
+      background: var(--warn-soft);
+    }
+
+    .metric.danger {
+      border-color: #f1a7b4;
+      background: var(--danger-soft);
+    }
+
+    code {
+      padding: 2px 5px;
+      border-radius: 5px;
+      background: #edf1f7;
+      color: #263147;
+      font-size: 0.92em;
+    }
+
+    pre {
+      overflow-x: auto;
+      margin: 0;
+      padding: 16px;
+      border-radius: 8px;
+      background: #121826;
+      color: #f4f7fb;
+      font-size: 0.9rem;
+      line-height: 1.45;
+    }
+
+    .note {
+      margin-top: 12px;
+      color: var(--muted);
+      font-size: 0.93rem;
+    }
+
+    @media (max-width: 820px) {
+      main {
+        width: min(100% - 24px, 1120px);
+        padding-top: 24px;
+      }
+
+      .span-7,
+      .span-5,
+      .span-12 {
+        grid-column: span 12;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <header class="masthead">
+      <span class="eyebrow">Codex automation</span>
+      <h1>Sentry Cursor Agent</h1>
+      <p class="lede">A lightweight monitor for the Sentry feed that hands recent EnergyCenter webview regressions to Cursor with the repository's own bug-fix prompt.</p>
+    </header>
+
+    <div class="grid">
+      <section class="span-7">
+        <h2>Agent Flow</h2>
+        <ol class="steps">
+          <li class="step">
+            <span class="num">1</span>
+            <div>
+              <strong>Read the authenticated Sentry feed</strong>
+              <p>Use the active Chrome session, refresh the 24-hour issue feed, and copy only the visible issue list needed for triage.</p>
+            </div>
+          </li>
+          <li class="step">
+            <span class="num">2</span>
+            <div>
+              <strong>Gate on the EnergyCenter project</strong>
+              <p>Continue only when the latest issue belongs to the EnergyCenter reverse project; otherwise record the latest non-matching issue and stop.</p>
+            </div>
+          </li>
+          <li class="step">
+            <span class="num">3</span>
+            <div>
+              <strong>Open Cursor on the local repository</strong>
+              <p>Resolve <code>enrg-energycenter-rev</code>, inspect <code>.cursor</code> guidance, and pass Cursor the Sentry context.</p>
+            </div>
+          </li>
+          <li class="step">
+            <span class="num">4</span>
+            <div>
+              <strong>Use the project bug-fix prompt</strong>
+              <p>Ask Cursor to adapt <code>.cursor/prompts/fix-bug.md</code>, implement a minimal defensive fix, and report changed files plus verification results.</p>
+            </div>
+          </li>
+        </ol>
+      </section>
+
+      <section class="span-5">
+        <h2>Current Operating Rules</h2>
+        <div class="metrics">
+          <div class="metric ok">
+            <strong>Schedule</strong>
+            <p>Every 5 minutes in the current Codex thread.</p>
+          </div>
+          <div class="metric warn">
+            <strong>Credentials</strong>
+            <p>No passwords, OTPs, passkey secrets, tokens, or raw cookies are copied into prompts or committed.</p>
+          </div>
+          <div class="metric danger">
+            <strong>Write boundary</strong>
+            <p>Cursor may edit the local EnergyCenter repository, but it must not commit, push, or create a PR unless explicitly requested.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="span-12">
+        <h2>Cursor Prompt Template</h2>
+        <pre><code>Use .cursor/prompts/fix-bug.md, adapted for a Sentry issue without a Jira ticket.
+
+Sentry context:
+- Project: &lt;latest EnergyCenter issue key&gt;
+- Error: &lt;message&gt;
+- Route: &lt;route or source shown in feed&gt;
+- Last seen: &lt;relative timestamp&gt;
+- Impact: &lt;events/users/priority from feed&gt;
+
+Follow the local .cursor rules, including the RAG gate. Investigate root cause
+and implement the minimal defensive fix. Update types/tests as needed. Do not
+paste secrets. Do not commit, push, or open a PR. Report files changed and
+verification commands/results.</code></pre>
+        <p class="note">This page is intentionally generic so the public repository does not expose private Sentry sessions, credentials, or internal incident payloads.</p>
+      </section>
+    </div>
+  </main>
+</body>
+</html>
