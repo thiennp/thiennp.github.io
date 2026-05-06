@@ -1,0 +1,4 @@
+interface:
+  display_name: "ENRG PR Rebase"
+  short_description: "Rebase ENRG Bitbucket PRs onto release and refresh tests."
+  default_prompt: "Paste a Bitbucket PR link for check24/enrg-energycenter-rev, then rebase its source branch onto release, run frontend test-update, amend generated changes, and push with force-with-lease."

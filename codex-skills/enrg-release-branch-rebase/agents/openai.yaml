@@ -1,0 +1,7 @@
+interface:
+  display_name: "ENRG Release Rebase"
+  short_description: "Rebase ENRG PRs onto release locally."
+  default_prompt: "Use $enrg-release-branch-rebase on this Bitbucket PR link: "
+
+policy:
+  allow_implicit_invocation: false
