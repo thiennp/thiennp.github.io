@@ -77,3 +77,18 @@ enabled = true
 
 [plugins."browser-use@openai-bundled"]
 enabled = true
+
+# MCP servers for Sentry/Jira/Bitbucket automation.
+# Secrets are loaded by wrapper scripts from local gitignored .env files.
+[mcp_servers.sentry]
+url = "https://mcp.sentry.dev/mcp"
+
+[mcp_servers.jira_energy]
+command = "/Users/thiennguyen/.codex/mcp-wrappers/jira-from-energy-env.sh"
+
+[mcp_servers.bitbucket_webfrontend]
+command = "/Users/thiennguyen/.codex/mcp-wrappers/bitbucket-webfrontend-env.sh"
+
+[mcp_servers.bitbucket_energyrev]
+command = "/Users/thiennguyen/.codex/mcp-wrappers/bitbucket-energyrev-env.sh"
+
