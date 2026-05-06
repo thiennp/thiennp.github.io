@@ -1,0 +1,79 @@
+model = "gpt-5.5"
+model_reasoning_effort = "medium"
+[projects."/Users/thiennguyen/Documents/Codex/2026-04-22-can-you-check-what-s-running"]
+trust_level = "trusted"
+
+[projects."/Users/thiennguyen/Documents/Codex/2026-04-22-open-chrome-trade-republic-and-find"]
+trust_level = "trusted"
+
+[projects."/Users/thiennguyen/Documents/Codex/2026-04-22-open-on-chrome-a-stock-market"]
+trust_level = "trusted"
+
+[projects."/Users/thiennguyen/Documents/Codex/2026-04-22-open-outlook-on-my-chrome-and"]
+trust_level = "trusted"
+
+[projects."/Users/thiennguyen/Documents/Codex/2026-04-22-open-outlook-on-my-chrome-and-2"]
+trust_level = "trusted"
+
+[projects."/Users/thiennguyen/Documents/Codex/2026-04-22-open-outlook-on-my-chrome-and-3"]
+trust_level = "trusted"
+
+[projects."/Users/thiennguyen/Documents/Codex/2026-04-22-open-outlook-on-my-chrome-and-4"]
+trust_level = "trusted"
+
+[projects."/Users/thiennguyen/Documents/Codex/2026-04-22-open-https-c24-energie-atlassian-net"]
+trust_level = "trusted"
+
+[projects."/Users/thiennguyen/Documents/Codex/2026-04-22-open-jira-https-c24-energie-atlassian"]
+trust_level = "trusted"
+
+[projects."/Users/thiennguyen/Documents/Codex/2026-04-22-check-https-bitbucket-org-check24-workspace"]
+trust_level = "trusted"
+
+[projects."/Users/thiennguyen/Documents/Codex/2026-04-23-reveal-https-www-wishees-com-try"]
+trust_level = "trusted"
+
+[projects."/Users/thiennguyen/Documents/Codex/2026-04-29/every-5-minutes-open-https-check24"]
+trust_level = "trusted"
+
+[projects."/Users/thiennguyen/Documents/Codex/2026-04-29/find-and-add-cursor-ai-plugin"]
+trust_level = "trusted"
+
+[projects."/Users/thiennguyen/Documents/Codex/2026-04-29/open-https-check24-energie-sentry-io"]
+trust_level = "trusted"
+
+[projects."/Users/thiennguyen/Documents/Codex/2026-04-30/create-a-heartbeat-automation-that-scans"]
+trust_level = "trusted"
+
+[projects."/Users/thiennguyen/thiennp.github.io"]
+trust_level = "trusted"
+
+[marketplaces.openai-bundled]
+last_updated = "2026-05-06T06:37:15Z"
+source_type = "local"
+source = "/Users/thiennguyen/.codex/.tmp/bundled-marketplaces/openai-bundled"
+
+[marketplaces.openai-primary-runtime]
+last_updated = "2026-05-06T05:32:21Z"
+source_type = "local"
+source = "/Users/thiennguyen/.cache/codex-runtimes/codex-primary-runtime/plugins/openai-primary-runtime"
+
+[marketplaces.local]
+last_updated = "2026-04-29T07:02:05Z"
+source_type = "local"
+source = "/Users/thiennguyen"
+
+[plugins."documents@openai-primary-runtime"]
+enabled = true
+
+[plugins."spreadsheets@openai-primary-runtime"]
+enabled = true
+
+[plugins."presentations@openai-primary-runtime"]
+enabled = true
+
+[plugins."cursor-ai@local"]
+enabled = true
+
+[plugins."browser-use@openai-bundled"]
+enabled = true
