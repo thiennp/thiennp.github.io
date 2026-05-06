@@ -1,7 +1,7 @@
 version = 1
 id = "sync-codex-automations-to-thiennp-github-io"
 kind = "cron"
-name = "Sync Codex Automations to thiennp.github.io"
+name = "Sync Codex automations to thiennp.github.io"
 prompt = "Sync Codex automations into `/Users/thien.nguyen/thiennp.github.io/codex-automations/` so they are portable across devices. Copy each local automation from `/Users/thien.nguyen/.codex/automations/<automation-id>/automation.toml` into `codex-automations/<automation-id>/automation.toml`, update `codex-automations/README.md` and `codex-automations/index.md` if needed, then commit and push the `thiennp.github.io` repo if there are changes. Do not copy secrets, browser cookies, tokens, passwords, OTPs, passkey secrets, or raw credential material. Summarize which automations were synced and the commit/push result."
 status = "ACTIVE"
 rrule = "FREQ=HOURLY;INTERVAL=1"

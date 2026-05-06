@@ -9,10 +9,10 @@ The public site navigation includes an `Automations` link to `codex-automations/
 ## Automations
 
 - `enrg-pr-chromelink-test-update-rebase` - ENRG EnergyCenter PR Rebase and Test Update: manual/message-trigger automation for EnergyCenter Reverse Bitbucket PR links.
-- `fix-slack-security-dependency-threads` - Slack Security Dependency PR Fixer: cron automation for Slack security-bot dependency threads.
+- `fix-slack-security-dependency-threads` - Fix Slack Security Dependency Threads: cron automation for Slack security-bot dependency threads.
 - `sentry-energycenter-cursor-check` - Sentry Alternating Cursor Fixes: heartbeat automation for alternating EnergyCenter Reverse and Result List Goes React Sentry triage/fix workflows.
-- `sentry-enrg-web-frontend-cursor-checks` - Sentry ENRG Web Frontend Cursor Fixes: heartbeat automation for enrg-web-frontend Sentry triage/fix workflows.
-- `sync-codex-automations-to-thiennp-github-io` - Sync Codex Automations to thiennp.github.io: cron automation that syncs local Codex automation definitions back into this repository.
+- `sentry-enrg-web-frontend-cursor-checks` - Sentry enrg-web-frontend Cursor checks: heartbeat automation for enrg-web-frontend Sentry triage/fix workflows.
+- `sync-codex-automations-to-thiennp-github-io` - Sync Codex automations to thiennp.github.io: cron automation that syncs local Codex automation definitions back into this repository.
 
 ## Layout
 
