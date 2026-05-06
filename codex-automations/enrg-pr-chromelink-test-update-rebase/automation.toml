@@ -1,0 +1,11 @@
+version = 1
+id = "enrg-pr-chromelink-test-update-rebase"
+kind = "manual"
+name = "ENRG PR Chrome-link rebase and test-update"
+prompt = "When the user sends a Bitbucket Chrome PR link for `check24/enrg-energycenter-rev` (including the common typo `enrg-energycetner-rev`), run the standard EnergyCenter Reverse PR rebase workflow. Use `/Users/thien.nguyen/enrg-energycenter-rev` as the local repo, open it in Cursor, verify the remote is `bitbucket.org:check24/enrg-energycenter-rev.git`, and confirm the working tree is clean before switching branches. Resolve the PR id and actual source branch from the authenticated non-no-cors Chrome window/tab or Bitbucket page text; do not guess the source branch from the PR id. Update local `release` from origin, check out or track the PR source branch, rebase it onto updated `release`, and resolve conflicts. Generated coverage HTML conflicts may be resolved pragmatically because `frontend/npm run test-update` regenerates final coverage artifacts, but inspect source, test, docs, and config conflicts before choosing a side. Run `npm run test-update` from `frontend/`. If it fails, stop and report the failure summary without pushing. If it changes files, stage legitimate regenerated/source changes and amend the last commit; preserve existing commit body/trailers and convert legacy subjects such as `00000: fix(scope): ...` to the repo-required `00000: (fix) ...` shape when hooks require it. Never use `--no-verify`. After hooks pass, push the rebased source branch with `git push --force-with-lease`. Finish with final `git status --short --branch`, final commit hash and subject, the `test-update` summary, and the Bitbucket PR link printed by the push."
+status = "ACTIVE"
+trigger = "User message contains a Bitbucket PR link for check24/enrg-energycenter-rev"
+source_skill_path = "/Users/thien.nguyen/.codex/skills/enrg-pr-rebase-test-update/SKILL.md"
+repo_workflow_path = "/Users/thien.nguyen/enrg-energycenter-rev/.cursor/docs/workflows/playbooks/git-bitbucket/bitbucket-pr-chromelink-test-update-rebase.md"
+created_at = 1778051138000
+updated_at = 1778051138000
