@@ -1,6 +1,6 @@
 # Codex Automations
 
-Portable exports of local Codex automations from `/Users/thiennguyen/.codex/automations`.
+Portable exports of local Codex automations from `~/.codex/automations`.
 
 These files are intended for reference and restoration on another device. They may contain local paths and workflow instructions, but should not contain secrets, cookies, passwords, OTPs, passkey material, or raw credentials.
 
