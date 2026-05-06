@@ -1,0 +1,13 @@
+version = 1
+id = "sync-codex-automations-to-thiennp-github-io"
+kind = "cron"
+name = "Sync Codex automations to thiennp.github.io"
+prompt = "Sync Codex automations into `/Users/thiennguyen/thiennp.github.io/codex-automations/` so they are portable across devices. Copy each local automation from `/Users/thiennguyen/.codex/automations/<automation-id>/automation.toml` into `codex-automations/<automation-id>/automation.toml`, update `codex-automations/README.md` and `codex-automations/index.md` if needed, then commit and push the `thiennp.github.io` repo if there are changes. Do not copy secrets, browser cookies, tokens, passwords, OTPs, passkey secrets, or raw credential material. Summarize which automations were synced and the commit/push result."
+status = "ACTIVE"
+rrule = "FREQ=HOURLY;INTERVAL=1"
+model = "gpt-5.2"
+reasoning_effort = "medium"
+execution_environment = "local"
+cwds = ["/Users/thiennguyen/thiennp.github.io"]
+created_at = 1778050891719
+updated_at = 1778050891719
