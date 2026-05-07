@@ -1,0 +1,13 @@
+version = 1
+id = "sentry"
+kind = "cron"
+name = "Sentry"
+prompt = "list unassigned issues in https://sentry.io/organizations/check24-energie/issues/?project=-1&statsPeriod=24h, and the project that it belong to"
+status = "ACTIVE"
+rrule = "RRULE:FREQ=WEEKLY;BYHOUR=9;BYMINUTE=30;BYDAY=MO,TU,WE,TH,FR"
+model = "gpt-5.4"
+reasoning_effort = "medium"
+execution_environment = "worktree"
+cwds = ["/Users/thien.nguyen/thiennp.github.io/codex-automations"]
+created_at = 1778154361121
+updated_at = 1778154361121
