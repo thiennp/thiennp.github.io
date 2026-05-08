@@ -1,0 +1,4 @@
+interface:
+  display_name: "ENRG ActivityList Staging Style"
+  short_description: "Style ActivityList from Figma, publish a pre-release, and deploy it to energymodule staging."
+  default_prompt: "Use $enrg-activity-list-staging-style to update @check24/activity-list styling, preview in Storybook, publish a PRE-4131 pre-release, and update enrg-energymodule staging."

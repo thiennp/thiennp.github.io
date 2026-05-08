@@ -5,6 +5,7 @@ Portable Codex skills stored in this repository. These are intended for reuse an
 ## Skills
 
 - `enrg-pr-rebase-test-update` - CHECK24 EnergyCenter workflow for rebasing a Bitbucket PR branch onto `release`, running frontend `npm run test-update`, amending regenerated changes, and pushing with `--force-with-lease`.
+- `enrg-activity-list-staging-style` - CHECK24 Energy ActivityList workflow for Figma-driven style edits, Storybook visual confirmation, publishing `@check24/activity-list` pre-release packages, and updating `enrg-energymodule` staging.
 - `enrg-release-branch-rebase` - explicit-only CHECK24 ENRG workflow for rebasing a Bitbucket PR branch through `release`, opening PhpStorm for review, and never pushing.
 
 ## Layout
