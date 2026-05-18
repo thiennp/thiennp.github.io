@@ -1,17 +1,15 @@
 ---
 name: enrg-activity-list-staging-style
-description: >-
-  CHECK24 Energy ActivityList styling and staging workflow. Use when updating
-  `@check24/activity-list` visual styles, comparing against the UX Library Figma
-  nodes, previewing in Storybook, publishing a PRE-4131 style pre-release, and
-  updating `enrg-energymodule` staging to consume the package.
+description: Coordinates CHECK24 Energy ActivityList styling, Figma comparison, Storybook preview, PRE-4131 publishing, and staging package updates.
 ---
 
-# ENRG ActivityList Styling And Staging
+# ENRG ActivityList Styling and Staging
 
 ## Scope
 
-Use this workflow for the CHECK24 Energy "Vergleich fortsetzen" ActivityList area.
+Use this workflow for the CHECK24 Energy "Vergleich fortsetzen" ActivityList
+area. It covers Figma comparison, library styling, package preview, pre-release
+publishing, and staging consumption.
 
 Main repos:
 
@@ -346,4 +344,3 @@ Report:
 - `enrg-energymodule` commit hash on `origin/staging`.
 - Build commands run and whether they passed.
 - Any leftover ignored/untracked local files, especially `.rag/`.
-

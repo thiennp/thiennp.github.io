@@ -1,6 +1,6 @@
 interface:
   display_name: "ENRG Release Rebase"
-  short_description: "Rebase ENRG PRs onto release locally."
+  short_description: "Explicit-only local ENRG release rebase workflow that never pushes."
   default_prompt: "Use $enrg-release-branch-rebase on this Bitbucket PR link: "
 
 policy:

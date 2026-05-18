@@ -1,14 +1,13 @@
 ---
 name: energycenter-commit-prompts
-description: >-
-  Chooses the right commit-message and staging workflow for EnergyCenter: quick
-  commit, comprehensive commit, or code-verified commit. Use when the user asks for
-  a commit message, staged changes review, or POST-/00000 commit format.
+description: Selects the appropriate EnergyCenter commit workflow for quick, comprehensive, or code-verified commits and repository-compliant messages.
 ---
 
-# Commit prompts (quick, comprehensive, verified)
+# EnergyCenter Commit Prompts
 
-Team conventions: **`.cursor/rules/commit-workflow.mdc`**, **`.cursor/rules/commit-message-standards.mdc`** (`POST-<n>:` vs `00000:`).
+Use this skill to choose between quick, comprehensive, and verification-backed
+commit workflows. Team conventions live in **`.cursor/rules/commit-workflow.mdc`**
+and **`.cursor/rules/commit-message-standards.mdc`** (`POST-<n>:` vs `00000:`).
 
 | Intent | Open this prompt |
 |--------|------------------|
@@ -22,4 +21,4 @@ Team conventions: **`.cursor/rules/commit-workflow.mdc`**, **`.cursor/rules/comm
 
 ## Related
 
-- **`.cursor/docs/workflows/playbooks/quality/extract-to-util.md`** — extracting logic to **`src/utils/`** before committing
+- **`.cursor/docs/workflows/playbooks/quality/extract-to-util.md`** - extracting logic to **`src/utils/`** before committing

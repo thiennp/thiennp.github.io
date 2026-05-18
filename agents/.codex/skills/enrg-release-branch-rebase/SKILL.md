@@ -1,19 +1,14 @@
 ---
 name: enrg-release-branch-rebase
-description: >-
-  Explicit-only CHECK24 ENRG release branch rebase workflow. Use only when the
-  user explicitly invokes this skill by name or asks to run this release rebase
-  skill for a Bitbucket PR link. Do not trigger from a PR link alone. Supports
-  check24/enrg-web-frontend and check24/enrg-energycenter-rev, rebases locally
-  through release, opens PhpStorm to review the resulting release change, and
-  never pushes.
+description: Runs the explicit-only CHECK24 ENRG release branch rebase workflow for supported Bitbucket PRs, with local review and no pushing.
+disable-model-invocation: true
 ---
 
 # ENRG Release Branch Rebase
 
 ## Trigger
 
-Run only when the user explicitly asks for this skill, for example:
+Run only when the user explicitly asks for this skill by name, for example:
 
 ```text
 Use $enrg-release-branch-rebase on https://bitbucket.org/check24/enrg-web-frontend/pull-requests/1005/overview

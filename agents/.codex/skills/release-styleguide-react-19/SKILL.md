@@ -1,13 +1,12 @@
 ---
 name: release-styleguide-react-19
-description: >-
-  Release the CHECK24 EnergyCenter frontend styleguide React 19 Jenkins job. Use
-  when the user asks to release, deploy, start, trigger, or continue the
-  `styleguide react-19` release job at Jenkins, including the browser login and
-  Jenkins 2FA token handoff.
+description: Guides the CHECK24 EnergyCenter frontend styleguide React 19 Jenkins release job, including browser login and 2FA token handoff.
 ---
 
 # Release Styleguide React 19
+
+Use this workflow only for the CHECK24 EnergyCenter frontend styleguide React 19
+Jenkins release job.
 
 ## Target
 

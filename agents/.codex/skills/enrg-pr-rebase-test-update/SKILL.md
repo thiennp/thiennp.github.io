@@ -1,19 +1,13 @@
 ---
 name: enrg-pr-rebase-test-update
-description: >-
-  Rebase and refresh a Bitbucket pull request for CHECK24 EnergyCenter. Use when
-  the user sends a Chrome/Bitbucket PR link for `check24/enrg-energycenter-rev`
-  (including the common typo `enrg-energycetner-rev`) and asks to do the standard
-  PR rebase/update flow: resolve the PR source branch, rebase onto `release`, run
-  frontend `npm run test-update`, amend generated changes into the last commit,
-  and push with `--force-with-lease`.
+description: Rebases and refreshes CHECK24 EnergyCenter Bitbucket PRs by resolving the source branch, updating tests, amending, and force-pushing safely.
 ---
 
-# ENRG PR Rebase Test Update
+# ENRG PR Rebase and Test Update
 
 ## Scope
 
-Use this only for Bitbucket PRs whose URL points to:
+Use this only for Bitbucket pull requests whose URL points to:
 
 ```text
 https://bitbucket.org/check24/enrg-energycenter-rev/pull-requests/<id>

@@ -1,8 +1,5 @@
 ---
 description: >-
-  Agent and subagent checklist output format — status tokens ([✓], [x], [~], [?])
-  and required Recommendation/Code suggestion shape after [x]. Use when running PR
-  review, implementation gates, or orchestrated audits.
 alwaysApply: false
 ---
 
@@ -13,7 +10,7 @@ Use this **exactly** so humans and orchestrators can scan results quickly.
 ## Status tokens (per verification line)
 
 | Meaning                  | Token | When to use                                                                                                                                           |
-| ------------------------ | ----- | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
+| --- | ----- | ----- |
 | **Verified / passing**   | `[✓]` | Criterion satisfied for the given scope (cite evidence: file, hunk, or behavior).                                                                     |
 | **Not satisfied / risk** | `[x]` | Criterion **not** met or cannot be verified from provided inputs. **Required:** add **Recommendation** and, if possible, a **Code suggestion** block. |
 

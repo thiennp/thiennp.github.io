@@ -1,18 +1,19 @@
 ---
 name: split-cursor-commit-rebase
-description: >-
-  Split `.cursor` vs app commits and rebase on `release`
+description: Splits Cursor/Codex agent asset changes from application changes, commits assets on release, amends app work, and rebases the branch.
 ---
 
-# Split `.cursor` vs app commits and rebase on `release`
+# Split Agent Assets and Rebase
 
-Use this when you want **application / non-`.cursor` work** amended on your **feature branch**, **`.cursor` rule and prompt changes** committed on **`release`**, and your feature branch **rebased onto `release`**.
+Use this when you want application work amended on your feature branch, agent
+asset changes committed separately on `release`, and the feature branch rebased
+onto `release`.
 
 ## What the script does
 
-1. Stashes changes under **`.cursor`** (including untracked files there).
-2. If anything remains outside **`.cursor`**, stages it and runs **`git commit --amend -m "<first message>"`** on the current branch.
-3. Checks out **`release`**, **`git pull origin release`**, pops the stash, commits **`.cursor`** with **`git commit -m "<second message>"`** (if there is something to commit).
+1. Stashes changes under **`.cursor`** and **`.codex`** when the script supports both scopes.
+2. If anything remains outside the agent asset paths, stages it and runs **`git commit --amend -m "<first message>"`** on the current branch.
+3. Checks out **`release`**, **`git pull origin release`**, pops the stash, commits agent asset changes with **`git commit -m "<second message>"`** if there is something to commit.
 4. Checks out your original branch and runs **`git rebase release`**.
 
 **Requirements:** Run from the **repo root** on a **feature branch** (not `release`). Resolve conflicts manually if `pull` or `rebase` stops.
@@ -41,7 +42,7 @@ bash scripts/git/split-cursor-commit-rebase.sh \
   "COMMIT_MESSAGE_CURSOR"
 ```
 
-Do **not** add this script to **`package.json`**: scripts there are **application / product** commands only (see **@git-workflow.mdc** § package.json scripts).
+Do **not** add this script to **`package.json`**: scripts there are **application / product** commands only (see **`@git-workflow.mdc`** package script guidance).
 
 ## After it finishes
 

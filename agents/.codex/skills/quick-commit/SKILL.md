@@ -1,172 +1,43 @@
 ---
 name: quick-commit
-description: >-
-  Quick Commit Process
+description: Prepares a small focused commit by inspecting status and diff, staging intended files, and proposing a repository-compliant message.
 ---
 
-# Quick Commit Process
+# Quick Commit
 
-INSTRUCTIONS:
-When you see this prompt with "do it" or ".", you should:
+## Purpose
 
-- [ ] Ask for ticket number, if it is not a part of the branch name. Use 00000 if I response with another "." or "," or "y"
-- [ ] For each rule below, add ✅ (passing) or ❌ (failing) in response
+Use this for narrow changes where a lightweight review is enough. If the diff
+touches multiple unrelated concerns, switch to `comprehensive-commit`.
 
-1. Change Verification
-   A. Status Check
+## Workflow
 
-- [ ] Run: `git status`
-- [ ] Identify changes to be committed
-- [ ] Note special directories:
+1. Inspect the current branch and worktree:
+   - Run `git status --short --branch`.
+   - Confirm the branch is not `release`.
+   - Identify ticket key from the branch, user input, or use `00000` for non-ticket work.
 
-* .cursor (include)
-* .gitignore (NEVER modify automatically)
+2. Review the files:
+   - Run `git diff --name-only`.
+   - Check the diff for unintended edits, debug code, local-only files, and secrets.
+   - Treat `.cursor` or `.codex` changes as agent-asset changes and keep them separate from app code when practical.
 
-B. Import Path Check
+3. Stage deliberately:
+   - Stage only files that belong to the commit.
+   - Run `git diff --staged --name-only`.
+   - If the staged set mixes unrelated purposes, split it.
 
-- [ ] Check for all changes related to `import`, suggest shorten version, wait for confirmation
+4. Propose a commit message:
+   - Ticket work: `PRE-1234: (fix) short imperative summary`.
+   - Non-ticket work: `00000: (chore) short imperative summary`.
+   - Prefer `feat`, `fix`, `refactor`, `test`, `docs`, or `chore`.
 
-Common paths to use:
+5. Commit only after approval:
+   - Show staged files and the proposed message.
+   - Wait for explicit confirmation before `git commit`.
+   - Ask again before any `git push`.
 
-- hooks/
-- utils/
-- components/
-- features/
-- types/
-- stores/
+## Output
 
-```typescript
-// BEFORE: Overly long relative path
-import { useNumberFormValue } from "../../../../../hooks/useNumberFormValue";
-
-// AFTER: Shortened absolute path
-import { useNumberFormValue } from "hooks/useNumberFormValue";
-```
-
-C. File Review
-
-- [ ] Run: `git diff --name-only`
-- [ ] Group changes by type:
-
-* Implementation
-* Documentation
-* Tests
-* Configuration
-
-2. Staging Process
-   A. File Staging
-
-- [ ] Stage specific files:
-
-```bash
-git add path/to/files
-```
-
-OR
-
-- [ ] Stage all changes if appropriate:
-
-```bash
-git add .
-```
-
-B. Verification
-
-- [ ] Run: `git diff --staged --name-only`
-- [ ] Confirm all necessary files included
-- [ ] Verify no unintended files staged
-
-3. Message Creation
-   A. Format
-
-```bash
-# For ticket-related work
-PRE-XXX: type(scope): description
-
-# For non-ticket work
-00000: type(scope): description
-```
-
-B. Type Selection
-
-- [ ] Choose appropriate type:
-
-* feat: New feature
-* fix: Bug fix
-* docs: Documentation
-* refactor: Code restructuring
-* test: Adding tests
-* chore: Maintenance
-
-C. Message Quality
-
-- [ ] Be specific about changes
-- [ ] Focus on what, not how
-- [ ] Use clear, actionable verbs:
-
-* add: new features/files
-* update: existing functionality
-* fix: bug fixes
-* remove: deletions
-* refactor: code restructuring
-
-- [ ] Include context when needed
-
-4. Commit Execution
-   A. Confirmation
-
-- [ ] Present commit message for review
-- [ ] Get explicit confirmation
-- [ ] NEVER commit without confirmation
-
-B. Execution
-
-- [ ] Run commit with approved message:
-
-```bash
-git commit -m "PRE-XXX: type(scope): description"
-```
-
-5. Post-Commit
-   A. Verification
-
-- [ ] Verify commit was created
-- [ ] Check for remaining changes
-
-B. Push Decision
-
-- [ ] Ask if changes should be pushed
-- [ ] If confirmed:
-
-```bash
-git push
-```
-
-## Common Mistakes to Avoid
-
-1. Modifying .gitignore without explicit approval
-2. Using vague commit messages
-3. Not verifying staged files
-4. Using "and" in messages (split into multiple commits)
-5. Not being specific about changes
-6. Using overly long relative import paths
-7. Not using available absolute import paths
-
-## Message Examples
-
-```bash
-# UI Change
-PRE-1234: fix(button): correct hover state in dark mode
-
-# Content Update
-PRE-1234: fix(teaser): update consumption input placeholders
-
-# Documentation
-00000: docs(rules): add commit message guidelines
-
-# Refactor
-PRE-1234: refactor(validation): extract form validation logic
-
-# Import Path Update
-PRE-1234: refactor(imports): shorten relative import paths
-```
+Return the staged file list, proposed message, verification performed, and any
+remaining unstaged files.

@@ -1,17 +1,15 @@
 ---
 name: component-snapshot-tests-codemod
-description: >-
-  Lists React TSX files without co-located tests and generates Vitest snapshot
-  tests via TypeScript codemods. Use when bulk-adding component tests, closing
-  snapshot coverage gaps, or when the user runs the component snapshot codemod
-  workflow.
+description: Lists React TSX files without co-located tests and generates Vitest snapshot tests via TypeScript codemods for bulk component coverage work.
 ---
 
-# Component snapshot test codemod
+# Component Snapshot Test Codemod
 
 ## When to use
 
-Adding **`*.test.tsx`** with **`createSnapshotRootElm`** patterns for components that lack tests (see **`.cursor/rules/component-patterns.mdc`** if present).
+Add co-located **`*.test.tsx`** files with the repository's
+**`createSnapshotRootElm`** pattern for React components that lack tests.
+Check **`.cursor/rules/component-patterns.mdc`** first when it exists.
 
 ## Steps
 
@@ -29,7 +27,7 @@ Adding **`*.test.tsx`** with **`createSnapshotRootElm`** patterns for components
 
    Use the exact path from the list (repo-relative or absolute as emitted).
 
-3. Each run creates or overwrites **`<ComponentName>.test.tsx`** next to the component. Review snapshots and apply the **`post-action-verification`** skill after batches.
+3. Each run creates or overwrites **`<ComponentName>.test.tsx`** next to the component. Review snapshots and run the repository's normal verification after each practical batch.
 
 ## Scripts
 
@@ -40,4 +38,4 @@ See **`.cursor/scripts/README.md`** for related codemods.
 
 ## Related
 
-- **`reference-bulk-all-components.md`** — end-to-end “all components without tests” batch instructions (optional; same scripts as above).
+- **`reference-bulk-all-components.md`** - end-to-end batch instructions for all components without tests.

@@ -1,3 +1,21 @@
+# macOS and editor state
 .DS_Store
+.idea/
+*.iml
+
+# Local Codex desktop/runtime state. Shared prompt assets live in agents/.codex.
+/.codex/
+
+# Generated Codex skill bundles and runtime cache folders
 agents/.codex/skills/.system/
 agents/.codex/skills/codex-primary-runtime/
+agents/.codex/cache/
+agents/.codex/logs/
+agents/.codex/sessions/
+agents/.codex/plugins/cache/
+
+# Tool logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+pnpm-debug.log*
