@@ -2,6 +2,7 @@
 
 | Automation ID | Name | Type | Status | File |
 | --- | --- | --- | --- | --- |
+| `daily-german-btl-property-scan` | Daily German BTL Property Scan | cron | ACTIVE | [automation.toml](daily-german-btl-property-scan/automation.toml) |
 | `enrg-pr-chromelink-test-update-rebase` | ENRG EnergyCenter PR Rebase and Test Update | manual | ACTIVE | [automation.toml](enrg-pr-chromelink-test-update-rebase/automation.toml) |
 | `fix-slack-security-dependency-threads` | Fix Slack Security Dependency Threads | cron | ACTIVE | [automation.toml](fix-slack-security-dependency-threads/automation.toml) |
 | `sentry` | Sentry | cron | ACTIVE | [automation.toml](sentry/automation.toml) |
