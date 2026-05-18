@@ -1,3 +1,3 @@
 .DS_Store
-.codex/skills/.system/
-.codex/skills/codex-primary-runtime/
+agents/.codex/skills/.system/
+agents/.codex/skills/codex-primary-runtime/

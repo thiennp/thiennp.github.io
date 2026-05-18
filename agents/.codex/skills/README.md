@@ -1,6 +1,6 @@
 # Codex Skills
 
-Portable Codex skills stored in this repository. These are intended for reuse and restoration across devices, with the source of truth kept under `.codex/skills/`.
+Portable Codex skills stored in this repository. These are intended for reuse and restoration across devices, with the source of truth kept under `agents/.codex/skills/`.
 
 ## Skills
 
@@ -11,7 +11,7 @@ Portable Codex skills stored in this repository. These are intended for reuse an
 
 ## Shared ENRG/Cursor Skills
 
-These shared skills were centralized from duplicate `.cursor/skills` folders in local `enrg-*` and `enrglib-*` repos. The matching project-local copies are symlinks back to this directory:
+These shared skills were centralized from duplicate `.cursor/skills` folders in local `enrg-*` and `enrglib-*` repos. Project-local duplicates should be removed unless a project needs a real local override:
 
 - `component-snapshot-tests-codemod`
 - `comprehensive-commit`
@@ -38,7 +38,7 @@ Make Codex load skills directly from this repo:
 if [ -e ~/.codex/skills ] && [ ! -L ~/.codex/skills ]; then
   mv ~/.codex/skills ~/.codex/skills.backup.$(date +%Y%m%d-%H%M%S)
 fi
-ln -sfn ~/thiennp.github.io/.codex/skills ~/.codex/skills
+ln -sfn ~/thiennp.github.io/agents/.codex/skills ~/.codex/skills
 ```
 
 After that, any new skill created under `~/.codex/skills` is created in this repository folder and can be synced with git.
@@ -48,11 +48,11 @@ After that, any new skill created under `~/.codex/skills` is created in this rep
 Each skill is stored as:
 
 ```text
-.codex/skills/<skill-name>/SKILL.md
+agents/.codex/skills/<skill-name>/SKILL.md
 ```
 
 Optional agent UI metadata is stored under:
 
 ```text
-.codex/skills/<skill-name>/agents/
+agents/.codex/skills/<skill-name>/agents/
 ```
