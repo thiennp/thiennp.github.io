@@ -1,0 +1,9 @@
+---
+description: 
+globs: *.tsx,*.ts
+alwaysApply: false
+---
+- Don't use React.{anything}. e.g don't use React.ReactElement, use ReactElement instead
+- When accessing TEXT_MANAGER, prefer direct access over destructuring to ensure proper type checking
+- When using text keys in components, consider creating a dedicated hook if the same text is used in multiple places
+- Always mark all interface properties as readonly to enforce immutability

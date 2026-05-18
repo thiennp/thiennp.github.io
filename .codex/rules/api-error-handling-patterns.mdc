@@ -1,0 +1,180 @@
+---
+description: Standard patterns for handling API errors including authentication and status codes
+globs: "**/services/**/*.ts"
+alwaysApply: false
+---
+# API Error Handling Patterns
+
+**One line:** Use status codes (never message content) for error type; 401: detect in loader, handle login() in client hook.
+
+## Overview
+This rule defines standard patterns for handling API errors consistently across the codebase, with a focus on authentication errors and user-friendly error messaging.
+
+## General Principles
+- Handle common error codes with specific actions
+- Provide user-friendly error messages for expected errors
+- Log detailed error information for debugging
+- Maintain a consistent approach to authentication failures
+- **Important:** Separate server-side error detection from client-side actions
+- **Important:** Always use status codes, never error message content, for determining error types
+
+## Authentication Error Handling (401)
+
+### Correct Architecture Pattern
+
+Authentication errors require a two-part handling strategy due to React Router's separation between loaders (server-side) and components/hooks (client-side):
+
+1. **Server-side (Loader)**: Detect 401 errors but DO NOT call login() directly
+2. **Client-side (Hook/Component)**: Handle the 401 status and redirect to login
+
+```
+┌─────────────┐          ┌──────────────┐         ┌─────────────┐
+│  API Server │ ──401──> │    Loader    │ ──401─> │ Client Hook │ ──> login()
+└─────────────┘          └──────────────┘         └─────────────┘
+```
+
+### Implementation in Loaders
+
+Loaders should detect 401 errors but only return them with appropriate status:
+
+```typescript
+export async function loader({ request }: LoaderFunctionArgs): Promise<DataDTO | ErrorResponse> {
+  try {
+    // API call logic
+  } catch (error) {
+    // Proper error check with axios utility
+    if (axios.isAxiosError(error) && error.response?.status === 401) {
+      // Return 401 error with status code to be handled on client
+      return { 
+        errorMessage: "Authentication required", 
+        statusCode: 401 
+      };
+    }
+    
+    // Handle other errors with appropriate status codes
+    const errorMessage =
+      error instanceof Error
+        ? `Operation failed: ${error.message}`
+        : "Operation failed: Unknown error";
+        
+    debug(errorMessage, error);
+    return { 
+      errorMessage, 
+      statusCode: 500
+    };
+  }
+}
+```
+
+### Implementation in Hooks
+
+Response processing hooks handle the 401 error and call login() based on the status code, NEVER the error message:
+
+```typescript
+export function useProcessApiResponse(response: unknown, onSuccess: () => void): void {
+  useEffect(() => {
+    if (isSuccessResponse(response)) {
+      onSuccess();
+    } else if (isErrorResponse(response)) {
+      // Handle authentication errors first based on status code
+      if (response.statusCode === 401) {
+        debug("Authentication error, redirecting to login");
+        login();
+        return;
+      }
+      
+      // Handle other errors
+      debug("Error in response", response.errorMessage);
+    }
+  }, [response, onSuccess]);
+}
+```
+
+### Implementation in Direct API Calls
+
+For direct API calls in hooks (without loaders):
+
+```typescript
+const apiCall = useCallback(async () => {
+  try {
+    const response = await api.getData();
+    // Process response
+  } catch (error) {
+    if (axios.isAxiosError(error) && error.response?.status === 401) {
+      debug("Authentication error in API call");
+      login();
+      setError("Session expired, redirecting to login");
+    } else {
+      // Handle other errors
+      setError("Failed to load data");
+      debug("API error", error);
+    }
+  }
+}, [api]);
+```
+
+## Common HTTP Error Status Codes
+
+Handle these common status codes consistently:
+
+| Status Code | Meaning | Recommended Action |
+|-------------|---------|-------------------|
+| 400 | Bad Request | Show validation errors to the user |
+| 401 | Unauthorized | Return from loader, handle in hook with login redirect |
+| 403 | Forbidden | Show access denied message |
+| 404 | Not Found | Show resource not found message |
+| 409 | Conflict | Explain the conflict to the user |
+| 422 | Unprocessable Entity | Show validation errors |
+| 429 | Too Many Requests | Show rate limit error with retry info |
+| 500+ | Server Errors | Show generic error and log details |
+
+## Anti-Pattern: Checking Error Messages
+
+```typescript
+// AVOID: Using error message content to determine error type
+if (response.errorMessage.includes("Authentication required")) {
+  // This is fragile and may break if error messages change
+  login();
+}
+
+// CORRECT: Use status codes for error type determination
+if (response.statusCode === 401) {
+  // This relies on standard HTTP status codes which are stable
+  login();
+}
+```
+
+## Handling Network Errors
+
+For network-related errors (non-HTTP status errors):
+
+```typescript
+try {
+  // API call
+} catch (error) {
+  if (!axios.isAxiosError(error)) {
+    // Network or other non-HTTP error
+    debug("Network error", error);
+    return { errorMessage: "Network error, please check your connection" };
+  }
+  
+  // Handle HTTP errors
+}
+```
+
+## Error Response Structure
+
+The `ErrorResponse` interface includes an optional status code:
+
+```typescript
+export interface ErrorResponse {
+  errorMessage: string;
+  statusCode?: number; // HTTP status code when applicable
+}
+```
+
+## Examples from Codebase
+
+See implementation examples in:
+- `app/features/CustomerEvaluation/components/CustomerEvaluationTab/features/Like/services/submitLikeLoader.ts`
+- `app/features/CustomerEvaluation/components/CustomerEvaluationTab/features/Like/hooks/useProcessLikeResponse.ts` 

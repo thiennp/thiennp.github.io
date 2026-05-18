@@ -1,0 +1,28 @@
+---
+description: Lazy loading with React.lazy and Suspense (no shared renderLazy helper)
+alwaysApply: false
+---
+
+# Lazy Loading Standards
+
+## Pattern
+
+This codebase uses **`React.lazy`** and **`Suspense`** directly (there is **no** central **`renderLazy`** utility).
+
+- Use **`lazy(async () => import("…"))`** with **statically analyzable** import paths under **`src/`** (same **`baseUrl`** rules as normal imports).
+- Wrap lazy content in **`<Suspense fallback={…}>`** with a sensible fallback (loading UI, **`null`**, or an existing skeleton component — avoid raw unstyled loading text in user-facing areas).
+
+## Examples in this repo
+
+- [src/pages/PriceDetailsPage/PriceDetailsPageContent/PriceDetailsPageContent.tsx](mdc:src/pages/PriceDetailsPage/PriceDetailsPageContent/PriceDetailsPageContent.tsx) — lazy sub-features under **`shared/PriceDetails/`**
+- [src/pages/LeadPage/LeadPageMobile/LeadPageMobile.tsx](mdc:src/pages/LeadPage/LeadPageMobile/LeadPageMobile.tsx) — lazy sections (e.g. **`DeactivateLead`**, **`ChatbotTileSection`**)
+
+## Guidelines
+
+1. **Fallback:** Match design system / existing skeletons; keep i18n in mind (no hardcoded English loading strings in product UI unless already the pattern nearby).
+2. **Boundaries:** Lazy-load at **route** or **heavy section** level; avoid tiny lazy splits that harm readability.
+3. **Testing:** **`npm test`** / Storybook — lazy boundaries may need **`Suspense`** wrappers in tests; see **testing-standards.mdc**.
+
+## Related
+
+- **performance-architecture-standards.mdc**, **component-patterns.mdc**

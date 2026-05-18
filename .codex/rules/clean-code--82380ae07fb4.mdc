@@ -1,0 +1,49 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# Clean Code Principles
+
+## Overview
+This rule defines the core principles of writing clean, maintainable, and readable code. All code should adhere to these standards to ensure a high-quality codebase.
+
+## 1. Meaningful Names
+- **Use Intention-Revealing Names:** Names should answer questions like why it exists, what it does, and how it is used. `getUserInfo()` is better than `gUI()`.
+- **Avoid Disinformation:** Don't use names that are misleading.
+- **Use Pronounceable Names:** If you can't pronounce it, you can't discuss it without sounding like an idiot.
+- **Be Descriptive:** Class names, function names, and variable names should be descriptive. A name like `customerList` is more descriptive than `theList`.
+- **Be Consistent:** Use the same naming conventions throughout the project.
+
+## 2. Functions
+- **Small and Focused:** Functions should be small and do one thing. They should do it well.
+- **Descriptive Names:** The name of a function should describe what it does.
+- **Few Arguments:** The ideal number of arguments for a function is 0, followed by 1, then 2. Three or more arguments should be avoided. If you need many arguments, consider passing an object.
+- **No Side Effects:** Functions should not have hidden side effects. A function that gets information should not also modify the state of an object.
+- **Command-Query Separation:** Functions should either do something (command) or return something (query), but not both.
+
+## 3. Comments
+- **Comments are a failure:** Strive to write code that is so clear that it doesn't need comments. Comments are often a sign that the code is not expressive enough.
+- **Use Only When Necessary:** Use comments only for things that the code cannot explain, such as:
+  - Explaining the intent behind a decision.
+  - Providing context for a workaround for a third-party library issue.
+  - `TODO` comments for tasks that need to be done.
+- **Prefer Self-Documenting Code:** Refactor code to be self-explanatory rather than adding a comment.
+
+## 4. Formatting
+- **Visually Organized:** Code should be formatted for maximum readability.
+- **Vertical Density:** Related code should be grouped together vertically. Blank lines should be used to separate concepts.
+- **Vertical Spacing:** Add a single blank line between adjacent code blocks at the same indentation level if one of them is multi-line. This creates visual "paragraphs".
+- **Indentation:** Use consistent indentation to show the logical structure of the code.
+
+## 5. DRY – Don't Repeat Yourself
+- **Eliminate Duplication:** Every piece of knowledge must have a single, unambiguous, authoritative representation within a system.
+- **Extract Reusable Logic:** When you see the same code in multiple places, extract it into a reusable function, component, or utility.
+
+## 6. Code Smells
+Be aware of and actively refactor these common code smells:
+- **Long Functions:** Functions that are too long should be broken down.
+- **Large Modules/Classes:** Large modules should be broken down into smaller, more focused ones.
+- **Too Many `if/else` Conditions:** Complex conditional logic can often be simplified using patterns like polymorphism or maps.
+- **Inconsistent Naming:** Names should follow a consistent convention across the project.
+- **Excessive Comments:** Code with too many comments often indicates that the code itself is unclear.

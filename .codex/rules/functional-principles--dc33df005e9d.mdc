@@ -1,0 +1,35 @@
+---
+description: KISS, YAGNI, DRY principles, functional patterns, and React hooks optimization
+globs: "**/*.ts,**/*.tsx"
+alwaysApply: false
+---
+# Practical Functional Programming and Clean Code
+
+Canonical rules: **performance-architecture-standards.mdc** (KISS/YAGNI/DRY/SOLID/Self-Doc), **zustand-memo-optimization.mdc** (data-only stores, standalone setters), **api-response-processing.mdc** (guardWithTolerance always returns T), **generic.mdc** (self-doc, comments for "why" only).
+
+## Key points
+- **KISS/YAGNI/DRY:** See performance-architecture-standards.mdc.
+- **Zustand:** Data-only stores; standalone setters; selective subscriptions (zustand-memo-optimization.mdc).
+- **guardWithTolerance:** Always returns T; do not check null/undefined after (api-response-processing.mdc).
+- **Type guards:** Prefer direct guard in condition; avoid redundant isDefined when guard handles it.
+
+## Example: Type guard in condition (no redundant isDefined)
+```typescript
+// BAD - Redundant check when type guard handles undefined/null
+if (!isDefined(response)) return;
+if (isResponseDTO(response, { callbackOnError: debug, identifier: "ResponseDTO" })) { ... }
+
+// GOOD - Let the type guard handle it
+if (isResponseDTO(response, { callbackOnError: debug, identifier: "ResponseDTO" })) { ... }
+```
+
+## Example: Standalone setter in effect deps (minimal deps)
+```typescript
+// GOOD - setDataInStore is a standalone function; no store subscription, so deps stay minimal
+useEffect(() => {
+  if (isDefined(response)) setDataInStore(validatedData);
+}, [response]);
+```
+
+## Related Rules
+- performance-architecture-standards.mdc, zustand-memo-optimization.mdc, api-response-processing.mdc, generic.mdc

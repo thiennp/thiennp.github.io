@@ -1,0 +1,300 @@
+---
+description: Performance and architecture standards including KISS, YAGNI, DRY, SOLID principles
+globs: "**/*.ts,**/*.tsx"
+alwaysApply: false
+---
+# Performance and Architecture Standards
+
+## General Principles
+- Follow [KISS (Keep It Simple, Stupid)](mdc:#KISS) - prefer simpler solutions over complex ones
+- Apply [YAGNI (You Aren't Gonna Need It)](mdc:#YAGNI) - don't add functionality until necessary
+- Practice [DRY (Don't Repeat Yourself)](mdc:#DRY) - extract common logic to reusable functions
+- Maintain [SOLID principles](mdc:#SOLID) within a functional paradigm
+- Write [Self-Documenting Code](mdc:#Self-Doc) - see also generic.mdc
+
+## Bundle Size Management
+- Use React.lazy with Suspense for feature-level code splitting
+- Import specific components from libraries instead of entire packages
+- Include bundle analysis in CI pipeline with size budgets per chunk
+- Add tree-shaking hints to unused exports (`/*#__PURE__*/`)
+- Use dynamic imports for rarely accessed features
+
+## Performance Optimization
+- Implement virtualization for all list components with >20 items
+- useMemo/useCallback: see **code-standard.mdc** (only when needed; avoid by default).
+- React.memo for pure presentational components
+- Use windowing techniques for large datasets (e.g. react-window)
+- Profile components with React Profiler and optimize re-renders
+- Apply skeleton loading states consistently across all async operations
+- Follow [Zustand and Memo Optimization](mdc:zustand-memo-optimization.mdc) guidelines to prevent unnecessary re-renders
+
+## API Layer Abstraction
+- Create pure function-based API utilities rather than classes
+- Use React Router loader/fetcher for data fetching (see api-request-pattern.mdc, api-integration-pattern.mdc)
+- Create specific response DTOs with proper typing; validate with type guards in loaders
+- Add retry logic for transient failures where appropriate
+- Use composition over inheritance for API behavior customization
+
+## State Management Scale
+- Use Zustand for global application state
+- Store only data in store state; export actions as standalone functions that use `store.setState()` / `store.getState()` (see [Zustand and Memo Optimization](mdc:zustand-memo-optimization.mdc))
+- For one-off initialization from loader/API result, prefer pure functions that call `store.setState()` directly (e.g. `setInitialToastInfo(result)`); use hooks that return a setter only when the setter needs hook context or to be passed as a dependency
+- Create domain-specific slices for state isolation
+- Implement observer pattern using pure functions
+- Define clear boundaries between global and local state
+- Avoid prop drilling deeper than 3 levels
+- Apply immutability principles consistently
+
+## Functional Programming Principles <a name="SOLID"></a>
+- Use pure functions throughout the codebase
+- Prefer composition over inheritance
+- Avoid side effects outside designated effect handlers
+- Use immutable data structures
+- Leverage function composition and higher-order functions
+- Implement proper error handling with Either/Result patterns
+- Prefer declarative over imperative code
+
+## <a name="KISS"></a>KISS - Keep It Simple, Stupid
+- Break complex problems into smaller, manageable pieces
+- Use established patterns over clever solutions
+- Minimize nested conditions and complex expressions
+- Use descriptive naming to convey intent
+- Limit each function to doing one thing well
+
+## <a name="YAGNI"></a>YAGNI - You Aren't Gonna Need It
+- Implement features only when they're needed, not when they might be needed
+- Avoid speculative generality that adds unused flexibility
+- Remove dead or unused code regularly
+- Don't over-engineer solutions based on future requirements
+- Start with the simplest implementation that meets requirements
+- Avoid creating complex folder structures for simple components
+- Don't add barrel files (index.ts) unless actually needed for export organization
+- Keep component organization flat when components are tightly coupled and only used together
+- Refactor toward complexity only when proven necessary
+
+## <a name="DRY"></a>DRY - Don't Repeat Yourself
+- Extract common logic into reusable functions
+- Use hooks and composition for shared component logic (avoid unnecessary HoFs per code-standard.mdc)
+- Create utility functions for repeated calculations
+- Establish shared constants for values used in multiple places
+- Use custom hooks to share stateful logic between components
+
+## <a name="Self-Doc"></a>Self-Documenting Code
+- Choose descriptive variable and function names
+- Structure code to reveal intent (revealing module pattern)
+- Extract complex expressions into well-named variables
+- Use TypeScript types to document data structures
+- Only add comments for "why" not "what" or "how"
+
+## Accessibility Standards
+- Add a11y testing (e.g. axe-core with vitest) to component test suites
+- Enforce proper keyboard navigation for all interactive elements
+- Implement focus trapping for modals and popups
+- Add skip navigation links for keyboard users
+- Ensure all interactive elements have appropriate ARIA attributes
+- Test with screen readers as part of the pre-commit checklist
+
+## Build Performance
+- Optimize Vite configuration for faster rebuilds
+- Enable persistent cache between builds
+- Configure dependency pre-bundling for common libraries
+- Implement parallel builds for multi-core utilization
+- Replace heavy dependencies with lighter alternatives
+- Monitor and optimize CSS size (e.g. Tailwind purge / build-time pruning)
+
+## Implementation Examples
+
+### Code Splitting
+```typescript
+const TariffsOverview = lazy(() => import('./features/TariffsOverview'));
+
+function App() {
+  return (
+    <Suspense fallback={<TariffsOverviewSkeleton />}>
+      <TariffsOverview />
+    </Suspense>
+  );
+}
+```
+
+### Virtualized Lists
+```typescript
+import { VirtualList } from 'react-window';
+
+function TariffsList({ tariffs }) {
+  return (
+    <VirtualList
+      height={800}
+      itemCount={tariffs.length}
+      itemSize={150}
+      width="100%"
+      itemData={tariffs}
+    >
+      {({ data, index, style }) => (
+        <TariffTile style={style} tariff={data[index]} />
+      )}
+    </VirtualList>
+  );
+}
+```
+
+### API Client (Functional Approach)
+```typescript
+// app/services/api/apiClient.ts
+export const fetchFromApi = async <T>(
+  endpoint: string, 
+  params?: Record<string, string>
+): Promise<T> => {
+  try {
+    const urlParams = params ? new URLSearchParams(params).toString() : '';
+    const url = `${endpoint}${urlParams ? `?${urlParams}` : ''}`;
+    const response = await fetch(url);
+    
+    if (!response.ok) {
+      throw new Error(`API error: ${response.status}`);
+    }
+    
+    return await response.json();
+  } catch (error) {
+    // Error handling with proper logging
+    console.error(`API error for ${endpoint}:`, error);
+    throw error;
+  }
+};
+
+// With retry logic
+export const fetchWithRetry = <T>(
+  endpoint: string,
+  params?: Record<string, string>,
+  retries = 3,
+  delay = 300
+): Promise<T> => {
+  return fetchFromApi<T>(endpoint, params).catch(error => {
+    if (retries <= 0) throw error;
+    return new Promise(resolve => setTimeout(resolve, delay))
+      .then(() => fetchWithRetry(endpoint, params, retries - 1, delay * 2));
+  });
+};
+```
+
+Data fetching uses React Router loaders and useFetcher (api-request-pattern.mdc).
+
+### State Management (Functional)
+Store only data; export actions as standalone functions so components can avoid subscribing for action references.
+
+```typescript
+// app/stores/tariffStore.ts
+interface TariffState {
+  readonly tariffs: readonly Tariff[];
+}
+
+export const useTariffStore = create<TariffState>(() => ({
+  tariffs: [],
+}));
+
+export const setTariffsInStore = (tariffs: readonly Tariff[]): void => {
+  useTariffStore.setState({ tariffs });
+};
+
+export const sortTariffsInStore = (field: keyof Tariff): void => {
+  useTariffStore.setState((state) => ({
+    tariffs: [...state.tariffs].sort((a, b) => a[field] - b[field]),
+  }));
+};
+
+export const useSortedTariffs = (sortField: keyof Tariff) =>
+  useTariffStore(
+    (state) => [...state.tariffs].sort((a, b) => a[sortField] - b[sortField]),
+    shallow,
+  );
+```
+
+### Store Initial Data (Hydration)
+For one-off initialization from loader/API result, export a pure function that calls `store.setState()` so callers do not need to subscribe to the store. Use from orchestrating hooks (e.g. `useSetInitialData`) by calling the function directly.
+
+```typescript
+// store: export pure setter, no hook
+export const setInitialToastInfo = (result: ResultDTO): void => {
+  const { toastInfos } = result;
+  if (!isDefined(toastInfos)) {
+    useToastInfoStore.setState({ data: null });
+    return;
+  }
+  useToastInfoStore.setState({ data: toastInfos });
+};
+
+// orchestrating hook: call pure setters directly; use hooks only for setters that need hook context
+function applyResultToStores(result: ResultDTO, setters: Setters): void {
+  setInitialToastInfo(result);
+  setInitialProvidersData(result.providerList, result.referenceTariff?.providerHash, ...);
+  if (isDefined(result.debug)) setDebugMenuData(result.debug);
+  setters.setInitialHintListData(result);
+}
+```
+
+### Functional Composition Example
+```typescript
+// Function composition utilities
+const pipe = <T>(...fns: Array<(arg: T) => T>) => 
+  (value: T): T => fns.reduce((acc, fn) => fn(acc), value);
+
+// Tariff formatting functions
+const addCurrencySymbol = (price: number): string => `${price} €`;
+const formatToTwoDecimals = (price: number): number => Math.round(price * 100) / 100;
+const applyDiscount = (discount: number) => (price: number): number => price * (1 - discount);
+
+// Usage
+const formatPrice = (price: number, discount: number): string => 
+  pipe(
+    applyDiscount(discount),
+    formatToTwoDecimals,
+    addCurrencySymbol
+  )(price);
+
+// In component
+function TariffPrice({ tariff, discount }) {
+  const formattedPrice = useMemo(
+    () => formatPrice(tariff.price, discount),
+    [tariff.price, discount]
+  );
+  
+  return <div>{formattedPrice}</div>;
+}
+```
+
+### Accessibility Example
+```typescript
+// Component with proper accessibility
+function TariffButton({ tariff, isExpanded, toggleExpand }) {
+  return (
+    <button
+      aria-label="View tariff details"
+      aria-expanded={isExpanded}
+      onClick={toggleExpand}
+    >
+      {tariff.name}
+    </button>
+  );
+}
+```
+
+### Vite Optimization
+```typescript
+// vite.config.ts
+export default defineConfig({
+  optimizeDeps: {
+    include: ['react', 'react-dom'],
+  },
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          vendor: ['react', 'react-dom'],
+          ui: ['your-ui-library'],
+        }
+      }
+    }
+  },
+  cacheDir: '.vite-cache',
+});
+```

@@ -1,0 +1,84 @@
+---
+description: Using enums, null, and undefined instead of magic strings for state representation
+globs: "**/*.ts,**/*.tsx"
+alwaysApply: false
+---
+# State Representation and Avoiding Magic Strings
+
+## Overview
+This rule establishes the standard for representing component and form state. It is crucial to use clear, type-safe, and idiomatic values instead of "magic strings" to ensure the codebase is robust, maintainable, and less prone to silent errors.
+
+## The Anti-Pattern: Magic Strings
+A "magic string" is a raw string value that is used to signify a specific state or condition in the logic. They are an anti-pattern because they are brittle, not type-safe, and make the code harder to understand and maintain.
+
+### Example: The `"NEW_ACCOUNT"` Magic String
+In `[app/pages/Checkout/features/PaymentMethod/components/PaymentMethodForm/components/PaymentMethodFormFields/components/views/DirectDebitDetails/DirectDebitDetails.tsx](mdc:app/pages/Checkout/features/PaymentMethod/components/PaymentMethodForm/components/PaymentMethodFormFields/components/views/DirectDebitDetails/DirectDebitDetails.tsx)`, we initially used the string `"NEW_ACCOUNT"` to represent the state where a user chose to add a new bank account instead of selecting an existing one.
+
+#### ❌ Before Refactoring
+```typescript
+// In DirectDebitDetails.tsx (before)
+const isNewAccount = selectedBankAccountId === "NEW_ACCOUNT";
+
+// In BankAccountSelection.tsx (before)
+<RadioGroup.Item
+  value="NEW_ACCOUNT"
+  checked={selectedAccountId === "NEW_ACCOUNT"}
+  onChange={() => {
+    onSelectionChange("NEW_ACCOUNT");
+  }}
+>
+  anderes Bankkonto
+</RadioGroup.Item>
+```
+
+**Why this is a problem:**
+-   **Typo-Prone:** A simple typo (`"NEW_ACCOUT"`) would break the logic without any warning from the compiler.
+-   **Maintenance Hazard:** If we ever needed to change this identifier, we would have to find and replace every single occurrence, a process that is fraught with risk.
+-   **Not Self-Documenting:** It's not immediately clear what the string represents without reading the surrounding code.
+
+---
+
+## The Solution: Idiomatic State Representation
+Instead of magic strings, use values that are idiomatic to the language and your type system. In the case of representing "no existing item was selected", the idiomatic choice is `null`.
+
+### Using `null` to Represent "No Selection"
+Using `null` is a clear, semantic way to indicate the absence of a selected value. It's a primitive type that carries specific meaning, unlike an arbitrary string.
+
+#### ✅ After Refactoring
+We updated the code to use `null` to signify that a new account should be created.
+
+1.  **The State Check is Cleaner:**
+    ```typescript
+    // In DirectDebitDetails.tsx (after)
+    const isNewAccount = selectedBankAccountId === null;
+    ```
+2.  **The State Change is More Explicit:**
+    ```typescript
+    // In BankAccountSelection.tsx (after)
+    <RadioGroup.Item
+      checked={selectedAccountId === null}
+      onChange={() => {
+        onSelectionChange(null);
+      }}
+    >
+      anderes Bankkonto
+    </RadioGroup.Item>
+    ```
+
+3.  **The Type Definition Becomes More Accurate:**
+    This change prompted an improvement to our type definition in `[app/pages/Checkout/features/PaymentMethod/components/PaymentMethodForm/types/PaymentMethodFormData.type.ts](mdc:app/pages/Checkout/features/PaymentMethod/components/PaymentMethodForm/types/PaymentMethodFormData.type.ts)`, making our code more robust.
+
+    ```typescript
+    // In PaymentMethodFormData.type.ts (after)
+    export interface PaymentMethodFormData {
+      // ...
+      readonly selectedBankAccountId?: string | null; // Represents string ID, null, or undefined
+    }
+    ```
+
+## General Guidelines for State
+-   **For boolean states:** Use `true`/`false`.
+-   **For the absence of a value or selection:** Use `null`.
+-   **For a value that hasn't been set yet:** Use `undefined` (often the default state in forms).
+-   **For a fixed set of distinct states:** Use **Enums**. For example, `PaymentTypeEnum.DIRECT_DEBIT` is vastly superior to a string `"direct_debit"`.
+-   **NEVER** use raw strings to represent distinct logical states.

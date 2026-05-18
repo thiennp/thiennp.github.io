@@ -1,0 +1,40 @@
+---
+description: >-
+  Agent and subagent checklist output format — status tokens ([✓], [x], [~], [?])
+  and required Recommendation/Code suggestion shape after [x]. Use when running PR
+  review, implementation gates, or orchestrated audits.
+alwaysApply: false
+---
+
+# Output marking convention (all agent prompts)
+
+Use this **exactly** so humans and orchestrators can scan results quickly.
+
+## Status tokens (per verification line)
+
+| Meaning                  | Token | When to use                                                                                                                                           |
+| ------------------------ | ----- | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Verified / passing**   | `[✓]` | Criterion satisfied for the given scope (cite evidence: file, hunk, or behavior).                                                                     |
+| **Not satisfied / risk** | `[x]` | Criterion **not** met or cannot be verified from provided inputs. **Required:** add **Recommendation** and, if possible, a **Code suggestion** block. |
+
+> **Note on `[]` vs `[x]`:** Some teams phrase “unchecked template” as `[ ]`. Here **`[x]` always means failure / not satisfied**, not “completed checkbox”. **`[✓]` means verified OK** (use `[PASS]` instead of `[✓]` if you need strict ASCII).
+> | **Not applicable** | `[~]` | Criterion does not apply to this scope (say why in one short phrase). |
+> | **Blocked** | `[?]` | Cannot verify (missing diff, missing ticket, wrong branch, etc.); say what is missing. |
+
+## Required shape after each `[x]`
+
+````text
+[x] <criterion one-liner>
+    Recommendation: <concrete next step>
+    Code suggestion (optional):
+    ```ts
+    // minimal illustrative fix or pattern
+    ```
+````
+
+## Scope discipline
+
+- **PR review agents:** only judge **changed** files/hunks vs `origin/release...HEAD` unless the prompt says otherwise.
+- **Implementation agents:** judge **new/edited** work for the ticket, plus commands the prompt authorizes.
+
+Do **not** mix “PR review (no CI)” constraints from `review-pr` into implementation verification prompts that require `pnpm ci:test`, unless the orchestrator explicitly combines them.

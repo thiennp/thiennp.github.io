@@ -1,0 +1,218 @@
+---
+description: Using path aliases instead of long relative paths for maintainable imports
+globs: "**/*.ts,**/*.tsx"
+alwaysApply: false
+---
+# Import Path Optimization
+
+## Verification
+Run `tsx .cursor/scripts/import-path-depth.ts` (or `pnpm run cursor:verify -- --imports` when enabled) to find relative imports with more than two `../`. Prefer aliases over deep relative paths.
+
+## Overview
+This rule defines standards for using the shortest and most maintainable import paths in the codebase. Always prefer established aliases and direct paths over long relative paths to improve code readability and maintainability.
+
+## Problem: Long Relative Paths
+Long relative paths with multiple `../` segments are:
+- Hard to read and understand
+- Fragile when files are moved
+- Difficult to maintain
+- Error-prone when counting directory levels
+
+### Anti-Pattern Example
+```typescript
+// ❌ BAD: Long relative path with multiple ../ segments
+import { DeviceOutputEnum } from "../../../../enums/DeviceOutput.enum";
+import { SomeType } from "../../../types/SomeType.type";
+import { someUtility } from "../../../../utils/someUtility";
+```
+
+## Solution: Use Established Aliases and Direct Paths
+Prefer established path aliases and direct imports over long relative paths.
+
+### Implementation Pattern
+```typescript
+// ✅ GOOD: Using established aliases
+import { DeviceOutputEnum } from "enums/DeviceOutput.enum";
+import { SomeType } from "types/SomeType.type";
+import { someUtility } from "utils/someUtility";
+```
+
+## Established Path Aliases
+
+### Core Directories
+The codebase has established aliases for common directories:
+
+| Alias | Path | Purpose |
+|-------|------|---------|
+| `enums/` | `app/enums/` | Enumeration definitions |
+| `types/` | `app/types/` | TypeScript type definitions |
+| `utils/` | `app/utils/` | Utility functions |
+| `constants/` | `app/constants/` | Application constants |
+| `services/` | `app/services/` | API services and business logic |
+| `components/` | `app/components/` | Reusable components |
+| `features/` | `app/features/` | Feature-specific code |
+| `hooks/` | `app/hooks/` | React hooks |
+| `globalStateClientSide` | `app/globalStateClientSide` | Client-side global state utilities |
+
+### Examples from Codebase
+
+#### Enum Imports
+```typescript
+// ✅ GOOD: Using enums alias
+import { DeviceOutputEnum } from "enums/DeviceOutput.enum";
+import { ProductEnum } from "enums/Product.enum";
+import { LoginStateEnum } from "enums/LoginState.enum";
+
+// ❌ AVOID: Long relative paths
+import { DeviceOutputEnum } from "../../../../enums/DeviceOutput.enum";
+```
+
+#### Utility Imports
+```typescript
+// ✅ GOOD: Using utils alias
+import { isDefined } from "utils/typeguards/isDefined";
+import { debug } from "utils/debug";
+import { convertToEuro } from "utils";
+
+// ❌ AVOID: Long relative paths
+import { isDefined } from "../../../../utils/typeguards/isDefined";
+```
+
+#### Type Imports
+```typescript
+// ✅ GOOD: Using types alias
+import type { UserDTO } from "types/UserDTO.type";
+import type { ConfigType } from "types/ConfigType.type";
+
+// ❌ AVOID: Long relative paths
+import type { UserDTO } from "../../../types/UserDTO.type";
+```
+
+## When to Use Relative Paths
+
+### Short Relative Paths (1-2 levels)
+Use relative paths only for closely related files within the same feature:
+
+```typescript
+// ✅ GOOD: Short relative path for closely related files
+import { ComponentProps } from "./types/ComponentProps.type";
+import { ComponentUtils } from "../utils/ComponentUtils";
+import { SubComponent } from "./components/SubComponent/SubComponent";
+```
+
+### Cross-Feature Imports
+Always use aliases for imports across different features:
+
+```typescript
+// ✅ GOOD: Using aliases for cross-feature imports
+import { useAuthStore } from "stores/useAuthStore";
+import { Button } from "components/Button/Button";
+import { formatDate } from "utils/date/formatDate";
+
+// ❌ AVOID: Long relative paths across features
+import { useAuthStore } from "../../../stores/useAuthStore";
+```
+
+## Refactoring Process
+
+When encountering long relative paths:
+
+1. **Identify the target directory**: Determine which established alias it belongs to
+2. **Check existing usage**: Look for how other files import from the same directory
+3. **Replace with alias**: Use the appropriate alias instead of relative path
+4. **Verify imports work**: Ensure the new path resolves correctly
+
+### Example Refactoring
+```typescript
+// Before: Long relative path
+import { DeviceOutputEnum } from "../../../../enums/DeviceOutput.enum";
+
+// After: Using established alias
+import { DeviceOutputEnum } from "enums/DeviceOutput.enum";
+```
+
+## Benefits
+
+1. **Readability**: Shorter, clearer import paths
+2. **Maintainability**: Less fragile when files are moved
+3. **Consistency**: All developers use the same import patterns
+4. **Error Prevention**: No need to count directory levels
+5. **IDE Support**: Better autocomplete and navigation
+
+## Validation
+
+### TypeScript Configuration
+The aliases are configured in [tsconfig.json](mdc:tsconfig.json) and [vite.stories.config.ts](mdc:vite.stories.config.ts):
+
+```json
+{
+  "compilerOptions": {
+    "paths": {
+      "enums/*": ["app/enums/*"],
+      "utils/*": ["app/utils/*"],
+      "types/*": ["app/types/*"],
+      // ... other aliases
+    }
+  }
+}
+```
+
+### Storybook Configuration
+Aliases are also configured in Storybook for consistent import resolution:
+
+```typescript
+// vite.stories.config.ts
+resolve: {
+  alias: {
+    "enums": path.resolve(__dirname, "app/enums"),
+    "utils": path.resolve(__dirname, "app/utils"),
+    // ... other aliases
+  }
+}
+```
+
+## Anti-Patterns to Avoid
+
+### 1. Counting Directory Levels
+```typescript
+// ❌ BAD: Manually counting ../ levels
+import { something } from "../../../../../../utils/something";
+
+// ✅ GOOD: Using established alias
+import { something } from "utils/something";
+```
+
+### 2. Inconsistent Import Patterns
+```typescript
+// ❌ BAD: Mixing relative and alias imports inconsistently
+import { DeviceOutputEnum } from "enums/DeviceOutput.enum";
+import { SomeType } from "../../../types/SomeType.type"; // Inconsistent!
+
+// ✅ GOOD: Consistent use of aliases
+import { DeviceOutputEnum } from "enums/DeviceOutput.enum";
+import { SomeType } from "types/SomeType.type";
+```
+
+### 3. Overly Specific Relative Paths
+```typescript
+// ❌ BAD: Too specific relative path
+import { utility } from "../../../../utils/specific/category/utility";
+
+// ✅ GOOD: Using alias with specific path
+import { utility } from "utils/specific/category/utility";
+```
+
+## Examples from Codebase
+
+### Good Import Patterns
+- [app/services/getDeviceOutputFromRequest.ts](mdc:app/services/getDeviceOutputFromRequest.ts) - Uses `enums/DeviceOutput.enum`
+- [app/utils/isMobileOrApp.ts](mdc:app/utils/isMobileOrApp.ts) - Uses `enums/DeviceOutput.enum`
+- [app/globalStateClientSide.ts](mdc:app/globalStateClientSide.ts) - Uses `enums/DeviceOutput.enum`
+
+### Refactored Examples
+- [app/wireframe/hooks/useWireframeAuth/utils/getUnifiedLoginDeviceOutput.ts](mdc:app/wireframe/hooks/useWireframeAuth/utils/getUnifiedLoginDeviceOutput.ts) - Refactored from long relative path to `enums/DeviceOutput.enum`
+
+## Related Rules
+- [TypeScript Standards](mdc:.cursor/rules/typescript-standards.mdc) - For proper import organization
+- [Folder Organization Standards](mdc:.cursor/rules/folder-organization-standards.mdc) - For understanding directory structure
+- [Existing Utilities Usage Guide](mdc:.cursor/rules/existing-utilities.mdc) - For finding existing utilities before creating new ones

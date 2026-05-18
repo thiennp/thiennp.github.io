@@ -1,0 +1,146 @@
+---
+description: Patterns for processing API responses with type guards and store updates
+globs: "**/services/**/*.ts"
+alwaysApply: false
+---
+# API Response Processing Patterns
+
+**One line:** Use type guards in process hooks; guardWithTolerance always returns T (no null check after); with guardWithTolerance use isDefined(response) before calling.
+
+## Response Processing Hook Patterns
+
+When creating hooks that process API responses (typically named `useProcess*Response`), follow these consistent patterns to ensure codebase-wide uniformity:
+
+### Direct Type Guard Pattern
+
+```typescript
+// PREFERRED - Let the type guard handle undefined/null checks
+export function useProcessApiResponse(response: unknown, ...args): void {
+ useEffect(() => {
+   if (
+     isResponseDTO(response, {
+       callbackOnError: debug,
+       identifier: "ResponseDTO",
+     })
+   ) {
+     // Success handling
+     // ...
+   } else {
+     // Error handling
+     // ...
+   }
+ }, [response, ...args]);
+}
+```
+
+### Avoid Redundant Checks (direct type guard only)
+
+When using **direct type guards** (e.g. `isResponseDTO(response, config)`), the guard handles null/undefined; do not add `if (!isDefined(response)) return`. When using **guardWithTolerance**, you do need `if (isDefined(response))` before calling it, then use the returned value (always T).
+
+### Using `guardWithTolerance` Correctly
+
+The `guardWithTolerance` function has a specific behavior you must understand:
+
+```typescript
+// Implementation of guardWithTolerance
+export function guardWithTolerance<T>(
+ data: unknown,
+ typeGuardFn: TypeGuardFn<T>,
+ config?: Nullable<TypeGuardFnConfig>,
+): T {
+ return typeGuardFn(data, config) ? data : (data as T);
+}
+```
+
+Important: This function **always returns a value of type T**, even if validation fails. It will:
+1. Return the original data with the proper type if validation passes
+2. Return the original data cast to type T even if validation fails
+
+When using `guardWithTolerance`:
+
+```typescript
+// CORRECT - No null check needed after guardWithTolerance
+export function useProcessApiResponse(response: unknown, ...args): void {
+ useEffect(() => {
+   if (isDefined(response)) {
+     const validatedResponse = guardWithTolerance<ResponseDTO>(
+       response,
+       isResponseDTO,
+       {
+         callbackOnError: debug,
+         identifier: "ResponseDTO",
+       }
+     );
+
+     // No need to check if validatedResponse exists - it always will
+     processValidatedData(validatedResponse);
+
+     // But you may want to log when validation actually failed
+     if (!isResponseDTO(response)) {
+       debug("Response format doesn't match expected type", response);
+     }
+   }
+ }, [response, ...args]);
+}
+```
+
+```typescript
+// INCORRECT - Redundant check after guardWithTolerance
+if (isDefined(validatedResponse)) { // Always true!
+ processValidatedData(validatedResponse);
+}
+```
+
+### Pattern for Multiple Response Types
+
+When handling multiple possible response types:
+
+```typescript
+export function useProcessApiResponse(response: unknown, ...args): void {
+ useEffect(() => {
+   // Success case
+   if (
+     isSuccessResponseDTO(response, {
+       callbackOnError: debug,
+       identifier: "SuccessResponseDTO",
+     })
+   ) {
+     // Success handling
+     return;
+   }
+
+   // Error case
+   if (
+     isErrorResponse(response, {
+       callbackOnError: debug,
+       identifier: "ErrorResponse",
+     })
+   ) {
+     // Error handling
+     return;
+   }
+
+   // Default case - unhandled response type
+   debug("Unhandled response type", response);
+ }, [response, ...args]);
+}
+```
+
+## Type Guard Usage
+
+- Let type guards handle null/undefined checks
+- Always pass error callback and identifier config to type guards
+- Include clear error logging for invalid response formats
+
+## Store Updates
+
+- Always update loading states in both success and error cases
+- Set consistent patterns for storing API data in the application state
+- Use appropriate error handling based on the application's error management strategy
+
+## Examples from Codebase
+
+See implementations in:
+- `app/features/CustomerEvaluation/hooks/useProcessCustomerEvaluationResponse.ts`
+- `app/features/SmartAlarm/features/CreateSmartAlarm/hooks/useProcessSmartAlarmResponse.ts`
+- `app/pages/Result/features/TariffDetailsDesktop/hooks/useProcessTariffDetailsResponse.ts`

@@ -1,0 +1,225 @@
+---
+description:
+globs:
+alwaysApply: true
+---
+# Clean Code Refactoring Patterns
+
+## Overview
+This rule defines standard patterns for refactoring complex React hooks and functions. Apply them consistently across **`src/`** (pages, shared UI, and `feature/`).
+
+## Core Refactoring Principles
+
+### 1. Extract Complex Logic into Well-Named Functions
+When a function or hook contains complex logic, break it down into smaller, focused functions with descriptive names.
+
+#### Before refactoring
+```typescript
+// Complex logic mixed with side effects (illustrative)
+useEffect(() => {
+  const open = window.Check24?.uliloginlayer?.open ?? window.C24App?.triggerUnifiedLogin;
+  if (typeof open === "function") {
+    open();
+    return;
+  }
+  setTimeout(() => {
+    try {
+      window.location.reload();
+    } catch {
+      ERROR_API.log("Reload failed", true, "login");
+    }
+  }, 100);
+}, []);
+```
+
+#### After refactoring
+```typescript
+const tryOpenUnifiedLogin = (): boolean => {
+  const open = window.Check24?.uliloginlayer?.open ?? window.C24App?.triggerUnifiedLogin;
+  if (typeof open === "function") {
+    open();
+    return true;
+  }
+  return false;
+};
+
+const scheduleReloadWithErrorLogging = (): void => {
+  setTimeout(() => {
+    try {
+      window.location.reload();
+    } catch {
+      ERROR_API.log("Reload failed", true, "login");
+    }
+  }, 100);
+};
+
+useEffect(() => {
+  if (!tryOpenUnifiedLogin()) {
+    scheduleReloadWithErrorLogging();
+  }
+}, []);
+```
+
+### 2. Function Naming Guidelines
+- Use verb-noun combinations that describe the action being performed
+- Make names specific and intention-revealing
+- Avoid generic names like `process`, `handle`, or `doSomething`
+
+#### Good Examples
+- `buildLogoutLink()` - Clearly builds a logout URL
+- `configureTestEnvironment()` - Configures environment for testing
+- `initializeUnifiedLoginLayer()` - Initializes a specific component
+- `setSessionCookie()` - Sets a session cookie
+- `fetchAndUpdateLead()` - Fetches and updates lead state in the store
+
+#### Avoid
+- `process()` - Too generic
+- `handle()` - Doesn't describe what's being handled
+- `doSomething()` - Vague and unhelpful
+
+### 3. Single Responsibility Principle
+Each extracted function should have one clear purpose and responsibility.
+
+```typescript
+// GOOD: Single responsibility
+const setSessionCookie = (sessionId: string): void => {
+  const cookieDomains = getCookieDomain();
+  const domain = cookieDomains[0];
+  document.cookie = `c24session=${sessionId};path=/;SameSite=lax;domain=${domain}`;
+};
+
+// GOOD: Another single responsibility
+const fetchAndUpdateLead = async (leadId: string): Promise<void> => {
+  try {
+    const response = await fetch(`/api/lead/${leadId}`);
+    const result: unknown = await response.json();
+
+    if (isLeadDTO(result, null)) {
+      useLeadStore.getState().setLeadState(result);
+      debug("Lead updated from /api/lead", result);
+    } else {
+      debug("Invalid lead payload from /api/lead", result);
+    }
+  } catch (error) {
+    debug("Failed to update lead from /api/lead", error);
+  }
+};
+```
+
+### 4. Type Safety Improvements
+When refactoring, improve type safety by:
+- Using proper return types for functions
+- Handling nullable types correctly
+- Using union types for constrained values
+
+```typescript
+// GOOD: Proper typing for constrained values
+const getDeviceOutput = (): "mobile" | "desktop" => {
+  const currentDeviceOutput = GLOBAL_STATE_UTILS_CLIENT_SIDE.getDeviceOutput();
+  const mobileDevices = [DeviceOutputEnum.MOBILE, DeviceOutputEnum.APP];
+  return mobileDevices.includes(currentDeviceOutput) ? "mobile" : "desktop";
+};
+
+// GOOD: Handling nullable types properly
+const initializeUnifiedLoginLayer = (product: string, socialClosingUrl: string | null, onePagerURL: string | null): void => {
+  if (!isDefined(window.Check24)) {
+    return;
+  }
+
+  const config = {
+    deviceoutput: getDeviceOutput(),
+    api_product: product,
+    ...(socialClosingUrl && { social_login_closing_url: socialClosingUrl }),
+    ...(onePagerURL && { social_login_callback_url: onePagerURL }),
+  };
+
+  window.Check24.uliloginlayer.init(config);
+};
+```
+
+### 5. Error Handling and Debugging
+Maintain proper error handling and debugging when refactoring:
+
+```typescript
+// GOOD: Preserve error handling and debugging
+const fetchAndUpdateLead = async (leadId: string): Promise<void> => {
+  try {
+    const response = await fetch(`/api/lead/${leadId}`);
+    const result: unknown = await response.json();
+
+    if (isLeadDTO(result, null)) {
+      useLeadStore.getState().setLeadState(result);
+      debug("Lead updated from /api/lead", result);
+    } else {
+      debug("Invalid lead payload from /api/lead", result);
+    }
+  } catch (error) {
+    debug("Failed to update lead from /api/lead", error);
+  }
+};
+```
+
+### 6. Hook Structure After Refactoring
+The main hook should be clean and focused on orchestration:
+
+```typescript
+export function useLeadBannerViewModel(): {
+  readonly headline: string;
+  readonly showPriceDetails: boolean;
+} {
+  const lead = useLeadStore((s) => s.lead);
+  const headline = buildHeadline(lead);
+  const showPriceDetails = shouldShowPriceDetails(lead);
+
+  useEffect(() => {
+    trackLeadSectionView(lead?.id);
+  }, [lead?.id]);
+
+  return {
+    headline,
+    showPriceDetails,
+  };
+}
+```
+
+## Refactoring Process
+
+### Step 1: Identify Complex Logic
+Look for:
+- Functions with multiple responsibilities
+- Complex conditional logic
+- Long functions (>20 lines)
+- Mixed concerns (UI logic with business logic)
+
+### Step 2: Extract Functions
+- Create functions with descriptive names
+- Ensure single responsibility
+- Maintain proper typing
+- Preserve error handling
+
+### Step 3: Update Dependencies
+- Update useEffect dependencies to include only necessary values
+- Ensure proper dependency arrays
+- Avoid unnecessary re-renders
+
+### Step 4: Test and Verify
+- Run type checking: `npm run typecheck` (and `npm run test-update` when behavior changed)
+- Verify functionality remains intact
+- Check for any performance regressions
+
+## Benefits of This Approach
+
+1. **Maintainability**: Smaller functions are easier to understand and modify
+2. **Testability**: Individual functions can be tested in isolation
+3. **Reusability**: Extracted functions can be reused elsewhere
+4. **Readability**: Code is self-documenting and easier to follow
+5. **Type Safety**: Better TypeScript support with proper typing
+
+## Examples from Codebase
+
+Prefer small, named helpers colocated in a `utils/` folder next to the hook or under `src/utils/` when reused.
+
+## Related Rules
+- [Clean Code Principles](mdc:.cursor/rules/clean-code.mdc)
+- [TSX generic standards](mdc:.cursor/rules/tsx-generic.mdc)
+- [TypeScript Standards](mdc:.cursor/rules/typescript-standards.mdc)

@@ -1,0 +1,35 @@
+---
+description: 
+globs: *.ts,*.tsx,*.scss
+alwaysApply: false
+---
+# Code Standards for React Components
+
+## General Principles
+- Write self-explanatory code rather than relying on comments
+- Use meaningful variable names that make the purpose clear
+- Extract complex logic into well-named variables before using in JSX
+- Follow a functional programming style where possible
+
+## React Components
+- Extract complex rendering logic into separate variables
+- Use short, descriptive variable names for props destructuring
+- Keep components focused on a single responsibility
+
+## Conditional Rendering
+- Use map constants for conditional component rendering instead of multiple conditional checks in JSX
+- Define component maps at the top level, outside of component functions
+- Use enums as keys for type safety in component maps
+- Follow the pattern: `const COMPONENT_MAP: Record<EnumType, () => ReactElement>`
+- Access map values by key: `{COMPONENT_MAP[someEnum]()}`
+
+## Component Organization
+- Place each component in its own folder at the same level within the components directory
+- Avoid nested component hierarchies unless absolutely necessary
+- Never use index.ts barrel files - import components directly from their source
+- Follow the pattern: `import ComponentName from "../components/ComponentName/ComponentName"`
+
+## Tooltips
+- Set both overlayMinWidth and overlayMaxWidth to the same value
+- Use proper semantic HTML structure within tooltips (headings, paragraphs)
+- Always provide a title for tooltips 

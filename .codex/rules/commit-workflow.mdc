@@ -1,0 +1,247 @@
+---
+description: Commit workflow process including staging, confirmation, ticket numbers, stash management, and push approval
+alwaysApply: false
+---
+# Commit Workflow Preferences
+
+## Standard Commit Workflow
+
+When making changes to the codebase:
+
+1. Stage changes. Prefer targeted staging (`git add path/to/files`) when scope is clear; otherwise `git add .` then evaluate. See git-workflow.mdc for SCOPE and avoiding mixed commits.
+2. Evaluate changes and determine commit structure:
+   - Assess whether changes should be grouped in one commit or separated
+   - Group logically related changes together
+   - Separate unrelated changes into different commits
+   - **Avoid using "and" in commit messages** - this often indicates the changes should be split
+
+3. Craft descriptive commit message following conventional format:
+   ```bash
+   git commit -m "<type>(<scope>): <description>"
+   ```
+
+4. **Include ticket number in commit message**
+   - For ticket-related work: `PRE-1234: (type) Description` (use the real Jira key and number)
+   - For non-ticket work: `00000: (type) Description` only
+   - **Never** use fake PRE- placeholders such as `PRE-00000`, `PRE-0`, or any `PRE-` prefix where the numeric part is only zeros. Those look like real tickets but are not; they must not appear in commit history. When there is no ticket, **`00000:`** is the only allowed non-ticket prefix (see Husky `commit-msg`).
+   - Always ask about related ticket if not mentioned by the user
+
+5. **Always confirm before committing**
+   - Present proposed changes and commit message(s) for review
+   - Wait for explicit confirmation before executing the commit
+
+6. After confirming, execute the commit:
+   ```bash
+   git add <files-or-directories>
+   git commit -m "<ticket>: <description>"
+   ```
+
+7. **Ask if push is desired**
+   - After successful commit, explicitly ask if changes should be pushed
+   - Only push when explicitly instructed
+
+8. If pushing is confirmed:
+   ```bash
+   git push
+   ```
+
+## Separating Commits
+
+1. When to separate commits:
+   - Changes to different logical components
+   - Different types of changes (e.g., feature vs. fix)
+   - Different scopes (e.g., UI vs. API)
+   - Unrelated file changes
+   - When a commit message would need the word "and" to describe all changes
+
+2. How to separate commits:
+   ```bash
+   # First unstage everything
+   git reset HEAD
+   
+   # Stage files for first commit
+   git add path/to/files-for-first-commit
+   
+   # Commit first set of changes
+   git commit -m "PRE-1234: feat(component): add new feature"
+   
+   # Stage files for second commit
+   git add path/to/files-for-second-commit
+   
+   # Commit second set of changes
+   git commit -m "PRE-1234: fix(types): update type definitions"
+   ```
+
+3. Examples of changes that should be separate commits:
+   - Feature implementation and documentation changes
+   - Bug fix and refactoring
+   - Multiple unrelated bug fixes
+   - UI changes and data model changes
+   - Type definition updates and component logic changes
+
+## Stash Management
+
+1. If changes need to be stashed during a task:
+   ```bash
+   git stash push -m "descriptive message"
+   ```
+
+2. **Always unstash after completing the task**
+   - After the main task is completed, always restore stashed changes
+   - Use `git stash apply` or `git stash pop` to restore the changes
+   - Never leave changes in stash without explicitly confirming with the user
+
+3. After restoring stashed changes, confirm if they should be committed:
+   ```bash
+   git stash apply
+   # Ask if these restored changes should be committed
+   ```
+
+## Commit Message Format
+
+Structure (enforced by Husky): `<ticket>: (type) <descriptive message>`
+
+- **Ticket**: Real `PRE-<digits>` or `MAINT-<digits>` for ticket work; `00000` for non-ticket work only. **Do not** use `PRE-0`, `PRE-00000`, or any all-zero `PRE-` value as a stand-in—use `00000:` instead.
+- **Type**: One of `feat`, `fix`, `chore`, `refactor`, `docs`, `test`, `style`, `perf`, `build`, `ci` — wrapped in parentheses after the colon, per Husky (e.g. `(test)`).
+- **Message**: What changed; why if not obvious. Name the area of the codebase in the text when helpful. Avoid vague words ("update", "fix bug"); be specific.
+
+Examples:
+- Good: `PRE-1234: (feat) Add loading state with spinner for teaser async actions`
+- Good: `00000: (fix) Handle 404 responses in tariff detail fetching`
+- Bad: `PRE-00000: (test) Fix unit tests` (use `00000:` when there is no ticket)
+- Bad: `feat(button): update button component` (missing ticket / wrong shape)
+- Bad: `fix: update button and fix form` (use "and" → split into two commits)
+
+## Important Guidelines
+
+1. **Always request confirmation** before committing changes
+   - Present changes and wait for approval before committing
+   - Never commit automatically without explicit confirmation
+
+2. **Always verify ticket number**
+   - Ask about related ticket if the user hasn't mentioned one
+   - Use `00000:` prefix if there is no real ticket; never substitute `PRE-00000`, `PRE-0`, or similar
+
+3. **Always ask before pushing**
+   - Never push without explicit instructions to do so
+   - Confirm push destination if appropriate
+
+4. **Separate commits logically**
+   - Evaluate whether changes should be in one or multiple commits
+   - Group related changes, separate unrelated ones
+   - If a commit message requires "and", split it into separate commits
+   - Each commit should have a single, clear purpose
+
+5. **Never leave stashed changes**
+   - Always restore stashed changes after completing the task that required stashing
+   - Confirm what to do with the restored changes
+
+6. **Never use --no-verify flag**
+   - Always run pre-commit hooks and verification steps
+   - Never bypass linting, testing, or other quality checks
+   - The --no-verify flag should be avoided in all circumstances
+   - If pre-commit hooks fail, fix the issues rather than bypassing them
+
+## Examples
+
+### Correct Workflow
+```bash
+# Present changes for review
+git status
+# Ask for ticket number if not provided
+# "Is this commit related to a specific ticket? If yes, what's the ticket number?"
+# Present commit message for approval
+# "PRE-1234: docs(rules): add new workflow rule"
+# Wait for confirmation...
+git add .cursor/rules/new-rule.mdc
+git commit -m "PRE-1234: docs(rules): add new workflow rule"
+# Ask if push is desired
+# Wait for confirmation...
+git push  # Only if explicitly confirmed
+```
+
+### Correct Workflow for Separate Commits
+```bash
+# Review all changes
+git status
+
+# Identify changes that should be separate commits:
+# 1. Rule file changes
+# 2. Type definition changes
+
+# Unstage all changes to start fresh
+git reset HEAD
+
+# Stage and commit first logical group
+git add .cursor/rules/commit-workflow.mdc
+# Ask for ticket number and commit message confirmation
+# "PRE-1234: docs(rules): update commit workflow with stash management"
+git commit -m "PRE-1234: docs(rules): update commit workflow with stash management"
+
+# Stage and commit second logical group
+git add app/pages/Result/types/ResultDTO/*.ts
+# Ask for ticket number and commit message confirmation
+# "PRE-1234: fix(types): update ResultDTO types"
+git commit -m "PRE-1234: fix(types): update ResultDTO types"
+
+# Ask if push is desired
+# Wait for confirmation...
+git push  # Only if explicitly confirmed
+```
+
+### Correct Stash Workflow
+```bash
+# Need to stash changes to perform another operation
+git stash save "work in progress on feature X"
+# Perform other operations...
+# Task complete, restore stashed changes
+git stash apply
+# Continue working with restored changes
+```
+
+### Incorrect Workflow
+```bash
+# Automatically committing without confirmation
+git add .cursor/rules/new-rule.mdc
+git commit -m "docs(rules): add new workflow rule"  # Missing ticket number
+git push  # Without asking first
+```
+
+### Incorrect Commit Message
+```bash
+# Using "and" in commit message - should be split
+git commit -m "PRE-1234: update commit workflow and fix ResultDTO types"  # INCORRECT
+```
+
+### Incorrect Stash Workflow
+```bash
+# Stash changes
+git stash
+# Complete task but forget to unstash
+# INCORRECT - need to apply stash after task completion
+```
+
+## When Working with Branches
+
+1. Create and checkout branch:
+   ```bash
+   git checkout -b feature/branch-name
+   ```
+
+2. Make changes and commit:
+   ```bash
+   git add <files>
+   git commit -m "PRE-1234: <type>(<scope>): <description>"
+   ```
+
+3. **STOP** - Do not push, merge, or rebase automatically
+
+## Rationale
+
+- Allows user to review changes before pushing
+- Provides opportunity for squashing commits if needed
+- Ensures user has full control over when code is pushed to remote
+- Prevents unintended pushes to protected branches
+- Maintains ticket traceability through commit history
+- Ensures no work is lost in stash after tasks are completed
+- Keeps commit history clean with focused, single-purpose commits

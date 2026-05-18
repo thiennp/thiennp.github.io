@@ -1,0 +1,327 @@
+---
+description: React Router loader pattern for API requests with clear separation of concerns
+globs: "**/services/**/*.ts"
+alwaysApply: false
+---
+# API Request Pattern
+
+**One line:** Loader extracts URL params, validates, calls API service; response hooks validate with type guards and update store via standalone setters (see zustand-memo-optimization.mdc).
+
+## Overview
+This rule defines the standard pattern for implementing API requests in the codebase, focusing on the React Router loader pattern for data fetching with clear separation of concerns.
+
+## Architecture Diagram
+
+```
+┌─────────────────┐          ┌──────────────────┐         ┌────────────────────┐
+│   Component     │ ──────→  │   Custom Hook    │ ──────→ │ Request Submission  │
+│ (Tariff Details)│          │(useGetTariffDet.)│         │  (handleSubmit)     │
+└─────────────────┘          └──────────────────┘         └────────────────────┘
+        ↑                             │                             │
+        │                             │                             │
+        │                             ↓                             ↓
+┌─────────────────┐          ┌──────────────────┐         ┌────────────────────┐
+│  Response Hook  │ ←──────  │  useFetcher()    │ ←─────  │   API Route        │
+│(useProcessResp.)│          │  (React Router)  │         │  (/api/endpoint)   │
+└─────────────────┘          └──────────────────┘         └────────────────────┘
+        │                                                           │
+        │                                                           │
+        ↓                                                           ↓
+┌─────────────────┐                                       ┌────────────────────┐
+│   Store Update  │                                       │  Loader Function   │
+│  (Zustand)      │                                       │  (Parameter Valid.)│
+└─────────────────┘                                       └────────────────────┘
+                                                                    │
+                                                                    │
+                                                                    ↓
+                                                          ┌────────────────────┐
+                                                          │    API Service     │
+                                                          │  (HTTP Request)    │
+                                                          └────────────────────┘
+                                                                    │
+                                                                    │
+                                                                    ↓
+                                                          ┌────────────────────┐
+                                                          │ Response Validation│
+                                                          │ (Type Guards)      │
+                                                          └────────────────────┘
+```
+
+## Implementation Components
+
+### 1. API Service Layer
+The fundamental service that performs the actual HTTP request:
+
+```typescript
+// services/getTariffDetailsPage.api.ts
+export const getTariffDetailsPage = async (
+  productId: ProductEnum,
+  c24session: Nullable<string>,
+  data: GetTariffDetailsRequestParams,
+  requestContext: RequestContext,
+): Promise<TariffDetailsDTO> => {
+  return new Promise((resolve, reject) => {
+    createMDWApiClient({ productId, c24session, requestContext, authorization: null, cookies: null })
+      .post(GET_TARIFF_DETAIL_PAGE_URL, data)
+      .then((response) => {
+        resolve(
+          guardWithTolerance(response.data, isTariffDetailsDTO, {
+            callbackOnError: logger.warn,
+            identifier: "getTariffDetailsPage TariffDetailsDTO",
+          }),
+        );
+      })
+      .catch((error) => {
+        logger.error(error);
+        reject(error);
+      });
+  });
+};
+
+```
+
+### 2. Loader Function
+React Router loader that extracts parameters from the URL and calls the API service:
+
+```typescript
+// features/GetTariffDetails/services/getTariffDetailsLoader.ts
+export async function loader({ request }: LoaderFunctionArgs): Promise<ErrorResponse | TariffDetailsDTO> {
+  const url = new URL(request.url);
+  const productId = Number(url.searchParams.get("productId"));
+  const c24session = getSessionID(request);
+
+  // Extract required parameters from URL
+  const tariffVersionId = Number(url.searchParams.get("tariffVersionId"));
+  const tariffVersionVariationKey = url.searchParams.get("tariffVersionVariationKey") ?? "";
+  const calculationParameterId = url.searchParams.get("calculationParameterId") ?? undefined;
+
+  try {
+    const response = await getTariffDetailsPage(
+      productId,
+      c24session,
+      // Validate parameters
+      guardWithTolerance<GetTariffDetailsRequestParams>(
+        {
+          productId,
+          tariffVersionId,
+          tariffVersionVariationKey,
+          calculationParameterId,
+        },
+        isGetTariffDetailsRequestParams,
+        {
+          callbackOnError: debug,
+          identifier: "GetTariffDetailsRequestParams",
+        },
+      ),
+    );
+
+    return guardWithTolerance(response, isTariffDetailsDTO, {
+      callbackOnError: debug,
+      identifier: "TariffDetailsDTO",
+    });
+  } catch (error) {
+    // Error handling
+    return { errorMessage: `Failed to get tariff details: ${error instanceof Error ? error.message : "Unknown error"}` };
+  }
+}
+```
+
+### 3. Request Submission Utility
+Utility function to handle parameter validation and URL creation:
+
+```typescript
+// features/GetTariffDetails/utils/handleTariffDetailsSubmit.util.ts
+export function handleTariffDetailsSubmit(
+  params: GetTariffDetailsRequestParams,
+  triggerRequestFunction: (url: string) => void,
+): void {
+  if (!isGetTariffDetailsRequestParams(params)) {
+    debug("Invalid tariff details request parameters", params);
+    return;
+  }
+
+  triggerRequestFunction(`/api/tariff-details?${convertObjectToURLQueryString(params)}`);
+}
+```
+
+### 4. Custom Hook for Data Fetching
+Hook that uses React Router's fetcher to call the loader:
+
+```typescript
+// features/GetTariffDetails/hooks/useGetTariffDetails.ts
+export function useGetTariffDetails(requestParams: GetTariffDetailsRequestParams): Nullable<TariffDetailsDTO> {
+  const fetcher = useFetcher();
+  const { tariffDetails } = useTariffDetailsStore();
+
+  useProcessTariffDetailsResponse(fetcher.data, requestParams.tariffVersionId);
+
+  useEffect(() => {
+    if (isNil(tariffDetails[requestParams.tariffVersionId])) {
+      handleTariffDetailsSubmit(requestParams, (url) => void fetcher.load(url));
+    }
+  }, []);
+
+  return tariffDetails[requestParams.tariffVersionId] ?? null;
+}
+```
+
+### 5. Response Processing Hook
+Hook to validate response data and update the store. Use a **standalone setter** (see zustand-memo-optimization.mdc) so the hook does not subscribe to store actions:
+
+```typescript
+// features/GetTariffDetails/hooks/useProcessTariffDetailsResponse.ts
+export function useProcessTariffDetailsResponse(response: unknown, tariffVersionId: number): void {
+  useEffect(() => {
+    if (isDefined(response)) {
+      const validatedResponse = guardWithTolerance<TariffDetailsDTO>(response, isTariffDetailsDTO, {
+        callbackOnError: debug,
+        identifier: "TariffDetailsDTO",
+      });
+      setTariffDetailsInStore(tariffVersionId, validatedResponse);
+      if (!isTariffDetailsDTO(response)) {
+        debug("Response format doesn't match expected type", response);
+      }
+    }
+  }, [response, tariffVersionId]);
+}
+```
+
+### 6. Store for State Management
+Zustand store: **data only**; export standalone setters so components do not subscribe for action references (see zustand-memo-optimization.mdc, performance-architecture-standards.mdc):
+
+```typescript
+// features/GetTariffDetails/stores/useTariffDetailsStore.ts
+interface TariffDetailsStoreType {
+  readonly tariffDetails: Record<number, TariffDetailsDTO>;
+  readonly requestStarted: Record<number, boolean>;
+}
+
+export const useTariffDetailsStore = create<TariffDetailsStoreType>(() => ({
+  tariffDetails: {},
+  requestStarted: {},
+}));
+
+export const setTariffDetailsInStore = (tariffVersionId: number, tariffDetails: TariffDetailsDTO): void => {
+  useTariffDetailsStore.setState((state) => ({
+    tariffDetails: { ...state.tariffDetails, [tariffVersionId]: tariffDetails },
+  }));
+};
+```
+
+### 7. Component Usage
+Using the custom hook in a component:
+
+```typescript
+// components/TariffDetails.tsx
+export default function TariffDetails(props: TariffDetailsProps): ReactElement {
+  const tariffDetailsParams = useGetTariffDetailsParams(false)(props.tariff.key);
+  const tariffDetails = useGetTariffDetails(tariffDetailsParams);
+  
+  if (!tariffDetails) {
+    return <TariffDetailsSkeleton />;
+  }
+  
+  return <TariffDetailsContent details={tariffDetails} />;
+}
+```
+
+## Router Configuration
+Register the API route in routes.ts:
+
+```typescript
+// routes.ts
+export default [
+  // Other routes...
+  route("/api/tariff-details", "./pages/Result/features/GetTariffDetails/services/getTariffDetailsLoader.ts"),
+] satisfies RouteConfig;
+```
+
+## Data Flow Explained
+
+1. **Component Initialization**:
+   - Component triggers data request via custom hook
+   
+2. **Request Creation**:
+   - Custom hook calls utility to format request URL
+   - Parameters are validated before submission
+   
+3. **API Route Invocation**:
+   - React Router fetcher loads the route with parameters
+   
+4. **Loader Execution**:
+   - Loader function extracts URL parameters
+   - Validates parameters and calls API service
+   
+5. **API Service Call**:
+   - Service performs HTTP request to backend
+   - Response is received from the API
+   
+6. **Validation & Processing**:
+   - Response is validated using type guards
+   - Data is normalized if needed
+   
+7. **Response Handling**:
+   - Processing hook receives data from fetcher
+   - Validates response format and updates store
+   
+8. **UI Rendering**:
+   - Component accesses store data
+   - UI renders based on store state
+
+## Benefits of This Pattern
+
+1. **Separation of Concerns**:
+   - API services handle HTTP requests
+   - Loaders handle parameter extraction and validation
+   - Hooks handle UI integration and state management
+   
+2. **Type Safety**:
+   - Each step includes type validation
+   - guardWithTolerance provides type safety with error logging
+   
+3. **Testability**:
+   - Each component can be tested independently
+   - Mocking is simplified by the clear boundaries
+   
+4. **Reusability**:
+   - Response processing pattern is consistent
+   - Store update pattern is standardized
+   
+5. **Error Handling**:
+   - Clear path for error detection and reporting
+   - Consistent error formatting through the chain
+
+## Anti-Patterns to Avoid
+
+```typescript
+// AVOID: Direct API calls in components
+function BadComponent() {
+  useEffect(() => {
+    // Don't call API directly from component
+    fetch('/api/endpoint').then(/* ... */);
+  }, []);
+}
+
+// AVOID: Mixing API calls with UI logic
+function handleButtonClick() {
+  // Don't mix API logic with UI handlers
+  apiCall().then(updateUI);
+}
+
+// AVOID: Inadequate validation
+function missingValidation(data) {
+  // Always validate parameters and responses
+  apiService.call(data); // Missing validation
+}
+```
+
+## Examples from Codebase
+
+Refer to the following implementations for reference:
+- `app/pages/Result/features/GetTariffDetails/*`
+- `app/pages/Result/features/TariffDetailsDesktop/*`
+- `app/features/CustomerEvaluation/*`
+
+## Parameter Validation in Loaders
+
+Required/optional params, enum validation, and boolean conversion: see **api-validation-patterns.mdc**. 

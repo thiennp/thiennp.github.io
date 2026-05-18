@@ -1,0 +1,67 @@
+---
+description: Folder organization — feature-based layout, components, tests, imports, types, YAGNI
+alwaysApply: false
+---
+
+# Folder Organization Standards
+
+## Feature-based organization
+
+- Organize by **feature** or **route**, not only by technical layer.
+- Group related UI under **`src/feature/`**, **`src/pages/`**, or **`src/shared/`** as already used in this repo.
+
+## Component organization
+
+- Each component that has tests/stories/docs lives in its **own folder** when complexity warrants it.
+- Apply **YAGNI**: avoid deep nesting for components that are only used together in one place.
+- Use **`components/`** for sub-components. Prefer consistent names over `containers` / `presenters` unless the codebase already uses a pattern locally.
+- Typical shape:
+
+```
+ComponentName/
+├── ComponentName.tsx
+├── ComponentName.test.tsx
+├── ComponentName.stories.tsx
+├── ComponentName.module.scss
+└── components/
+    └── SubComponent/
+        ├── SubComponent.tsx
+        ├── SubComponent.test.tsx
+        └── SubComponent.stories.tsx
+```
+
+## Tests
+
+- Co-locate **`*.test.tsx`** / **`*.test.ts`** next to sources.
+- Storybook specs live in **`.stories.tsx`** alongside components.
+
+## Naming
+
+- **PascalCase** — components and their folders.
+- **camelCase** — utilities (**utility-naming-conventions.mdc**).
+- **kebab-case** — config files where the repo already does so.
+
+## Imports
+
+- Prefer **aliases** (`utils/`, `types/`, etc.) for cross-folder imports (**import-path-optimization.mdc**).
+- Short **relative** imports only inside the same feature folder.
+
+## Constants and maps
+
+- Put **`Record<Enum, …>`** registries and static maps in **`*.constant.ts`** or dedicated modules — see **code-standard.mdc** and **component-injection-map.mdc**.
+
+## Types
+
+- **`*.type.ts`** for shared interfaces/types; co-locate when only one component uses them.
+
+## Documentation
+
+- Prefer **`src/docs/**/*.mdx`**, co-located **`.mdx`** next to components (as in **Inbox**), or a small **`README.md`** in the feature folder — see **generic.mdc** and **mdx-generic.mdc**.
+
+## YAGNI
+
+- Do not add barrels **`index.ts`** unless needed for lazy loading or multi-export boundaries (**performance-architecture-standards.mdc**).
+
+## Example (this codebase)
+
+The **Inbox** feature uses colocated utils, components, and tests under **`src/feature/Inbox/`** — same idea: keep feature work discoverable in one subtree.

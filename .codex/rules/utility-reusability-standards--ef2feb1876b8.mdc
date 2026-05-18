@@ -1,0 +1,36 @@
+---
+description: When to extract utilities to src/utils vs keep them feature-local
+globs: "**/*.ts,**/*.tsx"
+alwaysApply: false
+---
+
+# Utility Reusability Standards
+
+## Global (`src/utils/`)
+
+Extract when **all** of the following hold:
+
+1. **Generic** — not tied to one screen’s business rules.
+2. **Reused** — already (or clearly about to be) used in more than one feature, or the same concern appears in multiple places.
+3. **Stable API** — name and behavior are clear for the whole app.
+4. **Few feature-specific imports** — does not drag half of a feature into global utils.
+
+Examples in this repo: **`src/utils/typeguards/*`**, **`convertToEuro`**, **`getCookie`**, **`renderIfNotNull`**.
+
+## Feature-local (`src/feature/<Name>/utils/`, `src/pages/.../utils/`, etc.)
+
+Keep local when **any** of the following holds:
+
+1. **Single consumer** — only one component or flow uses it.
+2. **Domain-specific** — name or logic only makes sense in that feature (e.g. inbox filtering rules).
+3. **Would mislead** if moved to `src/utils/` (name sounds global but behavior is not).
+
+## Decision process
+
+1. Search **`src/utils`** and the current feature’s **`utils/`** folders.
+2. If extracting, pick the **smallest** shared surface (one function, clear name).
+3. Add tests next to the utility (**`*.test.ts`**).
+
+## Related
+
+- **existing-utilities.mdc**, **utility-naming-conventions.mdc**, **import-path-optimization.mdc**

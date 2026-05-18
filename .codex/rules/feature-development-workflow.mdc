@@ -1,0 +1,118 @@
+---
+description: Feature development workflow from branch creation, component patterns, testing, commits, to PR creation and verification
+alwaysApply: false
+---
+# Feature Development Workflow
+
+## Scope discovery (local RAG) — before implementation
+
+For non-trivial work, **narrow the blast radius before editing**:
+
+1. Follow **rag-local-corpus.mdc** § **Agent workflow (before code or doc changes)**.
+2. In chat, show **`RAG query:`** then run **`pnpm --dir .cursor/tools/rag run query -- "<question>"`** when the query is not `(none)`.
+3. Optionally `@` the skill **`.cursor/skills/local-rag-hybrid-query/SKILL.md`** so the agent applies the full RAG-first sequence.
+
+Then continue with branch setup and component work below.
+
+## Initial Setup
+1. Create a feature branch from release:
+   ```bash
+   git checkout release
+   git pull
+   git checkout -b feature/[feature-name]-[additional-context]
+   ```
+   Example: `feature/refactor-customer-type-filter-and-fix-saving-tooltip`
+
+## Component Development Process
+1. Follow the three-tier component pattern:
+   - Main/Container component (`ComponentName.tsx`)
+   - Device-specific components (`ComponentNameDesktop.tsx`, `ComponentNameMobile.tsx`)
+   - Props interface in `types` folder (`ComponentNameProps.ts`)
+
+2. File Structure:
+   ```
+   features/ComponentName/
+   ├── ComponentName.tsx
+   ├── ComponentNameDesktop.tsx
+   ├── ComponentNameMobile.tsx
+   └── types/
+       └── ComponentNameProps.ts
+   ```
+
+3. Development Steps:
+   a. Create component folder structure
+   b. Implement device-specific components
+   c. Create main component with device renderer
+   d. Update imports in dependent components
+   e. Run tests and fix any issues
+   f. Update snapshots if needed: `pnpm test-update-snapshot`
+
+## Testing Requirements
+1. Run all tests: `pnpm test`
+2. Update snapshots if needed: `pnpm test -- -u`
+3. Check type safety: `pnpm run typecheck`
+4. Verify component in Storybook if applicable
+
+## Commit Process
+See **commit-workflow.mdc** for staging, message format (ticket prefix, type/scope), and push approval.
+
+1. Stage specific changes:
+   ```bash
+   git add [specific-files-or-folders]
+   ```
+
+2. Create commit messages with ticket prefix and conventional format:
+   ```bash
+   git commit -m "<ticket>: <type>(<scope>): description"
+   ```
+   Types:
+   - feat: New feature
+   - fix: Bug fix
+   - refactor: Code restructuring
+   - test: Adding/updating tests
+   - docs: Documentation updates
+
+3. Push changes:
+   ```bash
+   git push -u origin feature/[branch-name]
+   ```
+
+## Pull Request Creation
+See **jira-ticket-management.mdc** for PR creation via Bitbucket API and credentials.
+
+PR Description Template:
+   ```markdown
+   # Description
+   [Brief overview of changes]
+
+   ## Type of change
+   * [ ] Feature (non-breaking change that adds functionality)
+   * [ ] Bug fix (non-breaking change which fixes an issue)
+   * [ ] Refactor (non-breaking change that improves code structure)
+   * [ ] Documentation update
+
+   ## How Has This Been Tested?
+   * [ ] Unit tests updated and passing
+   * [ ] Snapshot tests updated
+   * [ ] Manual testing completed
+   * [ ] Storybook stories verified
+
+   ## Checklist:
+   * [ ] Code follows component patterns
+   * [ ] Self-review completed
+   * [ ] Documentation updated
+   * [ ] No new warnings
+   * [ ] Tests added/updated
+   * [ ] All tests passing
+   ```
+
+## Final Verification
+1. Verify all files are committed: `git status`
+2. Push any remaining changes: `git add . && git commit && git push`
+3. Review PR in Bitbucket interface
+4. Add appropriate reviewers
+
+## Security Note
+- Create temporary app passwords for PR creation
+- Revoke app passwords after PR creation
+- Never commit sensitive information

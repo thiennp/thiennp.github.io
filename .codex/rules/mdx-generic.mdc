@@ -1,0 +1,16 @@
+---
+description: Documentation standards for MDX files including structure, formatting, and content guidelines
+globs: "**/*.mdx"
+alwaysApply: false
+---
+# MDX Documentation Standards
+
+## Structure
+- Use only "Description," "Usage," and "Preview" sections in MDX files
+
+## Code Examples
+- Do not include "import" statements in MDX TypeScript snippets
+
+## Reference Implementation
+- Follow the structure example in `app/components/ActiveIndicator/ActiveIndicator.mdx`
+

@@ -1,0 +1,23 @@
+---
+description: camelCase naming conventions for utility files and functions
+globs: "**/utils/**/*.ts"
+alwaysApply: false
+---
+# Utility Function Naming Conventions
+
+## Verification
+Run `pnpm run cursor:verify` (includes utility naming check). Fix any reported files.
+
+## Convention
+- **Utility files under `app/.../utils` must use camelCase** (e.g. `handleNumericInput.ts`).
+- File name should match the exported function name (except extension).
+- PascalCase is reserved for React components.
+- **Compound names** use the segment before the first dot as the primary name (e.g. `handleSubmit.util.ts` → `handleSubmit`).
+
+## What `utility-naming.ts` skips (not function-style utilities)
+- Test and spec files (`*.test.*`, `*.spec.*`), type modules (`*.type.ts`, `*.types.*`), constants (`*.constant(s).*`), `*.guardz.ts`, `*.dto.ts`, `*.enum.ts`
+- Paths under `**/enums/**`, `**/form/validations/**`, `**/typeguards/**`
+
+## Related
+- [utility-test-coverage-standards.mdc](mdc:utility-test-coverage-standards.mdc)
+- [existing-utilities.mdc](mdc:existing-utilities.mdc)

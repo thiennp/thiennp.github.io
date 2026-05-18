@@ -1,0 +1,213 @@
+---
+description: Standards for achieving 100% test coverage on utility functions across statements, branches, functions, and lines
+globs: **/*.test.ts,**/*.test.tsx
+alwaysApply: false
+---
+# Utility Test Coverage Standards
+
+## Overview
+This rule establishes comprehensive testing standards for utility functions to ensure 100% coverage across all criteria: statements, branches, functions, and lines.
+
+## Coverage Requirements
+- **Statements**: 100% coverage required
+- **Branches**: 100% coverage required  
+- **Functions**: 100% coverage required
+- **Lines**: 100% coverage required
+
+## Test File Structure
+- **Location**: Same directory as utility function
+- **Naming**: `utilityName.test.ts` (matches function name)
+- **Import**: Direct import from source file
+
+## Test Organization Pattern
+```typescript
+import { describe, it, expect, vi } from "vitest";
+import { utilityFunction } from "./utilityFunction";
+
+describe("utilityFunction", () => {
+  // Test all input types and edge cases
+  it("handles valid input", () => {
+    // Test implementation
+  });
+
+  it("handles edge cases", () => {
+    // Test edge cases
+  });
+
+  it("handles error conditions", () => {
+    // Test error scenarios
+  });
+});
+```
+
+## Testing Guidelines
+
+### 1. Input Validation Testing
+- Test all possible input types
+- Test null/undefined values
+- Test edge cases (empty strings, zero values, etc.)
+- Test invalid inputs that should be rejected
+
+### 2. Branch Coverage
+- Test all conditional branches
+- Test both true/false outcomes of conditions
+- Test early returns and fallback values
+- Test all switch cases or enum values
+
+### 3. Function Coverage
+- Test all exported functions
+- Test all internal helper functions if they're part of the public API
+- Test function overloads and different parameter combinations
+
+### 4. Line Coverage
+- Ensure every line of code is executed
+- Test error handling paths
+- Test default parameter values
+- Test all return statements
+
+## Common Testing Patterns
+
+### For Simple Utilities
+```typescript
+describe("simpleUtility", () => {
+  it("returns expected result for valid input", () => {
+    expect(simpleUtility("input")).toBe("expected");
+  });
+
+  it("handles edge cases", () => {
+    expect(simpleUtility("")).toBe("default");
+    expect(simpleUtility(null)).toBe("default");
+  });
+});
+```
+
+### For Utilities with Dependencies
+```typescript
+describe("utilityWithDependencies", () => {
+  it("calls dependencies correctly", () => {
+    const mockDependency = vi.fn().mockReturnValue("mocked");
+    vi.spyOn(dependencyModule, "dependency").mockImplementation(mockDependency);
+    
+    utilityWithDependencies("input");
+    
+    expect(mockDependency).toHaveBeenCalledWith("input");
+  });
+});
+```
+
+### For Server-Side Utilities
+```typescript
+describe("serverUtility", () => {
+  it("returns correct value for each environment", () => {
+    vi.spyOn(envModule, "getEnv").mockReturnValue(EnvironmentEnum.PROD);
+    expect(serverUtility()).toBe("production-value");
+  });
+});
+```
+
+### For Browser-Dependent Utilities
+```typescript
+describe("browserUtility", () => {
+  it("returns null when document is undefined (SSR)", () => {
+    const originalDocument = global.document;
+    delete global.document;
+    
+    expect(browserUtility()).toBeNull();
+    
+    global.document = originalDocument;
+  });
+});
+```
+
+## Examples from Codebase
+
+### convertToYesNo Utility
+```typescript
+describe("convertToYesNo", () => {
+  it("returns NO for undefined", () => {
+    expect(convertToYesNo(undefined)).toBe(YesNoEnum.NO);
+  });
+
+  it("returns YES for true", () => {
+    expect(convertToYesNo(true)).toBe(YesNoEnum.YES);
+  });
+
+  it("returns NO for false", () => {
+    expect(convertToYesNo(false)).toBe(YesNoEnum.NO);
+  });
+});
+```
+
+### formatIfDefined Utility
+```typescript
+describe("formatIfDefined", () => {
+  it("returns formatted number if value is defined", () => {
+    vi.spyOn(formatNumberModule, "formatNumber").mockReturnValue("formatted");
+    expect(formatIfDefined(123)).toBe("formatted");
+  });
+
+  it("returns empty string if value is undefined", () => {
+    expect(formatIfDefined(undefined)).toBe("");
+  });
+});
+```
+
+## Coverage Verification
+Run coverage check for specific utilities:
+```bash
+pnpm test app/utils/utilityName.test.ts -- --coverage
+```
+
+Verify 100% coverage in all fields:
+```
+utilityName.ts | 100 | 100 | 100 | 100 |
+```
+
+## Anti-Patterns to Avoid
+
+### ❌ Insufficient Test Coverage
+```typescript
+// BAD: Only testing happy path
+describe("utility", () => {
+  it("works with valid input", () => {
+    expect(utility("valid")).toBe("result");
+  });
+  // Missing edge cases and error conditions
+});
+```
+
+### ❌ Testing Implementation Details
+```typescript
+// BAD: Testing internal implementation
+describe("utility", () => {
+  it("calls internal helper", () => {
+    // Don't test internal implementation details
+  });
+});
+```
+
+### ❌ Incomplete Branch Testing
+```typescript
+// BAD: Not testing all branches
+describe("utility", () => {
+  it("handles positive numbers", () => {
+    expect(utility(5)).toBe("positive");
+  });
+  // Missing test for negative numbers and zero
+});
+```
+
+## Best Practices
+
+1. **Test All Code Paths**: Ensure every line, branch, and function is covered
+2. **Use Descriptive Test Names**: Make test names clear about what they're testing
+3. **Test Edge Cases**: Include boundary conditions and unexpected inputs
+4. **Mock Dependencies**: Use vi.spyOn() to mock external dependencies
+5. **Clean Up Mocks**: Restore mocks after tests to avoid side effects
+6. **Group Related Tests**: Use describe blocks to organize related test cases
+7. **Test Error Conditions**: Verify proper error handling and fallback behavior
+
+## Related Rules
+- See [utility-naming-conventions.mdc](mdc:utility-naming-conventions.mdc) for naming standards
+- See [testing-standards.mdc](mdc:testing-standards.mdc) for general testing guidelines
+- See [existing-utilities.mdc](mdc:existing-utilities.mdc) for utility documentation

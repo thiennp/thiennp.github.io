@@ -1,0 +1,4 @@
+interface:
+  display_name: "Release Styleguide React 19"
+  short_description: "Run the ENRG styleguide React 19 release"
+  default_prompt: "Use $release-styleguide-react-19 to release the ENRG styleguide React 19 Jenkins job."

@@ -1,0 +1,178 @@
+---
+description: Git workflow standards for adding new files, SCOPE framework for commit separation, and verification before commits
+alwaysApply: false
+---
+# Git Workflow Standards
+
+## package.json scripts (application only)
+
+The root **`package.json`** **`scripts`** field is for **application and product** commands used in development and CI (e.g. build, dev, test, lint, typecheck, wireframe, text generation).
+
+Do **not** add **automation**, **git helpers**, **agent-only workflows**, or **internal tooling** as **`pnpm run …`** entries. Run those via **`bash`**, **`pnpm exec`**, **`tsx`**, or paths documented under **`scripts/`** or **`.cursor/scripts/`** (e.g. **`bash scripts/git/split-cursor-commit-rebase.sh`**). This keeps the script list aligned with the app and avoids cluttering the namespace.
+
+## Adding New Files
+
+### Always Add New Files to Git
+All new files created during development must be explicitly added to git:
+
+```bash
+# Add specific new files
+git add path/to/new/file.ts
+
+# Or when adding all new files in a directory
+git add path/to/directory/
+```
+
+New files are not automatically tracked by git, even when using `git commit -a` or similar commands. Always verify that all new files are properly added before committing.
+
+### Verification Process
+Before committing changes, always verify file status:
+
+```bash
+# Check status of files
+git status
+
+# Look for "Untracked files:" section
+# Files listed here need to be explicitly added
+```
+
+### Best Practices
+
+1. **Add files as you create them**:
+   ```bash
+   # After creating new file(s)
+   git add path/to/new/file.ts
+   ```
+
+2. **Add files by type or component**:
+   ```bash
+   # When creating multiple related files
+   git add app/features/ComponentName/types/*.ts
+   ```
+
+3. **For new components with multiple files**:
+   ```bash
+   # Add all files for a new component
+   git add app/features/NewComponent/
+   ```
+
+4. **Check for unexpected untracked files**:
+   Regularly run `git status` to identify files that may have been missed.
+
+### Common Pitfalls
+
+1. **Forgotten type files**:
+   When adding new features, type files (interfaces, type guards) are often created in separate files and may be forgotten.
+
+2. **Generated files**:
+   Be cautious about automatically generated files - check the .gitignore to determine if they should be committed.
+
+3. **IDE-specific files**:
+   Files created by IDEs (like .vscode/) should usually be excluded from git.
+
+### When Creating New Features
+
+When implementing a new feature with multiple files (such as DTO types and type guards):
+
+1. Create all required files:
+   ```
+   FeatureName/
+     ├── types/
+     │   └── ResponseDTO/
+     │       ├── ResponseDTO.type.ts
+     │       └── isResponseDTO.ts
+   ```
+
+2. Add all files to git:
+   ```bash
+   git add FeatureName/types/ResponseDTO/
+   ```
+
+3. Verify all files are staged:
+   ```bash
+   git status
+   ```
+
+4. Commit with appropriate message:
+   ```bash
+   git commit -m "feat(feature-name): add response type definitions"
+   ```
+
+## Examples from Codebase
+
+Files that must be explicitly added:
+- New component files (*.tsx, *.ts)
+- Type definitions (*.type.ts)
+- Type guards (is*.ts)
+- Test files (*.test.tsx)
+- Story files (*.stories.tsx)
+- Documentation (*.mdx) 
+
+## Commit Scope Separation
+
+### SCOPE Framework
+Always apply the SCOPE framework before staging any files for commit:
+
+1. **S**eparate - Identify distinct types of changes:
+   - Documentation/rules changes
+   - Implementation code changes
+   - Test changes
+   - Configuration changes
+
+2. **C**lassify - Assign each file to exactly one change type:
+   ```
+   Documentation: .cursor/rules/*.mdc, .cursor/cursor.json
+   Implementation: app/features/*, app/components/*
+   Tests: *.test.tsx, __tests__/*
+   Config: package.json, vite.config.ts
+   ```
+
+3. **O**utline - List which files belong to the current commit scope:
+   ```bash
+   # List files that differ from base branch
+   git diff --name-only
+
+   # Group manually by categories from step 1 & 2
+   ```
+
+4. **P**urpose - Confirm all files serve the same conceptual purpose:
+   - Documentation changes should ONLY include documentation
+   - Implementation changes should ONLY include implementation code
+   - NEVER mix these concerns in a single commit
+
+5. **E**xclude - Explicitly consider what should NOT be included:
+   ```bash
+   # Example: Only stage rule documents, not implementation
+   git add .cursor/rules/*.mdc .cursor/cursor.json
+   
+   # Before committing, verify ONLY rule files are staged
+   git diff --staged --name-only
+   ```
+
+### Critical Rules for Clean Commits
+
+1. **Never mix implementation and documentation changes**
+   - Rule/documentation changes must be committed separately
+   - Implementation code must be committed separately
+
+2. **Verify staged files before every commit**
+   ```bash
+   # Always run before commit
+   git diff --staged --name-only
+   ```
+
+3. **Use specific staging commands**
+   ```bash
+   # Good: Targeted staging
+   git add path/to/specific/files
+   
+   # Avoid: Broad staging that may include unrelated changes
+   git add .
+   ```
+
+4. **Abort commit if scope is mixed**
+   - If you notice mixed concerns (docs + implementation), reset and re-stage correctly
+   ```bash
+   # Reset staging area
+   git reset
+   ```

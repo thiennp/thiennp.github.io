@@ -1,0 +1,64 @@
+---
+description: State representation — avoid magic strings; prefer null, enums, and accurate types
+globs: 
+alwaysApply: true
+---
+
+# State Representation and Avoiding Magic Strings
+
+## Overview
+
+Use clear, type-safe values instead of **magic strings** so state stays robust and refactor-friendly.
+
+## Anti-pattern: sentinel strings
+
+#### Before (avoid)
+
+```typescript
+const isNewItem = selectedId === "NEW_ITEM";
+
+<RadioGroup.Item
+  value="NEW_ITEM"
+  checked={selectedId === "NEW_ITEM"}
+  onChange={() => {
+    onSelectionChange("NEW_ITEM");
+  }}
+/>
+```
+
+**Why this is bad:** typos slip through, refactors are risky, intent is unclear.
+
+## Prefer: `null`, enums, booleans
+
+#### After (prefer)
+
+```typescript
+const isNewItem = selectedId === null;
+
+<RadioGroup.Item
+  checked={selectedId === null}
+  onChange={() => {
+    onSelectionChange(null);
+  }}
+/>
+```
+
+**Types:** model optional selection as `string | null` or `string | null | undefined`, not ad-hoc string sentinels.
+
+```typescript
+export interface ExampleFormData {
+  readonly selectedBankAccountId?: string | null;
+}
+```
+
+## Guidelines
+
+- **Booleans:** `true` / `false`
+- **No selection / empty choice:** `null` when that is the domain meaning
+- **Not yet set (forms):** often `undefined`
+- **Fixed variants:** **enums** or string union types — not arbitrary string literals repeated across files
+- **Never** use raw strings as the only discriminator for distinct logical states
+
+## Related
+
+- **enum-validation-pattern.mdc**, **typescript-standards.mdc**, **jsx-best-practices.mdc**

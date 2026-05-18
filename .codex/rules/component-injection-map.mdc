@@ -1,0 +1,86 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# Component Injection via Maps
+
+## Overview
+This rule defines the standard for handling conditional rendering of different components based on a state or prop. Instead of using conditional logic (like `if` or `switch` statements) inside a component to decide what to render, we should use a **component map** to inject the correct component from its parent.
+
+This is a form of **Inversion of Control** and helps us adhere to the **Open/Closed Principle**.
+
+## The Problem: Internal Conditional Rendering
+When a component contains logic to render different child components based on a prop, it becomes difficult to extend and maintain.
+
+#### ❌ Anti-Pattern Example
+Imagine a component that does this internally:
+
+```typescript
+// Inside a component like the old "PaymentMethodDetails"
+if (paymentType === PaymentTypeEnum.BANK_TRANSFER) {
+  return <BankTransferDetails />;
+} else if (paymentType === PaymentTypeEnum.DIRECT_DEBIT) {
+  return <DirectDebitDetails {...props} />;
+}
+// To add PayPal, we must modify this file...
+// else if (paymentType === PaymentTypeEnum.PAYPAL) { ... } 
+else {
+  return null;
+}
+```
+
+**Why this is a problem:**
+1.  **Violates Open/Closed Principle:** To add a new payment method (e.g., PayPal), you must modify the logic of this component, adding another `if` or `case`. The component is not closed for modification.
+2.  **Tight Coupling:** The component is tightly coupled to all the possible views it might render.
+3.  **Poor Cohesion:** Its responsibility is blurred. It's both deciding *which* view to render and orchestrating the rendering itself.
+
+## The Solution: Component Injection Map
+The parent component should be responsible for deciding which view to render. We achieve this by creating a map where keys correspond to a state (like a `PaymentTypeEnum`) and the values are the components to render for that state.
+
+#### Preferred pattern (illustrative)
+
+1. **Create focused view components** for each variant (e.g. `BankTransferDetails`, `DirectDebitDetails`).
+2. **Define a map in the parent** that owns the “which view?” decision.
+
+    ```typescript
+    // e.g. PaymentMethodFormFields.tsx (names illustrative)
+    
+    const paymentMethodViews: Record<PaymentTypeEnum, ReactElement | null> = {
+      [PaymentTypeEnum.BANK_TRANSFER]: <BankTransferDetails />,
+      [PaymentTypeEnum.DIRECT_DEBIT]: (
+        <DirectDebitDetails
+          accountsToShow={accountsToShow}
+          selectedBankAccountId={selectedBankAccountId}
+          onAccountSelectionChange={(accountId) => {
+            setValue("selectedBankAccountId", accountId);
+          }}
+          register={register}
+        />
+      ),
+    };
+    ```
+
+3.  **Render from the Map:**
+    The parent component then uses the `paymentType` state to look up the correct component in the map and render it.
+
+    ```typescript
+    // In PaymentMethodFormFields.tsx render method
+    return (
+      <div className={styles.PaymentMethodFormFields}>
+        <PaymentTypeSelection
+          paymentType={paymentType}
+          onPaymentTypeChange={(type) => {
+            setValue("paymentType", type);
+          }}
+        />
+        {/* The correct component is injected here */}
+        {paymentMethodViews[paymentType]}
+      </div>
+    );
+    ```
+
+## Benefits of the Component Map Pattern
+-   **Extensible:** To add a new payment method, we simply create a new view component and add it to the map. The existing logic remains untouched.
+-   **Clean Separation of Concerns:** The parent component is responsible for the "which" (which view to show), and the individual view components are responsible for the "what" (the actual UI for that view).
+-   **Declarative and Readable:** The component map makes the relationship between states and their corresponding views explicit and easy to understand.

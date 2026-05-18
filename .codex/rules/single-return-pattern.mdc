@@ -1,0 +1,201 @@
+---
+description: Single exit point pattern for functions to improve readability and control flow
+globs: "**/*.ts,**/*.tsx"
+alwaysApply: false
+---
+# Single Return Pattern
+
+Prefer single exit when the main path is linear; guard clauses are acceptable when they reduce nesting.
+
+## Overview
+This rule defines the standard pattern for avoiding multiple return statements in functions. Functions should have a single exit point to improve readability, maintainability, and control flow predictability.
+
+## Exceptions (when multiple returns are acceptable)
+
+- **Guard clauses**: Early returns for invalid input or preconditions (e.g. `if (!isDefined(x)) return;`) when they avoid deep nesting.
+- **Recursive functions**: Base-case returns.
+- **Performance-critical code**: When early exit gives a clear benefit.
+
+## Problem: Multiple Return Statements
+Multiple return statements make code harder to follow and control. They create multiple exit points that can lead to:
+- Unpredictable control flow
+- Difficulty in debugging
+- Harder to add logging or cleanup logic
+- Reduced code maintainability
+
+### Anti-Pattern Example
+```typescript
+// ❌ BAD: Multiple return statements
+export const initializeComponent = (config: Config): void => {
+  if (!isDefined(config)) {
+    return;
+  }
+
+  if (!isValidConfig(config)) {
+    return;
+  }
+
+  // Main logic here
+  processConfig(config);
+};
+```
+
+## Solution: Single Return Pattern
+Use conditional logic without early returns. For void functions, no explicit return is needed.
+
+### Implementation Pattern
+```typescript
+// ✅ GOOD: Single exit point with conditional logic
+export const initializeComponent = (config: Config): void => {
+  if (isDefined(config) && isValidConfig(config)) {
+    // Main logic here
+    processConfig(config);
+  }
+};
+```
+
+## Pattern Structure
+
+### 1. Use Positive Conditionals
+```typescript
+// ✅ GOOD: Positive conditions
+if (isValid(data)) {
+  // Process valid data
+}
+
+// ❌ AVOID: Negative conditions with early returns
+if (!isValid(data)) {
+  return;
+}
+```
+
+### 2. No Explicit Return for Void Functions
+```typescript
+// ✅ GOOD: No explicit return needed for void functions
+export const doSomething = (): void => {
+  if (condition) {
+    // Do work
+  }
+};
+
+// ❌ AVOID: Unnecessary return for void functions
+export const doSomething = (): void => {
+  let result: void = undefined;
+  if (condition) {
+    // Do work
+  }
+  return result; // Unnecessary
+};
+```
+
+### 3. Single Return for Non-Void Functions
+```typescript
+// ✅ GOOD: Single return with conditional assignment
+export const processData = (data: unknown): ProcessedData | null => {
+  if (isValidData(data)) {
+    return {
+      id: data.id,
+      name: data.name,
+      processed: true
+    };
+  }
+  
+  return null;
+};
+```
+
+## Examples from Codebase
+
+### Void Functions
+```typescript
+// From: app/wireframe/hooks/useWireframeAuth/utils/initializeUnifiedLoginLayer.ts
+export const initializeUnifiedLoginLayer = (
+  product: string,
+  socialClosingUrl: string | null,
+  onePagerURL: string | null,
+): void => {
+  if (isDefined(window.Check24)) {
+    const config = {
+      deviceoutput: getUnifiedLoginDeviceOutput(),
+      api_product: product,
+      ...(socialClosingUrl && { social_login_closing_url: socialClosingUrl }),
+      ...(onePagerURL && { social_login_callback_url: onePagerURL }),
+    };
+
+    window.Check24.uliloginlayer.init(config);
+  }
+};
+```
+
+### Async Functions
+```typescript
+// From: app/wireframe/hooks/useWireframeAuth/utils/handleUnifiedLoginEvent.ts
+export const handleUnifiedLoginEvent = async (event: Event): Promise<void> => {
+  const unifiedLoginData = (event as { detail?: { ul?: { STATE: string; SSO_SESSION?: string } } }).detail?.ul;
+
+  if (isDefined(unifiedLoginData) && isNonEmptyString(unifiedLoginData.SSO_SESSION)) {
+    setSessionCookie(unifiedLoginData.SSO_SESSION);
+
+    const isLoggedIn = unifiedLoginData.STATE === "loggedin" || unifiedLoginData.STATE === unifiedLoginData.SSO_SESSION;
+    if (isLoggedIn) {
+      await fetchAndUpdateUser(unifiedLoginData.SSO_SESSION);
+    }
+  }
+};
+```
+
+### Functions with Return Values
+```typescript
+// ✅ GOOD: Single return with conditional assignment
+export const processData = (data: unknown): ProcessedData | null => {
+  if (isValidData(data)) {
+    return {
+      id: data.id,
+      name: data.name,
+      processed: true
+    };
+  }
+  
+  return null;
+};
+```
+
+## Benefits
+
+1. **Predictable Control Flow**: Single exit point makes the function flow easier to follow
+2. **Easier Debugging**: Set breakpoints at the single return point
+3. **Better Maintainability**: Adding logging or cleanup is straightforward
+4. **Consistent Pattern**: All functions follow the same structure
+5. **Functional Programming**: Avoids mutable variables and unnecessary returns
+6. **Type Safety**: Proper typing without artificial result variables
+
+## When to Apply
+
+Apply this pattern to:
+- Utility functions
+- Event handlers
+- Initialization functions
+- Data processing functions
+- Any function with conditional logic
+
+## Refactoring Process
+
+When refactoring existing functions:
+
+1. **Identify early returns**: Look for `if (!condition) return;` patterns
+2. **Invert conditions**: Change negative conditions to positive
+3. **Remove unnecessary variables**: Don't create artificial result variables for void functions
+4. **Move logic inside conditionals**: Place main logic inside positive conditions
+5. **Add single return only if needed**: Only for non-void functions
+
+## Testing Considerations
+
+- Ensure the refactored function produces identical results
+- Test all conditional branches
+- Verify async functions maintain proper behavior
+- Check that error handling remains intact
+
+## Related Rules
+- [Clean Code Refactoring Patterns](mdc:.cursor/rules/clean-code-refactoring-patterns.mdc) - For extracting complex logic
+- [Functional Programming Principles](mdc:.cursor/rules/functional-principles.mdc) - For functional programming patterns
+- [TypeScript Standards](mdc:.cursor/rules/typescript-standards.mdc) - For proper typing

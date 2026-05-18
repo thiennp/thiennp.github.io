@@ -1,0 +1,64 @@
+---
+description: Import paths — baseUrl src, short imports, @ alias, avoid deep relatives
+globs: 
+alwaysApply: true
+---
+
+# Import Path Optimization
+
+## How resolution works here
+
+[tsconfig.json](mdc:tsconfig.json) sets **`"baseUrl": "src"`** and **`"paths": { "@/*": ["src/*"] }`**.
+
+- Imports like **`utils/...`**, **`stores/...`**, **`shared/...`**, **`common/...`**, **`pages/...`**, **`feature/...`**, **`dtos/...`** resolve under **`src/`** (no `src/` prefix in the import string).
+- Optional explicit alias: **`@/some/path`** → **`src/some/path`**.
+
+Prefer these over long **`../../../`** chains.
+
+## Anti-pattern
+
+```typescript
+// BAD: deep relatives across packages
+import convertToEuro from "../../../utils/convertToEuro";
+```
+
+## Preferred
+
+```typescript
+// GOOD: path relative to src/ (baseUrl)
+import convertToEuro from "utils/convertToEuro";
+import useLead from "stores/useLead";
+import PriceDetailsMobile from "shared/PriceDetails/PriceDetailsMobile/PriceDetailsMobile";
+```
+
+## When relatives are OK
+
+Use **short** relatives (**`./`** / **`../`**) inside the **same feature** or **same folder** (sibling files, local `types/`, local `utils/`).
+
+```typescript
+import { LocalType } from "./types/LocalType";
+import { sibling } from "../Sibling/sibling";
+```
+
+## Cross-area imports
+
+For imports across **`pages/`**, **`shared/`**, **`feature/`**, use **`baseUrl`** paths as above, not five-level **`../`**.
+
+## TypeScript / tooling
+
+- App and tests rely on the same **`tsconfig.json`** **`baseUrl`**.
+- Storybook uses **`@storybook/preset-create-react-app`**, which picks up the CRA/tsconfig resolution for **`src/`** imports. Extra webpack aliases live in [`.storybook/main.ts`](mdc:.storybook/main.ts) under **`storybook/*`** only.
+
+## Anti-patterns
+
+- Mixing **`../../../`** for something that has a stable **`src/`** top-level name (`utils`, `shared`, `stores`, …).
+- Introducing new path aliases in **`tsconfig.json`** without updating Storybook if the new alias is used in stories (usually unnecessary — prefer **`baseUrl`**-style imports already supported).
+
+## Examples in this repo
+
+- [src/shared/PriceDetails/PriceDetailsMobile/PriceDetailsMobile.tsx](mdc:src/shared/PriceDetails/PriceDetailsMobile/PriceDetailsMobile.tsx) — `utils/renderIfNotNull`, `stores/useLead`
+- [src/utils/convertToEuro.ts](mdc:src/utils/convertToEuro.ts) — consumed as **`utils/convertToEuro`**
+
+## Related
+
+- **folder-organization.mdc**, **typescript-standards.mdc**, **existing-utilities.mdc**

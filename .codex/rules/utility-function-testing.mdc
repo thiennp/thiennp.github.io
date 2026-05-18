@@ -1,0 +1,8 @@
+---
+description: Guidelines for testing utility functions in test files
+globs: **/*.test.ts,**/*.test.tsx
+alwaysApply: false
+---
+# Utility Function Testing
+
+See **utility-test-coverage-standards.mdc** for coverage and structure; **testing-standards.mdc** for type safety and mocking. Test files: `utilityName.test.ts` next to source.

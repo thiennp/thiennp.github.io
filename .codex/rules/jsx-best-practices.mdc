@@ -1,0 +1,66 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+ # JSX Best Practices
+
+## Conditional Rendering
+- Prefer map constants over multiple conditional expressions in JSX
+- Define lookup maps at the top level, outside of component functions 
+- Follow the pattern: `const COMPONENT_MAP: Record<KeyType, () => ReactElement>` 
+- Access components through the map with `{COMPONENT_MAP[key]()}`
+- Use TypeScript enums as map keys for type safety when possible
+
+### Example - Poor Practice:
+```tsx
+// Avoid multiple conditional expressions in JSX
+<div>
+  {type === 'success' && <SuccessComponent />}
+  {type === 'error' && <ErrorComponent />}
+  {type === 'warning' && <WarningComponent />}
+  {type === 'info' && <InfoComponent />}
+</div>
+```
+
+### Example - Good Practice:
+```tsx
+// Define a map constant
+const MESSAGE_COMPONENT_MAP: Record<MessageType, () => ReactElement> = {
+  [MessageType.SUCCESS]: () => <SuccessComponent />,
+  [MessageType.ERROR]: () => <ErrorComponent />,
+  [MessageType.WARNING]: () => <WarningComponent />,
+  [MessageType.INFO]: () => <InfoComponent />
+};
+
+// Use the map in JSX
+<div>
+  {MESSAGE_COMPONENT_MAP[type]()}
+</div>
+```
+
+## JSX Simplification
+- Extract complex JSX expressions into variables or functions
+- Keep render methods clean and focused on structure
+- Separate data transformation from rendering logic
+- Use early returns for conditional rendering when appropriate
+- Break large components into smaller, focused components
+
+## Array Rendering
+- Use explicit `key` props with stable, unique identifiers
+- Avoid using array index as key when items can be reordered
+- Extract item rendering logic to separate components
+- Use `map` instead of imperative loops
+- Consider performance optimizations for long lists (virtualization)
+
+## Event Handling
+- Define event handlers outside JSX using useCallback
+- Keep event handlers focused on a single responsibility
+- Use descriptive names that indicate both event and action
+- Prefer arrow functions for consistent `this` binding
+
+## Props Passing
+- Destructure props at the function parameter level
+- Use object spread for passing multiple props to a child component
+- Be explicit about which props are being passed
+- Avoid passing unnecessary props

@@ -1,0 +1,8 @@
+---
+description: TypeScript and JSX conventions including React imports and TEXT_MANAGER access
+globs: "**/*.tsx,**/*.ts"
+alwaysApply: false
+---
+- Don't use React.* namespace (e.g. use `ReactElement` not `React.ReactElement`).
+- TEXT_MANAGER: prefer direct access over destructuring for proper type checking.
+- When the same text key is used in multiple places, consider a dedicated hook.

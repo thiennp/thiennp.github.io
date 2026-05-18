@@ -1,0 +1,65 @@
+---
+description: 
+globs: *.ts,*.tsx
+alwaysApply: false
+---
+# Enum Validation Pattern
+
+## Overview
+This rule describes the standard pattern for validating enum values in the codebase using the isEnum utility.
+
+## Key Principles
+- Use the `isEnum` utility instead of custom validation functions
+- Follow the curried function pattern for type safety and clean code
+- Add appropriate debug callbacks for better error reporting
+
+## Implementation Pattern
+
+```typescript
+// Import the utility
+import isEnum from "utils/typeguards/isEnum";
+import { ProductEnum } from "enums/Product.enum";
+
+// In validation logic:
+const productIdNumber = Number(productIdParam);
+if (!isEnum(ProductEnum)(productIdNumber)) {
+  return {
+    errorMessage: "Invalid productId",
+    statusCode: 400
+  };
+}
+
+// Use with debug for better error reporting
+if (
+  isEnum(ProductEnum)(productId, {
+    callbackOnError: debug,
+    identifier: "productId",
+  })
+) {
+  // Proceed with valid enum value
+}
+```
+
+## Anti-Pattern
+Avoid creating custom validation functions that duplicate the isEnum functionality:
+
+```typescript
+// AVOID: Custom validation function
+function isValidProductEnum(value: number): value is ProductEnum {
+  return Object.values(ProductEnum).includes(value);
+}
+```
+
+## Example from submitLikeLoader.ts
+```typescript
+// Convert and validate parameters
+const productIdNumber = Number(productIdParam);
+if (!isEnum(ProductEnum)(productIdNumber)) {
+  return {
+    errorMessage: "Invalid productId",
+    statusCode: 400
+  };
+}
+
+const productId = productIdNumber;
+``` 

@@ -1,0 +1,268 @@
+---
+description: Standards for SCSS modules including BEM naming, file organization, and conversion patterns
+globs: "**/*.scss,**/*.module.scss"
+alwaysApply: false
+---
+# SCSS Module Standards
+
+## Overview
+This rule defines the standards for using SCSS modules to ensure consistent, maintainable, and scalable styling across the codebase.
+
+## BEM Naming Convention
+- **Component**: The root class of a component's style should match the component's name exactly (e.g., `.ComponentName`).
+- **Element**: Descendant elements within a component are denoted with a single underscore (e.g., `ComponentName_element`).
+- **Modifier**: Variations or states of a component or element are denoted with a triple underscore (e.g., `ComponentName___modifier` or `ComponentName_element___modifier`).
+- **Never use double underscores**.
+
+### Example
+```scss
+// ComponentName.module.scss
+
+.ComponentName {
+  // Base styles for the component's root element
+  display: flex;
+
+  &_element {
+    // Styles for a descendant element
+    padding: 8px;
+  }
+
+  &___disabled {
+    // Styles for the component in a 'disabled' state
+    opacity: 0.5;
+    pointer-events: none;
+  }
+}
+```
+
+### Using styles in component (.tsx)
+Import the module and use the styles object; CSS Modules generate unique class names at build time:
+
+```tsx
+import styles from "./ComponentName.module.scss";
+
+return (
+  <div className={styles.ComponentName}>
+    <div className={styles.ComponentName_element}>
+      <input className={`${styles.ComponentName_input} ${styles["ComponentName_input___disabled"]}`} />
+  </div>
+);
+```
+
+## File Organization
+- Create a `.module.scss` file for each component that requires styles.
+- Co-locate the stylesheet with its corresponding component file.
+- Import styles using the `import styles from "./ComponentName.module.scss"` syntax.
+- Apply classes in your component using the styles object: `className={styles.ComponentName}`.
+
+## Best Practices
+- **Semantic Class Names**: Use names that describe the purpose or role of an element (e.g., `_submitButton`, `_userInfo`) rather than its appearance (e.g., `_redBox`, `_largeText`).
+- **Single Root Class**: The stylesheet should be nested under a single root class that matches the component's name. This avoids style conflicts and makes the CSS self-documenting.
+- **Alphabetical Sorting**: Sort CSS properties alphabetically within each rule to ensure consistency and readability.
+- **Use Pixel Units**: Always use `px` for sizing, spacing, and font sizes. Do not use `rem` or `em`.
+- **Use CSS variables for colors (no raw hex by default)**: Do **not** paste literal hex values (e.g. `#181818`, `#022d94`) in SCSS until you have checked whether the same role is already represented by a **CSS custom property**. Prefer `var(--…)` tokens (e.g. `var(--c24-color-fusion-blue)`, `var(--c24-color-dark-grey)`) so themes and branding stay consistent.
+- **Shorthand Properties**: Use shorthand properties for `margin`, `padding`, and `border` where possible.
+- **Avoid `!important`**: Only use `!important` as a last resort to override third-party library styles or for utility classes that must take precedence.
+
+## Core Principles
+- Replace all Tailwind classes with SCSS modules for better maintainability
+- Use BEM naming convention with single underscores for elements
+- Always use pixel units, never rem
+- Sort CSS properties alphabetically
+- Use semantic class names that describe purpose, not styling
+- Combine related CSS properties using shorthand syntax
+
+## CSS Property Standards
+
+### Units
+- **Always use px units, never rem**
+- Convert rem to px: `1rem = 16px`, `0.5rem = 8px`, `1.5rem = 24px`
+
+### Property Sorting
+- **Sort all CSS properties alphabetically**
+- Group related properties but maintain alphabetical order within groups
+
+### Shorthand Properties
+- Use combined border-radius: `border-radius: 3px 3px 3px 0` instead of separate properties
+- Combine margin/padding where possible: `padding: 16px 32px 16px 16px`
+
+### Color variables (avoid hex in modules)
+- **Prefer `var(--token)` over `#hex`**: When implementing or changing colors in `.module.scss`, **search the codebase first** for an existing variable—e.g. **`app/root.css`** (`:root` and global rules), **`app/App.tsx`** / style imports if they define tokens, and **existing components** that use `var(--c24-color-…)` or other project `--*` names. Reuse the same token when the semantic role matches (text, border, CTA, background).
+- **If no variable exists** for a new color: add a named custom property in the appropriate global layer (typically **`app/root.css`** `:root`) with a clear name, then reference it with `var(--…)` in modules—avoid leaving one-off hex literals scattered in feature SCSS.
+- **Examples**: `color: var(--c24-color-dark-grey);`, `border-color: var(--c24-color-grey);`, `background-color: var(--c24-color-white);`
+- Maintain alignment with existing **`--c24-color-*`** naming where that system is already in use.
+
+## Important Declarations
+- Keep `!important` declarations when overriding external library styles
+- Use `!important` for skeleton components to ensure proper styling overrides
+- Document why `!important` is necessary in comments when not obvious
+
+## Semantic Class Naming
+- Use purpose-based names: `starsGroup` instead of `lightGreyFill`
+- Use action-based names: `closeButton` instead of `iconContainer`
+- Use content-based names: `headline` instead of `boldText`
+
+### Examples
+```scss
+// GOOD - Semantic names
+.Component {
+  &_starsGroup { fill: var(--c24-color-yellow); }
+  &_closeButton { position: absolute; }
+  &_headline { font-weight: bold; }
+}
+
+// AVOID - Style-based names
+.Component {
+  &_yellowFill { fill: var(--c24-color-yellow); }
+  &_absolutePosition { position: absolute; }
+  &_boldText { font-weight: bold; }
+}
+```
+
+## Common Conversion Patterns
+
+### Layout Classes
+```scss
+// Tailwind: flex flex-col gap-4
+.Component_container {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+// Tailwind: w-full h-full
+.Component_fullSize {
+  height: 100%;
+  width: 100%;
+}
+
+// Tailwind: absolute top-4 right-0
+.Component_positioned {
+  position: absolute;
+  right: 0;
+  top: 16px;
+}
+```
+
+### Sizing Classes
+```scss
+// Tailwind: !w-4 !h-4
+.Component_icon {
+  height: 16px !important;
+  width: 16px !important;
+}
+
+// Tailwind: max-w-[350px]
+.Component_constrained {
+  max-width: 350px;
+}
+```
+
+### Spacing Classes
+```scss
+// Tailwind: p-4 pr-8
+.Component_padded {
+  padding: 16px 32px 16px 16px;
+}
+
+// Tailwind: mt-[-1px]
+.Component_negativeMargin {
+  margin-top: -1px;
+}
+```
+
+### Color Classes
+```scss
+// Tailwind: bg-c24-fusion-blue
+.Component_background {
+  background-color: var(--c24-color-fusion-blue);
+}
+
+// Tailwind: fill-c24-yellow
+.Component_stars {
+  fill: var(--c24-color-yellow);
+}
+```
+
+## Component-Specific Patterns
+
+### Skeleton Components
+- Use `!important` for sizing overrides
+- Maintain consistent skeleton sizing patterns
+- Use descriptive names for different skeleton elements
+
+```scss
+.ComponentSkeleton {
+  &_closeButton {
+    height: 18px !important;
+    width: 18px !important;
+  }
+  
+  &_headline {
+    height: 32px !important;
+    width: 220px !important;
+  }
+}
+```
+
+### Icon Components
+- Always specify exact pixel dimensions
+- Use `!important` when overriding library defaults
+- Include background-color for icon fills
+
+```scss
+.Component {
+  &_icon {
+    background-color: var(--c24-color-nobel-grey) !important;
+    height: 16px !important;
+    width: 16px !important;
+  }
+}
+```
+
+### Layout Components
+- Use semantic container names
+- Separate concerns with different classes
+- Maintain responsive behavior through CSS
+
+```scss
+.ComponentLayout {
+  &_container {
+    display: flex;
+    gap: 16px;
+    padding: 16px;
+  }
+  
+  &_leftColumn {
+    flex: 1;
+    padding-right: 16px;
+  }
+  
+  &_rightColumn {
+    flex: 1;
+    padding-left: 16px;
+  }
+}
+```
+
+## Migration Process
+1. **Identify Tailwind classes** in the component
+2. **Create SCSS module file** with `.module.scss` extension
+3. **Convert classes to BEM naming** with semantic names
+4. **Use pixel units** and alphabetical property sorting
+5. **Import and apply** SCSS module in component
+6. **Test visual consistency** after conversion
+
+## Examples from Codebase
+- [QuickFilterButtonIcon](mdc:app/components/QuickFilterButton/components/QuickFilterButtonIcon.tsx) - Icon sizing and positioning
+- [CustomerEvaluationButton](mdc:app/features/CustomerEvaluation/components/CustomerEvaluationButton.tsx) - Complex component with conditional styling
+- [NewsTicker](mdc:app/features/NewsTicker/components/NewsTicker/NewsTicker.tsx) - External library integration
+- [EvaluationOverview](mdc:app/features/CustomerEvaluation/components/CustomerEvaluationTab/features/EvaluationOverview/EvaluationOverview.tsx) - Semantic class usage
+
+## Anti-Patterns to Avoid
+- Using rem units instead of px
+- Style-based class names instead of semantic names
+- Multiple classes per element instead of comprehensive single classes
+- Unsorted CSS properties
+- Missing `!important` for library overrides
+- Double underscores in BEM naming

@@ -1,0 +1,59 @@
+---
+description: Naming components by purpose (what) not implementation (how)
+globs: "**/*.tsx"
+alwaysApply: false
+---
+# Component Naming Conventions
+
+## Overview
+This rule defines the standard for naming React components to ensure clarity, maintainability, and a self-documenting codebase.
+
+## Core Principle: Name Components by "What" They Do, Not "How" They Do It
+A component's name should describe its **purpose or domain responsibility**, not its technical implementation.
+
+- **What (Purpose):** What is this component's role in the feature? What business logic does it represent?
+- **How (Implementation):** How does this component achieve its purpose? Does it use conditional logic, loops, or state?
+
+The name should always focus on the "What."
+
+## Examples from Codebase
+
+### Good vs. Poor Naming
+During the refactoring of the Payment Method form, we identified a component with a poor name and replaced it with a much better one.
+
+#### ❌ Poor Name: `ConditionalContent`
+```typescript
+// From: app/pages/Checkout/features/PaymentMethod/components/PaymentMethodForm/components/PaymentMethodFormFields/PaymentMethodFormFields.tsx
+
+// This component was originally named ConditionalContent.
+<ConditionalContent
+  paymentType={paymentType}
+  accountsToShow={accountsToShow}
+  // ...other props
+/>
+```
+**Why it's a poor name:**
+1.  **It Describes the "How":** The name `ConditionalContent` only tells us that the component uses conditional logic inside. It reveals an implementation detail.
+2.  **It's Generic:** This name is not specific to the feature. A component named `ConditionalContent` could exist anywhere.
+3.  **Lacks Business Context:** It gives no clue about its actual purpose, which is to show the specific fields and information for either "Direct Debit" or "Bank Transfer".
+
+---
+
+#### ✅ Good Name: `PaymentMethodDetails`
+```typescript
+// The refactored component with a descriptive name.
+<PaymentMethodDetails
+  paymentType={paymentType}
+  accountsToShow={accountsToShow}
+  // ...other props
+/>
+```
+**Why it's a good name:**
+1.  **It Describes the "What":** It clearly states that the component's purpose is to display the *details* of a selected payment method.
+2.  **It's Specific and Contextual:** The name `PaymentMethodDetails` firmly anchors the component within the "Payment Method" feature.
+3.  **It's Domain-Oriented:** The name is based on a business concept (details of a payment method) rather than a technical one.
+
+## Guidelines
+- **Be Specific:** Avoid generic names like `Wrapper`, `Container`, `Content`, or `Item`. Instead, use `PageLayoutWrapper`, `TariffDetailsContainer`, `PaymentMethodDetails`, or `BankAccountItem`.
+- **Focus on the Domain:** Connect component names to the feature or business domain they belong to.
+- **Review Names During Code Reviews:** Actively question component names to ensure they are descriptive and meaningful.

@@ -1,0 +1,179 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# JSON Safety Standards
+
+## Avoid Direct Use of JSON.parse and JSON.stringify
+
+JSON.parse and JSON.stringify operations present several risks:
+
+1. Type Safety Issues:
+   - No compile-time type checking
+   - Runtime type errors when the structure doesn't match expectations
+   - Can introduce `any` types which bypass TypeScript's safety mechanisms
+
+2. Error Handling Problems:
+   - JSON.parse throws exceptions on invalid input
+   - These exceptions are often not properly caught and handled
+   - Can lead to unhandled promise rejections
+
+3. Security Considerations:
+   - Potential injection vulnerabilities if used with untrusted data
+   - Reviver functions in JSON.parse can execute code
+   - Circular references can cause application crashes
+
+## Recommended Alternatives
+
+### For API Requests
+- Use typed request/response objects with proper validation
+- Leverage built-in serialization of fetch/Axios/similar libraries
+- Implement proper error boundaries around parsing operations
+
+### For Form Data
+- Use FormData for sending complex data structures
+- Separate individual fields where possible
+- Apply proper validation before and after transmission
+
+### For Local Storage
+- Create wrapper functions with proper typing and error handling
+- Validate data structure when retrieving from storage
+- Use type guards to ensure type safety
+
+## Implementation Patterns
+
+### Safe Parsing Pattern
+```typescript
+function safelyParseJSON<T>(
+  input: string, 
+  typeGuardFn: (value: unknown) => value is T,
+  errorCallback: (error: unknown) => void
+): T | null {
+  try {
+    const parsed = JSON.parse(input);
+    if (typeGuardFn(parsed)) {
+      return parsed;
+    }
+    errorCallback(new Error("Validation failed for parsed JSON"));
+    return null;
+  } catch (error) {
+    errorCallback(error);
+    return null;
+  }
+}
+
+// Usage
+const data = safelyParseJSON<UserData>(
+  jsonString, 
+  isUserData,
+  error => debug("Failed to parse user data", error)
+);
+```
+
+### FormData Pattern for Complex Objects
+```typescript
+// Sending
+const formData = new FormData();
+formData.append("simpleField", "value");
+
+// For complex objects, add individual properties
+Object.entries(complexObject).forEach(([key, value]) => {
+  if (value !== undefined && value !== null) {
+    formData.append(`complexObject.${key}`, String(value));
+  }
+});
+
+// Receiving
+const formData = await request.formData();
+const complexObject: Record<string, unknown> = {};
+
+for (const [key, value] of formData.entries()) {
+  if (key.startsWith("complexObject.") && typeof value === "string") {
+    const propKey = key.replace("complexObject.", "");
+    complexObject[propKey] = value;
+  }
+}
+
+// Validate the reconstructed object
+if (isValidComplexObject(complexObject)) {
+  // Use the validated object
+}
+```
+
+### Type Guard Pattern
+```typescript
+function isUserProfile(value: unknown): value is UserProfile {
+  return (
+    typeof value === "object" &&
+    value !== null &&
+    "name" in value &&
+    typeof (value as UserProfile).name === "string" &&
+    "age" in value &&
+    typeof (value as UserProfile).age === "number"
+  );
+}
+
+// Usage with JSON
+try {
+  const data = JSON.parse(jsonString);
+  if (isUserProfile(data)) {
+    // Type-safe usage
+    console.log(data.name);
+  } else {
+    console.error("Invalid user profile data", data);
+  }
+} catch (error) {
+  console.error("Failed to parse JSON", error);
+}
+```
+
+## Examples from Codebase
+
+### Using FormData for API Requests
+```typescript
+// In a submit action
+const formData = new FormData();
+formData.append("productId", String(params.productId));
+formData.append("page", String(params.page));
+
+// For complex objects, add properties individually
+Object.entries(params.calculationParameter).forEach(([key, value]) => {
+  formData.append(`calculationParameter.${key}`, String(value));
+});
+
+void fetcher.submit(formData, {
+  method: "POST",
+  action: "/api/endpoint"
+});
+```
+
+### Receiving and Validating Form Data
+```typescript
+// In an action function
+const formData = await request.formData();
+const productId = Number(formData.get("productId"));
+const page = Number(formData.get("page"));
+
+// Validate required fields
+if (!isNumber(productId) || !isNumber(page)) {
+  return { error: "Invalid parameters" };
+}
+
+// Extract complex object properties
+const calculationParams: Record<string, unknown> = {};
+for (const [key, value] of formData.entries()) {
+  if (key.startsWith("calculationParameter.") && typeof value === "string") {
+    const paramKey = key.replace("calculationParameter.", "");
+    calculationParams[paramKey] = parseValue(value);
+  }
+}
+
+// Validate with type guard
+if (!isCalculationParameterDTO(calculationParams)) {
+  return { error: "Invalid calculation parameters" };
+}
+
+// Use validated data
+const result = await api.getResult(productId, calculationParams);
+``` 

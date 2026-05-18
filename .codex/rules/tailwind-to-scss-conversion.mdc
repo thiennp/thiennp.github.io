@@ -1,0 +1,332 @@
+---
+description: Systematic approach for converting Tailwind CSS classes to SCSS modules
+globs: "**/*.scss,**/*.tsx"
+alwaysApply: false
+---
+# Tailwind to SCSS Module Conversion Guide
+
+BEM naming, units (px), and property sorting: see **scss-module-standards.mdc**. This rule covers conversion steps and Tailwind→SCSS mapping only.
+
+## Overview
+This rule provides a systematic approach for converting existing Tailwind CSS classes to SCSS modules, ensuring consistency and maintainability across the codebase.
+
+## Conversion Process
+
+### Step 1: Analyze Existing Tailwind Classes
+Before conversion, identify all Tailwind classes in the component:
+- Layout classes (`flex`, `grid`, `absolute`, etc.)
+- Sizing classes (`w-4`, `h-4`, `max-w-[350px]`, etc.)
+- Spacing classes (`p-4`, `m-2`, `gap-4`, etc.)
+- Color classes (`bg-c24-fusion-blue`, `fill-c24-yellow`, etc.)
+- Typography classes (`text-xs`, `font-bold`, etc.)
+- State classes (`hover:`, `focus:`, etc.)
+
+### Step 2: Create SCSS Module Structure
+```scss
+.ComponentName {
+  // Main component styles
+  
+  &_element {
+    // Element-specific styles
+  }
+  
+  &_anotherElement {
+    // Another element styles
+  }
+  
+  &___modifier {
+    // Modifier styles (triple underscore)
+  }
+}
+```
+
+### Step 3: Convert Common Tailwind Patterns
+
+#### Flexbox Layouts
+```scss
+// Tailwind: flex items-center justify-between
+.Component_container {
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+}
+
+// Tailwind: flex flex-col gap-4
+.Component_column {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+// Tailwind: flex-wrap
+.Component_wrap {
+  display: flex;
+  flex-wrap: wrap;
+}
+```
+
+#### Positioning
+```scss
+// Tailwind: absolute top-4 right-0
+.Component_positioned {
+  position: absolute;
+  right: 0;
+  top: 16px;
+}
+
+// Tailwind: relative z-10
+.Component_layered {
+  position: relative;
+  z-index: 10;
+}
+
+// Tailwind: sticky top-0
+.Component_sticky {
+  position: sticky;
+  top: 0;
+}
+```
+
+#### Sizing and Spacing
+```scss
+// Tailwind: w-full h-full
+.Component_fullSize {
+  height: 100%;
+  width: 100%;
+}
+
+// Tailwind: !w-4 !h-4 (important for overrides)
+.Component_icon {
+  height: 16px !important;
+  width: 16px !important;
+}
+
+// Tailwind: p-4 pr-8
+.Component_padded {
+  padding: 16px 32px 16px 16px;
+}
+
+// Tailwind: mt-[-1px] (negative margins)
+.Component_negativeMargin {
+  margin-top: -1px;
+}
+```
+
+#### Colors and Backgrounds
+```scss
+// Tailwind: bg-c24-fusion-blue
+.Component_background {
+  background-color: var(--c24-color-fusion-blue);
+}
+
+// Tailwind: fill-c24-yellow
+.Component_stars {
+  fill: var(--c24-color-yellow);
+}
+
+// Tailwind: text-c24-grey
+.Component_greyText {
+  color: var(--c24-color-grey);
+}
+
+// Tailwind: border-t border-t-c24-light-grey
+.Component_topBorder {
+  border-top: 1px solid var(--c24-color-light-grey);
+}
+```
+
+#### Typography
+```scss
+// Tailwind: text-xs
+.Component_smallText {
+  font-size: 12px;
+}
+
+// Tailwind: font-bold
+.Component_boldText {
+  font-weight: bold;
+}
+
+// Tailwind: whitespace-nowrap
+.Component_noWrap {
+  white-space: nowrap;
+}
+```
+
+#### Special Cases
+```scss
+// Tailwind: rounded-full
+.Component_circular {
+  border-radius: 50%;
+}
+
+// Tailwind: overflow-hidden
+.Component_clipped {
+  overflow: hidden;
+}
+
+// Tailwind: cursor-pointer
+.Component_clickable {
+  cursor: pointer;
+}
+
+// Tailwind: rotate-90
+.Component_rotated {
+  transform: rotate(90deg);
+}
+```
+
+## Unit Conversion Reference
+
+### Rem to Pixel Conversion
+- `0.25rem` → `4px`
+- `0.5rem` → `8px`
+- `0.75rem` → `12px`
+- `1rem` → `16px`
+- `1.25rem` → `20px`
+- `1.5rem` → `24px`
+- `2rem` → `32px`
+- `2.5rem` → `40px`
+- `3rem` → `48px`
+
+### Tailwind Spacing Scale
+- `1` → `4px`
+- `2` → `8px`
+- `3` → `12px`
+- `4` → `16px`
+- `5` → `20px`
+- `6` → `24px`
+- `8` → `32px`
+- `10` → `40px`
+- `12` → `48px`
+
+## Complex Component Conversion Examples
+
+### Multi-Class Element Conversion
+```tsx
+// Before: Multiple Tailwind classes
+<div className="flex items-center justify-between p-4 bg-white border-t border-gray-200">
+
+// After: Single SCSS class
+<div className={styles.Component_header}>
+
+// SCSS:
+.Component {
+  &_header {
+    align-items: center;
+    background-color: white;
+    border-top: 1px solid var(--c24-color-gray-200);
+    display: flex;
+    justify-content: space-between;
+    padding: 16px;
+  }
+}
+```
+
+### Conditional Classes Conversion
+```tsx
+// Before: Conditional Tailwind classes
+<div className={`flex ${isActive ? 'bg-blue-500' : 'bg-gray-200'} p-4`}>
+
+// After: Conditional SCSS classes
+<div className={isActive ? styles.Component_activeContainer : styles.Component_inactiveContainer}>
+
+// SCSS:
+.Component {
+  &_activeContainer {
+    background-color: var(--c24-color-blue-500);
+    display: flex;
+    padding: 16px;
+  }
+  
+  &_inactiveContainer {
+    background-color: var(--c24-color-gray-200);
+    display: flex;
+    padding: 16px;
+  }
+}
+```
+
+### Important Declarations for Library Overrides
+```scss
+// When overriding external library styles
+.Component {
+  &_libraryIcon {
+    background-color: var(--c24-color-nobel-grey) !important;
+    height: 16px !important;
+    width: 16px !important;
+  }
+  
+  &_skeletonElement {
+    height: 32px !important;
+    width: 220px !important;
+  }
+}
+```
+
+## Semantic Naming Guidelines
+
+### Purpose-Based Naming
+```scss
+// GOOD - Describes purpose
+.Component {
+  &_closeButton { /* styles */ }
+  &_navigationMenu { /* styles */ }
+  &_contentArea { /* styles */ }
+  &_userAvatar { /* styles */ }
+}
+
+// AVOID - Describes styling
+.Component {
+  &_redButton { /* styles */ }
+  &_flexContainer { /* styles */ }
+  &_paddedDiv { /* styles */ }
+  &_circularImage { /* styles */ }
+}
+```
+
+### State-Based Naming
+```scss
+.Component {
+  &_button {
+    // Base button styles
+  }
+  
+  &_button___active {
+    // Active state styles
+  }
+  
+  &_button___disabled {
+    // Disabled state styles
+  }
+  
+  &_button___loading {
+    // Loading state styles
+  }
+}
+```
+
+## Testing After Conversion
+1. **Visual Regression**: Ensure the component looks identical after conversion
+2. **Responsive Behavior**: Test on different screen sizes
+3. **Interactive States**: Test hover, focus, and active states
+4. **Browser Compatibility**: Test across supported browsers
+5. **Performance**: Ensure no performance degradation
+
+## Common Pitfalls to Avoid
+- **Forgetting !important**: When overriding library styles
+- **Using rem units**: Always use px for consistency
+- **Unsorted properties**: Always sort CSS properties alphabetically
+- **Style-based naming**: Use semantic names instead
+- **Multiple classes**: Combine into single comprehensive classes
+- **Missing imports**: Don't forget to import the SCSS module
+
+## Migration Checklist
+- [ ] Identify all Tailwind classes in component
+- [ ] Create `.module.scss` file with BEM structure
+- [ ] Convert all classes using semantic naming
+- [ ] Use pixel units and alphabetical sorting
+- [ ] Import SCSS module in component
+- [ ] Replace className attributes
+- [ ] Test visual consistency
+- [ ] Update any related tests or stories

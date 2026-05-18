@@ -1,0 +1,86 @@
+---
+description: Prompt templates for common tasks including saving development process as rules, rule file structure, and rule categories
+alwaysApply: false
+---
+# Prompt Templates
+
+## Save Development Process as Rules
+```markdown
+After completing this ticket's implementation, please:
+
+1. Create reusable rules from our development process, covering:
+   - The workflow steps we followed
+   - Any component patterns or standards we established
+   - Testing approaches we used
+   - Any other reusable patterns or guidelines
+
+2. Save these rules following these requirements:
+   - Place rules in `.cursor/rules/` directory
+   - Use `.mdc` extension for all rule files
+   - Follow existing naming conventions
+   - Include clear descriptions and examples
+   - Structure content with proper markdown headings
+
+3. Register the rules in `.cursor/cursor.json` with:
+   - Meaningful rule names
+   - Clear descriptions
+   - Correct file paths
+
+4. Commit and push the changes with appropriate commit messages.
+
+Please ensure the rules will be available and automatically applied in future sessions.
+```
+
+## Rule File Structure Template
+```markdown
+# [Rule Name]
+
+## Purpose
+[Brief description of what this rule is for]
+
+## Guidelines
+[Main content organized in sections]
+
+## Examples
+[Practical examples showing the rule in action]
+
+## Related Rules
+[References to other related rules if applicable]
+```
+
+## Common Rule Categories
+1. Workflow Rules
+   - Development process steps
+   - Branch management
+   - PR creation and review
+   - Verification steps
+
+2. Component Rules
+   - Structure and organization
+   - Naming conventions
+   - File organization
+   - Component patterns
+
+3. Testing Rules
+   - Test organization
+   - Coverage requirements
+   - Testing patterns
+   - Mock strategies
+
+4. Documentation Rules
+   - Documentation standards
+   - Comment guidelines
+   - MDX requirements
+   - Story requirements
+
+## RAG-first implementation (narrow scope before edits)
+
+Use when starting implementation so the agent formulates a local search question, shows it in chat, and runs **`pnpm --dir .cursor/tools/rag run query -- "<question>"`** before large edits.
+
+```markdown
+Follow **`.cursor/skills/local-rag-hybrid-query/SKILL.md`** for this task: derive **`RAG query:`** from the requirement, display it in this chat, run **`pnpm --dir .cursor/tools/rag run query -- "<question>"`** when the query is non-empty, then implement using RAG chunks plus source code. Canonical rules: **`rag-local-corpus.mdc`** (§ Agent workflow before changes).
+```
+
+## Split `.cursor` vs app commits and rebase on `release`
+
+Use **`.cursor/skills/split-cursor-commit-rebase/SKILL.md`**: set **`COMMIT_MESSAGE_AMEND`** and **`COMMIT_MESSAGE_CURSOR`**, then run **`bash scripts/git/split-cursor-commit-rebase.sh "…" "…"`** from the repo root on a feature branch (do not add this to **`package.json`**; see **@git-workflow.mdc** § package.json scripts).

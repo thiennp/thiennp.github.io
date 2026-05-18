@@ -1,0 +1,99 @@
+---
+description:
+globs:
+alwaysApply: true
+---
+# Utility Function Naming Conventions
+
+## File Naming Standards
+- **Utility function files must use camelCase**: `handleNumericInput.ts`
+- **File name must match the exported function name exactly** (except for extension)
+- **Never use PascalCase for utility files** - PascalCase is reserved for React components
+
+## Function Naming Standards
+- **Utility functions must use camelCase**: `handleNumericInput()`
+- **Function name must match the file name** for consistency and discoverability
+
+## Examples
+
+### ✅ Correct Patterns
+```
+src/utils/handleNumericInput.ts
+export function handleNumericInput() { ... }
+
+src/utils/parseNumber.ts
+export function parseNumber() { ... }
+
+src/utils/convertToEuro.ts
+export function convertToEuro() { ... }
+```
+
+### ❌ Incorrect Patterns
+```
+src/utils/handleNumericInput.ts  // PascalCase file name
+export function handleNumericInput() { ... }
+
+src/utils/handle-numeric-input.ts  // kebab-case file name
+export function handleNumericInput() { ... }
+
+src/utils/handleNumericInput.ts
+export function HandleNumericInput() { ... }  // PascalCase function name
+```
+
+## Import Standards
+- Import utility functions using the same camelCase name as the file
+- Use relative imports for utilities in the same directory
+- Use absolute imports with path aliases for utilities in other directories
+
+### Import Examples
+```typescript
+// ✅ Correct imports
+import { handleNumericInput } from "./handleNumericInput";
+import { parseNumber } from "utils/parseNumber";
+import convertToEuro from "utils/convertToEuro";
+
+// ❌ Incorrect imports
+import { handleNumericInput } from "./HandleNumericInput";  // Wrong file name
+import { HandleNumericInput } from "./handleNumericInput";  // Wrong function name
+```
+
+## Test File Naming
+- Test files must follow the same camelCase convention
+- Test file name should be: `functionName.test.ts`
+
+### Test File Examples
+```
+src/utils/handleNumericInput.test.ts
+src/utils/parseNumber.test.ts
+src/utils/convertToEuro.test.ts
+```
+
+## Enforcement
+- All new utility functions must follow these conventions
+- When refactoring existing utilities, rename files to match function names
+- Update all imports when renaming utility files
+- Run tests after renaming to ensure all imports are updated
+
+## Benefits
+- **Consistency**: Makes codebase predictable and easier to navigate
+- **Discoverability**: File name immediately indicates what function it exports
+- **Tooling**: Improves IDE auto-imports and refactoring support
+- **Maintenance**: Reduces confusion and makes code reviews more efficient
+
+## Migration Examples
+
+### Before Refactoring
+```
+src/utils/HandleNumericInput.ts  // ❌ PascalCase
+export function handleNumericInput() { ... }
+```
+
+### After Refactoring
+```
+src/utils/handleNumericInput.ts  // ✅ camelCase
+export function handleNumericInput() { ... }
+```
+
+## Related Rules
+- See [utility-test-coverage-standards.mdc](mdc:utility-test-coverage-standards.mdc) for testing standards
+- See **existing-utilities.mdc** for what already lives under **`src/utils/`**

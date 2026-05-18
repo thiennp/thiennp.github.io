@@ -1,0 +1,29 @@
+---
+description: Prefer pnpm scaffold for new components, hooks, stores, enums, constants, layouts, types, mocks, utilities, tests, styles; not hand-written boilerplate
+alwaysApply: true
+---
+# Scaffold generators
+
+When adding **new** files that match the kinds below, run **`pnpm scaffold`** instead of writing empty components, hooks, stores, enums, constants, layouts, types, mocks, utilities, or tests from memory.
+
+## Command
+
+```bash
+pnpm scaffold --list-kinds
+pnpm scaffold <kind> <name> [--base <path-from-repo-root>] [--dry-run] [--force]
+```
+
+Kinds: `component`, `constant`, `enum`, `hook`, `layout`, `mock`, `store`, `style`, `test`, `type`, `utility`.
+
+Defaults and examples: **`.cursor/scaffold/README.md`**. Human-oriented templates: **`.cursor/templates/README.md`**.
+
+## After scaffolding
+
+1. Wire real imports, DTOs, and props; replace placeholders (`PLACEHOLDER`, `string[]`, etc.).
+2. Run post-action verification (**`@code-standard.mdc`**).
+
+## Related
+
+- **`@code-standard.mdc`** — barrel rule, BEM, hook naming, verification.
+- **`@component-patterns.mdc`** — tests and snapshots.
+- **`@zustand-memo-optimization.mdc`** — store shape.

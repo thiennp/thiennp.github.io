@@ -1,0 +1,97 @@
+---
+description: Folder organization standards for feature-based structure, component layout, tests, imports, types, and YAGNI considerations
+alwaysApply: false
+---
+# Folder Organization Standards
+
+## Feature-Based Organization
+- Organize code by features, not by technical concerns
+- Use the pattern `/features/{FeatureName}` for major application features
+- Group related components within a feature folder
+
+## Component Organization
+- Each component should be in its own folder if it has associated tests, stories, or documentation **AND** is complex enough to warrant separation
+- Apply YAGNI principle: don't create nested folder structures for simple related components that are only used together
+- Place related simple components in the same folder rather than creating a complex nested hierarchy
+- Use `components` for sub-component directories. Avoid non-standard names like `views`, `containers`, or `presenters` to maintain consistency.
+- Follow a consistent naming convention for all related files
+- For complex components, use this predictable structure:
+```
+ComponentName/
+├── ComponentName.tsx
+├── ComponentName.test.tsx
+├── ComponentName.stories.tsx
+├── ComponentName.mdx (optional)
+└── components/ (if has subcomponents)
+    ├── SubComponentA/
+    │   ├── SubComponentA.tsx
+    │   ├── SubComponentA.test.tsx
+    │   └── SubComponentA.stories.tsx
+    └── SubComponentB/
+        ├── SubComponentB.tsx
+        ├── SubComponentB.test.tsx
+        └── SubComponentB.stories.tsx
+```
+
+## Test Organization
+- Keep test files co-located with their corresponding components
+- Store snapshot files in `__snapshots__` directory
+- Organize test fixtures in dedicated directories if needed
+
+## Naming Conventions
+- Use PascalCase for component files and directories
+- Use camelCase for utility files
+- Use kebab-case for configuration files
+- Clearly suffix files with their type (.test.tsx, .stories.tsx)
+
+## Import Organization
+- Use relative imports for files within the same feature
+- Use absolute imports for shared utilities and components
+- Create index files for legitimate use cases:
+  - Barrel exports when multiple components need to be exported together
+  - Lazy loading organization to avoid missing "lazy" imports
+  - Centralized export management for complex features
+- Don't create unnecessary abstraction layers with index files for simple component grouping
+
+## Constants and declarative maps
+- Place **static maps** (`Record<Enum, …>`, component registries) and **feature constants** in **dedicated files** (`*.constant.ts` or a clearly named map module), not inline in the main component file—see **code-standard.mdc** § **File boundaries: constants, maps, and testable units**. That keeps components slim and lets **pure helpers** each get their own tests.
+
+## Type Organization
+- Store shared types in dedicated type files
+- Use `.type.ts` extension for type definition files
+- Co-locate type definitions with the components that use them when specific to that component
+
+## Documentation
+- Include a `development.mdx` file at the feature level explaining architecture
+- For complex features, include additional README or documentation files
+- Document folder structure changes in pull requests
+
+## YAGNI Considerations
+- Don't create folder structures in anticipation of future complexity
+- Start with simpler organization and refactor when needed
+- Avoid creating index.ts files unless they serve a specific purpose:
+  - Exporting multiple components together
+  - Organizing lazy loading imports
+  - Centralizing complex export management
+- When components are tightly coupled and only used together, keeping them in the same folder is preferable
+
+## Examples from the Codebase
+- The Saving Tooltip feature follows this organization pattern for complex components:
+```
+Saving/
+├── components/
+│   ├── SavingTooltip/
+│   │   ├── SavingTooltip.tsx
+│   │   ├── SavingTooltip.test.tsx
+│   │   └── SavingTooltip.stories.tsx
+│   ├── SavingTooltipContent/
+│   │   ├── SavingTooltipContent.tsx
+│   │   ├── SavingTooltipContent.test.tsx
+│   │   └── SavingTooltipContent.stories.tsx
+│   └── SavingTooltipContentSkeleton/
+│       ├── SavingTooltipContentSkeleton.tsx
+│       ├── SavingTooltipContentSkeleton.test.tsx
+│       └── SavingTooltipContentSkeleton.stories.tsx
+├── Saving.tsx
+└── development.mdx
+```

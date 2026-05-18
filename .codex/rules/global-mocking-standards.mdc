@@ -1,0 +1,403 @@
+---
+description: Standards for mocking global values (window, document, localStorage) in tests with proper cleanup
+globs: **/*.test.ts,**/*.test.tsx
+alwaysApply: false
+---
+
+# Global Mocking Standards
+
+## Overview
+This rule defines the standard approach for mocking global values in tests, ensuring consistent patterns across the codebase and proper cleanup to prevent test pollution.
+
+## Core Principles
+- **Use setGlobal/getGlobal utilities** from setupTest.tsx for window object mocking
+- **Use Object.defineProperty for non-window globals** like localStorage, sessionStorage
+- **Always restore original values** in afterEach blocks
+- **Store original values** in beforeEach for proper cleanup
+- **Use proper TypeScript typing** for mocked values
+
+## Window Object Mocking
+
+### Using setGlobal/getGlobal Utilities
+The `setupTest.tsx` provides utilities for safely mocking window properties:
+
+```typescript
+import { setGlobal, getGlobal } from "../../setupTest";
+
+describe("component", () => {
+  let originalWindow: typeof window;
+
+  beforeEach(() => {
+    // Store original window
+    originalWindow = global.window;
+    
+    // Mock window properties
+    setGlobal("location", { href: "https://example.com" } as Location);
+    setGlobal("Check24", { 
+      uliloginlayer: { open: vi.fn() } 
+    } as unknown as Window["Check24"]);
+    setGlobal("C24App", { triggerUnifiedLogin: vi.fn() });
+  });
+
+  afterEach(() => {
+    // Restore original window
+    (global.window as Window) = originalWindow;
+  });
+});
+```
+
+### Window Property Mocking Patterns
+
+#### Location Mocking
+```typescript
+// Mock location with proper typing
+setGlobal("location", { 
+  href: "https://example.com" 
+} as Location);
+
+// Mock location with search params
+setGlobal("location", { 
+  href: "https://example.com?param=value",
+  search: "?param=value"
+} as Location);
+```
+
+#### Browser API Mocking
+```typescript
+// Mock Check24 API with proper type assertions
+setGlobal("Check24", {
+  uliloginlayer: {
+    open: vi.fn(),
+    init: vi.fn(),
+    config: { env: "test" }
+  } as unknown as NonNullable<Window["Check24"]>["uliloginlayer"],
+});
+
+// Mock nested properties with type assertions
+setGlobal("Check24", {
+  uliloginlayer: {
+    open: mockOpenFn,
+  } as unknown as NonNullable<Window["Check24"]>["uliloginlayer"],
+});
+
+// Mock C24App API
+setGlobal("C24App", {
+  triggerUnifiedLogin: vi.fn(),
+  someOtherMethod: vi.fn()
+});
+
+// Mock setTimeout with callback execution
+global.setTimeout = vi.fn((callback: () => void) => {
+  callback();
+  return 1;
+}) as unknown as typeof setTimeout;
+```
+
+#### History API Mocking
+```typescript
+const mockHistory = {
+  pushState: vi.fn(),
+  replaceState: vi.fn(),
+  go: vi.fn(),
+  back: vi.fn(),
+  forward: vi.fn()
+};
+
+setGlobal("history", mockHistory);
+```
+
+### Nested Property Mocking
+
+When mocking nested properties, use proper type assertions to handle complex global object types:
+
+```typescript
+// Mock nested properties with proper type assertions
+setGlobal("Check24", {
+  uliloginlayer: {
+    open: mockOpenFn,
+  } as unknown as NonNullable<Window["Check24"]>["uliloginlayer"],
+});
+
+// For complex nested objects with multiple properties
+setGlobal("Check24", {
+  uliloginlayer: {
+    open: mockOpenFn,
+    init: mockInitFn,
+    config: {
+      env: "test",
+    },
+  } as unknown as NonNullable<Window["Check24"]>["uliloginlayer"],
+});
+
+// When preserving existing structure is needed
+setGlobal("Check24", {
+  uliloginlayer: {
+    ...getGlobal("Check24")?.uliloginlayer,
+    open: mockOpenFn,
+  },
+});
+```
+
+## Non-Window Global Mocking
+
+### Storage APIs (localStorage, sessionStorage)
+Use `Object.defineProperty` for storage mocking:
+
+```typescript
+describe("storage utility", () => {
+  let originalLocalStorage: Storage | undefined;
+  let mockLocalStorage: {
+    getItem: ReturnType<typeof vi.fn>;
+    setItem: ReturnType<typeof vi.fn>;
+    removeItem: ReturnType<typeof vi.fn>;
+    clear: ReturnType<typeof vi.fn>;
+  };
+
+  beforeEach(() => {
+    // Store original
+    originalLocalStorage = global.localStorage;
+    
+    // Create mock
+    mockLocalStorage = {
+      getItem: vi.fn(),
+      setItem: vi.fn(),
+      removeItem: vi.fn(),
+      clear: vi.fn(),
+    };
+
+    // Mock localStorage
+    Object.defineProperty(global, "localStorage", {
+      value: mockLocalStorage,
+      writable: true,
+    });
+  });
+
+  afterEach(() => {
+    // Restore original
+    Object.defineProperty(global, "localStorage", {
+      value: originalLocalStorage,
+      writable: true,
+    });
+  });
+});
+```
+
+### Other Global Objects
+```typescript
+// Mock console
+let originalConsoleWarn: typeof console.warn;
+const mockConsoleWarn = vi.fn();
+
+beforeEach(() => {
+  originalConsoleWarn = console.warn;
+  console.warn = mockConsoleWarn;
+});
+
+afterEach(() => {
+  console.warn = originalConsoleWarn;
+});
+
+// Mock MutationObserver
+Object.defineProperty(global, "MutationObserver", {
+  value: vi.fn().mockImplementation(() => ({
+    observe: vi.fn(),
+    disconnect: vi.fn(),
+  })),
+  writable: true,
+});
+
+// Mock Node
+Object.defineProperty(global, "Node", {
+  value: {
+    ELEMENT_NODE: 1,
+    TEXT_NODE: 3,
+  },
+  writable: true,
+});
+```
+
+## Complex Mocking Patterns
+
+### Conditional Mocking
+```typescript
+it("handles different Check24 configurations", () => {
+  // Test with Check24 available
+  setGlobal("Check24", {
+    uliloginlayer: { open: vi.fn() }
+  } as unknown as Window["Check24"]);
+  
+  // Test function
+  someFunction();
+  
+  // Verify behavior
+  expect(getGlobal("Check24").uliloginlayer.open).toHaveBeenCalled();
+  
+  // Test without Check24
+  setGlobal("Check24", undefined);
+  
+  // Test alternative behavior
+  someFunction();
+  
+  // Verify fallback behavior
+  expect(global.setTimeout).toHaveBeenCalled();
+});
+```
+
+### Error Simulation
+```typescript
+it("handles login function errors", () => {
+  const mockOpenFn = vi.fn().mockImplementation(() => {
+    throw new Error("Login failed");
+  });
+  
+  setGlobal("Check24", {
+    uliloginlayer: { open: mockOpenFn }
+  } as unknown as Window["Check24"]);
+  
+  // Test error handling
+  someFunction();
+  
+  expect(mockOpenFn).toHaveBeenCalled();
+  expect(mockDebug).toHaveBeenCalledWith(
+    "Failed to open login layer", 
+    expect.any(Error)
+  );
+});
+```
+
+### URL Navigation Testing
+```typescript
+it("navigates to correct URL", () => {
+  const originalHref = "https://original-url.com";
+  setGlobal("location", { href: originalHref } as Location);
+  
+  // Test navigation
+  someFunction();
+  
+  // Verify setTimeout was called
+  expect(global.setTimeout).toHaveBeenCalledWith(expect.any(Function), 100);
+  
+  // Execute the callback to test URL change
+  const setTimeoutCall = (global.setTimeout as unknown as ReturnType<typeof vi.fn>).mock.calls[0];
+  const callback = setTimeoutCall[0] as () => void;
+  callback();
+  
+  // Verify final URL
+  const finalUrl = getGlobal("location").href;
+  const urlObj = new URL(finalUrl);
+  expect(urlObj.origin + urlObj.pathname).toBe("https://expected-domain.com/path");
+  expect(urlObj.searchParams.get("ref")).toBe(originalHref);
+});
+```
+
+## Type Safety
+
+### Proper Type Assertions
+```typescript
+// For window properties with complex types
+setGlobal("Check24", {
+  uliloginlayer: { open: vi.fn() }
+} as unknown as Window["Check24"]);
+
+// For location with proper typing
+setGlobal("location", { 
+  href: "https://example.com" 
+} as Location);
+
+// For history with proper typing
+setGlobal("history", {
+  pushState: vi.fn(),
+  replaceState: vi.fn()
+} as History);
+```
+
+### Mock Window Interface
+```typescript
+interface MockWindow {
+  location: { href: string };
+  Check24?: {
+    uliloginlayer?: {
+      open?: () => void;
+    };
+  };
+  C24App?: {
+    triggerUnifiedLogin?: () => void;
+  };
+  setTimeout?: (callback: () => void, delay: number) => number;
+}
+
+// Use in tests
+const win = global.window as MockWindow;
+win.Check24?.uliloginlayer?.open?.();
+```
+
+## Anti-Patterns to Avoid
+
+### ❌ Direct Global Assignment
+```typescript
+// BAD: Direct assignment without cleanup
+global.window = { location: { href: "test" } };
+
+// GOOD: Use setGlobal with proper cleanup
+setGlobal("location", { href: "test" } as Location);
+```
+
+### ❌ Missing Cleanup
+```typescript
+// BAD: No cleanup in afterEach
+beforeEach(() => {
+  setGlobal("location", { href: "test" } as Location);
+});
+
+// GOOD: Proper cleanup
+beforeEach(() => {
+  originalWindow = global.window;
+  setGlobal("location", { href: "test" } as Location);
+});
+
+afterEach(() => {
+  (global.window as Window) = originalWindow;
+});
+```
+
+### ❌ Inconsistent Mocking Patterns
+```typescript
+// BAD: Mixing different mocking approaches
+setGlobal("location", { href: "test" });
+Object.defineProperty(global, "window", { value: {} });
+
+// GOOD: Consistent approach
+setGlobal("location", { href: "test" } as Location);
+setGlobal("Check24", { uliloginlayer: { open: vi.fn() } });
+```
+
+## Best Practices
+
+1. **Always store original values** in beforeEach for proper restoration
+2. **Use setGlobal/getGlobal** for window object properties
+3. **Use Object.defineProperty** for non-window globals
+4. **Clean up in afterEach** to prevent test pollution
+5. **Use proper TypeScript typing** for mocked values
+6. **Test error conditions** by throwing errors in mocks
+7. **Verify mock calls** to ensure expected behavior
+8. **Use descriptive mock names** for better test readability
+
+## Examples from Codebase
+
+### Login Utility Testing
+See `app/utils/login.test.ts` for comprehensive window mocking examples including:
+- Check24 API mocking
+- C24App API mocking
+- Error handling with mocked functions
+- URL navigation testing
+
+### Storage Testing
+See `app/utils/cellaToken.test.ts` and `app/utils/debug.test.ts` for localStorage/sessionStorage mocking patterns.
+
+### Browser API Testing
+See `app/pages/Result/utils/updateResultPageSearchParams.test.ts` for history and location API mocking.
+
+## Related Rules
+- See [testing-standards.mdc](mdc:.cursor/rules/testing-standards.mdc) for general testing guidelines
+- See [complex-mocking-patterns.mdc](mdc:.cursor/rules/complex-mocking-patterns.mdc) for complex mocking scenarios
+- See [test-failure-resolution-patterns.mdc](mdc:.cursor/rules/test-failure-resolution-patterns.mdc) for troubleshooting test issues

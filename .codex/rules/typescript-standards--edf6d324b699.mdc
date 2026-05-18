@@ -1,0 +1,110 @@
+---
+description: TypeScript interface definitions, type guards, generics, strict null checking, and React typing standards
+globs: "**/*.ts,**/*.tsx"
+alwaysApply: false
+---
+# TypeScript Standards
+
+## Interface Definition
+
+### Immutability
+- **Always use readonly for all interface properties** to enforce immutability
+- This applies to all interfaces, not just component props
+- Prevents accidental mutation of objects
+
+```typescript
+// CORRECT: Using readonly for all properties
+export interface UserData {
+  readonly id: number;
+  readonly name: string;
+  readonly preferences: readonly string[];
+}
+
+// INCORRECT: Missing readonly modifiers
+export interface UserData {
+  id: number;
+  name: string;
+  preferences: string[];
+}
+```
+
+### Naming Conventions
+- Use PascalCase for interface names
+- Use camelCase for property names
+- Add descriptive suffixes for specialized interfaces:
+  - `Props` for component props 
+  - `DTO` for data transfer objects
+  - `Type` for generic type definitions
+
+```typescript
+export interface UserProfileProps {
+  readonly userId: number;
+  readonly showDetails: boolean;
+}
+
+export interface UserDTO {
+  readonly id: number;
+  readonly name: string;
+}
+```
+
+## Type Definitions
+- Prefer `interface` over `type` for object definitions
+- Use `type` for unions, intersections, and mapped types
+- Use explicit return types for all functions
+- Avoid type assertions except in test files
+- Never use the `any` type - use `unknown` instead when needed
+
+```typescript
+// CORRECT: Using interface for object definitions
+export interface UserSettings {
+  readonly theme: ThemeType;
+  readonly notifications: boolean;
+}
+
+// CORRECT: Using type for unions
+export type ThemeType = 'light' | 'dark' | 'system';
+```
+
+## Type Guards
+- Create proper type guards with is-prefix naming
+- Store type guards in dedicated files
+- Use composition with isType utility for complex objects
+- Always include proper TypeScript type predicates
+
+```typescript
+// Type guard function with correct type predicate
+function isUserDTO(value: unknown): value is UserDTO {
+  return (
+    typeof value === 'object' &&
+    value !== null &&
+    typeof (value as UserDTO).id === 'number' &&
+    typeof (value as UserDTO).name === 'string'
+  );
+}
+```
+
+## Generics
+- Use meaningful names for generic type parameters
+- Start with `T` for single generic parameters
+- Use descriptive names for multiple type parameters
+- Always specify constraints when applicable
+
+```typescript
+// With constraints
+function getProperty<T, K extends keyof T>(obj: T, key: K): T[K] {
+  return obj[key];
+}
+```
+
+## Strict Null Checking
+- Explicitly handle null and undefined cases
+- Use optional chaining (`?.`) and nullish coalescing (`??`)
+- Avoid non-null assertion operator (`!`) outside of test files
+- Use type guards to narrow nullable types
+
+## React TypeScript Standards
+- Use function component return type: `ReactElement`
+- Use `ReactNode` for children props
+- Use `FormEvent<HTMLFormElement>` for form events
+- Use proper ref types: `RefObject<HTMLElement>`

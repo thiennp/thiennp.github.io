@@ -1,0 +1,50 @@
+---
+description: Organizing type definitions in .type.ts files within feature folder structure
+globs: "**/*.type.ts,**/*.types.ts"
+alwaysApply: false
+---
+# Type File Organization
+
+## Naming and Location
+- Use `.type.ts` extension for all type definition files
+- Place each type definition in its own file for better modularity
+- Keep type files close to their implementation files
+- Group related types in a dedicated `types` folder within feature directories
+
+## Structure
+```
+FeatureName/
+├── utils/
+│   ├── someUtility/
+│   │   ├── types/
+│   │   │   ├── TypeOne.type.ts
+│   │   │   ├── TypeTwo.type.ts
+│   │   │   └── SharedType.type.ts
+│   │   ├── transformers/
+│   │   │   ├── transformerOne.ts
+│   │   │   └── transformerTwo.ts
+│   │   └── mainUtility.ts
+```
+
+## Direct Imports
+- Import types directly from their specific files
+- Avoid using barrel exports (index.ts) for types
+- Use explicit import paths for better code navigation and understanding
+- Example: `import type { MyType } from './types/MyType.type';`
+
+## Type Definition Best Practices
+- Define one type or interface per file
+- Use descriptive names for type files matching the type name
+- Add JSDoc only when the type’s purpose or contract isn’t obvious from the name (align with generic.mdc: comments for "why")
+- Use proper TypeScript conventions (readonly, etc.)
+
+## Type Re-exports
+- Avoid re-exporting types through index files unless absolutely necessary
+- When re-exports are needed, be explicit about what is being exported
+
+## Benefits
+- Improved code navigation
+- Better IDE support for finding type definitions
+- Clearer dependency relationships
+- Reduced risk of circular dependencies
+- Easier to maintain as the codebase grows

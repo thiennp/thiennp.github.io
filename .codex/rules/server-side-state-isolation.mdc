@@ -1,0 +1,286 @@
+---
+description: Prevents server-side state leakage between requests with request context isolation
+globs: "**/services/**/*.ts,**/middleware/**/*.ts"
+alwaysApply: false
+---
+# Server-Side State Isolation
+
+## Overview
+This rule prevents server-side state leakage between requests by enforcing proper request isolation patterns. Cross-request state sharing can lead to serious security vulnerabilities including data leakage, privacy violations, and race conditions.
+
+## Critical Security Principle
+**NEVER use global mutable state on the server side.** In Node.js, modules are cached and shared across all requests to the same process, which can cause one user's data to leak to another user.
+
+## Prohibited Patterns
+
+### ❌ Global Mutable Objects
+```typescript
+// NEVER DO THIS - Shared across all requests
+export const APP_STATE_SERVER_SIDE = {
+  ip: null,
+  userAgent: null,
+  id: `${Date.now()}${Math.random()}`, // Same ID for all users!
+  cellaToken: {},
+  deviceOutput: null,
+};
+
+// Usage that causes data leakage:
+APP_STATE_SERVER_SIDE.ip = getClientIPAddress(request); // User A's IP
+// Later request from User B might still see User A's IP
+```
+
+### ❌ Module-Level Mutable State
+(Project already forbids `let` per code-standard.mdc; on the server, mutable module state also leaks across requests.)
+```typescript
+// NEVER DO THIS - Persists across requests
+let currentUserId: string | null = null;
+let sessionData: Record<string, unknown> = {};
+
+export function setCurrentUser(id: string) {
+  currentUserId = id; // User A sets this, User B might see it
+}
+```
+
+### ❌ Singleton Pattern with Mutable State
+```typescript
+// NEVER DO THIS - Shared instance across requests
+class RequestState {
+  private data: Record<string, unknown> = {};
+
+  setData(key: string, value: unknown): void {
+    this.data[key] = value; // Shared across all users
+  }
+}
+
+export const requestState = new RequestState(); // Singleton
+```
+
+## Required Patterns
+
+### ✅ Request Context Middleware
+Use the existing request context middleware pattern:
+
+```typescript
+// middleware/requestContext.ts - CORRECT APPROACH
+import { unstable_createContext, type unstable_MiddlewareFunction } from "react-router";
+
+interface RequestContext {
+  readonly id: string;
+  readonly ip: string | null;
+  readonly userAgent: string | null;
+  readonly cellaToken: Record<string, string>;
+  // ... other request-specific data
+}
+
+const requestContext = unstable_createContext<RequestContext>();
+
+export const requestContextMiddleware: unstable_MiddlewareFunction<Response> = 
+  async ({ request, context }, next) => {
+    // Fresh context for each request
+    context.set(requestContext, {
+      id: `${Date.now()}-${Math.random()}`, // Unique per request
+      ip: getClientIPAddress(request),
+      userAgent: request.headers.get("user-agent"),
+      cellaToken: {}, // Fresh object per request
+    });
+
+    return next();
+  };
+```
+
+### ✅ Parameter Passing Pattern
+Pass request-specific data through function parameters:
+
+```typescript
+// CORRECT - Pass context as parameter
+export const createApiClient = (
+  productId: ProductEnum,
+  requestContext: RequestContext
+) => {
+  return axios.create({
+    headers: {
+      "X-Request-ID": requestContext.id, // Correct user's ID
+      "X-Forwarded-For": requestContext.ip, // Correct user's IP
+      "User-Agent": requestContext.userAgent ?? "",
+    },
+  });
+};
+
+// Usage in loader
+export async function loader({ request, context }: LoaderArgs) {
+  const requestContext = getRequestContext(context);
+  const apiClient = createApiClient(productId, requestContext);
+  // ...
+}
+```
+
+### ✅ Request-Scoped Data Storage
+Store data in the request context, not global objects:
+
+```typescript
+// CORRECT - Store in request context
+export function storeCellaToken(
+  context: RouterContextProvider,
+  calculationParameterId: string,
+  token: string
+) {
+  const requestContext = getRequestContext(context);
+  requestContext.cellaToken[calculationParameterId] = token;
+}
+
+export function getCellaToken(
+  context: RouterContextProvider,
+  calculationParameterId: string
+): string {
+  const requestContext = getRequestContext(context);
+  return requestContext.cellaToken[calculationParameterId] ?? "";
+}
+```
+
+## Migration Checklist
+
+When migrating from global state to request context:
+
+### 1. Identify Global State Usage
+- [ ] Search for global mutable objects
+- [ ] Look for module-level variables that change
+- [ ] Find singletons with mutable state
+- [ ] Check for shared caches or storage
+
+### 2. Replace with Request Context
+- [ ] Add data to RequestContext interface
+- [ ] Update middleware to initialize the data
+- [ ] Modify functions to accept context parameter
+- [ ] Update all call sites to pass context
+
+### 3. Verify Isolation
+- [ ] Each request gets fresh data
+- [ ] No shared mutable state between requests
+- [ ] User-specific data cannot leak to other users
+- [ ] Race conditions are eliminated
+
+## Security Implications
+
+### Data Leakage Risks
+- **IP Address Exposure**: User A's IP visible to User B
+- **Session Data Mixing**: Authentication tokens shared between users
+- **Personal Information**: User data visible across requests
+- **API Request Pollution**: Wrong user's data sent to APIs
+
+### Privacy Violations
+- **GDPR Compliance**: Unintentional data sharing violates privacy laws
+- **User Trust**: Data leakage destroys user confidence
+- **Audit Trail**: Incorrect user attribution in logs
+
+### Race Conditions
+- **Concurrent Requests**: Multiple users modifying shared state
+- **Data Corruption**: Inconsistent state due to timing issues
+- **Unpredictable Behavior**: Application state depends on request timing
+
+## Detection Strategies
+
+### Code Review Red Flags
+```typescript
+// RED FLAGS - Look for these patterns:
+export const GLOBAL_STATE = { /* mutable object */ };
+let moduleVariable = null;
+const cache = new Map(); // Shared cache
+class Singleton { private static instance; }
+```
+
+### Testing for Isolation
+```typescript
+// Test that requests don't share data
+test('requests should not share state', async () => {
+  // Simulate concurrent requests with different data
+  const request1 = createMockRequest({ ip: '1.1.1.1', userId: 'user1' });
+  const request2 = createMockRequest({ ip: '2.2.2.2', userId: 'user2' });
+  
+  const [result1, result2] = await Promise.all([
+    processRequest(request1),
+    processRequest(request2)
+  ]);
+  
+  // Verify no data leakage
+  expect(result1.ip).toBe('1.1.1.1');
+  expect(result2.ip).toBe('2.2.2.2');
+  expect(result1.userId).toBe('user1');
+  expect(result2.userId).toBe('user2');
+});
+```
+
+### Monitoring in Production
+- Monitor for unexpected data correlations
+- Log request IDs to track data flow
+- Alert on suspicious user data patterns
+- Regular security audits of request handling
+
+## Examples from Codebase
+
+### ❌ Previous Problematic Code
+```typescript
+// app/appStateServerSide.constant.tsx - REMOVED
+export const APP_STATE_SERVER_SIDE = {
+  ip: null, // Shared across all users!
+  userAgent: null,
+  id: `${Date.now()}${Math.random()}`, // Same for everyone!
+  cellaToken: {}, // All users' tokens mixed together!
+};
+```
+
+### ✅ Current Correct Implementation
+```typescript
+// middleware/requestContext.ts - CORRECT
+interface RequestContext {
+  readonly id: string; // Unique per request
+  readonly ip: string | null; // User's actual IP
+  readonly cellaToken: Record<string, string>; // User's tokens only
+}
+```
+
+## Enforcement
+
+### Linting Rules
+Consider adding ESLint rules to detect:
+- Global mutable exports
+- Module-level mutable variables
+- Singleton patterns with state
+
+### Code Review Guidelines
+- Always check for global state usage
+- Verify request isolation in server-side code
+- Ensure context is passed to all server functions
+- Test concurrent request scenarios
+
+### Team Training
+- Educate team on Node.js module caching
+- Explain security implications of shared state
+- Practice identifying problematic patterns
+- Regular security reviews of server code
+
+## Related Patterns
+
+### Acceptable Global State
+```typescript
+// OK - Immutable configuration
+export const API_ENDPOINTS = {
+  USERS: '/api/users',
+  ORDERS: '/api/orders',
+} as const;
+
+// OK - Pure functions without state
+export function formatCurrency(amount: number): string {
+  return `€${amount.toFixed(2)}`;
+}
+
+// OK - Read-only caches with proper invalidation
+export const configCache = new Map<string, ConfigValue>();
+```
+
+### Server-Side Storage Alternatives
+- Use databases for persistent data
+- Use Redis for session storage
+- Use request context for request-scoped data
+- Use environment variables for configuration
+
+This rule should be strictly enforced to prevent serious security vulnerabilities and ensure user data privacy and security.

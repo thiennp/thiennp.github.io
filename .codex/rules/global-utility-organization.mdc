@@ -1,0 +1,71 @@
+---
+description: Standards for organizing globally reusable utilities in the project structure
+globs: "**/utils/**/*.ts"
+alwaysApply: false
+---
+# Global Utility Organization
+
+## Overview
+This rule defines standards for organizing globally reusable utilities in the codebase. Utilities that can be used across multiple features should be placed at a higher level in the project structure.
+
+## Utility Placement Principles
+
+### Local vs. Global Utilities
+- **Local Utilities**: Specific to a single feature or component, placed within that feature's directory
+- **Global Utilities**: Reusable across multiple features, placed in a shared location
+
+### Placement Hierarchy
+1. **Component-specific utilities**: `app/components/ComponentName/utils/`
+2. **Feature-specific utilities**: `app/features/FeatureName/utils/`
+3. **Page-specific but shared utilities**: `app/pages/PageName/utils/`
+4. **Global utilities**: `app/utils/`
+
+## Global Utility Structure
+```
+app/
+├── utils/                         # Root utilities directory
+│   ├── typeguards/                # Type guard utilities
+│   │   ├── isDefined.ts
+│   │   └── isEnum.ts
+│   ├── paramTransformers/         # Parameter transformation utilities
+│   │   ├── types/                 # Type definitions
+│   │   │   ├── ParamTransformer.type.ts
+│   │   │   └── ...
+│   │   ├── transformers/          # Transformer implementations
+│   │   │   ├── toBooleanTransformer.ts
+│   │   │   └── ...
+│   │   └── transformSearchParams.ts
+│   └── ...
+```
+
+## When to Globalize Utilities
+Move a utility to the global level when:
+1. It's used by 3+ different features or components
+2. It provides fundamental functionality not tied to specific business logic
+3. It has minimal dependencies on feature-specific code
+4. Its behavior is consistent regardless of where it's used
+
+## Refactoring Existing Utilities
+When globalizing a utility:
+1. Move the code to the appropriate global location
+2. Update imports in existing code
+3. Review dependencies to ensure they are also globalized or accessible
+4. Update tests to reflect the new location
+5. Document the utility's purpose and usage
+
+## Naming Conventions
+- Use clear, descriptive names that indicate functionality
+- Prefer verb-noun pattern for functions (e.g., `transformData`, `validateInput`)
+- Group related utilities in subdirectories with descriptive names
+- Use consistent file naming patterns for similar utilities
+
+## Documentation
+- Include JSDoc comments for all global utilities
+- Document parameters, return values, and examples
+- Note any side effects or important behaviors
+- Provide usage examples for complex utilities
+
+## Testing
+- All global utilities must have comprehensive test coverage
+- Test edge cases and typical usage patterns
+- Consider creating a test utils directory alongside the global utils

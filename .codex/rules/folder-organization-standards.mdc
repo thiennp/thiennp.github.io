@@ -1,0 +1,112 @@
+---
+description: Folder structure for complex hooks and features; utility organization, export strategy, migration
+alwaysApply: false
+---
+# Folder Organization Standards (Complex Hooks & Features)
+
+For feature/component structure and YAGNI see **folder-organization.mdc**. This file is for **complex hooks** and **utility organization** only.
+
+## Hook Organization Pattern
+For complex hooks that have been refactored into multiple utility functions, follow this structure:
+
+```
+HookName/
+├── HookName.ts                     # Main hook implementation
+├── development.mdx                 # Documentation explaining the structure
+└── utils/                          # Utility functions
+    ├── utilityFunctionA.ts
+    ├── utilityFunctionB.ts
+    └── utilityFunctionC.ts
+```
+
+### Example: useWireframeData Structure
+The [useWireframeData](mdc:app/wireframe/hooks/useWireframeData) hook follows this pattern:
+
+```
+useWireframeData/
+├── useWireframeData.ts             # Main hook (orchestrates utilities)
+├── development.mdx                 # Documentation
+└── utils/                          # Utility functions
+    ├── buildLogoutLink.ts          # Builds logout URL
+    ├── configureTestEnvironment.ts # Configures test environment
+    ├── fetchAndUpdateUser.ts       # Fetches and updates user data
+    ├── getCookieDomain.ts          # Gets cookie domain based on environment
+    ├── getDeviceOutput.ts          # Determines device output type
+    ├── handleUnifiedLoginEvent.ts  # Handles unified login events
+    ├── initializeCookieBanner.ts   # Initializes cookie banner
+    ├── initializeMeinKonto.ts      # Initializes meinKonto component
+    ├── initializeUnifiedLoginLayer.ts # Initializes unified login layer
+    ├── setSessionCookie.ts         # Sets session cookies
+    └── setupUnifiedLoginEventListener.ts # Sets up event listeners
+```
+
+## Utility Function Organization
+- Place utility functions in a `utils/` subdirectory
+- Each utility function should be in its own file
+- Use descriptive, verb-noun naming for utility functions
+- Maintain single responsibility principle for each utility
+
+### Utility Function Naming Guidelines
+- Use verb-noun combinations: `buildLogoutLink`, `configureTestEnvironment`
+- Make names specific and intention-revealing
+- Avoid generic names like `process`, `handle`, or `doSomething`
+
+## Export Strategy
+- Keep the original file location as a re-export for backward compatibility
+- The original file should only contain the export statement
+- Use index files for legitimate purposes:
+  - Lazy loading organization to avoid missing "lazy" imports
+  - Barrel exports for multiple related components
+  - Centralized export management for complex features
+- Example:
+```typescript
+// Original location: app/wireframe/hooks/useWireframeData.ts
+export { useWireframeData } from "./useWireframeData/useWireframeData";
+
+// Lazy loading index file example:
+// app/pages/Result/features/Filter/layouts/index.ts
+import { lazy } from "react";
+export const FilterFormMobileLayout = lazy(async () => import("./FilterFormMobileLayout"));
+```
+
+## Documentation Requirements
+- Include a `development.mdx` file in the feature folder
+- Document the folder structure and purpose of each file
+- Explain the architecture and benefits of the organization
+- Provide usage examples
+- Reference related rules and patterns
+
+## When to Apply This Pattern
+Apply this folder organization pattern when:
+1. A hook or component has been refactored into multiple utility functions
+2. The original file exceeds 100 lines
+3. There are multiple distinct responsibilities that can be separated
+4. The code would benefit from individual testing of utility functions
+5. The functionality is complex enough to warrant documentation
+
+## Benefits of This Approach
+1. **Maintainability**: Each utility function is focused and easy to understand
+2. **Testability**: Individual functions can be tested in isolation
+3. **Reusability**: Utility functions can be reused in other contexts
+4. **Readability**: Clear separation of concerns makes the code self-documenting
+5. **Type Safety**: Proper TypeScript typing throughout the structure
+6. **Documentation**: Clear structure makes it easy to understand the feature
+
+## Migration Process
+When reorganizing an existing complex hook:
+
+1. **Create the new folder structure**
+2. **Extract utility functions** into separate files
+3. **Update imports** in the main hook file
+4. **Create documentation** explaining the new structure
+5. **Update the original file** to re-export from the new location
+6. **Run type checks** to ensure everything works correctly
+
+## Examples from Codebase
+- [useWireframeData](mdc:app/wireframe/hooks/useWireframeData) - Complete example of hook reorganization
+- [development.mdx](mdc:app/wireframe/hooks/useWireframeData/development.mdx) - Documentation example
+
+## Related Rules
+- [Clean Code Refactoring Patterns](mdc:.cursor/rules/clean-code-refactoring-patterns.mdc)
+- [Component Organization](mdc:.cursor/rules/folder-organization.mdc)
+- [Type File Organization](mdc:.cursor/rules/type-file-organization.mdc)

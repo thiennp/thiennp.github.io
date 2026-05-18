@@ -1,0 +1,65 @@
+---
+description: Breaking large monolithic components into smaller single-responsibility components
+globs: "**/*.tsx"
+alwaysApply: false
+---
+# Component Refactoring Strategy
+
+## Overview
+This rule outlines the standard process for refactoring large, monolithic React components into smaller, more maintainable, single-responsibility components. This approach improves code clarity, reusability, and testability.
+
+## The Problem: Large Components
+Large components that contain multiple distinct logical sections are difficult to read, test, and maintain. The `PaymentMethodFormFields` component was a prime example before we refactored it. It contained logic and JSX for:
+- Selecting the payment type.
+- Displaying existing bank accounts.
+- Selecting a bank account.
+- A form for adding a new bank account.
+- The SEPA mandate agreement.
+- The main conditional logic to orchestrate all of the above.
+
+## Refactoring Process
+Follow these steps to break down a large component, as demonstrated in our refactoring of `[app/pages/Checkout/features/PaymentMethod/components/PaymentMethodForm/components/PaymentMethodFormFields/PaymentMethodFormFields.tsx](mdc:app/pages/Checkout/features/PaymentMethod/components/PaymentMethodForm/components/PaymentMethodFormFields/PaymentMethodFormFields.tsx)`.
+
+### Step 1: Identify Logical Sections
+Analyze the large component and identify distinct, self-contained blocks of JSX and logic. Each of these is a candidate for extraction into a new component.
+
+### Step 2: Create a Structured Directory
+Create a `components` directory inside the feature component's folder. For each identified section, create a new sub-directory named after the new component.
+
+```
+/PaymentMethodFormFields
+├── components/
+│   ├── BankAccountDisplay/
+│   ├── BankAccountSelection/
+│   ├── NewAccountForm/
+│   ├── PaymentMethodDetails/
+│   ├── PaymentTypeSelection/
+│   └── SepaMandateSection/
+└── PaymentMethodFormFields.tsx
+```
+
+### Step 3: Extract Each Section into a New Component
+For each identified section:
+1.  Create a new component file (e.g., `PaymentTypeSelection.tsx`).
+2.  Create a corresponding stylesheet (e.g., `PaymentTypeSelection.module.scss`).
+3.  Move the relevant JSX from the parent to the new component.
+4.  Move the associated logic, props, and types. Define a clear `Props` interface for the new component.
+5.  Move the relevant styles from the parent's stylesheet to the new component's stylesheet.
+6.  Rename SCSS classes to follow the BEM convention for the new component (e.g., `styles.PaymentTypeSelection_container`).
+
+### Step 4: Update the Parent Component
+In the original large component:
+1.  Remove the extracted JSX, logic, and styles.
+2.  Import the new, smaller components you created.
+3.  Use the new components in the parent's render method, passing the required props.
+
+### Step 5: Clean Up
+- Remove all unused imports from the parent component.
+- Ensure the parent component's stylesheet only contains styles relevant to its own structure.
+
+## Benefits of This Approach
+- **Single Responsibility:** Each component has one clear purpose.
+- **Readability:** Smaller components are easier to understand at a glance.
+- **Reusability:** Self-contained components can be reused elsewhere if needed.
+- **Maintainability:** Changes are isolated to a single component, reducing the risk of unintended side effects.
+- **Testability:** It is much easier to write focused unit and integration tests for small, single-responsibility components.

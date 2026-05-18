@@ -1,0 +1,10 @@
+---
+description: Clean code principles; defers to code-standard, generic, performance-architecture for project rules
+globs: "**/*.ts,**/*.tsx"
+alwaysApply: false
+---
+# Clean Code Principles
+
+Defer to **code-standard.mdc**, **generic.mdc**, **performance-architecture-standards.mdc**.
+
+Principles: names intention-revealing; functions small, 0–2 args; comments only "why"; DRY; prefer component maps for conditionals (code-standard.mdc § Conditional Rendering).

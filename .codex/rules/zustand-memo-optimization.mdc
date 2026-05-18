@@ -1,0 +1,86 @@
+---
+description: Zustand store structure and memo optimization to prevent unnecessary re-renders
+globs: "**/stores/**/*.ts"
+alwaysApply: false
+---
+# Zustand and Memo Optimization
+
+## Problem
+Using React's `memo` with Zustand stores can lead to unexpected re-renders. Components using `memo` can still re-render when using Zustand's hooks inside the component, even when props don't change.
+
+## Store Structure: Data Only, Actions as Standalone Functions
+
+- Store only serializable data in the store state. Do not put `actions` or `utils` objects inside the store.
+- Export actions as standalone functions that call `useStore.setState()` and `useStore.getState()` from outside the store creator.
+- Components that only need to dispatch actions can call these functions without subscribing to the store, avoiding re-renders when unrelated state changes.
+- Use descriptive verb-noun names for exported actions (e.g. `addTariffToComparisonStore`, `setInitialToastInfo`, `selectProviderInStore`).
+
+```typescript
+// AVOID: Actions inside store state — subscribing for actions causes re-renders when any state changes
+export const useComparisonStore = create<State>((set, get) => ({
+  tariffs: [],
+  actions: {
+    addTariff: (key) => set({ tariffs: [...get().tariffs, key] }),
+  },
+}));
+// Component: const actions = useComparisonStore(s => s.actions); // Subscribes to whole store
+
+// PREFER: Data only in store; actions as standalone functions
+export const useComparisonStore = create<State>(() => ({
+  tariffs: [],
+}));
+export const addTariffToComparisonStore = (key: Key): void => {
+  useComparisonStore.setState((state) => ({ tariffs: [...state.tariffs, key] }));
+};
+// Component: const tariffs = useComparisonStore((s) => s.tariffs); ... addTariffToComparisonStore(key);
+```
+
+## Best Practices for Preventing Unnecessary Re-renders
+
+### Selective Store Subscriptions
+- Use selective store subscriptions to prevent re-renders when unrelated parts of the store change
+- Instead of: `const { wholeState } = useStore()`
+- Do this: `const relevantPart = useStore(state => state.relevantPart)`
+
+### Component Structure
+- Extract store-dependent parts into separate components
+- Keep parent components focused on composition and passing props
+- Memoize child components that receive data from stores
+
+### Avoiding Store Access Inside Memo Components
+```typescript
+// AVOID: Using store hooks inside memo components
+const Component = memo(() => {
+  // This will cause re-renders regardless of memo!
+  const { storeData } = useStore();
+  return <div>{storeData}</div>;
+});
+
+// BETTER: Pass store data as props from parent
+const ParentComponent = () => {
+  const storeData = useStore(state => state.data);
+  return <MemoizedChild data={storeData} />;
+};
+
+const MemoizedChild = memo(({ data }) => {
+  return <div>{data}</div>;
+});
+```
+
+### Using getState() for Read-only Access
+- For read-only access inside render, consider `useStore.getState()` instead of hooks
+- Only use when the component doesn't need to re-render on state changes
+
+### Consolidate Store Updates
+- Batch state updates when initializing multiple stores
+- Consider using middleware like Zustand's `combine` or `devtools`
+- Use store-provided batch update methods when available
+
+### Debug Re-renders
+- Use React DevTools Profiler to identify unnecessary re-renders
+- Add console.logs in memo comparison functions to see which props change
+- Set up performance monitoring for critical components
+
+### Testing Component Renders
+- Add tests that verify components don't re-render when irrelevant store parts change
+- Mock Zustand stores in tests to control state updates 

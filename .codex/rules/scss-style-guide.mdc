@@ -1,0 +1,76 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# SCSS Style Guide
+
+## Overview
+This document outlines the best practices and conventions for writing SCSS in this project to ensure consistency, readability, and maintainability.
+
+## BEM-like Nesting
+
+To keep component styles organized and scoped, use a BEM-like (Block, Element, Modifier) nesting structure within your `.module.scss` files.
+
+-   **Block:** The root selector should match the component's name (e.g., `NewAccountForm` for `NewAccountForm.tsx`).
+-   **Element:** Child elements within the block should be denoted by `&_elementName`.
+-   **Modifier:** Variations of a block or element should be denoted by `&--modifierName`.
+
+This approach encapsulates all of a component's styles within a single block, making them easy to locate and understand. The `&` character ensures that the selectors are correctly compiled by SASS while keeping the source code clean.
+
+### Example
+
+```scss
+// NewAccountForm.module.scss
+
+.NewAccountForm {
+  // This is the main block style (optional, can be empty)
+  
+  &_formContainer {
+    // Styles for the form container element
+    padding: 1rem;
+    border: 1px solid #ccc;
+  }
+
+  &_input {
+    // Styles for an input element
+    font-size: 1rem;
+
+    &--disabled {
+      // Style for a disabled modifier on the input
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+  }
+
+  &_submitButton {
+    // Styles for a submit button element
+    background-color: blue;
+    color: white;
+
+    &--primary {
+      // Style for a primary modifier
+      font-weight: bold;
+    }
+  }
+}
+```
+
+### Corresponding Component Usage (`.tsx`)
+
+When using these styles in a component, CSS Modules will generate unique class names, but you will access them via the keys you defined in the SCSS file.
+
+```tsx
+import styles from './NewAccountForm.module.scss';
+
+// ...
+
+return (
+  <div className={styles.NewAccountForm}>
+    <div className={styles.NewAccountForm_formContainer}>
+      <input className={`${styles.NewAccountForm_input} ${styles['NewAccountForm_input--disabled']}`} />
+      <button className={`${styles.NewAccountForm_submitButton} ${styles['NewAccountForm_submitButton--primary']}`}>Submit</button>
+    </div>
+  </div>
+);
+```

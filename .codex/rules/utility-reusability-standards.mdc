@@ -1,0 +1,212 @@
+---
+description: Criteria for extracting utilities to global locations versus keeping them local
+globs: "**/utils/**/*.ts"
+alwaysApply: false
+---
+# Utility Reusability Standards
+
+## Overview
+This rule defines the standards for determining when utility functions should be extracted to global locations versus kept local to their specific context. These standards were established during the analysis of [useWireframeData.ts](mdc:app/wireframe/hooks/useWireframeData.ts) utilities and should be applied consistently across the codebase.
+
+## Criteria for Global Utility Extraction
+
+### ✅ Good Candidates for Global Utilities
+
+Utilities should be extracted to global locations when they meet **ALL** of the following criteria:
+
+1. **Generic Purpose**: The function serves a general, reusable purpose not tied to specific business logic
+2. **Multiple Usage**: Evidence of similar functionality in 3+ different locations in the codebase
+3. **Clear Naming**: The function name accurately describes its generic purpose
+4. **Minimal Dependencies**: Few dependencies on feature-specific code or business logic
+5. **Consistent Behavior**: The function behaves the same regardless of where it's used
+
+### Examples of Good Global Utilities
+
+#### Cookie Management (`app/utils/cookieManagement/`)
+```typescript
+// ✅ GOOD: Generic cookie domain selection
+export const getCookieDomain = (): string[] => {
+  // Environment-based domain logic used across multiple cookie implementations
+};
+
+// ✅ GOOD: Secure session cookie setting
+export const setSessionCookie = (sessionId: string): void => {
+  // Reusable session cookie logic with proper security settings
+};
+```
+
+**Why these are good candidates:**
+- Used in multiple places: `energyUserActivityComparisonCookie.util.ts`, `cookies.server.ts`, `trackingStore/useSetInitialTrackingData.ts`
+- Generic purpose: Cookie management is a cross-cutting concern
+- Clear naming: Function names describe their purpose accurately
+- Minimal dependencies: Only depend on environment utilities
+
+## Criteria for Keeping Utilities Local
+
+### ❌ Poor Candidates for Global Utilities
+
+Utilities should **NOT** be extracted to global locations when they meet **ANY** of the following criteria:
+
+1. **Specific Purpose**: The function is designed for a specific feature or API
+2. **Misleading Name**: The function name suggests generic purpose but serves specific functionality
+3. **Business Logic Coupling**: Tightly coupled to specific business requirements
+4. **Single Usage**: Only used in one context or feature
+5. **Wrong Abstraction Level**: Extracting would create the wrong level of abstraction
+
+### Examples of Poor Global Utilities
+
+#### Device Output Conversion
+```typescript
+// ❌ BAD: Misleading name and specific purpose
+export const getDeviceOutput = (): "mobile" | "desktop" => {
+  // Actually converts device output for unified login layer only
+};
+
+// ✅ GOOD: Specific name and purpose
+export const getUnifiedLoginDeviceOutput = (): "mobile" | "desktop" => {
+  // Clearly indicates this is for unified login configuration
+};
+```
+
+**Why this was a poor candidate:**
+- Misleading name: `getDeviceOutput` suggests generic device utility
+- Specific purpose: Only used for unified login layer configuration
+- Wrong location: Would be misplaced in general device utilities
+- Single usage: Only used in wireframe unified login setup
+
+## Decision Framework
+
+### Step 1: Analyze Current Usage
+Search the codebase for similar functionality:
+```bash
+# Search for similar patterns
+grep -r "cookie.*domain" app/
+grep -r "device.*output" app/
+grep -r "session.*cookie" app/
+```
+
+### Step 2: Evaluate Function Name
+- Does the name accurately describe the function's purpose?
+- Does it suggest generic utility when it's actually specific?
+- Would the name be misleading in a global context?
+
+### Step 3: Assess Dependencies
+- What dependencies does the function have?
+- Are they feature-specific or general utilities?
+- Would extracting create circular dependencies?
+
+### Step 4: Check Behavior Consistency
+- Does the function behave the same in all contexts?
+- Are there context-specific variations that would break if extracted?
+
+## Implementation Patterns
+
+### Global Utility Extraction
+When extracting to global utilities:
+
+1. **Create appropriate directory structure**:
+   ```
+   app/utils/
+   ├── cookieManagement/
+   │   ├── getCookieDomain.ts
+   │   └── setSessionCookie.ts
+   ├── deviceOutput/
+   │   └── (for general device utilities only)
+   └── ...
+   ```
+
+2. **Add comprehensive documentation**:
+   ```typescript
+   /**
+    * Gets the appropriate cookie domain based on the current environment.
+    * Returns an array of valid domains for the current environment.
+    */
+   export const getCookieDomain = (): string[] => {
+     // Implementation
+   };
+   ```
+
+3. **Re-export for backward compatibility**:
+   ```typescript
+   // In original location
+   export { getCookieDomain } from "utils/cookieManagement/getCookieDomain";
+   ```
+
+### Local Utility Organization
+When keeping utilities local:
+
+1. **Use descriptive, specific names**:
+   ```typescript
+   // ✅ GOOD: Specific to unified login
+   export const getUnifiedLoginDeviceOutput = (): "mobile" | "desktop" => {
+     // Implementation
+   };
+   ```
+
+2. **Add context-specific documentation**:
+   ```typescript
+   /**
+    * Converts device output to unified login layer format.
+    * Returns "mobile" for mobile and app devices, "desktop" for all others.
+    * This is specific to the unified login layer configuration.
+    */
+   ```
+
+3. **Keep in feature-specific directories**:
+   ```
+   FeatureName/
+   ├── utils/
+   │   ├── specificUtility.ts
+   │   └── anotherSpecificUtility.ts
+   ```
+
+## Anti-Patterns to Avoid
+
+### 1. Premature Extraction
+```typescript
+// ❌ BAD: Extracting before evidence of reuse
+export const someUtility = () => {
+  // Only used in one place, but extracted "just in case"
+};
+```
+
+### 2. Misleading Names
+```typescript
+// ❌ BAD: Generic name for specific purpose
+export const getDeviceOutput = () => {
+  // Actually for unified login only
+};
+
+// ✅ GOOD: Specific name
+export const getUnifiedLoginDeviceOutput = () => {
+  // Clear purpose
+};
+```
+
+### 3. Wrong Abstraction Level
+```typescript
+// ❌ BAD: Too specific for global utility
+export const getCheck24UnifiedLoginDeviceOutput = () => {
+  // Too specific to be reusable
+};
+
+// ✅ GOOD: Appropriate level
+export const getUnifiedLoginDeviceOutput = () => {
+  // Specific enough for its context
+};
+```
+
+## Examples from Codebase
+
+### Successfully Extracted Utilities
+- `app/utils/cookieManagement/getCookieDomain.ts` - Environment-based domain selection
+- `app/utils/cookieManagement/setSessionCookie.ts` - Secure session cookie setting
+
+### Correctly Kept Local
+- `app/wireframe/hooks/useWireframeData/utils/getUnifiedLoginDeviceOutput.ts` - Unified login specific
+- `app/wireframe/hooks/useWireframeData/utils/buildLogoutLink.ts` - Wireframe specific
+
+## Related Rules
+- [Clean Code Refactoring Patterns](mdc:.cursor/rules/clean-code-refactoring-patterns.mdc) - For refactoring complex functions
+- [Folder Organization Standards](mdc:.cursor/rules/folder-organization-standards.mdc) - For organizing utilities
+- [Existing Utilities Usage Guide](mdc:.cursor/rules/existing-utilities.mdc) - For finding existing utilities before creating new ones

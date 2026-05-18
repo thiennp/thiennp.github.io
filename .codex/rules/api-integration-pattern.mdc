@@ -1,0 +1,44 @@
+---
+description: Recommended pattern for integrating API requests in React components using loader/fetcher
+globs: "**/services/**/*.ts"
+alwaysApply: false
+---
+# API Integration Pattern
+
+**One line:** Loader/fetcher for data; process in hooks with type guards; update state via standalone store setters. Details below.
+
+## Overview
+Separate API request logic from component rendering. Use React Router loader/fetcher; process responses in dedicated hooks; update state via standalone store setters. **Implementation details: api-request-pattern.mdc.**
+
+## Folder Structure
+```
+FeatureName/
+├── services/                      # API-related services
+│   └── featureNameLoader.ts       # Loader function for API route
+├── hooks/                         # Feature-specific hooks
+│   ├── useProcessResponse.ts      # Process API response
+│   └── useFeatureSubmit.ts       # Handle submission logic
+├── utils/                         # Utility functions
+│   └── handleDataSubmit.util.ts  # Form submission utility
+├── types/                         # Type definitions
+│   ├── ResponseDTO/               # Response data types
+│   └── RequestParams/             # Request parameter types
+├── components/                    # UI components
+│   └── ...                        # Feature-specific components
+```
+
+## Flow
+1. Register route: `route("/api/feature-endpoint", "./features/FeatureName/services/featureNameLoader.ts")`.
+2. Loader extracts URL params, validates, calls API, returns validated response (see api-request-pattern.mdc, api-response-processing.mdc).
+3. Component uses `useFetcher()`; a hook processes `fetcher.data` in `useEffect` and updates store via standalone setters (zustand-memo-optimization.mdc).
+4. Submit: utility validates params, builds URL, calls `fetcher.load(url)`.
+
+## Performance
+- useCallback/useMemo only when needed (code-standard.mdc).
+- Store: use selectors, not whole state (zustand-memo-optimization.mdc).
+- Effect deps: include only `fetcher.data` (and stable args), not the process-response callback.
+
+## Examples from Codebase
+- `app/pages/Result/features/Teaser/features/TeaserZipCodeAndCity`
+- `app/features/SmartAlarm/features/CreateSmartAlarm`
+- `app/features/CustomerEvaluation/hooks/useProcessCustomerEvaluationResponse.ts`

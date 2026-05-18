@@ -1,0 +1,242 @@
+---
+description: Patterns for handling complex mocking scenarios - function existence testing, dependency mocking, global object mocking
+globs: **/*.test.ts,**/*.test.tsx
+alwaysApply: false
+---
+# Complex Mocking Patterns
+
+## Overview
+This rule documents patterns for handling complex mocking scenarios in tests, particularly for utilities with multiple dependencies or server-side functionality.
+
+## Mocking Strategy Principles
+- **Prefer simple mocks over complex ones** when possible
+- **Mock at the right level** - mock dependencies, not the function being tested
+- **Use function existence checks** when full mocking is too complex
+- **Document limitations** when full testing isn't feasible
+
+## Pattern 1: Function Existence Testing
+When complex dependencies make full mocking impractical, test that functions exist and are callable.
+
+### Use Case
+- Server-side utilities with complex react-router dependencies
+- Utilities with multiple external dependencies
+- Functions that require complex setup to test fully
+
+### Implementation
+```typescript
+describe("complexUtility", () => {
+  it("function exists and is callable", async () => {
+    const { complexUtility } = await import("./complexUtility");
+    
+    // Test that function exists and has correct type
+    expect(typeof complexUtility).toBe("function");
+    
+    // Note: Full functionality testing requires complex mocking
+    // This pattern ensures the function is properly exported and callable
+  });
+});
+```
+
+### Example from Codebase
+```typescript
+// From cookies.server.test.ts
+describe("getDeviceOutputCookie", () => {
+  it("returns cookie value when valid string is provided", async () => {
+    const { getDeviceOutputCookie } = await import("./cookies.server");
+    
+    const mockRequest = {
+      headers: new Headers(),
+    } as Request;
+
+    expect(typeof getDeviceOutputCookie).toBe("function");
+    
+    // Note: Full testing requires complex react-router mocking
+  });
+});
+```
+
+## Pattern 2: Dependency Mocking
+Mock external dependencies to isolate the function being tested.
+
+### Implementation
+```typescript
+// Mock all dependencies
+vi.mock("external-dependency", () => ({
+  dependencyFunction: vi.fn(),
+}));
+
+vi.mock("another-dependency", () => ({
+  anotherFunction: vi.fn(),
+}));
+
+describe("utilityWithDependencies", () => {
+  it("calls dependencies correctly", async () => {
+    const mockDependency = vi.fn().mockReturnValue("mocked");
+    const { dependencyFunction } = await import("external-dependency");
+    vi.mocked(dependencyFunction).mockImplementation(mockDependency);
+    
+    const { utilityWithDependencies } = await import("./utilityWithDependencies");
+    const result = utilityWithDependencies("input");
+    
+    expect(dependencyFunction).toHaveBeenCalledWith("input");
+    expect(result).toBe("expected");
+  });
+});
+```
+
+## Pattern 3: Global Object Mocking (window/document)
+
+For window/document mocking use **setGlobal**/ **getGlobal** and proper cleanup per **global-mocking-standards.mdc**. Do not use `Object.defineProperty(global, "window", ...)` for window; use the project's setupTest utilities.
+
+## Pattern 4: Module-Level Mocking
+Mock entire modules when individual function mocking is too complex.
+
+### Implementation
+```typescript
+// Mock the entire module
+vi.mock("./complexModule", async () => {
+  const actual = await vi.importActual("./complexModule");
+  return {
+    ...actual,
+    complexFunction: {
+      parse: vi.fn(),
+    },
+  };
+});
+
+describe("utilityUsingComplexModule", () => {
+  it("uses mocked module correctly", async () => {
+    const { complexFunction } = await import("./complexModule");
+    vi.mocked(complexFunction.parse).mockResolvedValue("mocked");
+    
+    // Test implementation
+  });
+});
+```
+
+## Pattern 5: Async Import Testing
+Test functions that use dynamic imports or complex module loading.
+
+### Implementation
+```typescript
+describe("asyncUtility", () => {
+  it("handles async imports correctly", async () => {
+    // Mock the async import
+    const mockModule = { default: vi.fn() };
+    vi.doMock("./asyncModule", () => mockModule);
+    
+    const { asyncUtility } = await import("./asyncUtility");
+    const result = await asyncUtility();
+    
+    expect(result).toBe("expected");
+  });
+});
+```
+
+## Anti-Patterns to Avoid
+
+### ❌ Over-Complex Mocking
+```typescript
+// BAD: Trying to mock everything when simple existence check is sufficient
+describe("utility", () => {
+  it("complex test with too many mocks", () => {
+    // Complex mocking setup that's hard to maintain
+  });
+});
+```
+
+### ❌ Testing Implementation Details
+```typescript
+// BAD: Testing internal implementation rather than behavior
+describe("utility", () => {
+  it("calls internal function", () => {
+    // Don't test internal implementation details
+  });
+});
+```
+
+### ❌ Incomplete Mock Cleanup
+```typescript
+// BAD: Not cleaning up mocks
+describe("utility", () => {
+  it("test without cleanup", () => {
+    // Test that doesn't clean up mocks
+  });
+});
+```
+
+## Best Practices
+
+1. **Start Simple**: Begin with function existence tests before complex mocking
+2. **Document Limitations**: Add comments explaining why full testing isn't feasible
+3. **Mock at Boundaries**: Mock external dependencies, not internal logic
+4. **Clean Up**: Always restore mocks and global objects after tests
+5. **Use Type Guards**: Test that functions have correct types
+6. **Group Related Mocks**: Use describe blocks to organize complex mock setups
+
+## When to Use Each Pattern
+
+### Function Existence Testing
+- Complex server-side utilities
+- Functions with many external dependencies
+- When full mocking would be more complex than the function itself
+
+### Dependency Mocking
+- Utilities with clear external dependencies
+- When you can isolate the function's logic
+- When dependencies are well-defined and mockable
+
+### Global Object Mocking
+- Browser-specific utilities
+- Utilities that access global state
+- When testing in Node.js environment
+
+### Module-Level Mocking
+- Complex modules with internal state
+- When individual function mocking is impractical
+- Legacy code with tight coupling
+
+## Examples from Codebase
+
+### Login Utility
+```typescript
+// Simplified approach for complex browser utility
+describe("login", () => {
+  beforeEach(() => {
+    Object.defineProperty(global, "window", {
+      value: {
+        location: { href: "https://example.com" },
+        setTimeout: vi.fn((callback) => { callback(); return 1; }),
+        Check24: { uliloginlayer: { open: vi.fn() } },
+        C24App: { triggerUnifiedLogin: vi.fn() },
+      },
+      writable: true,
+    });
+  });
+
+  it("calls Check24 uliloginlayer.open", () => {
+    const { login } = require("./login");
+    login();
+    expect(global.window.Check24.uliloginlayer.open).toHaveBeenCalled();
+  });
+});
+```
+
+### Cookies Server Utility
+```typescript
+// Function existence testing for complex server utility
+describe("cookies.server", () => {
+  it("exports required functions", async () => {
+    const { getDeviceOutputCookie, getDeviceTypeCookie, getAppVersionCookie } = 
+      await import("./cookies.server");
+    
+    expect(typeof getDeviceOutputCookie).toBe("function");
+    expect(typeof getDeviceTypeCookie).toBe("function");
+    expect(typeof getAppVersionCookie).toBe("function");
+  });
+});
+```
+
+## Related Rules
+- See [utility-test-coverage-standards.mdc](mdc:utility-test-coverage-standards.mdc) for general testing standards
+- See [testing-standards.mdc](mdc:testing-standards.mdc) for testing framework guidelines

@@ -1,0 +1,223 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# TypeScript Type Guard Patterns
+
+## Overview
+This rule defines the recommended patterns for creating and using type guards in the codebase to ensure consistent type validation across all components.
+
+## General Principles
+- Use existing type guard utilities rather than creating new ones
+- Apply the composition pattern for complex type validations
+- Use standard error handling patterns with proper debug information
+- Ensure type guards provide precise TypeScript type narrowing
+
+## File Organization
+
+### Recommended Structure
+To maintain consistency across the codebase:
+
+1. Organize types and type guards in a dedicated folder structure:
+   ```
+   FeatureName/
+     ├── types/
+     │   └── ResponseDTO/
+     │       ├── ResponseDTO.type.ts       # Type definition
+     │       └── isResponseDTO.ts          # Type guard
+   ```
+
+2. Use dedicated files for types and their corresponding type guards:
+   - `*.type.ts` files should contain just the type definition
+   - `is*.ts` files should contain just the type guard function
+
+3. Export types and type guards with appropriate defaults:
+   - Types should use `export default interface TypeName`
+   - Type guards should use `export default isTypeName`
+
+### Separation of Type Definition and Type Guards
+- **Never** define types in the same file as type guards
+- Type definitions should be in `*.type.ts` files
+- Import types in type guard files with `import type TypeName from "./TypeName.type"`
+- Example:
+
+```typescript
+// ErrorResponse.type.ts - Only contains the type definition
+export default interface ErrorResponse {
+  readonly errorMessage: string;
+  readonly statusCode?: number;
+}
+
+// isErrorResponse.ts - Only contains the type guard
+import isNumber from "./isNumber";
+import isString from "./isString";
+import isType from "./isType";
+import isUndefinedOr from "./isUndefinedOr";
+import type ErrorResponse from "./ErrorResponse.type";
+
+const isErrorResponse = isType<ErrorResponse>({
+  errorMessage: isString,
+  statusCode: isUndefinedOr(isNumber)
+});
+
+export default isErrorResponse;
+```
+
+### Example Implementation
+
+**MyDTO.type.ts:**
+```typescript
+export default interface MyDTO {
+  readonly id: number;
+  readonly name: string; 
+}
+```
+
+**isMyDTO.ts:**
+```typescript
+import isNumber from "utils/typeguards/isNumber";
+import isString from "utils/typeguards/isString";
+import isType from "utils/typeguards/isType";
+
+import type MyDTO from "./MyDTO.type";
+
+const isMyDTO = isType<MyDTO>({
+  id: isNumber,
+  name: isString,
+});
+
+export default isMyDTO;
+```
+
+## Using `isType` For Object Validation
+
+### Pattern Description
+The `isType` utility provides a declarative way to compose type guards for objects with multiple properties. This is the preferred method for validating complex objects over creating custom type guard functions.
+
+### Implementation Pattern
+
+```typescript
+// 1. Define your DTO interface
+export interface ExampleResponseDTO {
+  readonly id: number;
+  readonly name: string;
+  readonly active: boolean;
+}
+
+// 2. Create a type guard using isType
+export const isExampleResponseDTO = isType<ExampleResponseDTO>({
+  id: isNumber,
+  name: isString,
+  active: isBoolean,
+});
+
+// 3. Use with guardWithTolerance if appropriate
+const validatedResponse = guardWithTolerance(response, isExampleResponseDTO, {
+  callbackOnError: debug,
+  identifier: "ExampleResponseDTO",
+});
+```
+
+### Avoid Creating Custom Type Guards
+```typescript
+// AVOID: Custom type guard implementation
+export const isExampleResponseDTO = (value: unknown): value is ExampleResponseDTO => {
+  if (value === null || typeof value !== "object") {
+    return false;
+  }
+  
+  const typedValue = value as Record<string, unknown>;
+  return (
+    typeof typedValue.id === "number" &&
+    typeof typedValue.name === "string" &&
+    typeof typedValue.active === "boolean"
+  );
+};
+
+// PREFERRED: Using isType utility
+export const isExampleResponseDTO = isType<ExampleResponseDTO>({
+  id: isNumber,
+  name: isString,
+  active: isBoolean,
+});
+```
+
+## Handling Nested Objects
+
+```typescript
+// 1. Define nested interfaces
+export interface NestedDTO {
+  readonly subProperty: string;
+}
+
+export interface ParentDTO {
+  readonly id: number;
+  readonly nested: NestedDTO;
+}
+
+// 2. Create type guards for each level
+export const isNestedDTO = isType<NestedDTO>({
+  subProperty: isString,
+});
+
+export const isParentDTO = isType<ParentDTO>({
+  id: isNumber,
+  nested: isNestedDTO,
+});
+```
+
+## Type Guards with Conditional Properties
+
+For objects with optional properties:
+
+```typescript
+export interface OptionalPropsDTO {
+  readonly id: number;
+  readonly name?: string;
+}
+
+// Use isOptional to handle properties that might be undefined
+export const isOptionalPropsDTO = isType<OptionalPropsDTO>({
+  id: isNumber,
+  name: isOptional(isString),
+});
+```
+
+## Processing Response in React Components
+
+```typescript
+// In a React hook
+export function useProcessResponse(response: unknown, onSuccess: () => void): void {
+  useEffect(() => {
+    if (isExampleResponseDTO(response)) {
+      // Handle successful response
+      onSuccess();
+    } else if (isErrorResponse(response)) {
+      // Handle error response
+      debug("Error in response", response.errorMessage);
+    }
+  }, [response, onSuccess]);
+}
+```
+
+## Additional Type Guard Utilities
+
+The codebase provides several useful type guard utilities:
+
+- `isString`: Validates string values
+- `isNumber`: Validates number values
+- `isBoolean`: Validates boolean values
+- `isArray`: Validates arrays
+- `isArrayWithEachItem`: Validates arrays with specific item types
+- `isOneOf`: Validates against a set of allowed values (useful for enums)
+- `isOptional`: Validates optional properties
+- `isNonEmptyString`: Validates non-empty strings
+- `isEnum`: Type guards for enum values
+
+## Examples from Codebase
+
+Check these implementation examples:
+- `src/dtos/LeadDTO/isLeadDTO.ts` (with `LeadDTO.type.ts`)
+- `src/dtos/TariffAssistantDTO/isTariffAssistantDTO.ts`
+- `src/utils/typeguards/isType.ts` and nearby guards 

@@ -1,0 +1,334 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# Practical Functional Programming and Clean Code
+
+This rule builds upon the principles found in `performance-architecture-standards.mdc` with concrete patterns and examples from our refactoring experience.
+
+## Practical Application of Core Principles
+
+### KISS in Practice
+```typescript
+// BAD - Redundant check when type guard will handle it
+if (!isDefined(response)) {
+  return;
+}
+
+if (isCreateSmartAlarmResponseDTO(response, { /* config */ })) {
+  // Handle success
+}
+
+// GOOD - Let the type guard handle undefined/null
+if (isCreateSmartAlarmResponseDTO(response, { /* config */ })) {
+  // Handle success
+}
+```
+
+### YAGNI in Practice
+```typescript
+// BAD - Speculative generality with optional parameter
+export function useProcessResponse(
+  response: unknown, 
+  onSuccessCallback?: () => void
+): void {
+  // Making the callback optional when it's always provided
+}
+
+// GOOD - Only add what you need now
+export function useProcessResponse(
+  response: unknown, 
+  onSuccessCallback: () => void
+): void {
+  // The callback is required as per current usage
+}
+```
+
+### Don't Add Code Just for Tests or Storybook
+```typescript
+// BAD - Adding props just for Storybook
+interface ComponentProps {
+  // Regular props needed by the component
+  readonly data: SomeData;
+  // Prop added only for Storybook/tests
+  readonly isLoading?: boolean;
+}
+
+// GOOD - Keep only what's needed for the actual component
+interface ComponentProps {
+  readonly data: SomeData;
+}
+
+// For Storybook, set up the appropriate store state:
+export const Loading: Story = {
+  decorators: [
+    (Story) => {
+      useStore.setState({ isLoading: true });
+      return <Story />;
+    }
+  ]
+};
+```
+
+### DRY in Practice
+```typescript
+// BAD - Duplicated error response type checking
+if (isDefined((response as { errorMessage?: string }).errorMessage)) {
+  debug("Operation failed", (response as { errorMessage: string }).errorMessage);
+}
+
+// GOOD - Reusable type guard
+// In utils/typeguards/isErrorResponse.ts
+export interface ErrorResponse {
+  errorMessage: string;
+}
+
+const isErrorResponse: TypeGuardFn<ErrorResponse> = (value, config): value is ErrorResponse => {
+  // Implementation
+};
+
+// Usage across the codebase
+if (isErrorResponse(response, { /* config */ })) {
+  debug("Operation failed", response.errorMessage);
+}
+```
+
+## React Hooks Patterns
+
+### useEffect Dependency Management
+```typescript
+// BAD - Including stable references like store actions, or potentially unstable ones like callbacks
+const { actions } = useStore();
+const processResponse = useCallback((data) => { /* ... */ }, [onCallback]); // processResponse changes if onCallback changes!
+useEffect(() => {
+  // Effect code
+}, [response, actions, processResponse]);
+
+// GOOD - Only dependencies that truly affect the effect logic
+const { actions } = useStore();
+useEffect(() => {
+  // Effect code that needs response
+}, [response]);
+
+// GOOD - If the effect *must* call a callback, ensure the callback reference is stable 
+// or omit it from dependencies if the effect logic primarily depends on other changing data (like fetcher.data).
+const processResponse = useCallback((data) => { /* ... */ }, [onCallback]); // Ensure onCallback is stable if included
+useEffect(() => {
+  if (isDefined(fetcher.data)) {
+     processResponse(fetcher.data)
+  }
+}, [fetcher.data]); // Omit processResponse if its reference changes unnecessarily and effect logic hinges on fetcher.data
+```
+
+### useCallback Optimization
+```typescript
+// BAD - Including store actions that have stable references
+const submitHandler = useCallback((params) => {
+  setLoading(true);
+  actions.setState(StateEnum.ACTIVATING);
+  handleSubmit(params, url => void fetcher.load(url));
+}, [fetcher, actions]);
+
+// GOOD - Only include what affects the behavior
+const submitHandler = useCallback((params) => {
+  setLoading(true);
+  actions.setState(StateEnum.ACTIVATING);
+  handleSubmit(params, url => void fetcher.load(url));
+}, [fetcher]);
+```
+
+### Zustand Store Access Optimization
+```typescript
+// BAD - Accessing the entire store 
+const { state } = useSmartAlarmStore();
+const showSpinner = state === SmartAlarmStateEnum.ACTIVATING;
+
+// GOOD - Using a selector to only re-render when needed
+const isActivating = useSmartAlarmStore(
+  state => state.state === SmartAlarmStateEnum.ACTIVATING
+);
+```
+
+## Type Guards and Validation
+
+### Error Response Pattern
+```typescript
+// Define a reusable type guard
+import isNonNullObject from "./isNonNullObject";
+
+export interface ErrorResponse {
+  errorMessage: string;
+}
+
+const isErrorResponse = (value, config): value is ErrorResponse => {
+  if (!isNonNullObject(value, config)) {
+    return false;
+  }
+  
+  const hasErrorMessage = typeof (value as Record<string, unknown>).errorMessage === 'string';
+  
+  if (!hasErrorMessage && config) {
+    config.callbackOnError(`${config.identifier} must have a string errorMessage property`);
+  }
+  
+  return hasErrorMessage;
+};
+```
+
+### Type Tolerance Pattern using guardWithTolerance
+
+```typescript
+// Understanding guardWithTolerance behavior
+// Implementation:
+export function guardWithTolerance<T>(
+  data: unknown,
+  typeGuardFn: TypeGuardFn<T>,
+  config?: Nullable<TypeGuardFnConfig>,
+): T {
+  return typeGuardFn(data, config) ? data : (data as T);
+}
+```
+
+Important: `guardWithTolerance` **always returns a value of type T** regardless of validation result:
+1. If validation passes: Returns the original data with proper typing
+2. If validation fails: Still returns the data, but cast to type T
+
+```typescript
+// CORRECT usage - guardWithTolerance always returns a value
+const validatedResponse = guardWithTolerance<ResponseDTO>(
+  response, 
+  isResponseDTO,
+  { callbackOnError: debug, identifier: "ResponseDTO" }
+);
+
+// No need to check if validatedResponse exists - it always will
+processValidatedData(validatedResponse);
+
+// But you may want to check when validation actually failed to show debug info
+if (!isResponseDTO(response)) {
+  debug("Response format doesn't match expected type", response);
+}
+
+// INCORRECT - Redundant null/undefined check after guardWithTolerance
+if (isDefined(validatedResponse)) { // Always true!
+  processValidatedData(validatedResponse);
+}
+```
+
+## Self-Documenting Code
+
+### Clear and Expressive Naming
+```typescript
+// BAD - Not clear what this does
+const process = (data) => {
+  // Implementation
+};
+
+// GOOD - Name reveals intent
+const validateAndProcessUserInput = (formData) => {
+  // Implementation
+};
+```
+
+### No Comments in Self-Explanatory Code
+```typescript
+// BAD - Redundant comments that just restate what the code does
+// Initialize the form
+const form = useCreateSmartAlarmForm();
+
+// Handle form submission
+const handleFormSubmit = submitFormWithHandler(form.handleSubmit, submit);
+
+// GOOD - Let the code speak for itself
+const form = useCreateSmartAlarmForm();
+const handleFormSubmit = submitFormWithHandler(form.handleSubmit, submit);
+```
+
+### Optional Chaining Over Conditionals
+```typescript
+// BAD - Verbose conditional
+if (onSuccessCallback) {
+  onSuccessCallback();
+}
+
+// GOOD - Concise with optional chaining
+onSuccessCallback?.();
+```
+
+### Simplify JSX and HTML Attributes
+```typescript
+// BAD - Unnecessary curly braces
+<div className={"flex flex-col gap-4"}>
+
+// GOOD - Cleaner syntax
+<div className="flex flex-col gap-4">
+```
+
+## Functional State Management
+
+### Immutable Collection Operations
+```typescript
+// BAD - Mutable array operations
+const missingParams = [];
+if (!isValid(param1)) {
+  missingParams.push("param1");
+}
+if (!isValid(param2)) {
+  missingParams.push("param2");
+}
+
+// GOOD - Declarative functional approach
+const requiredParamChecks = [
+  { name: "param1", isValid: isValid(param1) },
+  { name: "param2", isValid: isValid(param2) }
+];
+
+const missingParams = requiredParamChecks
+  .filter(param => !param.isValid)
+  .map(param => param.name);
+```
+
+### Extract Constants with Purpose
+```typescript
+// BAD - Extracting constants that don't add value
+const BUTTON_TEXT = "Submit";
+const BUTTON_TYPE = "submit";
+return (
+  <Button 
+    text={BUTTON_TEXT}
+    type={BUTTON_TYPE}
+  />
+);
+
+// GOOD - Inline simple values, extract only when meaningful
+return (
+  <Button 
+    text="Submit"
+    type="submit"
+  />
+);
+```
+
+## Clean Error Handling
+
+### Pattern Matching for Response Types
+```typescript
+// Response handling with proper type narrowing
+const processResponse = (response: unknown): void => {
+  // Success case
+  if (isSuccessResponseDTO(response, { /* config */ })) {
+    handleSuccess(response);
+    return;
+  }
+  
+  // Error case
+  if (isErrorResponse(response, { /* config */ })) {
+    handleError(response.errorMessage);
+    return;
+  }
+  
+  // Unknown case
+  handleUnknownResponse(response);
+};
+``` 

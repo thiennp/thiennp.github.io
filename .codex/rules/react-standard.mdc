@@ -1,0 +1,73 @@
+---
+description: React component standards including imports, organization, naming, styling with SCSS, TypeScript best practices, and state management
+globs: "**/*.ts,**/*.tsx"
+alwaysApply: false
+---
+# React Component Standards
+
+## Import Rules
+- Never import React from 'react' unless using namespace features
+- Import specific items from react: `import { memo } from 'react'`
+- Use type imports when importing types: `import type { ReactElement } from 'react'`
+- Use shortest possible imports with path aliases: `import { something } from '@/utils/something'`
+
+## Component Organization
+- Separate components into logical folders:
+  ```
+  ComponentName/
+  ├── layouts/
+  │   └── ComponentLayout.tsx
+  ├── hooks/
+  │   └── useComponentLogic.ts
+  └── ComponentName.tsx
+  ```
+
+## Naming Conventions
+- Use SNAKE_CASE for constants outside components:
+  ```typescript
+  const FORM_CLASSES = {
+    wrapper: 'class-names',
+    container: 'class-names'
+  } as const;
+  ```
+- Use PascalCase for component names and interfaces
+- Use camelCase for variables, functions, and props
+
+## Component Structure
+- Use function components with arrow syntax
+- Add displayName for debugging
+- Use memo for presentational components
+- Extract layout logic to separate layout components
+- Extract business logic to custom hooks
+
+## Styling
+- Use SASS modules for styling (e.g., `styles.className`)
+- Group related classes in constant objects if using utility classes within SASS, but prefer semantic class names.
+- Use classNames utility for conditional classes.
+- Avoid inline styles. Use CSS-in-JS or CSS modules for styling.
+- All styling must be done using SCSS modules with BEM-style naming conventions.
+- Avoid styled-components
+
+## TypeScript Best Practices
+- Mark all interfaces with readonly properties
+- Use explicit return types for components: `: ReactElement`
+- Use proper event types: `FormEvent<HTMLFormElement>`
+- Use proper ref types: `ForwardedRef<HTMLElement>`
+- Use type imports for React types
+
+## Form Handling
+- Use currentTarget instead of target for better type safety
+- Create specific interfaces for form elements
+- Use proper form element types
+- Handle form reset appropriately
+
+## Custom Hook Naming
+See **code-standard.mdc** § Hook Naming.
+
+## State Management
+- Use `useState` for simple component state.
+- Use `useReducer` for complex state logic.
+
+## File Organization
+- Keep related files close to their usage; group by feature rather than type
+- Barrel/index: see **code-standard.mdc** § Component Organization.

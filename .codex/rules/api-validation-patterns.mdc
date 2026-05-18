@@ -1,0 +1,145 @@
+---
+description: Type guards, enum validation, and parameter validation patterns for API services
+globs: "**/services/**/*.ts"
+alwaysApply: false
+---
+# API Validation Patterns
+
+## Parameter Validation in Loaders
+
+### Type Guards Over Type Assertions
+- Use proper type guards (`isNumber`, `isNonEmptyString`) instead of direct assertions or manual checks
+- Prefer `isNumber(productId)` over `Number.isNaN(productId)` or type assertions
+- This provides better TypeScript type narrowing and clearer error paths
+
+### Enum Validation Pattern (Updated)
+- Use the `isEnum` utility to validate enum values rather than custom validation functions
+- Follow the curried function pattern `isEnum(EnumType)(value)` for type checking
+- Add debug callbacks when appropriate: `isEnum(ProductEnum)(value, { callbackOnError: debug, identifier: "enumName" })`
+
+```typescript
+// AVOID - Custom enum validation function
+function isValidProductEnum(value: number): value is ProductEnum {
+  return Object.values(ProductEnum).includes(value);
+}
+
+// GOOD - Using the isEnum utility
+if (!isEnum(ProductEnum)(productIdNumber)) {
+  return {
+    errorMessage: "Invalid productId",
+    statusCode: 400
+  };
+}
+```
+
+### Functional Validation Approach
+- Use functional programming patterns for parameter validation
+- Create dedicated type guard functions rather than imperative validation blocks
+- Prefer declarative array methods over mutating arrays with push
+- Example of functional pattern:
+  ```typescript
+  // AVOID - Imperative approach with array mutations
+  const missingParams = [];
+  if (!isNonEmptyString(param1)) missingParams.push("param1");
+  if (!isNumber(param2)) missingParams.push("param2");
+  
+  // GOOD - Declarative functional approach
+  const validations = [
+    { field: "param1", valid: isNonEmptyString(param1) },
+    { field: "param2", valid: isNumber(param2) }
+  ];
+  const invalidFields = validations.filter(validation => !validation.valid)
+    .map(validation => validation.field);
+  ```
+
+### Best Practices for Validation
+```typescript
+// AVOID - Redundant conversion
+const productId = Number(url.searchParams.get("productId"));
+const response = await apiCall(Number(productId)); // Redundant conversion
+
+// AVOID - Unclear error cases
+if (isDefined(hash) && hash !== "") {
+  // Implementation
+}
+
+// GOOD - Dedicated utilities
+import isNonEmptyString from "utils/typeguards/isNonEmptyString";
+import isNumber from "utils/typeguards/isNumber";
+
+if (isNumber(productId) && isNonEmptyString(hash)) {
+  // Implementation
+}
+```
+
+### Error Handling in Loaders
+- Provide detailed error messages that list all missing parameters
+- Use the same declarative filter/map pattern as in Functional Validation Approach above
+- Dynamically adjust error messages for grammar (singular/plural)
+
+```typescript
+const validations = [
+  { field: "productId", valid: isNumber(productId) },
+  { field: "hash", valid: isNonEmptyString(hash) },
+];
+const missingParams = validations.filter((v) => !v.valid).map((v) => v.field);
+
+if (missingParams.length > 0) {
+  return {
+    errorMessage: `Invalid request parameters: missing ${missingParams.join(", ")} parameter${missingParams.length > 1 ? "s" : ""}`,
+  };
+}
+```
+
+## Loader Pattern Implementation
+
+### Creating Request Parameters
+- Only create parameter objects when needed
+- Narrower scope for variables is preferable
+- Avoid null coalescing operators for optional parameters
+
+```typescript
+// AVOID
+const params = {
+  hash: hash ?? "",
+};
+
+// GOOD
+if (isNonEmptyString(hash)) {
+  const params = { hash };
+  // Use params here when you're sure it's valid
+}
+```
+
+### Type Validation in API Calls
+
+`guardWithTolerance` always returns T (see **api-response-processing.mdc**). In loaders:
+
+```typescript
+try {
+  const response = await apiCall(params);
+  const validatedResponse = guardWithTolerance<ResponseDTO>(response, isResponseDTO, {
+    callbackOnError: debug,
+    identifier: "ResponseDTO",
+  });
+  return validatedResponse;
+} catch (error) {
+  return { errorMessage: `Failed to process request: ${error.message}` };
+}
+// Optional: if (!isResponseDTO(response)) debug("...", response);
+```
+
+## Migrating from Action to Loader Pattern
+
+### Key Migration Steps
+1. Create a loader file with the React Router loader function pattern
+2. Configure the API route in routes.ts
+3. Update hooks to use React Router's useFetcher
+4. Remove action file references from action registration
+5. Clean up any unused imports
+
+### API Route Configuration
+```typescript
+// In routes.ts
+route("/api/feature-endpoint", "./features/FeatureName/services/featureNameLoader.ts")
+```
