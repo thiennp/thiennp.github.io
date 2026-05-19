@@ -9,10 +9,8 @@ The public site navigation includes an `Automations` link to `codex-automations/
 ## Automations
 
 - `daily-german-btl-property-scan` - Daily German BTL Property Scan: cron automation for scanning German buy-to-let apartment listings.
-- `enrg-pr-chromelink-test-update-rebase` - ENRG EnergyCenter PR Rebase and Test Update: manual automation for EnergyCenter Reverse Bitbucket PR links.
 - `fix-slack-security-dependency-threads` - Fix Slack Security Dependency Threads: cron automation for Slack security-bot dependency threads.
 - `sentry` - Sentry: cron automation for listing unassigned Sentry issues.
-- `sentry-energycenter-cursor-check` - Sentry Cursor alternating checks: heartbeat automation for alternating EnergyCenter/Result List Goes React workflows.
 - `sentry-enrg-web-frontend-cursor-checks` - Sentry enrg-web-frontend Cursor checks: heartbeat automation for enrg-web-frontend Sentry triage/fix workflows.
 - `sync-codex-automations-to-thiennp-github-io` - Sync Codex automations to thiennp.github.io: cron automation that syncs local Codex automation definitions back into this repository.
 
