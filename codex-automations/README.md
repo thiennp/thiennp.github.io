@@ -11,7 +11,7 @@ The public site navigation includes an `Automations` link to `codex-automations/
 - `daily-german-btl-property-scan` - Daily German BTL Property Scan: cron automation for scanning German buy-to-let apartment listings.
 - `fix-slack-security-dependency-threads` - Fix Slack Security Dependency Threads: cron automation for Slack security-bot dependency threads.
 - `sentry` - Sentry: cron automation for listing unassigned Sentry issues.
-- `sentry-enrg-web-frontend-cursor-checks` - Sentry enrg-web-frontend Cursor checks: heartbeat automation for enrg-web-frontend Sentry triage/fix workflows.
+- `sentry-enrg-web-frontend-cursor-checks` - Sentry triage via Cursor: heartbeat automation for Sentry triage/fix workflows via Cursor.
 - `sync-codex-automations-to-thiennp-github-io` - Sync Codex automations to thiennp.github.io: cron automation that syncs local Codex automation definitions back into this repository.
 
 ## Layout
