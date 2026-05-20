@@ -1,0 +1,10 @@
+version = 1
+id = "sentry-jira-cursor-triage-loop"
+kind = "heartbeat"
+name = "Sentry Jira Cursor Triage Loop"
+prompt = "Continue the Sentry triage loop for Check24 Energie unresolved issues in Chrome from https://check24-energie.sentry.io/issues/?project=1837965&project=4508879690792960&project=4511296882540544&query=is%3Aunresolved&referrer=issue-list&sort=freq&statsPeriod=24h. Follow the user's rules: inspect issues by frequency, skip issues assigned to someone other than Thien Nguyen, assign unassigned eligible issues to Thien Nguyen, create a linked PRE Jira ticket through the Sentry Jira integration if missing with Thien Nguyen as developer/reporter/assignee, open the Jira ticket in Chrome, move it to In Progress if not done and no PR exists, check for an existing branch/PR, and if no branch exists open Cursor on the relevant repo and run /agent-fix-bug there only. Use these repo mappings: energymodule -> /Users/thien.nguyen/enrg-energymodule, enrg-web-frontend -> /Users/thien.nguyen/enrg-web-frontend, enrg-energycenter-rev -> /Users/thien.nguyen/enrg-energycenter-rev. Do not fix code in Codex. Notify Thien with every PR link and verification summary. Skip already handled items from this thread, including PRE-4253 PR 4932, PRE-4254 PR 1051, PRE-4255 PR 1421, PRE-4256 PR 4933, PRE-4257 PR 4934, PRE-4258 PR 1422, PRE-4259 PR 1423, PRE-4260 PR 1424, PRE-4261 PR 1052, and PRE-4262 PR 4936, unless the Jira ticket still has no PR. If there are no eligible issues left, report that briefly and wait for the next heartbeat."
+status = "ACTIVE"
+rrule = "FREQ=MINUTELY;INTERVAL=5"
+target_thread_id = "019e4442-52fb-7401-aefd-17df024b1de1"
+created_at = 1779263112241
+updated_at = 1779266002548
