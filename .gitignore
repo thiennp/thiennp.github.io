@@ -6,6 +6,9 @@
 # Local Codex desktop/runtime state. Shared prompt assets live in agents/.codex.
 /.codex/
 
+# Generated automation artifacts (not portable config).
+codex-automations/reports/
+
 # Generated Codex skill bundles and runtime cache folders
 agents/.codex/skills/.system/
 agents/.codex/skills/codex-primary-runtime/
