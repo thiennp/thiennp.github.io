@@ -1,0 +1,5 @@
+# Export folder should only contain `*/automation.toml` plus top-level docs.
+# Ignore any accidental local artifacts.
+**/memory.md
+**/history-dashboard/
+*.backup-*/
