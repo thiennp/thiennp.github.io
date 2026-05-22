@@ -8,6 +8,7 @@
 
 # Generated automation artifacts (not portable config).
 codex-automations/reports/
+codex-automations/lighthouse-artifacts/
 
 # Generated Codex skill bundles and runtime cache folders
 agents/.codex/skills/.system/
