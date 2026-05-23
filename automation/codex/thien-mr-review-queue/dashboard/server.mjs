@@ -676,12 +676,12 @@ function html() {
           <summary>Automation Workflow</summary>
           <div class="workflow-note">This panel mirrors the durable heartbeat prompt. Keep it updated when behavior changes, keep the prompt compact, use only thien-* Cursor agents, and sync the automation mirror in thiennp.github.io.</div>
           <div class="workflow-grid">
-            <div class="workflow-step" data-step="1"><strong>Inventory First</strong><span>Refresh MRs, Linear, and at least the first page of open Sentry issues before action. Cursor agents must be thien-* only, update currentAction with detailed phase/status, and Start now queues this heartbeat immediately.</span></div>
+            <div class="workflow-step" data-step="1"><strong>Inventory First</strong><span>Refresh MRs, Linear, and at least the first page of open Sentry issues before action. This heartbeat is an execution loop, not dashboard-only: after inventory it must process actionable queues. Cursor agents must be thien-* only, update currentAction with detailed phase/status, and Start now queues this heartbeat immediately.</span></div>
             <div class="workflow-step" data-step="2"><strong>MR Triage</strong><span>Show assigned, reviewer-requested, approved-but-open, draft, skipped, finished, Thien-authored, and comment-prompt MRs without removing history.</span></div>
             <div class="workflow-step" data-step="3"><strong>MR Action</strong><span>Skip drafts for review, review actionable MRs one at a time, and for Thien-authored MRs rebase, fix pipelines, then merge. If git dirt blocks the queue, switch to staging, fetch, reset hard to origin/staging, then retry.</span></div>
             <div class="workflow-step" data-step="4"><strong>Comments</strong><span>For developer replies on Thien comments or code, show editable replies plus a Cursor fix button. If already fixed, show fix status and fixed commit.</span></div>
-            <div class="workflow-step" data-step="5"><strong>Linear</strong><span>After MRs, work assigned actionable Linear issues one by one with the bug or feature Cursor workflow, highlighting active cards with elapsed time.</span></div>
-            <div class="workflow-step" data-step="6"><strong>Sentry</strong><span>List all open Sentry issues, but only run <code>/thien-sentry-to-mr &lt;url&gt;</code> for items with no MR and assigned to Thien or unassigned.</span></div>
+            <div class="workflow-step" data-step="5"><strong>Linear</strong><span>After MRs, actually work assigned actionable Linear issues one by one with the bug or feature Cursor workflow, highlighting active cards with elapsed time.</span></div>
+            <div class="workflow-step" data-step="6"><strong>Sentry</strong><span>After Linear, list all open Sentry issues. For unassigned issues with no MR, assign to Thien first, then run <code>/thien-sentry-to-mr &lt;url&gt;</code> one by one. Also run it for Thien-assigned issues with no MR.</span></div>
           </div>
         </details>
       </aside>
