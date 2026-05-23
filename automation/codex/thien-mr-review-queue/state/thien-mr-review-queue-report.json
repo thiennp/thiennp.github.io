@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-05-23T12:47:57.250Z",
+  "generatedAt": "2026-05-23T12:58:12.141Z",
   "MRs": {
     "checkedAt": "2026-05-23T11:17:56.825Z",
     "source": "GitLab API",
@@ -294,27 +294,27 @@
         "itemType": "MR",
         "title": "AUR-1138: Bump Node to 24.3.0 (TransformStream race fix)",
         "url": "https://git.fullscript.io/developers/fs-academy/-/merge_requests/1285",
-        "currentStatus": "Needs review",
+        "currentStatus": "Finished",
         "assignee": "thien.nguyen",
         "changedSinceLastBaseline": false,
-        "decision": "planned",
-        "reason": "Open MR requires classification/action if changed",
-        "commandRun": null,
-        "outputSummary": "Already reviewed by Thien; no later commits.",
+        "decision": "closed",
+        "reason": "Cursor follow-up confirmed MR was whitespace-only, replied/resolved threads, and closed MR !1285; no code changes were pushed.",
+        "commandRun": "cursor-agent --print --trust --force --workspace /Users/study/aurora/fs-academy \"/thien-mr-fix-followup https://git.fullscript.io/developers/fs-academy/-/merge_requests/1285\"",
+        "outputSummary": "Closed whitespace-only MR. Replied to Becky and AI review threads, resolved inline blocking thread, and documented next step: open a fresh Node 24.15.0 MR after DevOps publishes the matching CI image.",
         "resultingMrUrl": "https://git.fullscript.io/developers/fs-academy/-/merge_requests/1285",
         "resultingLinearStatus": null,
         "resultingSentryStatus": null,
         "linearUrl": "https://linear.app/fullscript/issue/AUR-1138",
         "mrUrl": "https://git.fullscript.io/developers/fs-academy/-/merge_requests/1285",
         "blockers": null,
-        "nextAction": "Classify approval/review state and process if actionable",
+        "nextAction": "Open a fresh AUR-1138 MR later once node:24.15.0-bookworm-slim CI image exists.",
         "author": "thien.nguyen",
         "mrAuthor": "thien.nguyen",
         "sourceBranch": "AUR-1138",
         "targetBranch": "staging",
         "draft": false,
         "authoredByThien": true,
-        "state": "opened",
+        "state": "closed",
         "changedSinceBaseline": false,
         "updatedAt": "2026-05-21T22:14:48.270-04:00",
         "approvals": {
@@ -792,12 +792,12 @@
   },
   "currentAction": {
     "source": "GitLab MR",
-    "phase": "Fix follow-up complete",
-    "detail": "MR !1341 follow-up pushed f1316621 and resolved Becky thread; approval reset so merge is blocked pending fresh approval.",
-    "itemUrl": "https://git.fullscript.io/developers/fs-academy/-/merge_requests/1341",
-    "itemTitle": "AUR-1142: Drop Sentry noise from unsupported legacy browsers",
-    "status": "blocked",
-    "updatedAt": "2026-05-23T12:47:57.250Z"
+    "phase": "MR !1285 closed",
+    "detail": "Closed whitespace-only AUR-1138 MR after replying/resolving review threads; no code changes pushed.",
+    "itemUrl": "https://git.fullscript.io/developers/fs-academy/-/merge_requests/1285",
+    "itemTitle": "AUR-1138: Bump Node to 24.3.0 (TransformStream race fix)",
+    "status": "completed",
+    "updatedAt": "2026-05-23T12:58:12.141Z"
   },
   "cursorGuidance": {
     "active": true,
@@ -810,7 +810,7 @@
       ".cursor/scripts/resolve-automation-cursor-baseline.ts"
     ],
     "currentBranch": "ai-improvement",
-    "resolvedAt": "2026-05-23T12:40:36.944Z",
+    "resolvedAt": "2026-05-23T12:49:06.981Z",
     "checkedOutAt": null
   }
 }
