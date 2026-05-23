@@ -1,8 +1,8 @@
 {
-  "generatedAt": "2026-05-23T19:49:22.627Z",
+  "generatedAt": "2026-05-23T20:24:18.629Z",
   "MRs": {
-    "checkedAt": "2026-05-23T19:49:22.627Z",
-    "source": "GitLab API + cursor-agent follow-up",
+    "checkedAt": "2026-05-23T20:24:11.225Z",
+    "source": "GitLab API targeted delta",
     "items": [
       {
         "itemType": "MR",
@@ -41,20 +41,20 @@
         "itemType": "MR",
         "title": "AUR-1249: Handle aborted Payload multipart uploads",
         "url": "https://git.fullscript.io/developers/fs-academy/-/merge_requests/1323",
-        "currentStatus": "Needs reply",
+        "currentStatus": "Needs approval",
         "assignee": "thien.nguyen",
         "changedSinceLastBaseline": true,
-        "decision": "reviewed",
-        "reason": "Open Becky prompt remains unresolved; Codex does not auto-post editable dashboard replies.",
+        "decision": "blocked",
+        "reason": "Previously unresolved Becky discussion is now resolved; MR is green and unblocked but not approved yet.",
         "commandRun": null,
-        "outputSummary": "Reviewed MR !1323. Focused unit test passed. Pushed commit 0dfd1d9a extracting multipart recovery wrapper and documenting Payload regen restore notes. GitLab discussion reply was not auto-posted.",
+        "outputSummary": "MR !1323 has no unresolved discussions and merge pipeline 2717067 is success. Approval remains reset/missing.",
         "resultingMrUrl": "https://git.fullscript.io/developers/fs-academy/-/merge_requests/1323",
         "resultingLinearStatus": null,
         "resultingSentryStatus": null,
         "linearUrl": "https://linear.app/fullscript/issue/AUR-1249",
         "mrUrl": "https://git.fullscript.io/developers/fs-academy/-/merge_requests/1323",
-        "blockers": "One unresolved discussion and one approval required.",
-        "nextAction": "Thien/dashboard suggested reply needs review/posting before merge path continues.",
+        "blockers": "Needs reviewer approval before merge.",
+        "nextAction": "Wait for reviewer approval, then merge if still green/unblocked.",
         "author": "thien.nguyen",
         "mrAuthor": "thien.nguyen",
         "sourceBranch": "AUR-1249",
@@ -63,27 +63,21 @@
         "authoredByThien": true,
         "state": "opened",
         "changedSinceBaseline": true,
-        "updatedAt": "2026-05-23T04:04:12.496-04:00",
+        "updatedAt": "2026-05-23T16:09:09.047-04:00",
         "approvals": {
           "approved": false,
           "approvedBy": [],
           "approvalsLeft": 1
         },
-        "openCommentPrompts": [
-          {
-            "commenter": "rebecca.putnam",
-            "status": "Reply suggested",
-            "commentText": "Asked whether modifying the Payload-generated route.ts is acceptable.",
-            "commentUrl": "https://git.fullscript.io/developers/fs-academy/-/merge_requests/1323",
-            "suggestedReply": "Yes — this is a deliberate, minimal exception. POST/PATCH are wrapped so aborted multipart uploads return Payload-shaped 400 instead of 500. I also moved the wrapper into a util and expanded the banner comment so the regen restore step is clear.",
-            "editable": true,
-            "postButton": true,
-            "fixButton": true,
-            "fixedCommit": "0dfd1d9a"
-          }
-        ],
+        "openCommentPrompts": [],
         "resultingCommit": "0dfd1d9a",
-        "resultingCommitUrl": "https://git.fullscript.io/developers/fs-academy/-/commit/0dfd1d9a"
+        "resultingCommitUrl": "https://git.fullscript.io/developers/fs-academy/-/commit/0dfd1d9a",
+        "pipeline": {
+          "id": 2717067,
+          "status": "success",
+          "sha": "68a3c4c05eebc78439dd7c10e04e9fc145cc3d8b",
+          "ref": "refs/merge-requests/1323/merge"
+        }
       },
       {
         "itemType": "MR",
@@ -91,9 +85,9 @@
         "url": "https://git.fullscript.io/developers/fs-academy/-/merge_requests/1345",
         "currentStatus": "Needs approval",
         "assignee": "thien.nguyen",
-        "changedSinceLastBaseline": true,
-        "decision": "processed",
-        "reason": "Conflict resolved by thien-mr-fix-followup; rebase reset reviewer approval.",
+        "changedSinceLastBaseline": false,
+        "decision": "blocked",
+        "reason": "Still green and conflict-free after rebase; waiting on fresh approval.",
         "commandRun": "cursor-agent --print --trust --force --workspace /Users/study/aurora/fs-academy \"/thien-mr-fix-followup https://git.fullscript.io/developers/fs-academy/-/merge_requests/1345\"",
         "outputSummary": "Rebased aur-1268 onto origin/staging, resolved instrumentation-client.ts conflict by keeping both ignoreErrors and beforeSend filters, ran pnpm tsc and pnpm lint, posted follow-up summary. Pipeline 2717063 succeeded on 41192b55. Approval reset after rebase.",
         "resultingMrUrl": "https://git.fullscript.io/developers/fs-academy/-/merge_requests/1345",
@@ -110,7 +104,7 @@
         "draft": false,
         "authoredByThien": true,
         "state": "opened",
-        "changedSinceBaseline": true,
+        "changedSinceBaseline": false,
         "updatedAt": "2026-05-23T19:49:22.627Z",
         "approvals": {
           "approved": false,
@@ -121,7 +115,8 @@
         "pipeline": {
           "id": 2717063,
           "status": "success",
-          "sha": "41192b55"
+          "sha": "d97b33ed86cc1200a79c3c983a07f083b29d6cf9",
+          "ref": "refs/merge-requests/1345/merge"
         }
       },
       {
@@ -201,35 +196,41 @@
       },
       {
         "itemType": "MR",
-        "title": "Draft: AUR-1075: Include depth in getCachedGlobal cache key",
+        "title": "AUR-1075: Include depth in getCachedGlobal cache key",
         "url": "https://git.fullscript.io/developers/fs-academy/-/merge_requests/1343",
-        "currentStatus": "Skipped",
-        "assignee": null,
-        "changedSinceLastBaseline": false,
-        "decision": "skipped",
-        "reason": "Draft MR - waiting until ready for review",
+        "currentStatus": "Needs approval",
+        "assignee": "thien.nguyen",
+        "changedSinceLastBaseline": true,
+        "decision": "blocked",
+        "reason": "MR is no longer draft; green and conflict-free, but not approved yet.",
         "commandRun": null,
-        "outputSummary": "No retry started this heartbeat; local changes must be inspected or stashed first.",
+        "outputSummary": "Draft status removed. Merge pipeline 2717073 is success; no unresolved discussions. Needs reviewer approval before merge.",
         "resultingMrUrl": "https://git.fullscript.io/developers/fs-academy/-/merge_requests/1343",
         "resultingLinearStatus": null,
         "resultingSentryStatus": null,
         "linearUrl": "https://linear.app/fullscript/issue/AUR-1075",
         "mrUrl": "https://git.fullscript.io/developers/fs-academy/-/merge_requests/1343",
-        "blockers": null,
-        "nextAction": "No active heartbeat action",
+        "blockers": "Needs reviewer approval before merge.",
+        "nextAction": "Wait for reviewer approval, then merge if still green/unblocked.",
         "author": "thien.nguyen",
         "mrAuthor": "thien.nguyen",
         "sourceBranch": "AUR-1075",
         "targetBranch": "staging",
-        "draft": true,
+        "draft": false,
         "authoredByThien": true,
         "state": "opened",
-        "changedSinceBaseline": false,
-        "updatedAt": "2026-05-22T17:15:21.578-04:00",
+        "changedSinceBaseline": true,
+        "updatedAt": "2026-05-23T16:09:50.327-04:00",
         "approvals": {
           "approved": false,
           "approvedBy": [],
           "approvalsLeft": 1
+        },
+        "pipeline": {
+          "id": 2717073,
+          "status": "success",
+          "sha": "b2b0ee03c63f6435b36388da2c5f88d4746f1c0c",
+          "ref": "refs/merge-requests/1343/merge"
         }
       },
       {
@@ -335,16 +336,55 @@
           "approvedBy": [],
           "approvalsLeft": 1
         }
+      },
+      {
+        "itemType": "MR",
+        "url": "https://git.fullscript.io/developers/fs-academy/-/merge_requests/1346",
+        "mrUrl": "https://git.fullscript.io/developers/fs-academy/-/merge_requests/1346",
+        "title": "AUR-1269: Reject stray POST without next-action before FormData parse",
+        "currentStatus": "Needs approval",
+        "assignee": "thien.nguyen",
+        "changedSinceLastBaseline": true,
+        "changedSinceBaseline": true,
+        "decision": "blocked",
+        "reason": "New non-draft Sentry MR is green and unblocked but not approved yet.",
+        "commandRun": "thien-sentry-single-issue (dashboard/manual flow before heartbeat)",
+        "outputSummary": "MR !1346 is open, non-draft, conflict-free, no unresolved discussions, and merge pipeline 2717077 is success. Needs reviewer approval before merge.",
+        "resultingMrUrl": "https://git.fullscript.io/developers/fs-academy/-/merge_requests/1346",
+        "resultingSentryStatus": "unresolved until merge",
+        "linearUrl": "https://linear.app/fullscript/issue/AUR-1269",
+        "sourceBranch": "AUR-1269-sentry-academy-gr-post-body",
+        "targetBranch": "staging",
+        "draft": false,
+        "authoredByThien": true,
+        "author": "thien.nguyen",
+        "mrAuthor": "thien.nguyen",
+        "state": "opened",
+        "updatedAt": "2026-05-23T16:17:56.546-04:00",
+        "approvals": {
+          "approved": false,
+          "approvedBy": [],
+          "approvalsLeft": 1
+        },
+        "pipeline": {
+          "id": 2717077,
+          "status": "success",
+          "sha": "3e6128b597507ebf660465fadfa0b4f1d314345d",
+          "ref": "refs/merge-requests/1346/merge"
+        },
+        "blockers": "Needs reviewer approval before merge.",
+        "nextAction": "Wait for reviewer approval, then merge if still green/unblocked."
       }
     ],
     "totals": {
-      "total": 9,
+      "total": 10,
       "finished": 3,
-      "needsApproval": 1,
-      "needsReply": 1,
-      "skipped": 4,
-      "processedThisRun": 1,
-      "mergedSinceLastRun": 1
+      "needsApproval": 4,
+      "needsReply": 0,
+      "skipped": 3,
+      "processedThisRun": 0,
+      "changedThisRun": 3,
+      "mergedSinceLastRun": 0
     }
   },
   "Linear": {
@@ -807,12 +847,12 @@
   },
   "currentAction": {
     "source": "GitLab MR",
-    "phase": "MR !1345 conflict resolved",
-    "detail": "Rebased aur-1268 onto staging, kept both Sentry filters, pushed 41192b55, pipeline 2717063 green; approval reset and needs reviewer re-approval before merge.",
-    "itemUrl": "https://git.fullscript.io/developers/fs-academy/-/merge_requests/1345",
-    "itemTitle": "AUR-1268: Ignore GTM zaius ReferenceError in Sentry client config",
+    "phase": "Inventory changed",
+    "detail": "MR !1323 discussion resolved; MR !1343 is ready for review; MR !1346 opened from Sentry flow and is green. All await reviewer approval.",
+    "itemUrl": "https://git.fullscript.io/developers/fs-academy/-/merge_requests/1346",
+    "itemTitle": "AUR-1269: Reject stray POST without next-action before FormData parse",
     "status": "completed",
-    "updatedAt": "2026-05-23T19:48:36.503Z"
+    "updatedAt": "2026-05-23T20:24:18.628Z"
   },
   "cursorGuidance": {
     "active": true,
@@ -823,12 +863,18 @@
       ".cursor/scripts/resolve-automation-cursor-baseline.ts"
     ],
     "currentBranch": "ai-improvement",
-    "resolvedAt": "2026-05-23T19:48:28.477Z",
-    "checkedOutAt": null
+    "resolvedAt": "2026-05-23T20:22:33.999Z",
+    "checkedOutAt": "2026-05-23T20:22:36.195Z"
   },
   "notification": {
     "decision": "NOTIFY",
-    "reason": "MR !1341 merged; MR !1345 conflict resolved/rebased and now needs fresh approval.",
-    "updatedAt": "2026-05-23T19:49:22.627Z"
+    "reason": "Queue changed: MR !1323 unblocked discussion, MR !1343 ready for review, MR !1346 new green Sentry MR; all await approval.",
+    "updatedAt": "2026-05-23T20:24:11.225Z"
+  },
+  "workspace": {
+    "dirtyPaths": [
+      "docs/edge-request-guards.md"
+    ],
+    "note": "Untracked doc left after Sentry branch workflow; not removed because it is not clearly generated/scratch."
   }
 }
