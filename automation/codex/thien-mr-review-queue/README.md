@@ -1,10 +1,11 @@
 # Thien MR Review Queue Automation
 
-Mirror of the local Codex heartbeat automation and dashboard for:
+Mirror of the local Codex heartbeat automation and dashboard (Target System Workflow v2):
 
+- Thin Codex orchestrator: delta inventory, one Cursor launch per heartbeat
 - MR review and Thien-authored MR maintenance
 - Linear assigned issue handling
-- Sentry inventory and Sentry-to-MR handling
+- Sentry inventory and `/thien-sentry-all` queue drain (one Cursor launch per heartbeat)
 - Local dashboard at `http://127.0.0.1:4177`
 
 ## Source Of Truth

@@ -13,6 +13,7 @@ const toneMemoryPath = '/Users/study/.codex/automations/thien-mr-dashboard-reply
 const automationPath = '/Users/study/.codex/automations/thien-mr-review-queue/automation.toml'
 const automationDbPath = '/Users/study/.codex/sqlite/codex-dev.db'
 const commentFixPath = '/Users/study/.codex/automations/thien-mr-dashboard-comment-fixes.json'
+const cursorBaselinePath = '/Users/study/.codex/automations/thien-mr-cursor-baseline.json'
 const workspacePath = '/Users/study/aurora/fs-academy'
 
 async function loadEnvFile(path) {
@@ -28,6 +29,32 @@ async function loadEnvFile(path) {
 
 await loadEnvFile('.env')
 await loadEnvFile('.cursor/scripts/.env')
+
+async function resolveCursorBaseline() {
+  const result = await shellWithStatus('npx', [
+    'tsx',
+    '.cursor/scripts/resolve-automation-cursor-baseline.ts',
+    '--checkout',
+  ])
+  if (!result.ok) {
+    console.warn('Cursor baseline resolve failed:', result.stderr || result.stdout)
+  }
+}
+
+async function readCursorBaseline() {
+  try {
+    return JSON.parse(await readFile(cursorBaselinePath, 'utf8'))
+  } catch {
+    return {
+      active: false,
+      guidanceBranch: 'staging',
+      gitUnblockRef: 'origin/staging',
+      guidanceRoot: '.cursor',
+    }
+  }
+}
+
+await resolveCursorBaseline()
 
 const token = process.env.GITLAB_TOKEN ?? process.env.NPMRC_GITLAB_TOKEN
 
@@ -112,7 +139,7 @@ async function cursorActivity() {
   const stdout = await shell('ps', ['-axo', 'pid,etime,command'])
   return stdout
     .split('\n')
-    .filter(line => line.includes('cursor-agent') || line.includes('/thien-mr-review'))
+    .filter(line => line.includes('cursor-agent') || /\/thien-/.test(line))
     .filter(line => !line.includes('server.mjs'))
     .map(line => line.trim())
 }
@@ -530,6 +557,7 @@ async function statusPayload() {
     cursorActivity: await cursorActivity(),
     report: await readReport(),
     automationSchedule: await readAutomationSchedule(),
+    cursorGuidance: await readCursorBaseline(),
     toneMemory: {
       replyCount: toneMemory.replies.length,
       updatedAt: toneMemory.updatedAt,
@@ -674,14 +702,13 @@ function html() {
       <aside class="workflow-rail">
         <details class="workflow" id="workflowDetails">
           <summary>Automation Workflow</summary>
-          <div class="workflow-note">This panel mirrors the durable heartbeat prompt. Keep it updated when behavior changes, keep the prompt compact, use only thien-* Cursor agents, and sync the automation mirror in thiennp.github.io.</div>
+          <div class="workflow-note">Target System Workflow v2: Codex orchestrates live check, delta inventory, and one Cursor launch per heartbeat. Cursor thien-* agents own review, fixes, Sentry triage, and Linear work. Sync automation.toml and thiennp.github.io after changes.</div>
           <div class="workflow-grid">
-            <div class="workflow-step" data-step="1"><strong>Inventory First</strong><span>Refresh MRs, Linear, and at least the first page of open Sentry issues before action. This heartbeat is an execution loop, not dashboard-only: after inventory it must process actionable queues. Cursor agents must be thien-* only, update currentAction with detailed phase/status, and Start now queues this heartbeat immediately.</span></div>
-            <div class="workflow-step" data-step="2"><strong>MR Triage</strong><span>Show assigned, reviewer-requested, approved-but-open, draft, skipped, finished, Thien-authored, and comment-prompt MRs without removing history.</span></div>
-            <div class="workflow-step" data-step="3"><strong>MR Action</strong><span>Skip drafts for review, review actionable MRs one at a time, and for Thien-authored MRs rebase, fix pipelines, then merge. If git dirt blocks the queue, switch to staging, fetch, reset hard to origin/staging, then retry.</span></div>
-            <div class="workflow-step" data-step="4"><strong>Comments</strong><span>For developer replies on Thien comments or code, show editable replies plus a Cursor fix button. If already fixed, show fix status and fixed commit.</span></div>
-            <div class="workflow-step" data-step="5"><strong>Linear</strong><span>After MRs, actually work assigned actionable Linear issues one by one with the bug or feature Cursor workflow, highlighting active cards with elapsed time.</span></div>
-            <div class="workflow-step" data-step="6"><strong>Sentry</strong><span>After Linear, list all open Sentry issues. For unassigned issues with no MR, assign to Thien first, then run <code>/thien-sentry-to-mr &lt;url&gt;</code> one by one. Also run it for Thien-assigned issues with no MR.</span></div>
+            <div class="workflow-step" data-step="1"><strong>Live check &amp; sync</strong><span>Curl dashboard :4177; ensure LaunchAgent <code>com.thien.mr-dashboard</code> is alive. Skip queue/git reset if a thien-* Cursor task is running. Start now queues this heartbeat immediately.</span></div>
+            <div class="workflow-step" data-step="2"><strong>Refresh inventory</strong><span>Run <code>resolve-automation-cursor-baseline.ts --checkout</code>. If ai-improvement has unmerged <code>.cursor/</code> changes vs staging, checkout branch <code>ai-improvement</code>; else <code>staging</code>. Then delta-fetch MRs, Linear, Sentry.</span></div>
+            <div class="workflow-step" data-step="3"><strong>GitLab MRs</strong><span>Draft/approved skip rules; <code>[AI]</code> approve-only; review via <code>/thien-mr-review</code>; Thien-authored rebase/merge in Codex; pipeline/review fixes via <code>/thien-mr-fix-followup</code>. Comments: dashboard only.</span></div>
+            <div class="workflow-step" data-step="4"><strong>Linear</strong><span>One assigned ACA issue: <code>/thien-fix-bug</code> or <code>/thien-implement-linear-feature</code>. Skip done, In Review with MR, blocked, or waiting on others.</span></div>
+            <div class="workflow-step" data-step="5"><strong>Sentry</strong><span>Codex list-only. When ≥1 actionable row (unassigned or Thien-assigned, no MR) → one <code>/thien-sentry-all</code> (Cursor drains assign, Linear, fix, MR, review for all actionable issues).</span></div>
           </div>
         </details>
       </aside>
@@ -1036,7 +1063,9 @@ function html() {
       if (activeWorkText.includes('/thien-mr-review')) return 'Reviewing an MR with Cursor.'
       if (activeWorkText.includes('/thien-fix-bug')) return 'Fixing a Linear bug with Cursor.'
       if (activeWorkText.includes('/thien-implement-linear-feature')) return 'Implementing a Linear feature with Cursor.'
-      if (activeWorkText.includes('/thien-sentry-to-mr')) return 'Solving a Sentry issue with Cursor.'
+      if (activeWorkText.includes('/thien-sentry-single-issue')) return 'Solving a Sentry issue with Cursor.'
+      if (activeWorkText.includes('/thien-sentry-all')) return 'Draining Sentry issues with Cursor.'
+      if (activeWorkText.includes('/thien-mr-fix-followup')) return 'Fixing MR comments or pipeline with Cursor.'
       return 'Cursor task is running.'
     }
     function renderProcessList(elementId, items) {

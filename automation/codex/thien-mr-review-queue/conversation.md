@@ -1,88 +1,171 @@
-# Thien MR Review Queue Conversation Handoff
+# Thien MR Review Queue — Target System Workflow v2
 
 Last synced: 2026-05-23
 
-## Purpose
+Schedule: every 5 minutes (heartbeat) via local Codex runner  
+Mirror: `/Users/study/thiennp.github.io/automation/codex/thien-mr-review-queue` — run `sync-from-local.sh` on change
 
-This folder mirrors the Codex heartbeat automation that runs Thien's MR, Linear, and Sentry queue and powers the local dashboard at `http://127.0.0.1:4177`.
+---
 
-## Current Durable Requirements
+## 1. Core operating constraints and token efficiency
 
-- Run every 5 minutes.
-- Keep the dashboard live through LaunchAgent `com.thien.mr-dashboard`.
-- Keep the dashboard, automation prompt, and Automation Workflow panel synchronized whenever behavior changes.
-- Keep this GitHub Pages mirror synchronized after automation/dashboard/report changes.
-- Optimize for low cloud-token cost by reusing persisted report/history, inspecting only changed/actionable items, and summarizing logs.
-- Use only Cursor agents whose names/files start with `thien-`.
-- The thien-agent allowlist does not apply to commands, skills, subagents, or rules.
-- Do not invoke `becky-*`, `*-dana-*`, or any other non-`thien-*` agent from this automation.
-- Human GitLab reviewers are not Cursor agents and may still be assigned by the normal MR workflow when needed.
+- **Role split:** Codex owns dashboard health, delta inventory, report persistence, classification, notifications, cheap GitLab/git shell ops, and **one** Cursor `thien-*` launch per heartbeat. Cursor owns all substantive MR review, fixes, Sentry triage, Linear work, and pipeline/comment follow-up via `.cursor/agents/thien-*.md` and skills.
+- **Persistent delta engine:** Read `/Users/study/.codex/automations/thien-mr-review-queue-report.json` and `thien-mr-dashboard-history.json` first. Use `changed-since-baseline` and prior report rows; fetch only new/changed items. Prefer API modified-since or If-None-Match when available; full fetch only when delta signals are missing.
+- **Concise output:** Summarize execution logs. Do not restate unchanged data or agent-internal steps.
+- **One Cursor launch per heartbeat** (retry only after git-unblock). Never duplicate dashboard `/api/fix-comment` runs.
+- **Isolation guard:** Never execute queue steps, `git reset`, or state overwrites if a `thien-*` agent is active (`startedAt`, `currentAction.status=running`, or `cursor-agent`/thien-* PIDs).
 
-## Dashboard Requirements
+### Cursor guidance branch (ai-improvement vs staging)
 
-- Colorful light UI with `MRs`, `Linear`, and `Sentry` card columns.
-- Status tabs/chips for `All`, `Needs review`, `Approve only`, `Approved`, `Skipped`, and `Finished`.
-- Direct links open in new pages.
-- MR number, title, author, source branch, and target branch are clickable.
-- No iframe and no console/activity area.
-- Poll `/api/status` every 5 seconds and refresh on focus/visibility.
-- Serve dashboard and API with `Cache-Control: no-store`.
-- Header shows active action from Cursor-reported `currentAction`, or `Waiting for next heartbeat round, in MM:SS`.
-- Countdown must use the automation RRULE/anchor from `automation.toml`.
-- Waiting header includes `Start now` to queue the heartbeat immediately.
-- Active cards show `Working now` and elapsed time from persisted `startedAt`.
-- Automation Workflow panel mirrors this behavior, sits in a sticky side rail on large screens, and is collapsed by default on small screens.
-- Never remove seen/closed/merged/finished items; mark them `Finished` when they leave the active queue.
-
-## MR Rules
-
-- Check open `developers/fs-academy` MRs where `thien.nguyen` is assignee, requested reviewer, approver, or author.
-- Keep approved/open and Thien-authored/open MRs visible.
-- Do not review or approve draft MRs.
-- Skip approved MRs and reviewed MRs with no later commits.
-- For `[AI]` non-draft MRs, approve only if not already approved; do not run `/thien-mr-review`.
-- For other actionable review MRs, run `/thien-mr-review <MR_URL>` one at a time.
-- For Thien-authored MRs, verify rebase against target, fix broken pipelines, and merge if approved, rebased, unblocked, and mergeable.
-- If git dirt or stale branch state blocks work, record the blocker, switch to `staging`, fetch, hard-reset to `origin/staging`, clean only generated/scratch untracked files, and retry. Do not reset while Cursor is active.
-
-## MR Comments
-
-- For developer comments on Thien's prior comments or Thien-authored code, determine whether code action is reasonable.
-- Dashboard comment cards show the commenter, clickable GitLab discussion text/header, code-action or reply-only status, editable suggested reply, `Post suggested reply`, and `Fix code with Cursor`.
-- Do not auto-post replies.
-- Persist posted edited replies as tone memory for future suggestions.
-- Persist Cursor comment-fix status with command, timestamps, summary, fixed commit SHA/link, and blockers.
-
-## Linear Rules
-
-- After MR pass, check Linear Aurora issues assigned to Thien.
-- Persist complete assigned inventory before action.
-- Bugs/regressions/Sentry/errors/broken behavior use `/thien-fix-bug <issue_url>`.
-- Features/enhancements/implementation/migration/docs/product work use `/thien-implement-linear-feature <issue_url>`.
-- Process one issue at a time.
-- Skip done, In Review with open MR/no action, blocked, unassigned, or waiting-on-someone-else items, but keep outcomes visible.
-
-## Sentry Rules
-
-- After Linear, list open Sentry issues on dashboard, including unassigned and assigned-to-others.
-- Inventory all pages if possible; at minimum the first page.
-- Do not stop inventory for an individual blocked, duplicate, assigned-away, or unactionable issue.
-- Only act when no MR is linked/created/found and the assignee is `Unassigned` or Thien Nguyen/TN/thien.nguyen.
-- Actionable Sentry issues use `/thien-sentry-to-mr <sentry_issue_url>` one at a time.
-- Skip MR-linked/already-handled/assigned-to-others with exact reason and next action.
-
-## Current Action Reporting
-
-Cursor agents/rules/skills used by this automation must update:
-
-```text
-/Users/study/.codex/automations/thien-mr-review-queue-report.json
-```
-
-before each meaningful phase change using:
+At heartbeat start (and dashboard startup), run:
 
 ```bash
-npx tsx .cursor/scripts/update-automation-current-action.ts --source ... --phase ... --detail ... --item-url ... --item-title ... --status running|blocked|completed|skipped
+npx tsx .cursor/scripts/resolve-automation-cursor-baseline.ts --checkout --json
 ```
 
-All AI guidance/tooling changes under `.cursor/` must be made on branch `ai-improvement`, committed, and pushed.
+Read `/Users/study/.codex/automations/thien-mr-cursor-baseline.json` and persist `cursorGuidance` on the report.
+
+| `active` | Checkout branch | Git unblock ref | `.cursor/` source |
+|---|---|---|---|
+| `true` | `ai-improvement` | `origin/ai-improvement` | branch working tree |
+| `false` | `staging` | `origin/staging` | branch working tree |
+
+When ai-improvement has unmerged `.cursor/` commits vs staging, automation checks out **`ai-improvement`**. After merge to staging, baseline flips to **`staging`** automatically.
+
+---
+
+## 2. Infrastructure and dashboard lifecycle
+
+- **Live check:** Verify `http://127.0.0.1:4177` via curl. If down, load/recreate LaunchAgent `com.thien.mr-dashboard`.
+- **LaunchAgent template** (`/Users/study/Library/LaunchAgents/com.thien.mr-dashboard.plist`):
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>com.thien.mr-dashboard</string>
+    <key>ProgramArguments</key>
+    <array>
+        <string>/opt/homebrew/bin/node</string>
+        <string>/Users/study/aurora/fs-academy/.cursor/.temp/thien-mr-dashboard/server.mjs</string>
+    </array>
+    <key>WorkingDirectory</key>
+    <string>/Users/study/aurora/fs-academy</string>
+    <key>EnvironmentVariables</key>
+    <dict>
+        <key>PORT</key>
+        <string>4177</string>
+    </dict>
+    <key>RunAtLoad</key>
+    <true/>
+    <key>KeepAlive</key>
+    <true/>
+</dict>
+</plist>
+```
+
+- **Dashboard API:** Poll `/api/status` every 5s + visibility focus. `Cache-Control: no-store`. Header shows Cursor `currentAction` or Waiting countdown from `automation.toml` RRULE. **Start now** sets Codex DB `next_run_at` for `thien-mr-review-queue` to now.
+- **Sync rule:** Keep `automation.toml`, dashboard `server.mjs` Automation Workflow panel, and this mirror aligned after behavior changes.
+
+---
+
+## 3. Strict execution sequence
+
+```
+[Live check & sync] → [Refresh inventory] → [GitLab MRs] → [Linear tickets] → [Sentry open issues]
+```
+
+### 3a. Refresh inventory
+
+Persist to report JSON before action. Track MRs, Linear assigned to Thien, and open Sentry issues (all pages if possible, minimum first page). Compact fields per item: type, title, URL, state, assignee, changed-since-baseline, decision, reason, next action, command, blockers, related URLs, startedAt, output summary.
+
+### 3b. GitLab MR queue (priority 1)
+
+Scope: `thien.nguyen` as assignee, reviewer, approver, or author on `developers/fs-academy`.
+
+| Case | Action |
+|---|---|
+| Draft | `skipped` — `Draft MR - waiting until ready for review` |
+| Approved / reviewed, no new commits | Skip |
+| `[AI]` non-draft | GitLab approve only if unsigned; no `/thien-mr-review` |
+| Actionable review | One `/thien-mr-review <MR_URL>` |
+| Thien-authored, behind | Codex: shell rebase/push |
+| Thien-authored, pipeline red or review threads | `/thien-mr-fix-followup <MR_URL>` |
+| Thien-authored, ready | `glab merge`; never merge drafts |
+
+**MR comments:** Dashboard owns suggested replies and Fix code with Cursor. Codex inventories prompts only.
+
+### 3c. Linear sync (priority 2)
+
+Target: https://linear.app/fullscript/team/ACA/all — one issue at a time.
+
+- Bugs/regressions/errors → `/thien-fix-bug <issue_url>`
+- Features/enhancements/docs/product → `/thien-implement-linear-feature <issue_url>`
+- Skip: done, In Review with open MR, blocked, unassigned, waiting on others
+
+### 3d. Sentry triage (priority 3)
+
+Codex list-only — no Sentry writes. When inventory shows ≥1 actionable row (no linked MR; assignee Unassigned or Thien/TN/thien.nguyen), launch **one queue drain** per heartbeat — not one issue per heartbeat:
+
+```bash
+cursor-agent --print --trust --force --workspace /Users/study/aurora/fs-academy "/thien-sentry-all"
+```
+
+Cursor runs `@.cursor/agents/thien-sentry-all.md` (MCP assign, Linear, fix, MR, review for all actionable unresolved issues). Reserve `/thien-sentry-single-issue <url>` for manual one-off runs only.
+
+Deprecated: `/thien-sentry-to-mr`, `/thien-sentry-agent`. MCP/auth blocked → inventory + source-blocker (no browser triage).
+
+---
+
+## 4. Git conflict and workspace unblocking
+
+If dirty worktree blocks queue work: verify no Cursor task running; record dirty paths; read `cursorGuidance.gitUnblockRef` and `cursorGuidance.guidanceBranch`.
+
+**`active=true` (unmerged `.cursor/` on `ai-improvement` branch):**
+
+```bash
+git fetch origin
+git switch ai-improvement
+git reset --hard origin/ai-improvement
+npx tsx .cursor/scripts/resolve-automation-cursor-baseline.ts --checkout
+```
+
+**`active=false` (`origin/staging` — `.cursor/` merged or no diff):**
+
+```bash
+git fetch origin
+git switch staging
+git reset --hard origin/staging
+# clean generated/scratch untracked only
+```
+
+Rerun inventory from the matching baseline. User approved this reset.
+
+---
+
+## 5. UI layout and reporting contract
+
+- Colorful light theme; columns **MRs | Linear | Sentry**; status tabs All/Needs review/Approve only/Approved/Skipped/Finished
+- Sticky Automation Workflow panel (collapsed on small screens)
+- Never delete historical items; mark **Finished** when gone from active queue
+- **Agent allowlist:** `thien-*` only (not `becky-*`, `*-dana-*`)
+- **Reporting hook:**
+
+```bash
+npx tsx .cursor/scripts/update-automation-current-action.ts \
+  --source <src> --phase <phase> --detail <detail> \
+  --item-url <url> --item-title <title> \
+  --status running|blocked|completed|skipped
+```
+
+- `.cursor/` automation changes on branch `ai-improvement`, committed, pushed; AI-only MR titles use `[AI]`
+
+---
+
+## 6. Notification rules
+
+- Write final MRs/Linear/Sentry totals to `thien-mr-review-queue-report.json`
+- **NOTIFY:** processed/approved/merged/changed/blocked, source unchecked, comment prompt/fix waits for Thien
+- **DONT_NOTIFY:** short quiet status when no operational state change

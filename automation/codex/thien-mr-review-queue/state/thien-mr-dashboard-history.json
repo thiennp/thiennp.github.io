@@ -18,9 +18,9 @@
       "needsAction": false,
       "status": "Approved",
       "reason": "Approved by Thien",
-      "lastSeenAt": "2026-05-23T07:10:16.450Z",
-      "finishedAt": null,
-      "openComments": []
+      "openComments": [],
+      "lastSeenAt": "2026-05-23T11:17:59.140Z",
+      "finishedAt": null
     },
     "1285": {
       "iid": 1285,
@@ -40,9 +40,9 @@
       "needsAction": false,
       "status": "Skipped",
       "reason": "Reviewed by Thien; no later commits",
-      "lastSeenAt": "2026-05-23T07:10:16.450Z",
-      "finishedAt": null,
-      "openComments": []
+      "openComments": [],
+      "lastSeenAt": "2026-05-23T11:17:59.140Z",
+      "finishedAt": null
     },
     "1320": {
       "iid": 1320,
@@ -62,9 +62,9 @@
       "needsAction": false,
       "status": "Approved",
       "reason": "Approved by Thien",
-      "lastSeenAt": "2026-05-23T07:10:16.450Z",
-      "finishedAt": null,
-      "openComments": []
+      "openComments": [],
+      "lastSeenAt": "2026-05-23T11:17:59.140Z",
+      "finishedAt": null
     },
     "1323": {
       "iid": 1323,
@@ -76,16 +76,14 @@
       "sourceUrl": "https://git.fullscript.io/developers/fs-academy/-/tree/AUR-1249",
       "target": "staging",
       "targetUrl": "https://git.fullscript.io/developers/fs-academy/-/tree/staging",
-      "updatedAt": "2026-05-23T03:09:49.202-04:00",
-      "latestReviewAt": "2026-05-19T19:18:00.963Z",
+      "updatedAt": "2026-05-23T04:04:12.496-04:00",
+      "latestReviewAt": "2026-05-23T08:04:12.475Z",
       "latestCommitAt": "2026-05-23T07:09:46.000Z",
       "approvedByThien": false,
       "aiPrefixed": false,
-      "needsAction": true,
-      "status": "Needs review",
-      "reason": "New commits after Thien review",
-      "lastSeenAt": "2026-05-23T07:10:16.450Z",
-      "finishedAt": null,
+      "needsAction": false,
+      "status": "Skipped",
+      "reason": "Reviewed by Thien; no later commits",
       "openComments": [
         {
           "discussionId": "048a24d8c2fe6b8b01904629fb653d15090e9fd9",
@@ -99,29 +97,31 @@
           "reason": "Comment on Thien-authored code",
           "fix": null
         }
-      ]
+      ],
+      "lastSeenAt": "2026-05-23T11:17:59.140Z",
+      "finishedAt": null
     },
     "1341": {
       "iid": 1341,
-      "title": "Draft: AUR-1142: Drop Sentry noise from unsupported legacy browsers",
+      "title": "AUR-1142: Drop Sentry noise from unsupported legacy browsers",
       "url": "https://git.fullscript.io/developers/fs-academy/-/merge_requests/1341",
       "author": "thien.nguyen",
-      "draft": true,
+      "draft": false,
       "source": "AUR-1142",
       "sourceUrl": "https://git.fullscript.io/developers/fs-academy/-/tree/AUR-1142",
       "target": "staging",
       "targetUrl": "https://git.fullscript.io/developers/fs-academy/-/tree/staging",
-      "updatedAt": "2026-05-22T23:05:32.739-04:00",
-      "latestReviewAt": "2026-05-23T03:05:32.698Z",
+      "updatedAt": "2026-05-23T03:20:21.343-04:00",
+      "latestReviewAt": null,
       "latestCommitAt": "2026-05-22T21:21:16.000Z",
       "approvedByThien": false,
       "aiPrefixed": false,
-      "needsAction": false,
-      "status": "Skipped",
-      "reason": "Reviewed by Thien; no later commits",
-      "lastSeenAt": "2026-05-23T07:10:16.450Z",
-      "finishedAt": null,
-      "openComments": []
+      "needsAction": true,
+      "status": "Needs review",
+      "reason": "No Thien review found",
+      "openComments": [],
+      "lastSeenAt": "2026-05-23T11:17:59.140Z",
+      "finishedAt": null
     },
     "1342": {
       "iid": 1342,
@@ -141,9 +141,9 @@
       "needsAction": false,
       "status": "Skipped",
       "reason": "Reviewed by Thien; no later commits",
-      "lastSeenAt": "2026-05-23T07:10:16.450Z",
-      "finishedAt": null,
-      "openComments": []
+      "openComments": [],
+      "lastSeenAt": "2026-05-23T11:17:59.140Z",
+      "finishedAt": null
     },
     "1343": {
       "iid": 1343,
@@ -163,9 +163,53 @@
       "needsAction": true,
       "status": "Needs review",
       "reason": "No Thien review found",
-      "lastSeenAt": "2026-05-23T07:10:16.450Z",
-      "finishedAt": null,
-      "openComments": []
+      "openComments": [],
+      "lastSeenAt": "2026-05-23T11:17:59.140Z",
+      "finishedAt": null
+    },
+    "1344": {
+      "iid": 1344,
+      "title": "[AI] Add Sentry MCP and local dev slash commands",
+      "url": "https://git.fullscript.io/developers/fs-academy/-/merge_requests/1344",
+      "author": "thien.nguyen",
+      "draft": false,
+      "source": "ai-improvement",
+      "sourceUrl": "https://git.fullscript.io/developers/fs-academy/-/tree/ai-improvement",
+      "target": "staging",
+      "targetUrl": "https://git.fullscript.io/developers/fs-academy/-/tree/staging",
+      "updatedAt": "2026-05-23T04:12:11.496-04:00",
+      "latestReviewAt": null,
+      "latestCommitAt": "2026-05-23T08:11:50.000Z",
+      "approvedByThien": false,
+      "aiPrefixed": true,
+      "needsAction": true,
+      "status": "Approve only",
+      "reason": "[AI] title: approve without review comment",
+      "openComments": [],
+      "lastSeenAt": "2026-05-23T11:17:59.140Z",
+      "finishedAt": null
+    },
+    "1345": {
+      "iid": 1345,
+      "title": "AUR-1268: Ignore GTM zaius ReferenceError in Sentry client config",
+      "url": "https://git.fullscript.io/developers/fs-academy/-/merge_requests/1345",
+      "author": "thien.nguyen",
+      "draft": false,
+      "source": "aur-1268",
+      "sourceUrl": "https://git.fullscript.io/developers/fs-academy/-/tree/aur-1268",
+      "target": "staging",
+      "targetUrl": "https://git.fullscript.io/developers/fs-academy/-/tree/staging",
+      "updatedAt": "2026-05-23T03:29:45.299-04:00",
+      "latestReviewAt": "2026-05-23T07:29:45.275Z",
+      "latestCommitAt": "2026-05-23T07:28:21.000Z",
+      "approvedByThien": false,
+      "aiPrefixed": false,
+      "needsAction": false,
+      "status": "Skipped",
+      "reason": "Reviewed by Thien; no later commits",
+      "openComments": [],
+      "lastSeenAt": "2026-05-23T11:17:59.140Z",
+      "finishedAt": null
     }
   }
 }
