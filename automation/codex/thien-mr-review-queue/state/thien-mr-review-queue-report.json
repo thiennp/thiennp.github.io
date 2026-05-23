@@ -1,8 +1,8 @@
 {
-  "generatedAt": "2026-05-23T12:58:12.141Z",
+  "generatedAt": "2026-05-23T19:49:22.627Z",
   "MRs": {
-    "checkedAt": "2026-05-23T11:17:56.825Z",
-    "source": "GitLab API",
+    "checkedAt": "2026-05-23T19:49:22.627Z",
+    "source": "GitLab API + cursor-agent follow-up",
     "items": [
       {
         "itemType": "MR",
@@ -45,7 +45,7 @@
         "assignee": "thien.nguyen",
         "changedSinceLastBaseline": true,
         "decision": "reviewed",
-        "reason": "MR review completed with Verdict: Merge; non-blocking cleanup was committed and pushed. Open Becky thread needs editable suggested reply before merge.",
+        "reason": "Open Becky prompt remains unresolved; Codex does not auto-post editable dashboard replies.",
         "commandRun": null,
         "outputSummary": "Reviewed MR !1323. Focused unit test passed. Pushed commit 0dfd1d9a extracting multipart recovery wrapper and documenting Payload regen restore notes. GitLab discussion reply was not auto-posted.",
         "resultingMrUrl": "https://git.fullscript.io/developers/fs-academy/-/merge_requests/1323",
@@ -53,8 +53,8 @@
         "resultingSentryStatus": null,
         "linearUrl": "https://linear.app/fullscript/issue/AUR-1249",
         "mrUrl": "https://git.fullscript.io/developers/fs-academy/-/merge_requests/1323",
-        "blockers": null,
-        "nextAction": "Edit/post suggested reply to Becky thread, then merge when policy allows.",
+        "blockers": "One unresolved discussion and one approval required.",
+        "nextAction": "Thien/dashboard suggested reply needs review/posting before merge path continues.",
         "author": "thien.nguyen",
         "mrAuthor": "thien.nguyen",
         "sourceBranch": "AUR-1249",
@@ -89,20 +89,20 @@
         "itemType": "MR",
         "title": "AUR-1268: Ignore GTM zaius ReferenceError in Sentry client config",
         "url": "https://git.fullscript.io/developers/fs-academy/-/merge_requests/1345",
-        "currentStatus": "Needs review",
+        "currentStatus": "Needs approval",
         "assignee": "thien.nguyen",
         "changedSinceLastBaseline": true,
-        "decision": "planned",
-        "reason": "Thien-authored MR needs approval/merge readiness checks",
-        "commandRun": null,
-        "outputSummary": null,
+        "decision": "processed",
+        "reason": "Conflict resolved by thien-mr-fix-followup; rebase reset reviewer approval.",
+        "commandRun": "cursor-agent --print --trust --force --workspace /Users/study/aurora/fs-academy \"/thien-mr-fix-followup https://git.fullscript.io/developers/fs-academy/-/merge_requests/1345\"",
+        "outputSummary": "Rebased aur-1268 onto origin/staging, resolved instrumentation-client.ts conflict by keeping both ignoreErrors and beforeSend filters, ran pnpm tsc and pnpm lint, posted follow-up summary. Pipeline 2717063 succeeded on 41192b55. Approval reset after rebase.",
         "resultingMrUrl": "https://git.fullscript.io/developers/fs-academy/-/merge_requests/1345",
         "resultingLinearStatus": null,
         "resultingSentryStatus": null,
         "linearUrl": "https://linear.app/fullscript/issue/AUR-1268",
         "mrUrl": "https://git.fullscript.io/developers/fs-academy/-/merge_requests/1345",
-        "blockers": null,
-        "nextAction": "Monitor approval, pipeline, discussions, and merge readiness",
+        "blockers": "Needs fresh reviewer approval after rebase before merge.",
+        "nextAction": "Wait for reviewer re-approval, then merge if still green/unblocked.",
         "author": "thien.nguyen",
         "mrAuthor": "thien.nguyen",
         "sourceBranch": "aur-1268",
@@ -111,47 +111,60 @@
         "authoredByThien": true,
         "state": "opened",
         "changedSinceBaseline": true,
-        "updatedAt": "2026-05-23T03:29:45.299-04:00",
+        "updatedAt": "2026-05-23T19:49:22.627Z",
         "approvals": {
           "approved": false,
           "approvedBy": [],
           "approvalsLeft": 1
+        },
+        "resultingCommit": "41192b55",
+        "pipeline": {
+          "id": 2717063,
+          "status": "success",
+          "sha": "41192b55"
         }
       },
       {
         "itemType": "MR",
         "title": "AUR-1142: Drop Sentry noise from unsupported legacy browsers",
         "url": "https://git.fullscript.io/developers/fs-academy/-/merge_requests/1341",
-        "currentStatus": "Needs approval",
+        "currentStatus": "Finished",
         "assignee": "thien.nguyen",
         "changedSinceLastBaseline": true,
-        "decision": "processed",
-        "reason": "Cursor follow-up resolved the open Becky thread and pushed commit f1316621; GitLab approvals reset after the new commit.",
-        "commandRun": "cursor-agent --print --trust --force --workspace /Users/study/aurora/fs-academy \"/thien-mr-fix-followup https://git.fullscript.io/developers/fs-academy/-/merge_requests/1341\"",
-        "outputSummary": "Updated unsupported browser thresholds for Next.js 16, added boundary tests, replied to and resolved Becky thread. Targeted tests, tsc, lint, and pipeline #2716904 passed per Cursor output.",
+        "decision": "finished",
+        "reason": "MR merged after fresh approval and green merge pipeline.",
+        "commandRun": null,
+        "outputSummary": "MR !1341 is merged; no further action needed.",
         "resultingMrUrl": "https://git.fullscript.io/developers/fs-academy/-/merge_requests/1341",
         "resultingLinearStatus": null,
         "resultingSentryStatus": null,
         "linearUrl": "https://linear.app/fullscript/issue/AUR-1142",
         "mrUrl": "https://git.fullscript.io/developers/fs-academy/-/merge_requests/1341",
-        "blockers": "Needs fresh GitLab approval after follow-up commit before merge.",
-        "nextAction": "Wait for reviewer approval, then merge when GitLab reports approvals and pipeline green.",
+        "blockers": null,
+        "nextAction": "No active heartbeat action",
         "author": "thien.nguyen",
         "mrAuthor": "thien.nguyen",
         "sourceBranch": "AUR-1142",
         "targetBranch": "staging",
         "draft": false,
         "authoredByThien": true,
-        "state": "opened",
+        "state": "merged",
         "changedSinceBaseline": true,
-        "updatedAt": "2026-05-23T03:20:21.343-04:00",
+        "updatedAt": "2026-05-23T09:47:31.176-04:00",
         "approvals": {
-          "approved": false,
-          "approvedBy": [],
-          "approvalsLeft": 1
+          "approved": true,
+          "approvedBy": [
+            "rebecca.putnam"
+          ],
+          "approvalsLeft": 0
         },
         "resultingCommit": "f1316621",
-        "resultingCommitUrl": "https://git.fullscript.io/developers/fs-academy/-/commit/f1316621"
+        "resultingCommitUrl": "https://git.fullscript.io/developers/fs-academy/-/commit/f1316621",
+        "pipeline": {
+          "id": 2716904,
+          "status": "success",
+          "ref": "refs/merge-requests/1341/merge"
+        }
       },
       {
         "itemType": "MR",
@@ -203,7 +216,7 @@
         "linearUrl": "https://linear.app/fullscript/issue/AUR-1075",
         "mrUrl": "https://git.fullscript.io/developers/fs-academy/-/merge_requests/1343",
         "blockers": null,
-        "nextAction": "Mark ready for review, then review",
+        "nextAction": "No active heartbeat action",
         "author": "thien.nguyen",
         "mrAuthor": "thien.nguyen",
         "sourceBranch": "AUR-1075",
@@ -325,11 +338,13 @@
       }
     ],
     "totals": {
-      "open": 8,
-      "blocked": 1,
-      "needsReview": 2,
-      "approved": 2,
-      "skipped": 4
+      "total": 9,
+      "finished": 3,
+      "needsApproval": 1,
+      "needsReply": 1,
+      "skipped": 4,
+      "processedThisRun": 1,
+      "mergedSinceLastRun": 1
     }
   },
   "Linear": {
@@ -792,25 +807,28 @@
   },
   "currentAction": {
     "source": "GitLab MR",
-    "phase": "MR !1285 closed",
-    "detail": "Closed whitespace-only AUR-1138 MR after replying/resolving review threads; no code changes pushed.",
-    "itemUrl": "https://git.fullscript.io/developers/fs-academy/-/merge_requests/1285",
-    "itemTitle": "AUR-1138: Bump Node to 24.3.0 (TransformStream race fix)",
+    "phase": "MR !1345 conflict resolved",
+    "detail": "Rebased aur-1268 onto staging, kept both Sentry filters, pushed 41192b55, pipeline 2717063 green; approval reset and needs reviewer re-approval before merge.",
+    "itemUrl": "https://git.fullscript.io/developers/fs-academy/-/merge_requests/1345",
+    "itemTitle": "AUR-1268: Ignore GTM zaius ReferenceError in Sentry client config",
     "status": "completed",
-    "updatedAt": "2026-05-23T12:58:12.141Z"
+    "updatedAt": "2026-05-23T19:48:36.503Z"
   },
   "cursorGuidance": {
     "active": true,
     "guidanceBranch": "ai-improvement",
     "gitUnblockRef": "origin/ai-improvement",
     "guidanceRoot": ".cursor",
-    "aiImprovementSha": "54c677e8657e5bc212c3bc1ee78f94be9d91ed01",
-    "stagingSha": "f0b6526755f9db915e2766e871be75ae2718b5a4",
     "changedCursorFiles": [
       ".cursor/scripts/resolve-automation-cursor-baseline.ts"
     ],
     "currentBranch": "ai-improvement",
-    "resolvedAt": "2026-05-23T12:49:06.981Z",
+    "resolvedAt": "2026-05-23T19:48:28.477Z",
     "checkedOutAt": null
+  },
+  "notification": {
+    "decision": "NOTIFY",
+    "reason": "MR !1341 merged; MR !1345 conflict resolved/rebased and now needs fresh approval.",
+    "updatedAt": "2026-05-23T19:49:22.627Z"
   }
 }
