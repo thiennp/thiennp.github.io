@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-05-23T12:33:36.803Z",
+  "generatedAt": "2026-05-23T12:35:56.638Z",
   "MRs": {
     "checkedAt": "2026-05-23T11:17:56.825Z",
     "source": "GitLab API",
@@ -8,11 +8,11 @@
         "itemType": "MR",
         "title": "[AI] Add Sentry MCP and local dev slash commands",
         "url": "https://git.fullscript.io/developers/fs-academy/-/merge_requests/1344",
-        "currentStatus": "Approval blocked",
+        "currentStatus": "Finished",
         "assignee": "thien.nguyen",
         "changedSinceLastBaseline": false,
-        "decision": "blocked",
-        "reason": "[AI] non-draft MR should use GitLab approve-only path, but API approval returned 401 Unauthorized",
+        "decision": "finished",
+        "reason": "MR left active queue; GitLab state=merged, merged_at=2026-05-23T08:29:06.544-04:00",
         "commandRun": "POST /projects/developers%2Ffs-academy/merge_requests/1344/approve",
         "outputSummary": "Read inventory succeeded; approval mutation failed with 401 Unauthorized.",
         "resultingMrUrl": "https://git.fullscript.io/developers/fs-academy/-/merge_requests/1344",
@@ -21,16 +21,16 @@
         "linearUrl": null,
         "mrUrl": "https://git.fullscript.io/developers/fs-academy/-/merge_requests/1344",
         "blockers": "GitLab approve API returned 401 Unauthorized",
-        "nextAction": "Approve manually in GitLab or refresh automation token approval permission",
+        "nextAction": "No active heartbeat action",
         "author": "thien.nguyen",
         "mrAuthor": "thien.nguyen",
         "sourceBranch": "ai-improvement",
         "targetBranch": "staging",
         "draft": false,
         "authoredByThien": true,
-        "state": "opened",
+        "state": "merged",
         "changedSinceBaseline": false,
-        "updatedAt": "2026-05-23T04:12:11.496-04:00",
+        "updatedAt": "2026-05-23T08:29:09.110-04:00",
         "approvals": {
           "approved": false,
           "approvedBy": [],
@@ -323,7 +323,7 @@
       }
     ],
     "totals": {
-      "open": 9,
+      "open": 8,
       "blocked": 1,
       "needsReview": 2,
       "approved": 2,
@@ -789,13 +789,13 @@
     }
   },
   "currentAction": {
-    "source": "Cursor guidance",
-    "phase": "Resolver fixed",
-    "detail": "Pushed ai-improvement commit 54c677e8 so missing remote guidance branches fall back to staging cleanly",
-    "itemUrl": "https://git.fullscript.io/developers/fs-academy/-/commit/54c677e8",
-    "itemTitle": "[AI] Tolerate merged cursor guidance branch",
+    "source": "GitLab MR",
+    "phase": "MR !1344 finished",
+    "detail": "MR !1344 left open queue; state=merged, merged_at=2026-05-23T08:29:06.544-04:00",
+    "itemUrl": "https://git.fullscript.io/developers/fs-academy/-/merge_requests/1344",
+    "itemTitle": "[AI] Add Sentry MCP and local dev slash commands",
     "status": "completed",
-    "updatedAt": "2026-05-23T12:33:36.803Z"
+    "updatedAt": "2026-05-23T12:35:56.638Z"
   },
   "cursorGuidance": {
     "active": true,
@@ -808,7 +808,7 @@
       ".cursor/scripts/resolve-automation-cursor-baseline.ts"
     ],
     "currentBranch": "ai-improvement",
-    "resolvedAt": "2026-05-23T12:33:36.749Z",
+    "resolvedAt": "2026-05-23T12:35:36.361Z",
     "checkedOutAt": null
   }
 }

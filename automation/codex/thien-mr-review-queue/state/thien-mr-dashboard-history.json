@@ -19,7 +19,7 @@
       "status": "Approved",
       "reason": "Approved by Thien",
       "openComments": [],
-      "lastSeenAt": "2026-05-23T12:33:33.574Z",
+      "lastSeenAt": "2026-05-23T12:35:54.121Z",
       "finishedAt": null
     },
     "1285": {
@@ -41,7 +41,7 @@
       "status": "Skipped",
       "reason": "Reviewed by Thien; no later commits",
       "openComments": [],
-      "lastSeenAt": "2026-05-23T12:33:33.574Z",
+      "lastSeenAt": "2026-05-23T12:35:54.121Z",
       "finishedAt": null
     },
     "1320": {
@@ -63,7 +63,7 @@
       "status": "Approved",
       "reason": "Approved by Thien",
       "openComments": [],
-      "lastSeenAt": "2026-05-23T12:33:33.574Z",
+      "lastSeenAt": "2026-05-23T12:35:54.121Z",
       "finishedAt": null
     },
     "1323": {
@@ -98,7 +98,7 @@
           "fix": null
         }
       ],
-      "lastSeenAt": "2026-05-23T12:33:33.574Z",
+      "lastSeenAt": "2026-05-23T12:35:54.121Z",
       "finishedAt": null
     },
     "1341": {
@@ -120,7 +120,7 @@
       "status": "Needs review",
       "reason": "No Thien review found",
       "openComments": [],
-      "lastSeenAt": "2026-05-23T12:33:33.574Z",
+      "lastSeenAt": "2026-05-23T12:35:54.121Z",
       "finishedAt": null
     },
     "1342": {
@@ -142,7 +142,7 @@
       "status": "Skipped",
       "reason": "Reviewed by Thien; no later commits",
       "openComments": [],
-      "lastSeenAt": "2026-05-23T12:33:33.574Z",
+      "lastSeenAt": "2026-05-23T12:35:54.121Z",
       "finishedAt": null
     },
     "1343": {
@@ -164,7 +164,7 @@
       "status": "Needs review",
       "reason": "No Thien review found",
       "openComments": [],
-      "lastSeenAt": "2026-05-23T12:33:33.574Z",
+      "lastSeenAt": "2026-05-23T12:35:54.121Z",
       "finishedAt": null
     },
     "1344": {
@@ -208,7 +208,7 @@
       "status": "Skipped",
       "reason": "Reviewed by Thien; no later commits",
       "openComments": [],
-      "lastSeenAt": "2026-05-23T12:33:33.574Z",
+      "lastSeenAt": "2026-05-23T12:35:54.121Z",
       "finishedAt": null
     }
   }
