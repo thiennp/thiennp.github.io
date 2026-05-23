@@ -19,7 +19,7 @@
       "status": "Approved",
       "reason": "Approved by Thien",
       "openComments": [],
-      "lastSeenAt": "2026-05-23T12:35:54.121Z",
+      "lastSeenAt": "2026-05-23T12:47:53.919Z",
       "finishedAt": null
     },
     "1285": {
@@ -41,7 +41,7 @@
       "status": "Skipped",
       "reason": "Reviewed by Thien; no later commits",
       "openComments": [],
-      "lastSeenAt": "2026-05-23T12:35:54.121Z",
+      "lastSeenAt": "2026-05-23T12:47:53.919Z",
       "finishedAt": null
     },
     "1320": {
@@ -63,7 +63,7 @@
       "status": "Approved",
       "reason": "Approved by Thien",
       "openComments": [],
-      "lastSeenAt": "2026-05-23T12:35:54.121Z",
+      "lastSeenAt": "2026-05-23T12:47:53.919Z",
       "finishedAt": null
     },
     "1323": {
@@ -98,7 +98,7 @@
           "fix": null
         }
       ],
-      "lastSeenAt": "2026-05-23T12:35:54.121Z",
+      "lastSeenAt": "2026-05-23T12:47:53.919Z",
       "finishedAt": null
     },
     "1341": {
@@ -111,16 +111,16 @@
       "sourceUrl": "https://git.fullscript.io/developers/fs-academy/-/tree/AUR-1142",
       "target": "staging",
       "targetUrl": "https://git.fullscript.io/developers/fs-academy/-/tree/staging",
-      "updatedAt": "2026-05-23T03:20:21.343-04:00",
-      "latestReviewAt": null,
-      "latestCommitAt": "2026-05-22T21:21:16.000Z",
+      "updatedAt": "2026-05-23T08:43:40.226-04:00",
+      "latestReviewAt": "2026-05-23T12:43:50.966Z",
+      "latestCommitAt": "2026-05-23T12:43:19.000Z",
       "approvedByThien": false,
       "aiPrefixed": false,
-      "needsAction": true,
-      "status": "Needs review",
-      "reason": "No Thien review found",
+      "needsAction": false,
+      "status": "Skipped",
+      "reason": "Reviewed by Thien; no later commits",
       "openComments": [],
-      "lastSeenAt": "2026-05-23T12:35:54.121Z",
+      "lastSeenAt": "2026-05-23T12:47:53.919Z",
       "finishedAt": null
     },
     "1342": {
@@ -133,7 +133,7 @@
       "sourceUrl": "https://git.fullscript.io/developers/fs-academy/-/tree/AUR-1139",
       "target": "staging",
       "targetUrl": "https://git.fullscript.io/developers/fs-academy/-/tree/staging",
-      "updatedAt": "2026-05-22T23:32:55.643-04:00",
+      "updatedAt": "2026-05-23T08:38:18.542-04:00",
       "latestReviewAt": "2026-05-23T03:32:55.605Z",
       "latestCommitAt": "2026-05-22T21:20:01.000Z",
       "approvedByThien": false,
@@ -142,7 +142,7 @@
       "status": "Skipped",
       "reason": "Reviewed by Thien; no later commits",
       "openComments": [],
-      "lastSeenAt": "2026-05-23T12:35:54.121Z",
+      "lastSeenAt": "2026-05-23T12:47:53.919Z",
       "finishedAt": null
     },
     "1343": {
@@ -164,7 +164,7 @@
       "status": "Needs review",
       "reason": "No Thien review found",
       "openComments": [],
-      "lastSeenAt": "2026-05-23T12:35:54.121Z",
+      "lastSeenAt": "2026-05-23T12:47:53.919Z",
       "finishedAt": null
     },
     "1344": {
@@ -199,7 +199,7 @@
       "sourceUrl": "https://git.fullscript.io/developers/fs-academy/-/tree/aur-1268",
       "target": "staging",
       "targetUrl": "https://git.fullscript.io/developers/fs-academy/-/tree/staging",
-      "updatedAt": "2026-05-23T03:29:45.299-04:00",
+      "updatedAt": "2026-05-23T08:38:53.975-04:00",
       "latestReviewAt": "2026-05-23T07:29:45.275Z",
       "latestCommitAt": "2026-05-23T07:28:21.000Z",
       "approvedByThien": false,
@@ -208,7 +208,7 @@
       "status": "Skipped",
       "reason": "Reviewed by Thien; no later commits",
       "openComments": [],
-      "lastSeenAt": "2026-05-23T12:35:54.121Z",
+      "lastSeenAt": "2026-05-23T12:47:53.919Z",
       "finishedAt": null
     }
   }

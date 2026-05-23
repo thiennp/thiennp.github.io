@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-05-23T12:35:56.638Z",
+  "generatedAt": "2026-05-23T12:47:57.250Z",
   "MRs": {
     "checkedAt": "2026-05-23T11:17:56.825Z",
     "source": "GitLab API",
@@ -122,20 +122,20 @@
         "itemType": "MR",
         "title": "AUR-1142: Drop Sentry noise from unsupported legacy browsers",
         "url": "https://git.fullscript.io/developers/fs-academy/-/merge_requests/1341",
-        "currentStatus": "Skipped",
+        "currentStatus": "Needs approval",
         "assignee": "thien.nguyen",
         "changedSinceLastBaseline": true,
-        "decision": "planned",
-        "reason": "Draft MR - waiting until ready for review",
-        "commandRun": null,
-        "outputSummary": "Already reviewed by Thien; no later commits.",
+        "decision": "processed",
+        "reason": "Cursor follow-up resolved the open Becky thread and pushed commit f1316621; GitLab approvals reset after the new commit.",
+        "commandRun": "cursor-agent --print --trust --force --workspace /Users/study/aurora/fs-academy \"/thien-mr-fix-followup https://git.fullscript.io/developers/fs-academy/-/merge_requests/1341\"",
+        "outputSummary": "Updated unsupported browser thresholds for Next.js 16, added boundary tests, replied to and resolved Becky thread. Targeted tests, tsc, lint, and pipeline #2716904 passed per Cursor output.",
         "resultingMrUrl": "https://git.fullscript.io/developers/fs-academy/-/merge_requests/1341",
         "resultingLinearStatus": null,
         "resultingSentryStatus": null,
         "linearUrl": "https://linear.app/fullscript/issue/AUR-1142",
         "mrUrl": "https://git.fullscript.io/developers/fs-academy/-/merge_requests/1341",
-        "blockers": null,
-        "nextAction": "Mark ready for review, then review",
+        "blockers": "Needs fresh GitLab approval after follow-up commit before merge.",
+        "nextAction": "Wait for reviewer approval, then merge when GitLab reports approvals and pipeline green.",
         "author": "thien.nguyen",
         "mrAuthor": "thien.nguyen",
         "sourceBranch": "AUR-1142",
@@ -149,7 +149,9 @@
           "approved": false,
           "approvedBy": [],
           "approvalsLeft": 1
-        }
+        },
+        "resultingCommit": "f1316621",
+        "resultingCommitUrl": "https://git.fullscript.io/developers/fs-academy/-/commit/f1316621"
       },
       {
         "itemType": "MR",
@@ -790,12 +792,12 @@
   },
   "currentAction": {
     "source": "GitLab MR",
-    "phase": "MR !1344 finished",
-    "detail": "MR !1344 left open queue; state=merged, merged_at=2026-05-23T08:29:06.544-04:00",
-    "itemUrl": "https://git.fullscript.io/developers/fs-academy/-/merge_requests/1344",
-    "itemTitle": "[AI] Add Sentry MCP and local dev slash commands",
-    "status": "completed",
-    "updatedAt": "2026-05-23T12:35:56.638Z"
+    "phase": "Fix follow-up complete",
+    "detail": "MR !1341 follow-up pushed f1316621 and resolved Becky thread; approval reset so merge is blocked pending fresh approval.",
+    "itemUrl": "https://git.fullscript.io/developers/fs-academy/-/merge_requests/1341",
+    "itemTitle": "AUR-1142: Drop Sentry noise from unsupported legacy browsers",
+    "status": "blocked",
+    "updatedAt": "2026-05-23T12:47:57.250Z"
   },
   "cursorGuidance": {
     "active": true,
@@ -808,7 +810,7 @@
       ".cursor/scripts/resolve-automation-cursor-baseline.ts"
     ],
     "currentBranch": "ai-improvement",
-    "resolvedAt": "2026-05-23T12:35:36.361Z",
+    "resolvedAt": "2026-05-23T12:40:36.944Z",
     "checkedOutAt": null
   }
 }
