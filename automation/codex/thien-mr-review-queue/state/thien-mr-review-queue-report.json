@@ -1,7 +1,7 @@
 {
-  "generatedAt": "2026-05-24T10:46:51.350Z",
+  "generatedAt": "2026-05-24T12:07:36.654Z",
   "MRs": {
-    "checkedAt": "2026-05-24T10:46:51.350Z",
+    "checkedAt": "2026-05-24T12:07:36.654Z",
     "source": "GitLab API + cursor-agent review",
     "items": [
       {
@@ -203,20 +203,20 @@
         "itemType": "MR",
         "title": "AUR-1075: Include depth in getCachedGlobal cache key",
         "url": "https://git.fullscript.io/developers/fs-academy/-/merge_requests/1343",
-        "currentStatus": "Needs approval",
+        "currentStatus": "Skipped",
         "assignee": "thien.nguyen",
         "changedSinceLastBaseline": false,
-        "decision": "blocked",
-        "reason": "Still green, conflict-free, and waiting on reviewer approval.",
-        "commandRun": null,
-        "outputSummary": "Draft status removed. Merge pipeline 2717073 is success; no unresolved discussions. Needs reviewer approval before merge.",
+        "decision": "skipped",
+        "reason": "Reviewed by Thien; no later commits",
+        "commandRun": "cursor-agent --print --trust --force --workspace /Users/study/aurora/fs-academy \"/thien-mr-review https://git.fullscript.io/developers/fs-academy/-/merge_requests/1343\"",
+        "outputSummary": "Cursor review posted on GitLab with Verdict: Merge. Targeted tests, tsc, and lint passed per agent output; lint had one unrelated pre-existing importMap warning. GitLab approve returned 401 Unauthorized.",
         "resultingMrUrl": "https://git.fullscript.io/developers/fs-academy/-/merge_requests/1343",
         "resultingLinearStatus": null,
         "resultingSentryStatus": null,
         "linearUrl": "https://linear.app/fullscript/issue/AUR-1075",
         "mrUrl": "https://git.fullscript.io/developers/fs-academy/-/merge_requests/1343",
-        "blockers": "Needs reviewer approval before merge.",
-        "nextAction": "Wait for reviewer approval, then merge if still green/unblocked.",
+        "blockers": "Manual reviewer approval still required because GitLab approve API returned 401 Unauthorized.",
+        "nextAction": "Approve manually in GitLab if appropriate; merge once approved and still green/unblocked.",
         "author": "thien.nguyen",
         "mrAuthor": "thien.nguyen",
         "sourceBranch": "AUR-1075",
@@ -421,7 +421,7 @@
       "approveOnly": 1,
       "needsApproval": 5,
       "needsReply": 0,
-      "skipped": 2,
+      "skipped": 3,
       "processedThisRun": 1,
       "changedThisRun": 2,
       "mergedSinceLastRun": 0
@@ -886,13 +886,13 @@
     }
   },
   "currentAction": {
-    "source": "GitLab MR",
-    "phase": "MR !1342 reviewed",
-    "detail": "thien-mr-review completed with Verdict: Merge and posted summary; auto-approve failed with 401. MR !1347 approve-only also failed with 401.",
-    "itemUrl": "https://git.fullscript.io/developers/fs-academy/-/merge_requests/1342",
-    "itemTitle": "AUR-1139: Handle stale Server Action errors after deploy",
+    "source": "thien-mr-review",
+    "phase": "Approve MR",
+    "detail": "MR !1343 review posted with Verdict: Merge; GitLab approve returned 401 (token/self-approve).",
+    "itemUrl": "https://git.fullscript.io/developers/fs-academy/-/merge_requests/1343",
+    "itemTitle": "AUR-1075: Include depth in getCachedGlobal cache key",
     "status": "completed",
-    "updatedAt": "2026-05-24T10:46:51.350Z"
+    "updatedAt": "2026-05-24T12:07:36.654Z"
   },
   "cursorGuidance": {
     "active": true,
@@ -948,16 +948,16 @@
       ".cursor/subagents/subagent-sentry-triage/sentry-step-5-review-and-status.md"
     ],
     "currentBranch": "ai-improvement",
-    "resolvedAt": "2026-05-24T10:10:35.816Z",
-    "checkedOutAt": "2026-05-24T10:10:38.060Z"
+    "resolvedAt": "2026-05-24T11:25:14.769Z",
+    "checkedOutAt": "2026-05-24T11:25:17.100Z"
   },
   "notification": {
     "decision": "NOTIFY",
-    "reason": "Processed MR !1342 review and found MR !1347 approve-only blocked by GitLab API 401; manual approval/token fix needed.",
-    "updatedAt": "2026-05-24T10:46:51.350Z"
+    "reason": "Processed MR !1343 review with Verdict: Merge; GitLab approve still fails with 401, and MR !1323 remains queued for review.",
+    "updatedAt": "2026-05-24T12:07:36.654Z"
   },
   "workspace": {
     "dirtyPaths": [],
-    "note": "Workspace clean."
+    "note": "Workspace clean on ai-improvement after MR review."
   }
 }
