@@ -19,7 +19,7 @@
       "status": "Approved",
       "reason": "Approved by Thien",
       "openComments": [],
-      "lastSeenAt": "2026-05-24T13:26:04.675Z",
+      "lastSeenAt": "2026-05-24T13:30:24.751Z",
       "finishedAt": null
     },
     "1285": {
@@ -63,7 +63,7 @@
       "status": "Approved",
       "reason": "Approved by Thien",
       "openComments": [],
-      "lastSeenAt": "2026-05-24T13:26:04.675Z",
+      "lastSeenAt": "2026-05-24T13:30:24.751Z",
       "finishedAt": null
     },
     "1323": {
@@ -85,7 +85,7 @@
       "status": "Skipped",
       "reason": "Reviewed by Thien; no later commits",
       "openComments": [],
-      "lastSeenAt": "2026-05-24T13:26:04.675Z",
+      "lastSeenAt": "2026-05-24T13:30:24.751Z",
       "finishedAt": null
     },
     "1341": {
@@ -129,7 +129,7 @@
       "status": "Skipped",
       "reason": "Reviewed by Thien; no later commits",
       "openComments": [],
-      "lastSeenAt": "2026-05-24T13:26:04.675Z",
+      "lastSeenAt": "2026-05-24T13:30:24.751Z",
       "finishedAt": null
     },
     "1343": {
@@ -151,7 +151,7 @@
       "status": "Skipped",
       "reason": "Reviewed by Thien; no later commits",
       "openComments": [],
-      "lastSeenAt": "2026-05-24T13:26:04.675Z",
+      "lastSeenAt": "2026-05-24T13:30:24.751Z",
       "finishedAt": null
     },
     "1344": {
@@ -195,7 +195,7 @@
       "status": "Skipped",
       "reason": "Reviewed by Thien; no later commits",
       "openComments": [],
-      "lastSeenAt": "2026-05-24T13:26:04.675Z",
+      "lastSeenAt": "2026-05-24T13:30:24.751Z",
       "finishedAt": null
     },
     "1346": {
@@ -217,7 +217,7 @@
       "status": "Skipped",
       "reason": "Reviewed by Thien; no later commits",
       "openComments": [],
-      "lastSeenAt": "2026-05-24T13:26:04.675Z",
+      "lastSeenAt": "2026-05-24T13:30:24.751Z",
       "finishedAt": null
     },
     "1347": {
@@ -239,7 +239,29 @@
       "status": "Approve only",
       "reason": "[AI] title: approve without review comment",
       "openComments": [],
-      "lastSeenAt": "2026-05-24T13:26:04.675Z",
+      "lastSeenAt": "2026-05-24T13:30:24.751Z",
+      "finishedAt": null
+    },
+    "1348": {
+      "iid": 1348,
+      "title": "AUR-1270: Drop GTM vendor Sentry noise on legacy UA",
+      "url": "https://git.fullscript.io/developers/fs-academy/-/merge_requests/1348",
+      "author": "thien.nguyen",
+      "draft": false,
+      "source": "aur-1270",
+      "sourceUrl": "https://git.fullscript.io/developers/fs-academy/-/tree/aur-1270",
+      "target": "staging",
+      "targetUrl": "https://git.fullscript.io/developers/fs-academy/-/tree/staging",
+      "updatedAt": "2026-05-24T09:27:35.481-04:00",
+      "latestReviewAt": "2026-05-24T13:27:55.470Z",
+      "latestCommitAt": "2026-05-24T13:27:05.000Z",
+      "approvedByThien": false,
+      "aiPrefixed": false,
+      "needsAction": false,
+      "status": "Skipped",
+      "reason": "Reviewed by Thien; no later commits",
+      "openComments": [],
+      "lastSeenAt": "2026-05-24T13:30:24.751Z",
       "finishedAt": null
     }
   }
