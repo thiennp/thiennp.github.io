@@ -19,7 +19,7 @@
       "status": "Approved",
       "reason": "Approved by Thien",
       "openComments": [],
-      "lastSeenAt": "2026-05-24T13:30:24.751Z",
+      "lastSeenAt": "2026-05-24T14:33:50.306Z",
       "finishedAt": null
     },
     "1285": {
@@ -63,7 +63,7 @@
       "status": "Approved",
       "reason": "Approved by Thien",
       "openComments": [],
-      "lastSeenAt": "2026-05-24T13:30:24.751Z",
+      "lastSeenAt": "2026-05-24T14:33:50.306Z",
       "finishedAt": null
     },
     "1323": {
@@ -85,7 +85,7 @@
       "status": "Skipped",
       "reason": "Reviewed by Thien; no later commits",
       "openComments": [],
-      "lastSeenAt": "2026-05-24T13:30:24.751Z",
+      "lastSeenAt": "2026-05-24T14:33:50.306Z",
       "finishedAt": null
     },
     "1341": {
@@ -129,7 +129,7 @@
       "status": "Skipped",
       "reason": "Reviewed by Thien; no later commits",
       "openComments": [],
-      "lastSeenAt": "2026-05-24T13:30:24.751Z",
+      "lastSeenAt": "2026-05-24T14:33:50.306Z",
       "finishedAt": null
     },
     "1343": {
@@ -151,7 +151,7 @@
       "status": "Skipped",
       "reason": "Reviewed by Thien; no later commits",
       "openComments": [],
-      "lastSeenAt": "2026-05-24T13:30:24.751Z",
+      "lastSeenAt": "2026-05-24T14:33:50.306Z",
       "finishedAt": null
     },
     "1344": {
@@ -195,7 +195,7 @@
       "status": "Skipped",
       "reason": "Reviewed by Thien; no later commits",
       "openComments": [],
-      "lastSeenAt": "2026-05-24T13:30:24.751Z",
+      "lastSeenAt": "2026-05-24T14:33:50.306Z",
       "finishedAt": null
     },
     "1346": {
@@ -217,12 +217,12 @@
       "status": "Skipped",
       "reason": "Reviewed by Thien; no later commits",
       "openComments": [],
-      "lastSeenAt": "2026-05-24T13:30:24.751Z",
+      "lastSeenAt": "2026-05-24T14:33:50.306Z",
       "finishedAt": null
     },
     "1347": {
       "iid": 1347,
-      "title": "[AI] Document edge POST guard and fix middleware README links",
+      "title": "[AI] Add e2e workflows",
       "url": "https://git.fullscript.io/developers/fs-academy/-/merge_requests/1347",
       "author": "thien.nguyen",
       "draft": false,
@@ -230,7 +230,7 @@
       "sourceUrl": "https://git.fullscript.io/developers/fs-academy/-/tree/ai-improvement",
       "target": "staging",
       "targetUrl": "https://git.fullscript.io/developers/fs-academy/-/tree/staging",
-      "updatedAt": "2026-05-24T02:56:43.584-04:00",
+      "updatedAt": "2026-05-24T09:35:44.091-04:00",
       "latestReviewAt": null,
       "latestCommitAt": "2026-05-24T06:56:14.000Z",
       "approvedByThien": false,
@@ -239,7 +239,7 @@
       "status": "Approve only",
       "reason": "[AI] title: approve without review comment",
       "openComments": [],
-      "lastSeenAt": "2026-05-24T13:30:24.751Z",
+      "lastSeenAt": "2026-05-24T14:33:50.306Z",
       "finishedAt": null
     },
     "1348": {
@@ -252,7 +252,7 @@
       "sourceUrl": "https://git.fullscript.io/developers/fs-academy/-/tree/aur-1270",
       "target": "staging",
       "targetUrl": "https://git.fullscript.io/developers/fs-academy/-/tree/staging",
-      "updatedAt": "2026-05-24T09:27:35.481-04:00",
+      "updatedAt": "2026-05-24T09:34:36.192-04:00",
       "latestReviewAt": "2026-05-24T13:27:55.470Z",
       "latestCommitAt": "2026-05-24T13:27:05.000Z",
       "approvedByThien": false,
@@ -261,7 +261,7 @@
       "status": "Skipped",
       "reason": "Reviewed by Thien; no later commits",
       "openComments": [],
-      "lastSeenAt": "2026-05-24T13:30:24.751Z",
+      "lastSeenAt": "2026-05-24T14:33:50.306Z",
       "finishedAt": null
     }
   }
