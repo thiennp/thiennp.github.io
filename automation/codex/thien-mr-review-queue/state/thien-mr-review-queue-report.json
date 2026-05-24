@@ -1,7 +1,7 @@
 {
-  "generatedAt": "2026-05-24T12:07:36.654Z",
+  "generatedAt": "2026-05-24T13:25:21.808Z",
   "MRs": {
-    "checkedAt": "2026-05-24T12:07:36.654Z",
+    "checkedAt": "2026-05-24T13:24:47.496Z",
     "source": "GitLab API + cursor-agent review",
     "items": [
       {
@@ -41,20 +41,20 @@
         "itemType": "MR",
         "title": "AUR-1249: Handle aborted Payload multipart uploads",
         "url": "https://git.fullscript.io/developers/fs-academy/-/merge_requests/1323",
-        "currentStatus": "Needs approval",
+        "currentStatus": "Skipped",
         "assignee": "thien.nguyen",
         "changedSinceLastBaseline": false,
-        "decision": "blocked",
-        "reason": "Still green, conflict-free, and waiting on reviewer approval.",
-        "commandRun": null,
-        "outputSummary": "MR !1323 has no unresolved discussions and merge pipeline 2717067 is success. Approval remains reset/missing.",
+        "decision": "skipped",
+        "reason": "Reviewed by Thien; no later commits",
+        "commandRun": "cursor-agent --print --trust --force --workspace /Users/study/aurora/fs-academy \"/thien-mr-review https://git.fullscript.io/developers/fs-academy/-/merge_requests/1323\"",
+        "outputSummary": "Cursor delta re-review posted on GitLab with Verdict: Merge at 9dacb9b0. Four unit tests, pnpm tsc, pnpm lint, and pnpm validate:barrel-exports passed per agent output. GitLab approve returned 401 Unauthorized.",
         "resultingMrUrl": "https://git.fullscript.io/developers/fs-academy/-/merge_requests/1323",
         "resultingLinearStatus": null,
         "resultingSentryStatus": null,
         "linearUrl": "https://linear.app/fullscript/issue/AUR-1249",
         "mrUrl": "https://git.fullscript.io/developers/fs-academy/-/merge_requests/1323",
-        "blockers": "Needs reviewer approval before merge.",
-        "nextAction": "Wait for reviewer approval, then merge if still green/unblocked.",
+        "blockers": "Manual reviewer approval still required because GitLab approve API returned 401 Unauthorized.",
+        "nextAction": "Approve manually in GitLab if appropriate; merge once approved and still green/unblocked.",
         "author": "thien.nguyen",
         "mrAuthor": "thien.nguyen",
         "sourceBranch": "AUR-1249",
@@ -421,7 +421,7 @@
       "approveOnly": 1,
       "needsApproval": 5,
       "needsReply": 0,
-      "skipped": 3,
+      "skipped": 4,
       "processedThisRun": 1,
       "changedThisRun": 2,
       "mergedSinceLastRun": 0
@@ -886,13 +886,12 @@
     }
   },
   "currentAction": {
-    "source": "thien-mr-review",
-    "phase": "Approve MR",
-    "detail": "MR !1343 review posted with Verdict: Merge; GitLab approve returned 401 (token/self-approve).",
-    "itemUrl": "https://git.fullscript.io/developers/fs-academy/-/merge_requests/1343",
-    "itemTitle": "AUR-1075: Include depth in getCachedGlobal cache key",
-    "status": "completed",
-    "updatedAt": "2026-05-24T12:07:36.654Z"
+    "source": "thien-fix-bug",
+    "phase": "Implement bug fix",
+    "detail": "Extend beforeSend drop for GTM legacy UA (AUR-1270)",
+    "itemUrl": "https://linear.app/fullscript/issue/AUR-1270",
+    "status": "running",
+    "updatedAt": "2026-05-24T13:25:21.807Z"
   },
   "cursorGuidance": {
     "active": true,
@@ -948,16 +947,16 @@
       ".cursor/subagents/subagent-sentry-triage/sentry-step-5-review-and-status.md"
     ],
     "currentBranch": "ai-improvement",
-    "resolvedAt": "2026-05-24T11:25:14.769Z",
-    "checkedOutAt": "2026-05-24T11:25:17.100Z"
+    "resolvedAt": "2026-05-24T13:24:19.301Z",
+    "checkedOutAt": null
   },
   "notification": {
     "decision": "NOTIFY",
-    "reason": "Processed MR !1343 review with Verdict: Merge; GitLab approve still fails with 401, and MR !1323 remains queued for review.",
-    "updatedAt": "2026-05-24T12:07:36.654Z"
+    "reason": "Processed MR !1323 delta re-review with Verdict: Merge; GitLab approve still fails with 401. Remaining GitLab action is MR !1347 approve-only, also blocked by 401.",
+    "updatedAt": "2026-05-24T13:24:47.496Z"
   },
   "workspace": {
     "dirtyPaths": [],
-    "note": "Workspace clean on ai-improvement after MR review."
+    "note": "Workspace clean on ai-improvement after MR !1323 review."
   }
 }

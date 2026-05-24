@@ -19,7 +19,7 @@
       "status": "Approved",
       "reason": "Approved by Thien",
       "openComments": [],
-      "lastSeenAt": "2026-05-24T12:07:46.163Z",
+      "lastSeenAt": "2026-05-24T13:26:04.675Z",
       "finishedAt": null
     },
     "1285": {
@@ -63,7 +63,7 @@
       "status": "Approved",
       "reason": "Approved by Thien",
       "openComments": [],
-      "lastSeenAt": "2026-05-24T12:07:46.163Z",
+      "lastSeenAt": "2026-05-24T13:26:04.675Z",
       "finishedAt": null
     },
     "1323": {
@@ -76,16 +76,16 @@
       "sourceUrl": "https://git.fullscript.io/developers/fs-academy/-/tree/AUR-1249",
       "target": "staging",
       "targetUrl": "https://git.fullscript.io/developers/fs-academy/-/tree/staging",
-      "updatedAt": "2026-05-23T16:09:09.047-04:00",
-      "latestReviewAt": "2026-05-19T19:18:00.963Z",
+      "updatedAt": "2026-05-24T09:23:44.205-04:00",
+      "latestReviewAt": "2026-05-24T13:23:44.167Z",
       "latestCommitAt": "2026-05-23T19:56:08.000Z",
       "approvedByThien": false,
       "aiPrefixed": false,
-      "needsAction": true,
-      "status": "Needs review",
-      "reason": "New commits after Thien review",
+      "needsAction": false,
+      "status": "Skipped",
+      "reason": "Reviewed by Thien; no later commits",
       "openComments": [],
-      "lastSeenAt": "2026-05-24T12:07:46.163Z",
+      "lastSeenAt": "2026-05-24T13:26:04.675Z",
       "finishedAt": null
     },
     "1341": {
@@ -129,7 +129,7 @@
       "status": "Skipped",
       "reason": "Reviewed by Thien; no later commits",
       "openComments": [],
-      "lastSeenAt": "2026-05-24T12:07:46.163Z",
+      "lastSeenAt": "2026-05-24T13:26:04.675Z",
       "finishedAt": null
     },
     "1343": {
@@ -151,7 +151,7 @@
       "status": "Skipped",
       "reason": "Reviewed by Thien; no later commits",
       "openComments": [],
-      "lastSeenAt": "2026-05-24T12:07:46.163Z",
+      "lastSeenAt": "2026-05-24T13:26:04.675Z",
       "finishedAt": null
     },
     "1344": {
@@ -195,7 +195,7 @@
       "status": "Skipped",
       "reason": "Reviewed by Thien; no later commits",
       "openComments": [],
-      "lastSeenAt": "2026-05-24T12:07:46.163Z",
+      "lastSeenAt": "2026-05-24T13:26:04.675Z",
       "finishedAt": null
     },
     "1346": {
@@ -217,7 +217,7 @@
       "status": "Skipped",
       "reason": "Reviewed by Thien; no later commits",
       "openComments": [],
-      "lastSeenAt": "2026-05-24T12:07:46.163Z",
+      "lastSeenAt": "2026-05-24T13:26:04.675Z",
       "finishedAt": null
     },
     "1347": {
@@ -239,7 +239,7 @@
       "status": "Approve only",
       "reason": "[AI] title: approve without review comment",
       "openComments": [],
-      "lastSeenAt": "2026-05-24T12:07:46.163Z",
+      "lastSeenAt": "2026-05-24T13:26:04.675Z",
       "finishedAt": null
     }
   }
