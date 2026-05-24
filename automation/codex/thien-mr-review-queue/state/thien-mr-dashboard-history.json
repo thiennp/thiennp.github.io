@@ -19,7 +19,7 @@
       "status": "Approved",
       "reason": "Approved by Thien",
       "openComments": [],
-      "lastSeenAt": "2026-05-23T20:24:22.059Z",
+      "lastSeenAt": "2026-05-24T11:02:42.771Z",
       "finishedAt": null
     },
     "1285": {
@@ -63,7 +63,7 @@
       "status": "Approved",
       "reason": "Approved by Thien",
       "openComments": [],
-      "lastSeenAt": "2026-05-23T20:24:22.059Z",
+      "lastSeenAt": "2026-05-24T11:02:42.771Z",
       "finishedAt": null
     },
     "1323": {
@@ -85,7 +85,7 @@
       "status": "Needs review",
       "reason": "New commits after Thien review",
       "openComments": [],
-      "lastSeenAt": "2026-05-23T20:24:22.059Z",
+      "lastSeenAt": "2026-05-24T11:02:42.771Z",
       "finishedAt": null
     },
     "1341": {
@@ -120,16 +120,16 @@
       "sourceUrl": "https://git.fullscript.io/developers/fs-academy/-/tree/AUR-1139",
       "target": "staging",
       "targetUrl": "https://git.fullscript.io/developers/fs-academy/-/tree/staging",
-      "updatedAt": "2026-05-23T16:10:07.925-04:00",
-      "latestReviewAt": "2026-05-23T03:32:55.605Z",
+      "updatedAt": "2026-05-24T05:51:59.408-04:00",
+      "latestReviewAt": "2026-05-24T09:51:59.368Z",
       "latestCommitAt": "2026-05-23T20:06:38.000Z",
       "approvedByThien": false,
       "aiPrefixed": false,
-      "needsAction": true,
-      "status": "Needs review",
-      "reason": "New commits after Thien review",
+      "needsAction": false,
+      "status": "Skipped",
+      "reason": "Reviewed by Thien; no later commits",
       "openComments": [],
-      "lastSeenAt": "2026-05-23T20:24:22.059Z",
+      "lastSeenAt": "2026-05-24T11:02:42.771Z",
       "finishedAt": null
     },
     "1343": {
@@ -151,7 +151,7 @@
       "status": "Needs review",
       "reason": "No Thien review found",
       "openComments": [],
-      "lastSeenAt": "2026-05-23T20:24:22.059Z",
+      "lastSeenAt": "2026-05-24T11:02:42.771Z",
       "finishedAt": null
     },
     "1344": {
@@ -195,7 +195,7 @@
       "status": "Skipped",
       "reason": "Reviewed by Thien; no later commits",
       "openComments": [],
-      "lastSeenAt": "2026-05-23T20:24:22.059Z",
+      "lastSeenAt": "2026-05-24T11:02:42.771Z",
       "finishedAt": null
     },
     "1346": {
@@ -217,7 +217,29 @@
       "status": "Skipped",
       "reason": "Reviewed by Thien; no later commits",
       "openComments": [],
-      "lastSeenAt": "2026-05-23T20:24:22.059Z",
+      "lastSeenAt": "2026-05-24T11:02:42.771Z",
+      "finishedAt": null
+    },
+    "1347": {
+      "iid": 1347,
+      "title": "[AI] Document edge POST guard and fix middleware README links",
+      "url": "https://git.fullscript.io/developers/fs-academy/-/merge_requests/1347",
+      "author": "thien.nguyen",
+      "draft": false,
+      "source": "ai-improvement",
+      "sourceUrl": "https://git.fullscript.io/developers/fs-academy/-/tree/ai-improvement",
+      "target": "staging",
+      "targetUrl": "https://git.fullscript.io/developers/fs-academy/-/tree/staging",
+      "updatedAt": "2026-05-24T02:56:43.584-04:00",
+      "latestReviewAt": null,
+      "latestCommitAt": "2026-05-24T06:56:14.000Z",
+      "approvedByThien": false,
+      "aiPrefixed": true,
+      "needsAction": true,
+      "status": "Approve only",
+      "reason": "[AI] title: approve without review comment",
+      "openComments": [],
+      "lastSeenAt": "2026-05-24T11:02:42.771Z",
       "finishedAt": null
     }
   }
