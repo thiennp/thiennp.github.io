@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Website QA Review Service - Thien Nguyen</title>
+    <meta name="description" content="Manual website QA review service for small teams: usability, frontend bugs, responsive checks, accessibility notes, and prioritized fixes.">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; color: #18212f; line-height: 1.6; background: #fff; }
+        .nav { border-bottom: 1px solid #dfe5ec; padding: 1rem 0; position: sticky; top: 0; background: #fff; z-index: 10; }
+        .wrap { max-width: 1120px; margin: 0 auto; padding: 0 2rem; }
+        .nav .wrap { display: flex; justify-content: space-between; gap: 1rem; align-items: center; }
+        a { color: #0d5f6c; font-weight: 800; text-decoration: none; }
+        a:hover { text-decoration: underline; }
+        .brand { color: #18212f; font-size: 1.2rem; }
+        .hero { background: #eef3f7; padding: 4rem 0; border-bottom: 1px solid #dfe5ec; }
+        h1 { font-size: 2.8rem; line-height: 1.1; margin-bottom: 1rem; letter-spacing: 0; }
+        .lede { color: #4c5968; font-size: 1.12rem; max-width: 780px; }
+        .actions { display: flex; gap: 0.8rem; flex-wrap: wrap; margin-top: 1.5rem; }
+        .button { background: #18212f; color: #fff; border: 1px solid #18212f; border-radius: 8px; padding: 0.75rem 1rem; min-height: 44px; display: inline-flex; align-items: center; }
+        .button.secondary { background: #fff; color: #18212f; border-color: #cfd9e3; }
+        section { padding: 3rem 0; border-bottom: 1px solid #edf1f5; }
+        h2 { font-size: 1.7rem; margin-bottom: 0.8rem; }
+        .grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem; }
+        .card { border: 1px solid #dfe5ec; border-radius: 8px; padding: 1.2rem; min-height: 100%; }
+        .card h3 { margin-bottom: 0.5rem; font-size: 1.1rem; }
+        .price { font-size: 1.8rem; font-weight: 900; margin: 0.6rem 0; }
+        ul { padding-left: 1.2rem; color: #344255; }
+        li { margin: 0.42rem 0; }
+        .note { background: #f7faf9; border-left: 4px solid #176b6b; padding: 1rem; color: #344255; }
+        @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } h1 { font-size: 2.1rem; } .wrap { padding: 0 1rem; } .nav .wrap { flex-direction: column; align-items: flex-start; } }
+    </style>
+</head>
+<body>
+    <nav class="nav">
+        <div class="wrap">
+            <a class="brand" href="index.html">Thien Nguyen</a>
+            <a href="earning-hub.html">Back to Earning Hub</a>
+        </div>
+    </nav>
+    <header class="hero">
+        <div class="wrap">
+            <h1>Manual Website QA Review</h1>
+            <p class="lede">A focused review for small teams that need practical feedback before launching: frontend bugs, responsive layout issues, usability friction, accessibility notes, and prioritized fixes.</p>
+            <div class="actions">
+                <a class="button" href="mailto:nguyenphongthien@gmail.com?subject=Website%20QA%20Review%20Request&body=Hi%20Thien%2C%0A%0AI%20would%20like%20a%20website%20QA%20review.%0A%0AWebsite%3A%20%0AGoal%3A%20%0ADeadline%3A%20%0ABudget%3A%20%0A%0AThanks!">Request review</a>
+                <a class="button secondary" href="assets/downloads/bug-report-template-pack.md">Download sample templates</a>
+            </div>
+        </div>
+    </header>
+    <main>
+        <section>
+            <div class="wrap">
+                <h2>Review Packages</h2>
+                <div class="grid">
+                    <article class="card">
+                        <h3>Quick Scan</h3>
+                        <div class="price">From EUR 49</div>
+                        <ul>
+                            <li>One page or flow.</li>
+                            <li>Desktop and mobile pass.</li>
+                            <li>Top five issues with screenshots.</li>
+                        </ul>
+                    </article>
+                    <article class="card">
+                        <h3>Launch Review</h3>
+                        <div class="price">From EUR 149</div>
+                        <ul>
+                            <li>Up to five pages or one conversion flow.</li>
+                            <li>Responsive, usability, and accessibility notes.</li>
+                            <li>Prioritized report with reproduction steps.</li>
+                        </ul>
+                    </article>
+                    <article class="card">
+                        <h3>Technical Follow-Up</h3>
+                        <div class="price">By scope</div>
+                        <ul>
+                            <li>Bug triage with developers.</li>
+                            <li>Frontend implementation suggestions.</li>
+                            <li>Regression checklist for fixes.</li>
+                        </ul>
+                    </article>
+                </div>
+            </div>
+        </section>
+        <section>
+            <div class="wrap">
+                <h2>What You Receive</h2>
+                <div class="note">A concise QA report with issue titles, reproduction steps, expected and actual results, screenshots or notes, likely impact, and a recommended priority. No automated fake traffic, no fake reviews, and no security testing without written permission.</div>
+            </div>
+        </section>
+    </main>
+</body>
+</html>

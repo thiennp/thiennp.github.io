@@ -1,0 +1,1805 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wishees - Virtual Wishing Wall & Interactive Ecard Creator</title>
+    <meta name="description" content="Make a wish on our global interactive wishing wall or create beautiful, custom animated ecards for your loved ones completely free. Simple, premium, and instant.">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Outfit:wght@400;600;700;800&family=Sacramento&display=swap" rel="stylesheet">
+
+    <style>
+        /* Base Variables & Theme */
+        :root {
+            --font-display: 'Outfit', sans-serif;
+            --font-body: 'Inter', sans-serif;
+            --font-handwritten: 'Sacramento', cursive;
+            
+            --bg-night: linear-gradient(135deg, #070714 0%, #0e0f26 50%, #1c133a 100%);
+            --glass-bg: rgba(255, 255, 255, 0.04);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --glass-hover: rgba(255, 255, 255, 0.08);
+            --glass-card-bg: rgba(15, 15, 35, 0.6);
+            
+            --text-primary: #f8f9fa;
+            --text-secondary: #a0aec0;
+            --text-muted: #718096;
+            
+            --primary: #9f7aea;
+            --primary-glow: rgba(159, 122, 234, 0.5);
+            --success: #48bb78;
+            --accent: #ed64a6;
+            
+            /* Card Theme Gradients */
+            --theme-classic: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --theme-neon: linear-gradient(135deg, #00f2fe 0%, #4facfe 100%);
+            --theme-sunset: linear-gradient(135deg, #ff0844 0%, #ffb199 100%);
+            --theme-gold: linear-gradient(135deg, #f6d365 0%, #fda085 100%);
+            --theme-emerald: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            --theme-pastel: linear-gradient(135deg, #ff9a9e 0%, #fecfef 99%, #fecfef 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-body);
+            background: var(--bg-night);
+            color: var(--text-primary);
+            min-height: 100vh;
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+
+        /* Ambient Stars Canvas Background */
+        #stars-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        /* Layout Structure */
+        header {
+            position: relative;
+            z-index: 10;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem 2rem;
+            border-bottom: 1px solid var(--glass-border);
+            background: rgba(7, 7, 20, 0.4);
+            backdrop-filter: blur(10px);
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            text-decoration: none;
+            color: var(--text-primary);
+        }
+
+        .logo-emoji {
+            font-size: 1.8rem;
+            filter: drop-shadow(0 0 8px var(--primary));
+        }
+
+        .logo-text {
+            font-family: var(--font-display);
+            font-size: 1.6rem;
+            font-weight: 800;
+            background: linear-gradient(120deg, #9f7aea, #e9d8fd, #ed64a6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: -0.02em;
+        }
+
+        .nav-actions {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            border-radius: 12px;
+            font-family: var(--font-display);
+            font-weight: 600;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            text-decoration: none;
+            border: 1px solid transparent;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #9f7aea 0%, #b794f4 100%);
+            color: #070714;
+            box-shadow: 0 4px 20px rgba(159, 122, 234, 0.4);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 24px rgba(159, 122, 234, 0.6);
+            background: linear-gradient(135deg, #b794f4 0%, #d6bcfa 100%);
+        }
+
+        .btn-glass {
+            background: var(--glass-bg);
+            border-color: var(--glass-border);
+            color: var(--text-primary);
+            backdrop-filter: blur(5px);
+        }
+
+        .btn-glass:hover {
+            background: var(--glass-hover);
+            transform: translateY(-2px);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        /* Main Container */
+        main {
+            position: relative;
+            z-index: 5;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+            min-height: calc(100vh - 85px);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        /* Hero / Wall Section */
+        .wall-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            margin-top: 3rem;
+            margin-bottom: 2rem;
+        }
+
+        .hero-title {
+            font-family: var(--font-display);
+            font-size: 3.5rem;
+            font-weight: 800;
+            line-height: 1.15;
+            margin-bottom: 1rem;
+            letter-spacing: -0.03em;
+        }
+
+        .hero-title span {
+            background: linear-gradient(120deg, #ed64a6, #9f7aea, #63b3ed);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero-subtitle {
+            font-size: 1.25rem;
+            color: var(--text-secondary);
+            max-width: 600px;
+            margin-bottom: 2.5rem;
+        }
+
+        /* Wishing Well Active Floating Area */
+        .canvas-container {
+            width: 100%;
+            height: 480px;
+            position: relative;
+            background: rgba(11, 11, 30, 0.4);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            overflow: hidden;
+            box-shadow: inset 0 0 40px rgba(0, 0, 0, 0.6);
+            margin-bottom: 3rem;
+        }
+
+        #wishes-canvas {
+            width: 100%;
+            height: 100%;
+            display: block;
+            cursor: pointer;
+        }
+
+        .wishes-hint {
+            position: absolute;
+            bottom: 1.5rem;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(7, 7, 20, 0.7);
+            padding: 0.5rem 1.25rem;
+            border-radius: 50px;
+            font-size: 0.85rem;
+            border: 1px solid var(--glass-border);
+            color: var(--text-secondary);
+            pointer-events: none;
+            backdrop-filter: blur(5px);
+        }
+
+        /* Wish Popup Detail Box (Interactive Hover on canvas) */
+        .wish-popup {
+            position: absolute;
+            background: var(--glass-card-bg);
+            border: 1px solid var(--glass-border);
+            backdrop-filter: blur(12px);
+            padding: 1.25rem;
+            border-radius: 16px;
+            color: var(--text-primary);
+            max-width: 280px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            pointer-events: none;
+            opacity: 0;
+            transform: scale(0.9) translateY(10px);
+            transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+            z-index: 100;
+            text-align: left;
+        }
+
+        .wish-popup.active {
+            opacity: 1;
+            transform: scale(1) translateY(0);
+        }
+
+        .wish-popup-sender {
+            font-family: var(--font-display);
+            font-weight: 700;
+            font-size: 0.9rem;
+            color: var(--primary);
+            margin-bottom: 0.25rem;
+        }
+
+        .wish-popup-text {
+            font-size: 0.95rem;
+            line-height: 1.4;
+        }
+
+        /* Modals & Wizards Styling (Forms) */
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(4, 4, 12, 0.85);
+            z-index: 1000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+            backdrop-filter: blur(10px);
+            padding: 1.5rem;
+        }
+
+        .overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .modal-card {
+            background: rgba(15, 15, 35, 0.85);
+            border: 1px solid var(--glass-border);
+            border-radius: 28px;
+            width: 100%;
+            max-width: 680px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+            display: flex;
+            flex-direction: column;
+            transform: scale(0.95) translateY(20px);
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .overlay.active .modal-card {
+            transform: scale(1) translateY(0);
+        }
+
+        .modal-header {
+            padding: 1.5rem 2rem;
+            border-bottom: 1px solid var(--glass-border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-title {
+            font-family: var(--font-display);
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 1.8rem;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+
+        .modal-close:hover {
+            color: var(--text-primary);
+        }
+
+        .modal-body {
+            padding: 2rem;
+        }
+
+        /* Step Navigation for Ecard Wizard */
+        .wizard-steps {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 2rem;
+            position: relative;
+        }
+
+        .wizard-steps::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: var(--glass-border);
+            z-index: 1;
+            transform: translateY(-50%);
+        }
+
+        .wizard-step {
+            width: 2.5rem;
+            height: 2.5rem;
+            border-radius: 50%;
+            background: #141534;
+            border: 2px solid var(--glass-border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: var(--font-display);
+            font-weight: 700;
+            font-size: 0.95rem;
+            z-index: 5;
+            position: relative;
+            color: var(--text-secondary);
+            transition: all 0.3s;
+        }
+
+        .wizard-step.active {
+            border-color: var(--primary);
+            background: var(--primary);
+            color: #070714;
+            box-shadow: 0 0 15px var(--primary-glow);
+        }
+
+        .wizard-step.completed {
+            border-color: var(--success);
+            background: var(--success);
+            color: #070714;
+        }
+
+        .form-panel {
+            display: none;
+        }
+
+        .form-panel.active {
+            display: block;
+            animation: fadeIn 0.4s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        label {
+            display: block;
+            font-family: var(--font-display);
+            font-weight: 600;
+            font-size: 0.95rem;
+            margin-bottom: 0.5rem;
+            color: var(--text-secondary);
+        }
+
+        input[type="text"], textarea, select {
+            width: 100%;
+            background: rgba(7, 7, 20, 0.5);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            padding: 0.9rem 1.2rem;
+            color: var(--text-primary);
+            font-family: var(--font-body);
+            font-size: 1rem;
+            transition: all 0.25s;
+        }
+
+        input[type="text"]:focus, textarea:focus, select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(159, 122, 234, 0.25);
+            background: rgba(7, 7, 20, 0.7);
+        }
+
+        /* Choice Selectors */
+        .option-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+            gap: 0.75rem;
+            margin-top: 0.5rem;
+        }
+
+        .choice-card {
+            background: rgba(7, 7, 20, 0.4);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            padding: 1rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.25s;
+        }
+
+        .choice-card:hover {
+            border-color: rgba(255, 255, 255, 0.2);
+            background: rgba(7, 7, 20, 0.6);
+        }
+
+        .choice-card.selected {
+            border-color: var(--primary);
+            background: rgba(159, 122, 234, 0.1);
+            box-shadow: 0 0 10px rgba(159, 122, 234, 0.15);
+        }
+
+        .choice-icon {
+            font-size: 1.75rem;
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+
+        .choice-label {
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        /* Colors Grid */
+        .color-grid {
+            display: flex;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+        }
+
+        .color-bubble {
+            width: 2.5rem;
+            height: 2.5rem;
+            border-radius: 50%;
+            cursor: pointer;
+            border: 3px solid transparent;
+            transition: transform 0.2s, border-color 0.2s;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        }
+
+        .color-bubble:hover {
+            transform: scale(1.1);
+        }
+
+        .color-bubble.selected {
+            border-color: var(--text-primary);
+            transform: scale(1.05);
+        }
+
+        /* Predefined Wish Recommendations */
+        .suggestions-scroll {
+            max-height: 200px;
+            overflow-y: auto;
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            padding: 0.5rem;
+            background: rgba(0, 0, 0, 0.2);
+        }
+
+        .suggestion-item {
+            padding: 0.75rem 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.2s;
+            font-size: 0.9rem;
+            border-bottom: 1px solid rgba(255,255,255,0.02);
+            text-align: left;
+        }
+
+        .suggestion-item:hover {
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-primary);
+        }
+
+        /* Wizard Footer Controls */
+        .wizard-footer {
+            margin-top: 2rem;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        /* Live Preview Card in Generator */
+        .preview-wrapper {
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            padding: 1.5rem;
+            background: rgba(0,0,0,0.3);
+            margin-bottom: 1.5rem;
+            display: flex;
+            justify-content: center;
+        }
+
+        /* Immersive Ecard Showcase View */
+        .recipient-view {
+            display: none; /* Active via script when url contains card param */
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            min-height: calc(100vh - 120px);
+            perspective: 1000px;
+            position: relative;
+        }
+
+        /* Envelope 3D Animation Box */
+        .envelope-wrapper {
+            position: relative;
+            width: 320px;
+            height: 220px;
+            background: #2d3748;
+            border-radius: 0 0 16px 16px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+            cursor: pointer;
+            transform-style: preserve-3d;
+            transition: transform 0.5s ease;
+            margin-bottom: 3rem;
+            z-index: 10;
+        }
+
+        .envelope-wrapper:hover {
+            transform: translateY(-5px) rotateX(5deg);
+        }
+
+        .envelope-flap {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 0;
+            height: 0;
+            border-left: 160px solid transparent;
+            border-right: 160px solid transparent;
+            border-top: 120px solid #4a5568;
+            transform-origin: top;
+            transition: transform 0.4s ease;
+            z-index: 15;
+        }
+
+        .envelope-front {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: transparent;
+            border-left: 160px solid transparent;
+            border-right: 160px solid transparent;
+            border-bottom: 110px solid #1a202c;
+            border-top: 110px solid transparent;
+            border-radius: 0 0 16px 16px;
+            z-index: 14;
+        }
+
+        .envelope-front-seal {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 3.5rem;
+            height: 3.5rem;
+            border-radius: 50%;
+            background: radial-gradient(circle, #ed64a6 0%, #9f7aea 100%);
+            z-index: 16;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            box-shadow: 0 0 15px rgba(159, 122, 234, 0.6);
+            border: 2px solid rgba(255,255,255,0.2);
+            transition: transform 0.3s;
+        }
+
+        .envelope-wrapper:hover .envelope-front-seal {
+            transform: translate(-50%, -50%) scale(1.1);
+        }
+
+        /* Real physical Card container */
+        .ecard-sheet {
+            width: 290px;
+            height: 400px;
+            background: var(--theme-classic);
+            border-radius: 16px;
+            padding: 2rem;
+            position: absolute;
+            bottom: 10px;
+            left: 15px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+            transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.5s;
+            z-index: 12;
+            color: #ffffff;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            text-align: center;
+            transform: translateY(0) scale(0.95);
+            opacity: 0.5;
+            pointer-events: none;
+            overflow: hidden;
+        }
+
+        /* Opened state classes */
+        .envelope-wrapper.open .envelope-flap {
+            transform: rotateX(180deg);
+            z-index: 9;
+        }
+
+        .envelope-wrapper.open .ecard-sheet {
+            transform: translateY(-220px) scale(1.15) rotate(1deg);
+            opacity: 1;
+            z-index: 20;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.7);
+            width: 320px;
+            height: 440px;
+            left: 0;
+            pointer-events: auto;
+        }
+
+        /* Responsive Ecard layout detailing */
+        .card-occasion {
+            font-family: var(--font-display);
+            font-size: 0.85rem;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            font-weight: 700;
+            opacity: 0.8;
+        }
+
+        .card-emoji {
+            font-size: 3.5rem;
+            margin: 1.5rem 0;
+            filter: drop-shadow(0 8px 12px rgba(0,0,0,0.15));
+        }
+
+        .card-wishes-text {
+            font-family: var(--font-handwritten);
+            font-size: 2.2rem;
+            line-height: 1.25;
+            margin-bottom: auto;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            word-wrap: break-word;
+        }
+
+        .card-signature {
+            font-family: var(--font-display);
+            font-size: 0.95rem;
+            font-weight: 600;
+            opacity: 0.95;
+            margin-top: 1.5rem;
+        }
+
+        /* Shared Card Controls (After opening) */
+        .recipient-actions {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.5s ease 0.4s;
+            pointer-events: none;
+            margin-top: 1rem;
+            z-index: 50;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            align-items: center;
+        }
+
+        .recipient-actions.show {
+            opacity: 1;
+            transform: translateY(0);
+            pointer-events: auto;
+        }
+
+        .audio-control-btn {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid var(--glass-border);
+            color: var(--text-secondary);
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+            font-size: 0.85rem;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.2s;
+        }
+
+        .audio-control-btn:hover {
+            color: var(--text-primary);
+            background: rgba(255,255,255,0.1);
+        }
+
+        /* Share Result Display Page */
+        .share-card-result {
+            text-align: center;
+            padding: 1.5rem 0;
+        }
+
+        .share-url-container {
+            display: flex;
+            gap: 0.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .share-url-input {
+            flex: 1;
+            font-family: monospace;
+            font-size: 0.9rem;
+            background: rgba(0,0,0,0.4);
+            border: 1px solid var(--glass-border);
+            padding: 0.75rem 1rem;
+            border-radius: 10px;
+            color: var(--success);
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            overflow: hidden;
+            text-align: left;
+        }
+
+        /* Monetization & Display Ads Zones */
+        .ads-banner-wrapper {
+            margin: 3rem auto;
+            width: 100%;
+            max-width: 970px;
+            min-height: 90px;
+            background: var(--glass-bg);
+            border: 1px dashed var(--glass-border);
+            border-radius: 16px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 1.25rem;
+            position: relative;
+            z-index: 10;
+            overflow: hidden;
+        }
+
+        .ads-label {
+            font-size: 0.65rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 0.5rem;
+        }
+
+        .ads-fallback-content {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            text-align: left;
+            text-decoration: none;
+            color: inherit;
+            width: 100%;
+            justify-content: center;
+            transition: opacity 0.2s;
+        }
+
+        .ads-fallback-content:hover {
+            opacity: 0.9;
+        }
+
+        .ads-fallback-image {
+            font-size: 2.2rem;
+            filter: drop-shadow(0 4px 8px var(--primary-glow));
+        }
+
+        .ads-fallback-text h4 {
+            font-family: var(--font-display);
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 0.15rem;
+        }
+
+        .ads-fallback-text p {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        /* Footer Branding */
+        footer {
+            border-top: 1px solid var(--glass-border);
+            padding: 2rem;
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            background: rgba(7, 7, 20, 0.6);
+            position: relative;
+            z-index: 10;
+        }
+
+        footer a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        footer a:hover {
+            color: var(--primary);
+        }
+
+        /* Mobile Optimization overrides */
+        @media (max-width: 768px) {
+            header {
+                padding: 1rem;
+            }
+
+            .logo-text {
+                font-size: 1.3rem;
+            }
+
+            .hero-title {
+                font-size: 2.5rem;
+            }
+
+            .hero-subtitle {
+                font-size: 1rem;
+            }
+
+            .canvas-container {
+                height: 380px;
+            }
+
+            .modal-card {
+                border-radius: 20px;
+            }
+
+            .modal-body {
+                padding: 1.5rem 1rem;
+            }
+
+            .option-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .envelope-wrapper.open .ecard-sheet {
+                transform: translateY(-180px) scale(1) rotate(0);
+                width: 290px;
+                height: 400px;
+                left: 15px;
+            }
+
+            .ads-fallback-content {
+                flex-direction: column;
+                text-align: center;
+                gap: 0.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Stars Particles Canvas (Ambient Layer) -->
+    <canvas id="stars-canvas"></canvas>
+
+    <!-- Header Navigation -->
+    <header>
+        <a href="index.html" class="logo-container">
+            <span class="logo-emoji">💫</span>
+            <span class="logo-text">wishees.com</span>
+        </a>
+        <div class="nav-actions">
+            <button id="nav-make-wish" class="btn btn-glass" onclick="openWishModal()">💫 Make a Wish</button>
+            <button id="nav-create-card" class="btn btn-primary" onclick="openCardWizard()">🎁 Create Ecard</button>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main>
+        
+        <!-- STATE A: Standard Wishing Wall / Portal -->
+        <div id="portal-view">
+            <div class="wall-section">
+                <h1 class="hero-title">Float Your Wishes Into <span>The Cosmos</span></h1>
+                <p class="hero-subtitle">Create gorgeous animated ecards completely free, or make a silent wish and release a glowing lantern into our interactive wishing sky.</p>
+                
+                <div class="canvas-container">
+                    <canvas id="wishes-canvas"></canvas>
+                    <div class="wishes-hint">Hover over floating stars to read people's dreams • Click the sky to add yours</div>
+                    <div id="hover-wish-popup" class="wish-popup">
+                        <div class="wish-popup-sender">Thien N.</div>
+                        <div class="wish-popup-text">May all your creative endeavors thrive this year!</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pre-styled AdSense Slot (Desktop and Mobile) -->
+            <div class="ads-banner-wrapper">
+                <div class="ads-label">Sponsored Resource</div>
+                <!-- Native fallback link optimized as affiliate space until active AdSense script is injected -->
+                <a class="ads-fallback-content" href="https://www.amazon.com/gp/search?ie=UTF8&tag=wishees-20&linkCode=ur2&linkId=674f14d79a2f6448bf81d2&camp=1789&creative=9325&index=aps&keywords=beautiful+greeting+cards+gift+ideas" target="_blank" rel="noopener noreferrer">
+                    <span class="ads-fallback-image">🎁</span>
+                    <div class="ads-fallback-text">
+                        <h4>Explore Beautiful Real-Life Gifts & Greeting Cards</h4>
+                        <p>Find premium handcrafted cards, gift wraps, and unique customized birthday gifts on Amazon.</p>
+                    </div>
+                </a>
+            </div>
+        </div>
+
+        <!-- STATE B: Immersive Recipient Landing (Card Viewer) -->
+        <div id="recipient-view" class="recipient-view">
+            <h2 id="recipient-header" class="hero-title" style="margin-bottom: 2rem; font-size: 2.8rem;">You have received a <span>magical card</span></h2>
+            
+            <div id="envelope" class="envelope-wrapper" onclick="openEnvelope()">
+                <div class="envelope-flap"></div>
+                <div class="envelope-front"></div>
+                <div class="envelope-front-seal">✨</div>
+                
+                <!-- The Actual Greeting Card Inside -->
+                <div id="recipient-card" class="ecard-sheet">
+                    <div id="card-occ" class="card-occasion">HAPPY BIRTHDAY</div>
+                    <div id="card-emo" class="card-emoji">🎂</div>
+                    <div id="card-txt" class="card-wishes-text">May your days be golden and full of peace!</div>
+                    <div id="card-sig" class="card-signature">From Thien Nguyen</div>
+                </div>
+            </div>
+
+            <div id="recipient-actions" class="recipient-actions">
+                <button class="audio-control-btn" onclick="toggleChimes()">
+                    <span id="audio-icon">🔈</span> <span id="audio-text">Enable Ambient Sound</span>
+                </button>
+                <div style="display: flex; gap: 1rem;">
+                    <a href="wishees.html" class="btn btn-primary">💝 Make Your Own Card</a>
+                    <button class="btn btn-glass" onclick="resetToWall()">🌌 View Wishing Wall</button>
+                </div>
+            </div>
+            
+            <!-- Secondary AdSense / Affiliate Slot for Recipient Landing -->
+            <div class="ads-banner-wrapper" style="margin-top: 5rem;">
+                <div class="ads-label">Sponsored Resource</div>
+                <a class="ads-fallback-content" href="https://www.etsy.com" target="_blank" rel="noopener noreferrer">
+                    <span class="ads-fallback-image">🎨</span>
+                    <div class="ads-fallback-text">
+                        <h4>Looking for custom, personalized keepsakes?</h4>
+                        <p>Support independent creators on Etsy. Discover custom paintings, handmade cards, and unique jewelry.</p>
+                    </div>
+                </a>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- OVERLAY 1: Make a Star/Wish Modal -->
+    <div id="wish-modal" class="overlay">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h3 class="modal-title">💫 Write on a Floating Star</h3>
+                <button class="modal-close" onclick="closeWishModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="wish-form" onsubmit="submitWish(event)">
+                    <div class="form-group">
+                        <label for="wish-name">Your Name</label>
+                        <input type="text" id="wish-name" placeholder="E.g., Anna" maxlength="20" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="wish-text">Your Wish to the Cosmos</label>
+                        <textarea id="wish-text" rows="3" placeholder="I wish for happiness, growth, and love..." maxlength="100" required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Star Glow Color</label>
+                        <div class="color-grid">
+                            <div class="color-bubble selected" style="background: #9f7aea;" onclick="selectWishColor(this, '#9f7aea')"></div>
+                            <div class="color-bubble" style="background: #38bdf8;" onclick="selectWishColor(this, '#38bdf8')"></div>
+                            <div class="color-bubble" style="background: #fb7185;" onclick="selectWishColor(this, '#fb7185')"></div>
+                            <div class="color-bubble" style="background: #facc15;" onclick="selectWishColor(this, '#facc15')"></div>
+                            <div class="color-bubble" style="background: #34d399;" onclick="selectWishColor(this, '#34d399')"></div>
+                        </div>
+                    </div>
+                    <div style="display: flex; justify-content: flex-end; margin-top: 1rem;">
+                        <button type="submit" class="btn btn-primary">💫 Release Star</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- OVERLAY 2: Ecard Wizard Modal -->
+    <div id="card-modal" class="overlay">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h3 class="modal-title">🎁 Create Animated Greeting Ecard</h3>
+                <button class="modal-close" onclick="closeCardWizard()">&times;</button>
+            </div>
+            <div class="modal-body">
+                
+                <!-- Steps Progress -->
+                <div class="wizard-steps">
+                    <div class="wizard-step active" id="step-1-indicator">1</div>
+                    <div class="wizard-step" id="step-2-indicator">2</div>
+                    <div class="wizard-step" id="step-3-indicator">3</div>
+                    <div class="wizard-step" id="step-4-indicator">4</div>
+                </div>
+
+                <!-- Wizard Panel 1: Occasion Selection -->
+                <div class="form-panel active" id="wizard-panel-1">
+                    <div class="form-group">
+                        <label>Choose the Occasion</label>
+                        <div class="option-grid">
+                            <div class="choice-card selected" onclick="selectOccasion('Birthday', '🎂', this)">
+                                <span class="choice-icon">🎂</span>
+                                <span class="choice-label">Birthday</span>
+                            </div>
+                            <div class="choice-card" onclick="selectOccasion('Anniversary', '🥂', this)">
+                                <span class="choice-icon">🥂</span>
+                                <span class="choice-label">Anniversary</span>
+                            </div>
+                            <div class="choice-card" onclick="selectOccasion('Love & Hearts', '💖', this)">
+                                <span class="choice-icon">💖</span>
+                                <span class="choice-label">Love</span>
+                            </div>
+                            <div class="choice-card" onclick="selectOccasion('Congratulations', '🎓', this)">
+                                <span class="choice-icon">🎓</span>
+                                <span class="choice-label">Congrats</span>
+                            </div>
+                            <div class="choice-card" onclick="selectOccasion('Thank You', '🙏', this)">
+                                <span class="choice-icon">🙏</span>
+                                <span class="choice-label">Thanks</span>
+                            </div>
+                            <div class="choice-card" onclick="selectOccasion('Warm Wishes', '💫', this)">
+                                <span class="choice-icon">💫</span>
+                                <span class="choice-label">Wishes</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Wizard Panel 2: Customize Text & Wording -->
+                <div class="form-panel" id="wizard-panel-2">
+                    <div class="form-group">
+                        <label for="card-to">Who is this for?</label>
+                        <input type="text" id="card-to" placeholder="E.g., Mom, Bestie, John" maxlength="25" required oninput="updateLivePreview()">
+                    </div>
+                    <div class="form-group">
+                        <label for="card-message">Personal Message</label>
+                        <textarea id="card-message" rows="3" placeholder="Type your heartfelt wish here..." maxlength="120" required oninput="updateLivePreview()"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Need inspiration? Choose a preset wish:</label>
+                        <div class="suggestions-scroll" id="wishes-preset-scroll">
+                            <!-- Preset options injected dynamically by script -->
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="card-from">Your Signature (From)</label>
+                        <input type="text" id="card-from" placeholder="E.g., Your Son, Emma" maxlength="25" required oninput="updateLivePreview()">
+                    </div>
+                </div>
+
+                <!-- Wizard Panel 3: Choose Visual Style & Audio -->
+                <div class="form-panel" id="wizard-panel-3">
+                    <div class="form-group">
+                        <label>Choose a Background Gradient Theme</label>
+                        <div class="option-grid">
+                            <div class="choice-card selected" onclick="selectVisualTheme('classic', this)" style="background: var(--theme-classic);">
+                                <span class="choice-label" style="text-shadow: 0 1px 4px rgba(0,0,0,0.5);">Midnight Royal</span>
+                            </div>
+                            <div class="choice-card" onclick="selectVisualTheme('neon', this)" style="background: var(--theme-neon);">
+                                <span class="choice-label" style="text-shadow: 0 1px 4px rgba(0,0,0,0.5);">Ocean Neon</span>
+                            </div>
+                            <div class="choice-card" onclick="selectVisualTheme('sunset', this)" style="background: var(--theme-sunset);">
+                                <span class="choice-label" style="text-shadow: 0 1px 4px rgba(0,0,0,0.5);">Sunset Blush</span>
+                            </div>
+                            <div class="choice-card" onclick="selectVisualTheme('gold', this)" style="background: var(--theme-gold);">
+                                <span class="choice-label" style="text-shadow: 0 1px 4px rgba(0,0,0,0.5);">Golden Glow</span>
+                            </div>
+                            <div class="choice-card" onclick="selectVisualTheme('emerald', this)" style="background: var(--theme-emerald);">
+                                <span class="choice-label" style="text-shadow: 0 1px 4px rgba(0,0,0,0.5);">Forest Emerald</span>
+                            </div>
+                            <div class="choice-card" onclick="selectVisualTheme('pastel', this)" style="background: var(--theme-pastel);">
+                                <span class="choice-label" style="color: #333;">Pastel Dream</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Live Real-Time Preview</label>
+                        <div class="preview-wrapper">
+                            <div id="wizard-live-preview" class="ecard-sheet" style="position: relative; opacity: 1; pointer-events: none; bottom: 0; left: 0;">
+                                <div id="preview-occ" class="card-occasion">HAPPY BIRTHDAY</div>
+                                <div id="preview-emo" class="card-emoji">🎂</div>
+                                <div id="preview-txt" class="card-wishes-text">Happy Birthday! May your day be magic.</div>
+                                <div id="preview-sig" class="card-signature">From: Thien</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Wizard Panel 4: Export Card and Get Link -->
+                <div class="form-panel" id="wizard-panel-4">
+                    <div class="share-card-result">
+                        <h4 style="font-family: var(--font-display); font-size: 1.3rem; margin-bottom: 0.5rem; color: var(--success);">✨ Card Generated Successfully!</h4>
+                        <p style="color: var(--text-secondary); margin-bottom: 2rem;">Copy this link and send it via text message, WhatsApp, Messenger, or Email. It will play the full animated envelope opening and music completely free.</p>
+                        
+                        <div class="share-url-container">
+                            <div class="share-url-input" id="generated-card-link">Generating link...</div>
+                            <button class="btn btn-primary" onclick="copyCardLink()" id="btn-copy-link">📋 Copy</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Wizard Navigation Footer -->
+                <div class="wizard-footer">
+                    <button class="btn btn-glass" id="btn-wizard-prev" onclick="wizardStepBack()" style="visibility: hidden;">Back</button>
+                    <button class="btn btn-primary" id="btn-wizard-next" onclick="wizardStepForward()">Continue</button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer Branding -->
+    <footer>
+        <p>&copy; 2026 wishees.com • Multi-Platform Free Ecards & Virtual Wishing board.</p>
+        <p style="margin-top: 0.5rem; font-size: 0.8rem;">Designed for passive income experiments. Built and hosted on <a href="index.html">Thien Nguyen Portfolio</a>.</p>
+    </footer>
+
+    <!-- JavaScript & Interactive Engines -->
+    <script>
+        /* === GLOBAL STATE === */
+        const APP = {
+            activeWizardStep: 1,
+            // Card Creator Form Data
+            cardOccasion: 'Birthday',
+            cardEmoji: '🎂',
+            cardTo: '',
+            cardMessage: 'Happy Birthday! May all your wishes shine bright.',
+            cardFrom: '',
+            cardTheme: 'classic',
+            // Wishing Wall Color selection
+            selectedWishColor: '#9f7aea',
+            // Web Audio Synthesis Context
+            audioCtx: null,
+            audioPlaying: false,
+            audioTimer: null,
+            // Wishes active on canvas
+            wishes: [
+                {x: 100, y: 150, name: "Maria S.", text: "May our new bakery business flourish beyond measure!", color: "#38bdf8", size: 6, speed: 0.25},
+                {x: 350, y: 80, name: "Hiroto K.", text: "Hoping for a safe, beautiful year of travels in Europe.", color: "#facc15", size: 5, speed: 0.18},
+                {x: 600, y: 220, name: "Clara M.", text: "Wishing for good health and deep recovery for Grandpa.", color: "#fb7185", size: 7, speed: 0.3},
+                {x: 850, y: 120, name: "Alex & Lea", text: "Wishing for eternal love on our 5th wedding anniversary today!", color: "#34d399", size: 6, speed: 0.22},
+                {x: 1100, y: 280, name: "Dev Team", text: "May compile errors disappear, and server hosting stay free!", color: "#9f7aea", size: 8, speed: 0.15}
+            ]
+        };
+
+        const PRESET_WISHES = {
+            'Birthday': [
+                "Wishing you a year filled with sweet moments, magical dreams, and absolute joy. Happy Birthday!",
+                "May your life be illuminated with endless smiles, warm laughter, and grand milestones. Cheers!",
+                "To another year of shining brightly, learning deeply, and loving fully. Have an amazing birthday!"
+            ],
+            'Anniversary': [
+                "Wishing you a lifetime of holding hands, sharing dreams, and growing ever closer. Happy Anniversary!",
+                "May your love continue to be a shining lighthouse of happiness, inspiration, and loyalty. Cheers to you two!",
+                "Two beautiful hearts beating as one. Wishing you an elegant and wonderful celebration today."
+            ],
+            'Love & Hearts': [
+                "Every single day with you feels like a quiet star floating gently in a serene night sky. I love you.",
+                "To the one who makes my world look beautiful, warm, and endlessly inspiring. You are my home.",
+                "Distance is nothing because you are in my heart, lighting up every thought."
+            ],
+            'Congratulations': [
+                "Your dedication, focus, and hard work have carried you to this mountaintop. So proud of you!",
+                "A massive milestone reached! Wishing you outstanding success as you step into this new adventure.",
+                "Hats off to your success! This is only the beginning of a wonderful journey."
+            ],
+            'Thank You': [
+                "Your kindness is a gift I will always cherish. Thank you for standing by me and helping.",
+                "Words cannot fully express how deeply I appreciate your warmth, guidance, and endless support.",
+                "Thank you for being the quiet hero who always knows exactly how to light up the dark."
+            ],
+            'Warm Wishes': [
+                "Sending you warm vibes, starry hopes, and gentle thoughts for a beautiful week ahead.",
+                "May you find peace, rest, and comfort in the quiet beauty of the universe today.",
+                "Keep dreaming, keep glowing, and never forget how incredibly special you are to the world."
+            ]
+        };
+
+        /* === INITIALIZATION ON LOAD === */
+        window.addEventListener('DOMContentLoaded', () => {
+            initBackgroundStars();
+            initWishingWall();
+            
+            // Check if page opened with customized Card URL parameter
+            const urlParams = new URLSearchParams(window.location.search);
+            const cardEncoded = urlParams.get('card');
+            
+            if (cardEncoded) {
+                try {
+                    // Unpack and decode card configurations
+                    const decodedData = JSON.parse(decodeURIComponent(escape(atob(cardEncoded))));
+                    
+                    // Render into Recipient UI elements
+                    document.getElementById('card-occ').textContent = (decodedData.occ || "SPECIAL WISH").toUpperCase();
+                    document.getElementById('card-emo').textContent = decodedData.emo || "💫";
+                    document.getElementById('card-txt').textContent = decodedData.msg || "Wishing you warmth!";
+                    document.getElementById('card-sig').textContent = decodedData.from ? `From ${decodedData.from}` : "";
+                    
+                    // Change theme color of recipient card
+                    const themeName = decodedData.theme || 'classic';
+                    const targetCard = document.getElementById('recipient-card');
+                    targetCard.style.background = `var(--theme-${themeName})`;
+                    
+                    // Toggle Visibility states (Immersive Show)
+                    document.getElementById('portal-view').style.display = 'none';
+                    document.getElementById('recipient-view').style.display = 'flex';
+                    document.getElementById('nav-make-wish').style.display = 'none';
+                    document.getElementById('nav-create-card').style.display = 'none';
+                    
+                    // Adjust Title for Recipient
+                    if (decodedData.to) {
+                        document.getElementById('recipient-header').innerHTML = `Special card for <span>${decodedData.to}</span>`;
+                        document.title = `Special Greeting for ${decodedData.to} - Wishees`;
+                    }
+                    
+                } catch(e) {
+                    console.error("Invalid greeting card URL hash received. Reverting to interactive wall.", e);
+                    resetToWall();
+                }
+            }
+        });
+
+        /* === AMBIENT STARS BACKGROUND ENGINE === */
+        function initBackgroundStars() {
+            const canvas = document.getElementById('stars-canvas');
+            const ctx = canvas.getContext('2d');
+            let width = canvas.width = window.innerWidth;
+            let height = canvas.height = window.innerHeight;
+
+            window.addEventListener('resize', () => {
+                width = canvas.width = window.innerWidth;
+                height = canvas.height = window.innerHeight;
+            });
+
+            // Create starry background particles
+            const starCount = 120;
+            const stars = [];
+            for (let i = 0; i < starCount; i++) {
+                stars.push({
+                    x: Math.random() * width,
+                    y: Math.random() * height,
+                    size: Math.random() * 1.5,
+                    brightness: Math.random(),
+                    fadeSpeed: 0.005 + Math.random() * 0.015
+                });
+            }
+
+            function drawStars() {
+                ctx.clearRect(0, 0, width, height);
+                ctx.fillStyle = '#ffffff';
+
+                stars.forEach(star => {
+                    star.brightness += star.fadeSpeed;
+                    if (star.brightness > 1 || star.brightness < 0) {
+                        star.fadeSpeed = -star.fadeSpeed;
+                    }
+                    ctx.globalAlpha = Math.max(0.1, star.brightness);
+                    ctx.beginPath();
+                    ctx.arc(star.x, star.y, star.size, 0, Math.PI * 2);
+                    ctx.fill();
+                });
+
+                requestAnimationFrame(drawStars);
+            }
+            drawStars();
+        }
+
+        /* === INTERACTIVE WISHING WALL ENGINE (CANVAS) === */
+        let wallCanvas, wallCtx, animationId;
+        
+        function initWishingWall() {
+            wallCanvas = document.getElementById('wishes-canvas');
+            wallCtx = wallCanvas.getContext('2d');
+            
+            function resizeWall() {
+                const rect = wallCanvas.parentNode.getBoundingClientRect();
+                wallCanvas.width = rect.width;
+                wallCanvas.height = rect.height;
+            }
+            resizeWall();
+            window.addEventListener('resize', resizeWall);
+
+            // Canvas Interaction Hover / Click
+            const popup = document.getElementById('hover-wish-popup');
+            
+            wallCanvas.addEventListener('mousemove', (e) => {
+                const rect = wallCanvas.getBoundingClientRect();
+                const mouseX = e.clientX - rect.left;
+                const mouseY = e.clientY - rect.top;
+                
+                let hoveredStar = null;
+                
+                APP.wishes.forEach(wish => {
+                    // Check if mouse is hovering over floating star
+                    const dist = Math.hypot(wish.x - mouseX, wish.y - mouseY);
+                    if (dist < wish.size + 15) {
+                        hoveredStar = wish;
+                    }
+                });
+
+                if (hoveredStar) {
+                    popup.querySelector('.wish-popup-sender').textContent = hoveredStar.name;
+                    popup.querySelector('.wish-popup-text').textContent = hoveredStar.text;
+                    popup.style.left = `${hoveredStar.x - 20}px`;
+                    popup.style.top = `${hoveredStar.y - 120}px`;
+                    popup.classList.add('active');
+                } else {
+                    popup.classList.remove('active');
+                }
+            });
+
+            // Click canvas to trigger new wish Modal
+            wallCanvas.addEventListener('click', (e) => {
+                const rect = wallCanvas.getBoundingClientRect();
+                const mouseX = e.clientX - rect.left;
+                const mouseY = e.clientY - rect.top;
+                
+                // Ensure they aren't clicking an active star
+                let clickedStar = false;
+                APP.wishes.forEach(wish => {
+                    if (Math.hypot(wish.x - mouseX, wish.y - mouseY) < wish.size + 15) {
+                        clickedStar = true;
+                    }
+                });
+                
+                if (!clickedStar) {
+                    openWishModal();
+                }
+            });
+
+            // Wishing Wall Animate loop
+            function animateWall() {
+                wallCtx.clearRect(0, 0, wallCanvas.width, wallCanvas.height);
+                
+                APP.wishes.forEach(wish => {
+                    // Float upward
+                    wish.y -= wish.speed;
+                    // Recirculate if floats off the top boundary
+                    if (wish.y < -20) {
+                        wish.y = wallCanvas.height + 20;
+                        wish.x = Math.random() * wallCanvas.width;
+                    }
+                    
+                    // Draw Star Glow Aura
+                    const gradient = wallCtx.createRadialGradient(
+                        wish.x, wish.y, 1, 
+                        wish.x, wish.y, wish.size * 3.5
+                    );
+                    gradient.addColorStop(0, '#ffffff');
+                    gradient.addColorStop(0.2, wish.color);
+                    gradient.addColorStop(1, 'transparent');
+                    
+                    wallCtx.beginPath();
+                    wallCtx.fillStyle = gradient;
+                    wallCtx.arc(wish.x, wish.y, wish.size * 3.5, 0, Math.PI * 2);
+                    wallCtx.fill();
+                    
+                    // Draw core particle
+                    wallCtx.beginPath();
+                    wallCtx.fillStyle = '#ffffff';
+                    wallCtx.arc(wish.x, wish.y, wish.size * 0.75, 0, Math.PI * 2);
+                    wallCtx.fill();
+                });
+                
+                animationId = requestAnimationFrame(animateWall);
+            }
+            animateWall();
+        }
+
+        /* === INTERACTIVE 3D ENVELOPE & CONFETTI === */
+        function openEnvelope() {
+            const envelope = document.getElementById('envelope');
+            if (envelope.classList.contains('open')) return;
+            
+            envelope.classList.add('open');
+            
+            // Trigger Confetti blast around envelope!
+            triggerConfetti();
+            
+            // Auto play chime audio on user click interaction
+            playChimeArpeggio();
+            
+            // Show action sheet elements
+            setTimeout(() => {
+                document.getElementById('recipient-actions').classList.add('show');
+            }, 600);
+        }
+
+        function triggerConfetti() {
+            const canvas = document.getElementById('stars-canvas');
+            const ctx = canvas.getContext('2d');
+            const width = canvas.width;
+            const height = canvas.height;
+
+            const particles = [];
+            const colors = ['#9f7aea', '#ed64a6', '#4facfe', '#ffb199', '#38ef7d', '#facc15'];
+
+            // Populate confetti burst
+            for (let i = 0; i < 90; i++) {
+                particles.push({
+                    x: width / 2 + (Math.random() - 0.5) * 100,
+                    y: height / 2 + 100,
+                    size: Math.random() * 8 + 4,
+                    color: colors[Math.floor(Math.random() * colors.length)],
+                    speedX: (Math.random() - 0.5) * 15,
+                    speedY: -Math.random() * 16 - 8,
+                    gravity: 0.45,
+                    rotation: Math.random() * Math.PI,
+                    rotationSpeed: (Math.random() - 0.5) * 0.2
+                });
+            }
+
+            function drawConfetti() {
+                if (particles.length === 0) return;
+                
+                // Fade effect on drawing canvas
+                ctx.fillStyle = 'rgba(7, 7, 20, 0.2)';
+                ctx.fillRect(0, 0, width, height);
+
+                for (let i = particles.length - 1; i >= 0; i--) {
+                    const p = particles[i];
+                    p.x += p.speedX;
+                    p.y += p.speedY;
+                    p.speedY += p.gravity;
+                    p.rotation += p.rotationSpeed;
+
+                    ctx.save();
+                    ctx.translate(p.x, p.y);
+                    ctx.rotate(p.rotation);
+                    ctx.fillStyle = p.color;
+                    ctx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size);
+                    ctx.restore();
+
+                    // Remove if fallen below screen
+                    if (p.y > height + 20) {
+                        particles.splice(i, 1);
+                    }
+                }
+                requestAnimationFrame(drawConfetti);
+            }
+            drawConfetti();
+        }
+
+        /* === WEB AUDIO SYNTHESIZER (PASSIVE SOUND) === */
+        function toggleChimes() {
+            const btn = document.getElementById('audio-text');
+            const icon = document.getElementById('audio-icon');
+            
+            if (APP.audioPlaying) {
+                // Stop Chimes
+                clearInterval(APP.audioTimer);
+                APP.audioPlaying = false;
+                btn.textContent = "Enable Ambient Sound";
+                icon.textContent = "🔈";
+            } else {
+                // Init & Play Chimes
+                APP.audioPlaying = true;
+                btn.textContent = "Playing Ambient Chimes";
+                icon.textContent = "🔊";
+                
+                // Continuous arpeggiator every 2.5 seconds
+                playChimeArpeggio();
+                APP.audioTimer = setInterval(playChimeArpeggio, 2500);
+            }
+        }
+
+        function playChimeArpeggio() {
+            if (!APP.audioPlaying && APP.audioCtx) return;
+            
+            // Lazy load audio context
+            if (!APP.audioCtx) {
+                APP.audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            }
+
+            const ctx = APP.audioCtx;
+            if (ctx.state === 'suspended') {
+                ctx.resume();
+            }
+
+            // Pentatonic premium scale: C4, D4, E4, G4, A4, C5, D5, E5, G5, A5
+            const scale = [261.63, 293.66, 329.63, 392.00, 440.00, 523.25, 587.33, 659.25, 783.99, 880.00];
+            const now = ctx.currentTime;
+            
+            // Play 4 random sweet high notes in a sequence (arpeggio)
+            const noteCount = 4;
+            let noteTime = now;
+            
+            for (let i = 0; i < noteCount; i++) {
+                const randFreq = scale[Math.floor(Math.random() * scale.length)];
+                
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                
+                // Soft triangle waveform for clean chimes
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(randFreq, noteTime);
+                
+                // Fade in/out envelope
+                gain.gain.setValueAtTime(0, noteTime);
+                gain.gain.linearRampToValueAtTime(0.2, noteTime + 0.05);
+                gain.gain.exponentialRampToValueAtTime(0.0001, noteTime + 1.2);
+                
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                
+                osc.start(noteTime);
+                osc.stop(noteTime + 1.3);
+                
+                // Delay next note slightly
+                noteTime += 0.15 + Math.random() * 0.15;
+            }
+        }
+
+        /* === MODALS LOGIC === */
+        function openWishModal() {
+            document.getElementById('wish-modal').classList.add('active');
+        }
+
+        function closeWishModal() {
+            document.getElementById('wish-modal').classList.remove('active');
+            document.getElementById('wish-form').reset();
+        }
+
+        function openCardWizard() {
+            APP.activeWizardStep = 1;
+            renderWizardStep();
+            
+            // Populates dynamic suggestion panel with default birthday wishes
+            populatePresets('Birthday');
+            
+            document.getElementById('card-modal').classList.add('active');
+        }
+
+        function closeCardWizard() {
+            document.getElementById('card-modal').classList.remove('active');
+        }
+
+        /* === WISHING SKYSCHEME SUBMISSIONS === */
+        function selectWishColor(element, colorHex) {
+            document.querySelectorAll('.color-grid .color-bubble').forEach(el => el.classList.remove('selected'));
+            element.classList.add('selected');
+            APP.selectedWishColor = colorHex;
+        }
+
+        function submitWish(e) {
+            e.preventDefault();
+            const nameInput = document.getElementById('wish-name').value.trim();
+            const textInput = document.getElementById('wish-text').value.trim();
+            
+            if (!nameInput || !textInput) return;
+
+            // Generate floating star onto the wishes canvas array
+            APP.wishes.push({
+                x: Math.random() * (wallCanvas.width - 40) + 20,
+                y: wallCanvas.height + 20,
+                name: nameInput,
+                text: textInput,
+                color: APP.selectedWishColor,
+                size: Math.floor(Math.random() * 5) + 5,
+                speed: 0.15 + Math.random() * 0.25
+            });
+
+            closeWishModal();
+            
+            // Soft confirmation alert
+            setTimeout(() => {
+                alert(`✨ Thank you, ${nameInput}! Your wishing star has been released into the digital cosmos.`);
+            }, 300);
+        }
+
+        /* === GREETING CARD WIZARD MODULE === */
+        function selectOccasion(occ, emo, cardEl) {
+            document.querySelectorAll('#wizard-panel-1 .choice-card').forEach(el => el.classList.remove('selected'));
+            cardEl.classList.add('selected');
+            
+            APP.cardOccasion = occ;
+            APP.cardEmoji = emo;
+            
+            // Update preset guidelines
+            populatePresets(occ);
+            updateLivePreview();
+        }
+
+        function populatePresets(occ) {
+            const container = document.getElementById('wishes-preset-scroll');
+            container.innerHTML = '';
+            
+            const wishes = PRESET_WISHES[occ] || PRESET_WISHES['Warm Wishes'];
+            wishes.forEach(wish => {
+                const item = document.createElement('div');
+                item.className = 'suggestion-item';
+                item.textContent = wish;
+                item.onclick = () => {
+                    document.getElementById('card-message').value = wish;
+                    APP.cardMessage = wish;
+                    updateLivePreview();
+                };
+                container.appendChild(item);
+            });
+        }
+
+        function selectVisualTheme(theme, cardEl) {
+            document.querySelectorAll('#wizard-panel-3 .choice-card').forEach(el => el.classList.remove('selected'));
+            cardEl.classList.add('selected');
+            
+            APP.cardTheme = theme;
+            updateLivePreview();
+        }
+
+        function updateLivePreview() {
+            // Read inputs
+            APP.cardTo = document.getElementById('card-to').value.trim();
+            APP.cardMessage = document.getElementById('card-message').value.trim();
+            APP.cardFrom = document.getElementById('card-from').value.trim();
+            
+            // Apply Occasion Upper Case
+            document.getElementById('preview-occ').textContent = (APP.cardTo ? `FOR ${APP.cardTo}` : APP.cardOccasion).toUpperCase();
+            document.getElementById('preview-emo').textContent = APP.cardEmoji;
+            document.getElementById('preview-txt').textContent = APP.cardMessage || "Type your message in Step 2...";
+            document.getElementById('preview-sig').textContent = APP.cardFrom ? `From: ${APP.cardFrom}` : "";
+            
+            // Theme Background apply
+            document.getElementById('wizard-live-preview').style.background = `var(--theme-${APP.cardTheme})`;
+        }
+
+        function renderWizardStep() {
+            // Hide all panels
+            for (let i = 1; i <= 4; i++) {
+                document.getElementById(`wizard-panel-${i}`).classList.remove('active');
+                document.getElementById(`step-${i}-indicator`).className = 'wizard-step';
+            }
+            
+            // Mark indicators
+            for (let i = 1; i < APP.activeWizardStep; i++) {
+                document.getElementById(`step-${i}-indicator`).classList.add('completed');
+            }
+            document.getElementById(`step-${APP.activeWizardStep}-indicator`).classList.add('active');
+
+            // Show active panel
+            document.getElementById(`wizard-panel-${APP.activeWizardStep}`).classList.add('active');
+            
+            // Configure Control buttons visibility/text
+            const prevBtn = document.getElementById('btn-wizard-prev');
+            const nextBtn = document.getElementById('btn-wizard-next');
+            
+            if (APP.activeWizardStep === 1) {
+                prevBtn.style.visibility = 'hidden';
+                nextBtn.textContent = 'Continue';
+            } else if (APP.activeWizardStep === 4) {
+                prevBtn.style.visibility = 'hidden';
+                nextBtn.textContent = 'Done';
+            } else {
+                prevBtn.style.visibility = 'visible';
+                nextBtn.textContent = APP.activeWizardStep === 3 ? 'Generate Card ✨' : 'Continue';
+            }
+        }
+
+        function wizardStepForward() {
+            if (APP.activeWizardStep === 1) {
+                APP.activeWizardStep = 2;
+                renderWizardStep();
+            } else if (APP.activeWizardStep === 2) {
+                // Validation Step 2
+                const to = document.getElementById('card-to').value.trim();
+                const msg = document.getElementById('card-message').value.trim();
+                if (!to || !msg) {
+                    alert("Please fill in who this card is for and write a personal message.");
+                    return;
+                }
+                APP.activeWizardStep = 3;
+                renderWizardStep();
+                updateLivePreview();
+            } else if (APP.activeWizardStep === 3) {
+                // Generate shareable link
+                generateCardSharingLink();
+                APP.activeWizardStep = 4;
+                renderWizardStep();
+            } else if (APP.activeWizardStep === 4) {
+                // Finish wizard
+                closeCardWizard();
+            }
+        }
+
+        function wizardStepBack() {
+            if (APP.activeWizardStep > 1) {
+                APP.activeWizardStep--;
+                renderWizardStep();
+            }
+        }
+
+        /* === URL SHAREABLE LINK ENCODER === */
+        function generateCardSharingLink() {
+            const cardObj = {
+                occ: APP.cardOccasion,
+                emo: APP.cardEmoji,
+                to: APP.cardTo,
+                msg: APP.cardMessage,
+                from: APP.cardFrom,
+                theme: APP.cardTheme
+            };
+            
+            // Base64 encode JSON to ensure URL compatibility & privacy
+            const encodedCard = btoa(unescape(encodeURIComponent(JSON.stringify(cardObj))));
+            const originUrl = window.location.href.split('?')[0];
+            const sharingUrl = `${originUrl}?card=${encodedCard}`;
+            
+            // Render URL link into form
+            const linkInput = document.getElementById('generated-card-link');
+            linkInput.textContent = sharingUrl;
+            
+            // Reset copy button status
+            const copyBtn = document.getElementById('btn-copy-link');
+            copyBtn.textContent = "📋 Copy";
+            copyBtn.className = "btn btn-primary";
+        }
+
+        function copyCardLink() {
+            const linkInput = document.getElementById('generated-card-link').textContent;
+            navigator.clipboard.writeText(linkInput).then(() => {
+                const copyBtn = document.getElementById('btn-copy-link');
+                copyBtn.textContent = "✓ Copied!";
+                copyBtn.className = "btn btn-primary";
+                copyBtn.style.background = "var(--success)";
+            }).catch(err => {
+                console.error("Could not copy card link automatically: ", err);
+            });
+        }
+
+        /* === UTILITY NAVIGATION === */
+        function resetToWall() {
+            // Remove URL parameter
+            window.history.replaceState({}, document.title, window.location.pathname);
+            // Hide recipient view and show main page elements
+            document.getElementById('recipient-view').style.display = 'none';
+            document.getElementById('portal-view').style.display = 'block';
+            
+            document.getElementById('nav-make-wish').style.display = 'inline-flex';
+            document.getElementById('nav-create-card').style.display = 'inline-flex';
+            
+            // Revive Canvas resizing
+            setTimeout(() => {
+                const rect = wallCanvas.parentNode.getBoundingClientRect();
+                wallCanvas.width = rect.width;
+                wallCanvas.height = rect.height;
+            }, 100);
+        }
+    </script>
+</body>
+</html>
