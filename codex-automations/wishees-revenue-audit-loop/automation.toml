@@ -7,4 +7,4 @@ status = "ACTIVE"
 rrule = "FREQ=MINUTELY;INTERVAL=15"
 target_thread_id = "019e5e9d-7e26-7693-8d0a-b45bcb1475e8"
 created_at = 1779706011086
-updated_at = 1779714530176
+updated_at = 1779716513198
