@@ -7,3 +7,4 @@
 | `resolve-stale-sentry-issues` | Resolve stale Sentry issues | cron | PAUSED | [automation.toml](resolve-stale-sentry-issues/automation.toml) |
 | `sentry-jira-cursor-triage-loop` | Sentry Jira Cursor Triage Loop | heartbeat | ACTIVE | [automation.toml](sentry-jira-cursor-triage-loop/automation.toml) |
 | `sync-codex-automations-to-thiennp-github-io` | Sync Codex automations to thiennp.github.io | cron | ACTIVE | [automation.toml](sync-codex-automations-to-thiennp-github-io/automation.toml) |
+| `wishees-revenue-audit-loop` | Wishees Revenue Audit Loop | heartbeat | ACTIVE | [automation.toml](wishees-revenue-audit-loop/automation.toml) |
