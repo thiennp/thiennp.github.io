@@ -3,11 +3,11 @@ id = "refresh-thiennp-dependabot-html-report"
 kind = "cron"
 name = "Refresh thiennp Dependabot HTML report"
 prompt = "Refresh the local Dependabot HTML report for thiennp.github.io. Run `node /Users/thien.nguyen/.codex/reports/thiennp-github-io-dependabot-report/update-report.mjs` from `/Users/thien.nguyen/thiennp.github.io`, then verify `/Users/thien.nguyen/.codex/reports/thiennp-github-io-dependabot-report/dependabot-report.html` exists and reflects the current npm audit totals. Also verify `/Users/thien.nguyen/.codex/reports/thiennp-github-io-dependabot-report/automation-status.json` was updated by the run and contains the current automation status, timestamps, audit total, and any error. Keep the report local; do not commit or push unless explicitly asked."
-status = "ACTIVE"
+status = "PAUSED"
 rrule = "FREQ=HOURLY;INTERVAL=1"
 model = "gpt-5-codex"
 reasoning_effort = "minimal"
 execution_environment = "local"
 cwds = ["/Users/thien.nguyen/thiennp.github.io"]
 created_at = 1779776502973
-updated_at = 1779776584648
+updated_at = 1779780544005
