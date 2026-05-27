@@ -3,11 +3,11 @@ id = "resolve-stale-sentry-issues"
 kind = "cron"
 name = "Resolve stale Sentry issues"
 prompt = "Open or use an authenticated Google Chrome/Sentry session for https://check24-energie.sentry.io/issues/?project=1837965&project=4508879690792960&project=4511296882540544&query=is%3Aunresolved&referrer=issue-list&sort=freq&statsPeriod=90d. For the CHECK24 Energie organization, find unresolved issues in project IDs 1837965, 4508879690792960, and 4511296882540544 whose API lastSeen timestamp is strictly older than 1 day. Assign each matching issue to Thien Nguyen and resolve it. Continue in safe batches until the same scoped stale-unresolved query returns no issues older than 1 day. Do not print, store, or transmit Sentry cookies, tokens, passwords, OTPs, passkey secrets, or raw credential material. Summarize the cutoff time used, how many issues were assigned/resolved, the final remaining count, and any blockers."
-status = "PAUSED"
+status = "ACTIVE"
 rrule = "FREQ=DAILY;BYHOUR=14;BYMINUTE=0;BYSECOND=0"
 model = "gpt-5.4"
 reasoning_effort = "medium"
 execution_environment = "local"
 cwds = ["/Users/thien.nguyen/thiennp.github.io/codex-automations"]
 created_at = 1779262606804
-updated_at = 1779349795942
+updated_at = 1779915181565
