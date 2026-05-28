@@ -15,7 +15,7 @@ The public site navigation includes an `Automations` link to `codex-automations/
 - `resolve-stale-sentry-issues` - Resolve stale Sentry issues: cron automation for assigning and resolving Sentry issues stale for >1 day.
 - `sentry-jira-cursor-triage-loop` - Sentry Jira Cursor Triage Loop: heartbeat automation for Sentry triage + Jira ticket creation workflow.
 - `sync-codex-automations-to-thiennp-github-io` - Sync Codex automations to thiennp.github.io: cron automation that syncs local Codex automation definitions back into this repository.
-- `wishees-revenue-audit-loop` - Wishees revenue audit loop: heartbeat automation for live-site checks, deploy verification, and small safe improvements.
+- `wishees-revenue-audit-loop` - Wishees Product Quality Loop: heartbeat automation for product-quality loops (manual QA + small safe fixes).
 
 ## Layout
 
