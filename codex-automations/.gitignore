@@ -1,7 +1,7 @@
-# Export folder should only contain `*/automation.toml` plus top-level docs.
-# Ignore any accidental local artifacts.
-**/memory.md
-**/history-dashboard/
+#
+# Codex automation exports should stay portable and secret-free.
+# Ignore generated runtime artifacts produced by automation runs.
+#
+
+**/price-history.json
 **/index.html
-*.backup-*/
-.gemini-report-ui/
