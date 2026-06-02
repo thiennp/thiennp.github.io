@@ -6,6 +6,23 @@ These files are intended for reference and restoration on another device. They m
 
 The public site navigation includes an `Automations` link to `codex-automations/`, and the automation index links directly to every exported definition.
 
+## Shared Reporting Contract
+
+Every automation should report to the Agent Report page at the start of a run or heartbeat, after major step completion, when blocked or paused, and at the final state.
+
+At the start of each automation, run this first so the report server is available without producing an extra autostart message:
+
+```bash
+AGENT_REPORT_SEND_STATUS=0 /Users/thien.nguyen/thiennp.github.io/agent-report/scripts/ensure-agent-report-server.sh
+```
+
+Use `automationName`, `title`, `status`, and `text` when sending to `ws://localhost:3100/stream`. Keep `source` as `terminal` or `browser`; do not put the automation name in `source`.
+
+```bash
+cd /Users/thien.nguyen/thiennp.github.io/agent-report
+AGENT_REPORT_WS=ws://localhost:3100/stream npm run send -- --automation-name "<automation name>" --title "<step title>" --status <running|success|warning|blocked|error|pending|info> "<concise update>"
+```
+
 ## Automations
 
 - `check24-package-audit-extractor` - CHECK24 package audit extractor: cron automation for rechecking the Power package-audit dashboard and exporting details to `~/sec.check24.de.json`.

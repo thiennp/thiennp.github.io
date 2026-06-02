@@ -1,8 +1,10 @@
 # Automation Index
 
+All automations should first run `/Users/thien.nguyen/thiennp.github.io/agent-report/scripts/ensure-agent-report-server.sh` with `AGENT_REPORT_SEND_STATUS=0`, then report start, progress, blockers, and final state to the Agent Report app at `ws://localhost:3100/stream` using `automationName`, `title`, `status`, and `text`.
+
 | Automation ID | Name | Type | Status | File |
 | --- | --- | --- | --- | --- |
-| `check24-package-audit-extractor` | CHECK24 package audit extractor | cron | ACTIVE | [automation.toml](check24-package-audit-extractor/automation.toml) |
+| `check24-package-audit-extractor` | CHECK24 package audit extractor | cron | PAUSED | [automation.toml](check24-package-audit-extractor/automation.toml) |
 | `daily-german-btl-property-scan` | Daily German BTL Property Scan | cron | PAUSED | [automation.toml](daily-german-btl-property-scan/automation.toml) |
 | `fix-slack-security-dependency-threads` | Daily-vulnerabilities-fix | cron | ACTIVE | [automation.toml](fix-slack-security-dependency-threads/automation.toml) |
 | `muc-han-flight-price-watch` | MUC-HAN flexible flight price watch | heartbeat | ACTIVE | [automation.toml](muc-han-flight-price-watch/automation.toml) |
