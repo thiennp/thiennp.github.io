@@ -15,13 +15,13 @@ Item-finished reports are mandatory. Whenever a ticket, PR, vulnerability, listi
 At the start of each automation, run this first so the report server is available without producing an extra autostart message:
 
 ```bash
-AGENT_REPORT_SEND_STATUS=0 /Users/thiennguyen/thiennp.github.io/agent-report/scripts/ensure-agent-report-server.sh
+AGENT_REPORT_SEND_STATUS=0 /Users/thien.nguyen/thiennp.github.io/agent-report/scripts/ensure-agent-report-server.sh
 ```
 
 Use `automationName`, `title`, `status`, and `text` when sending to `ws://localhost:3100/stream`. Keep `source` as `terminal` or `browser`; do not put the automation name in `source`.
 
 ```bash
-cd /Users/thiennguyen/thiennp.github.io/agent-report
+cd /Users/thien.nguyen/thiennp.github.io/agent-report
 AGENT_REPORT_WS=ws://localhost:3100/stream npm run send -- --automation-name "<automation name>" --title "<item or step title>" --status <running|success|warning|blocked|error|pending|info> "<concise update>"
 ```
 
@@ -33,7 +33,7 @@ AGENT_REPORT_WS=ws://localhost:3100/stream npm run send -- --automation-name "<a
 - `fix-slack-security-dependency-threads` - Daily-vulnerabilities-fix: cron automation for daily security dashboard scan/fix + Jira/PR tracking.
 - `hourly-bitbucket-dependency-pr-cleanup` - Hourly assigned Bitbucket PR review: hourly review automation for Bitbucket pull requests assigned to or requiring review from Thien Nguyen.
 - `sentry-jira-cursor-triage-loop` - Sentry Jira Cursor Triage Loop: heartbeat automation for Sentry triage + Jira ticket creation workflow.
-- `sync-codex-automations-to-thiennp-github-io` - Sync Codex automations with thiennp.github.io: cron automation that keeps local and exported automation definitions synchronized in both directions.
+- `sync-codex-automations-to-thiennp-github-io` - Sync Codex automations to thiennp.github.io: cron automation that keeps local and exported automation definitions synchronized in both directions.
 
 ## Layout
 
