@@ -27,6 +27,7 @@ AGENT_REPORT_WS=ws://localhost:3100/stream npm run send -- --automation-name "<a
 
 ## Automations
 
+- `agent-report-server-guard` - Agent Report server guard: cron automation that checks every 30 minutes and starts the Agent Report server if it is down.
 - `check24-package-audit-extractor` - CHECK24 package audit extractor: cron automation for rechecking the Power package-audit dashboard and exporting details to `~/sec.check24.de.json`.
 - `continue-nrg-readme-sweep` - Continue NRG README sweep: heartbeat automation to continue the NRG Jira/MR documentation sweep.
 - `fix-slack-security-dependency-threads` - Daily-vulnerabilities-fix: cron automation for daily security dashboard scan/fix + Jira/PR tracking.
