@@ -1,0 +1,10 @@
+version = 1
+id = "automation-improvement-review-loop"
+kind = "heartbeat"
+name = "Automation improvement review loop"
+prompt = "Continue the Automation Improvement Review Loop for automation change requests in this thread.\n\nWhen there is an explicit request to improve, update, refactor, clarify, redesign, or otherwise change an existing Codex automation, follow the `automation-improvement-review-loop` skill exactly: read the target automation, capture Thien's requirement, obtain the Claude AI proposal, obtain Cursor Agent critique and update, obtain Claude AI's second critique and update, obtain Cursor Agent's final critique, synthesize the final automation, validate it, save it under `~/.codex/automations/<automation_id>/automation.toml`, sync it to `/Users/thien.nguyen/thiennp.github.io/codex-automations/`, update README/index metadata when needed, and commit/push the shared repo when sync changes are safe.\n\nAt the start of every heartbeat, ensure the Agent Report server is running with `AGENT_REPORT_SEND_STATUS=0 /Users/thien.nguyen/thiennp.github.io/agent-report/scripts/ensure-agent-report-server.sh`, then send a start report to `ws://localhost:3100/stream` using automationName `Automation improvement review loop`. Report major step completion, every individual automation/file/review item finished, blockers, skipped review-loop participants with concrete reasons, validation results, sync status, commit/push result, and final state.\n\nIf there is no pending explicit automation-change request in this thread, do not modify automation files. Verify whether any prior review-loop work from this thread remains unsynced or unreported; sync/report only that pending work, then state that the loop is active and waiting for the next automation-change request."
+status = "ACTIVE"
+rrule = "FREQ=MINUTELY;INTERVAL=5"
+target_thread_id = "019e8c3a-961b-7350-99f8-67adec1955a9"
+created_at = 1780469186302
+updated_at = 1780469186302
