@@ -1,0 +1,37 @@
+---
+description: Require Claude and Cursor critique loops before saving Codex automation improvements.
+globs:
+alwaysApply: true
+---
+# Automation Improvement Review Loop
+
+When Thien asks to improve, update, refactor, clarify, redesign, or otherwise
+change a Codex automation, follow this workflow:
+
+1. Read the current automation content and the exact new requirement.
+2. Give the current automation and requirement to Claude AI and ask Claude AI to
+   provide an updated automation proposal, not only feedback.
+3. Send Claude AI's updated proposal to Cursor Agent. Ask Cursor Agent to
+   criticize it for ambiguity, missing gates, unsafe ownership, conflicting
+   instructions, and practical execution issues, then return an improved
+   proposal.
+4. Send Cursor Agent's proposal back to Claude AI. Ask Claude AI to criticize it
+   and return another improved proposal.
+5. Send Claude AI's second proposal back to Cursor Agent. Ask Cursor Agent to
+   provide final critique notes and, when useful, a final edited proposal.
+6. Let Codex make the final decision, resolve conflicts, apply the final
+   automation update, validate syntax/metadata, save it, and sync it.
+
+Ownership rules:
+
+- Codex remains the final editor and synchronization owner.
+- Claude AI and Cursor Agent are reviewers/proposal generators unless Thien
+  explicitly authorizes a separate manual editing session.
+- If Claude AI or Cursor Agent is unavailable, unauthenticated, times out, or
+  returns unusable output, record that concrete failure and continue only when
+  the user requirement can still be satisfied safely.
+- Save the updated automation in `~/.codex/automations/<automation_id>/automation.toml`.
+- Sync changed automations to `/Users/thien.nguyen/thiennp.github.io/codex-automations/`
+  when the mirror exists or the automation sync workflow applies.
+- Commit and push the shared `thiennp.github.io` repo when sync changes are made
+  and it is safe to do so.

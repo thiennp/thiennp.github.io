@@ -2,6 +2,7 @@
 
 | Skill ID | Display Name | Purpose | File |
 | --- | --- | --- | --- |
+| `automation-improvement-review-loop` | Automation Improvement Review Loop | Run Claude/Cursor critique loops before saving automation improvements. | [SKILL.md](automation-improvement-review-loop/SKILL.md) |
 | `component-snapshot-tests-codemod` | Component Snapshot Test Codemod | Generate co-located React snapshot tests with repo codemods. | [SKILL.md](component-snapshot-tests-codemod/SKILL.md) |
 | `comprehensive-commit` | Comprehensive Commit Review | Review broad changes before staging and committing. | [SKILL.md](comprehensive-commit/SKILL.md) |
 | `dip-code-quality-audit` | DIP Code Quality Audit | Audit Dependency Inversion Principle violations. | [SKILL.md](dip-code-quality-audit/SKILL.md) |

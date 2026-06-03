@@ -28,6 +28,7 @@ directory so new custom skills can be versioned and reused across machines.
 
 | Skill | Purpose |
 | --- | --- |
+| `automation-improvement-review-loop` | Run Claude/Cursor critique loops before saving automation improvements. |
 | `component-snapshot-tests-codemod` | Generate co-located React snapshot tests with repo codemods. |
 | `comprehensive-commit` | Review broad changes before staging and committing. |
 | `dip-code-quality-audit` | Audit Dependency Inversion Principle violations. |
