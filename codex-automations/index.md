@@ -11,6 +11,6 @@ All automations should first run `/Users/thien.nguyen/thiennp.github.io/agent-re
 | `check24-package-audit-extractor` | CHECK24 package audit extractor | cron | PAUSED | [automation.toml](check24-package-audit-extractor/automation.toml) |
 | `continue-nrg-readme-sweep` | Continue NRG README sweep | heartbeat | PAUSED | [automation.toml](continue-nrg-readme-sweep/automation.toml) |
 | `fix-slack-security-dependency-threads` | Daily-vulnerabilities-fix | cron | ACTIVE | [automation.toml](fix-slack-security-dependency-threads/automation.toml) |
-| `hourly-bitbucket-dependency-pr-cleanup` | Hourly assigned Bitbucket PR review | cron | ACTIVE | [automation.toml](hourly-bitbucket-dependency-pr-cleanup/automation.toml) |
+| `hourly-bitbucket-dependency-pr-cleanup` | Hourly assigned Bitbucket PR review | cron | PAUSED | [automation.toml](hourly-bitbucket-dependency-pr-cleanup/automation.toml) |
 | `sentry-jira-cursor-triage-loop` | Sentry Jira Cursor Triage Loop | heartbeat | PAUSED | [automation.toml](sentry-jira-cursor-triage-loop/automation.toml) |
 | `sync-codex-automations-to-thiennp-github-io` | Sync Codex automations to thiennp.github.io | cron | ACTIVE | [automation.toml](sync-codex-automations-to-thiennp-github-io/automation.toml) |
