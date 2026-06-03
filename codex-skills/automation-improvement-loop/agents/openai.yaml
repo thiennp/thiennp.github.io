@@ -1,0 +1,4 @@
+interface:
+  display_name: "Automation Improvement Loop"
+  short_description: "Revise automations through Claude and Cursor critique passes."
+  default_prompt: "Use $automation-improvement-loop to update this Codex automation through the required Claude and Cursor critique loop, then save and sync the result."
