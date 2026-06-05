@@ -1,0 +1,22 @@
+{"elapsedTime":"00:00:00","currentUserSession":"matrix","coveragePercentage":"1%","activeWorkflow":"cycle 1 starting","identifiedBugs":[]}
+{"elapsedTime":"00:00:09","currentUserSession":"matrix","coveragePercentage":"29%","activeWorkflow":"cycle 1 complete","identifiedBugs":[]}
+{"elapsedTime":"00:00:09","currentUserSession":"matrix","coveragePercentage":"29%","activeWorkflow":"runner stopped at configured bound","identifiedBugs":[]}
+{"elapsedTime":"00:00:03","currentUserSession":"maya+jordan","coveragePercentage":"32%","activeWorkflow":"gift-intent concurrent helper race completed","identifiedBugs":[]}
+{"elapsedTime":"00:00:03","currentUserSession":"matrix","coveragePercentage":"37%","activeWorkflow":"wishlist visibility scope probe completed","identifiedBugs":[]}
+{"elapsedTime":"00:00:05","currentUserSession":"matrix","coveragePercentage":"43%","activeWorkflow":"direct shared wish boundary probe completed","identifiedBugs":[]}
+{"elapsedTime":"00:00:04","currentUserSession":"lina","coveragePercentage":"49%","activeWorkflow":"friend invite boundary probe completed","identifiedBugs":[]}
+{"elapsedTime":"00:00:32","currentUserSession":"matrix","coveragePercentage":"57%","activeWorkflow":"notification permission probe completed","identifiedBugs":[]}
+{"elapsedTime":"00:00:11","currentUserSession":"maya","coveragePercentage":"59%","activeWorkflow":"helper reply notification probe completed","identifiedBugs":[]}
+{"elapsedTime":"00:00:15","currentUserSession":"maya","coveragePercentage":"64%","activeWorkflow":"gift contribution boundary probe completed","identifiedBugs":[]}
+{"elapsedTime":"00:00:09","currentUserSession":"lina+disabled+anonymous","coveragePercentage":"68%","activeWorkflow":"friend mutation permission probe completed","identifiedBugs":[]}
+{"elapsedTime":"00:00:22","currentUserSession":"matrix","coveragePercentage":"75%","activeWorkflow":"outcome permission probe completed","identifiedBugs":[]}
+{"elapsedTime":"00:00:12","currentUserSession":"alex","coveragePercentage":"78%","activeWorkflow":"owner decision race probe completed","identifiedBugs":[]}
+{"elapsedTime":"00:00:04","currentUserSession":"maya","coveragePercentage":"80%","activeWorkflow":"gift-intent same-helper concurrent probe completed","identifiedBugs":[]}
+{"elapsedTime":"00:00:06","currentUserSession":"matrix","coveragePercentage":"83%","activeWorkflow":"payment metadata probe completed","identifiedBugs":[]}
+{"elapsedTime":"00:00:10","currentUserSession":"maya+alex","coveragePercentage":"86%","activeWorkflow":"gift message security probe completed","identifiedBugs":[]}
+{"elapsedTime":"00:00:01","currentUserSession":"maya","coveragePercentage":"89%","activeWorkflow":"affiliate link probe completed","identifiedBugs":[]}
+{"elapsedTime":"00:00:02","currentUserSession":"maya","coveragePercentage":"92%","activeWorkflow":"temporary eBay affiliate probe completed","identifiedBugs":[]}
+{"elapsedTime":"00:00:01","currentUserSession":"jordan","coveragePercentage":"93%","activeWorkflow":"jordan fulfill probe submitted","identifiedBugs":[]}
+{"elapsedTime":"00:00:01","currentUserSession":"jordan","coveragePercentage":"93%","activeWorkflow":"jordan fulfill probe submitted","identifiedBugs":[]}
+{"elapsedTime":"00:00:01","currentUserSession":"matrix","coveragePercentage":"93%","activeWorkflow":"friend snapshot completed","identifiedBugs":[]}
+{"elapsedTime":"00:00:02","currentUserSession":"matrix","coveragePercentage":"93%","activeWorkflow":"cleanup-only completed","identifiedBugs":[]}

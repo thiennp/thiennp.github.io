@@ -1,0 +1,54 @@
+---
+description: Resolve self-service blockers instead of stopping when Codex can safely fix the issue itself
+alwaysApply: true
+---
+
+# Autonomous Blocker Resolution
+
+When work hits a blocker, first decide whether Codex can resolve it with the
+available tools, filesystem access, terminal, network access, or existing app
+connectors. If yes, do not stop at a blocker report. Fix it, verify the fix,
+and continue the original task.
+
+## Self-Resolvable Blockers
+
+Treat these as work to perform, not reasons to stop:
+
+- Missing local applications, CLIs, runtimes, packages, browser binaries, or
+  other dependencies that can be installed from the terminal.
+- Missing `node_modules`, virtual environments, generated files, build outputs,
+  snapshots, lockfile refreshes, or package-manager setup.
+- Failing commands where the error points to a concrete local setup step,
+  missing dependency, stale cache, unsupported port, absent browser, or
+  unstarted service.
+- Local environment setup that can be completed without secrets, paid access,
+  destructive changes, or ambiguous product decisions.
+
+Prefer the least invasive fix that unblocks the task: project-local installs
+before global installs, existing package-manager scripts before custom setup,
+and documented repo workflows before ad hoc commands.
+
+## Required Behavior
+
+1. Identify the blocker from command output, logs, or missing-file evidence.
+2. Attempt the concrete fix yourself when it is safe and reversible.
+3. Re-run the blocked command or an equivalent verification.
+4. Continue the original request after the blocker is cleared.
+5. Mention the blocker and fix briefly in the final response.
+
+## When To Ask Or Stop
+
+Only stop for user input when the blocker requires one of these:
+
+- Credentials, MFA, private tokens, paid accounts, or access the user has not
+  provided.
+- Destructive or high-risk actions such as deleting user data, resetting
+  branches, overwriting unrelated work, or changing production resources.
+- A product, design, legal, financial, or security decision that Codex cannot
+  infer safely from context.
+- A permission boundary imposed by the active environment or tool policy.
+- Repeated failed attempts where the same blocker persists after reasonable
+  diagnosis and at least two distinct fix attempts.
+
+Even then, report the smallest remaining blocker, what was tried, and the next
+specific action needed from the user.

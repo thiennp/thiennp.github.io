@@ -82,6 +82,13 @@ function loadWorkflowState() {
       phase: null,
       url: null,
       source: null,
+      scanRequestId: null,
+      previousSentryKey: null,
+      previousSentryIssueId: null,
+      previousUrl: null,
+      nextSentryKey: null,
+      nextSentryIssueId: null,
+      nextUrl: null,
       updatedAt: null,
     };
   }
@@ -102,6 +109,13 @@ function loadWorkflowState() {
       phase: null,
       url: null,
       source: null,
+      scanRequestId: null,
+      previousSentryKey: null,
+      previousSentryIssueId: null,
+      previousUrl: null,
+      nextSentryKey: null,
+      nextSentryIssueId: null,
+      nextUrl: null,
       updatedAt: new Date().toISOString(),
     };
   }
@@ -114,10 +128,24 @@ let uiState = {
   activeSentryKey: null,
   activeUrl: null,
   activeJiraKeys: [],
+  scanRequestId: null,
+  previousIssueId: null,
+  previousSentryKey: null,
+  previousUrl: null,
+  nextIssueId: null,
+  nextSentryKey: null,
+  nextUrl: null,
+  focusedIssueId: null,
+  activeCardVisible: false,
+  activeCardFocused: false,
   workflowUpdatedAt: null,
   highlightedCount: 0,
+  previousHighlightedCount: 0,
+  nextHighlightedCount: 0,
   sourceScopeHighlighted: false,
   visibleFeedHighlighted: false,
+  previousHighlighted: false,
+  nextHighlighted: false,
   renderedAt: null,
   clientUrl: null,
 };
@@ -185,7 +213,14 @@ function normalizeWorkflowState(input = {}) {
   const title = cleanText(input.title || input.stepTitle, 160);
   const message = cleanText(input.message || input.text || input.body, 600);
   const source = cleanText(input.source, 120);
+  const scanRequestId = cleanText(input.scanRequestId || input.requestId, 120);
   const url = cleanText(input.url || input.evidenceUrl, 600);
+  const previousSentryKey = cleanText(input.previousSentryKey || input.prevSentryKey, 80);
+  const previousSentryIssueId = cleanText(input.previousSentryIssueId || input.prevSentryIssueId || input.previousIssueId || input.prevIssueId, 80);
+  const previousUrl = cleanText(input.previousUrl || input.prevUrl, 600);
+  const nextSentryKey = cleanText(input.nextSentryKey, 80);
+  const nextSentryIssueId = cleanText(input.nextSentryIssueId || input.nextIssueId, 80);
+  const nextUrl = cleanText(input.nextUrl, 600);
   const status = cleanText(input.status, 32) || 'info';
 
   return {
@@ -201,6 +236,13 @@ function normalizeWorkflowState(input = {}) {
     phase,
     url,
     source,
+    scanRequestId,
+    previousSentryKey,
+    previousSentryIssueId,
+    previousUrl,
+    nextSentryKey,
+    nextSentryIssueId,
+    nextUrl,
     updatedAt: cleanText(input.updatedAt || input.checkedAt, 80) || new Date().toISOString(),
   };
 }
@@ -253,10 +295,24 @@ function normalizeUiState(input = {}) {
     activeJiraKeys: Array.isArray(input.activeJiraKeys)
       ? input.activeJiraKeys.map((key) => cleanText(key, 80)).filter(Boolean)
       : [],
+    scanRequestId: cleanText(input.scanRequestId || input.requestId, 120),
+    previousIssueId: cleanText(input.previousIssueId || input.previousSentryIssueId || input.prevIssueId, 80),
+    previousSentryKey: cleanText(input.previousSentryKey || input.prevSentryKey, 120),
+    previousUrl: cleanText(input.previousUrl || input.prevUrl, 600),
+    nextIssueId: cleanText(input.nextIssueId || input.nextSentryIssueId, 80),
+    nextSentryKey: cleanText(input.nextSentryKey, 120),
+    nextUrl: cleanText(input.nextUrl, 600),
+    focusedIssueId: cleanText(input.focusedIssueId, 80),
+    activeCardVisible: input.activeCardVisible === true,
+    activeCardFocused: input.activeCardFocused === true,
     workflowUpdatedAt: cleanText(input.workflowUpdatedAt, 80),
     highlightedCount: Number(input.highlightedCount || 0),
+    previousHighlightedCount: Number(input.previousHighlightedCount || 0),
+    nextHighlightedCount: Number(input.nextHighlightedCount || 0),
     sourceScopeHighlighted: input.sourceScopeHighlighted === true,
     visibleFeedHighlighted: input.visibleFeedHighlighted === true,
+    previousHighlighted: input.previousHighlighted === true,
+    nextHighlighted: input.nextHighlighted === true,
     renderedAt: cleanText(input.renderedAt, 80) || new Date().toISOString(),
     clientUrl: cleanText(input.clientUrl, 600),
   };

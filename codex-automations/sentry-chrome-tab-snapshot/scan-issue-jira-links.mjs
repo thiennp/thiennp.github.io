@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 import { execFileSync } from 'node:child_process';
+import { randomUUID } from 'node:crypto';
 import { closeSync, openSync, readFileSync, renameSync, writeFileSync } from 'node:fs';
 import { basename, dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -16,6 +17,19 @@ const pageTimeoutMs = Number(process.env.SENTRY_ISSUE_JIRA_SCAN_PAGE_TIMEOUT_MS 
 const settleMs = Number(process.env.SENTRY_ISSUE_JIRA_SCAN_SETTLE_MS || 900);
 const uiAckTimeoutMs = Number(process.env.SENTRY_ISSUE_JIRA_SCAN_UI_ACK_TIMEOUT_MS || 10000);
 const uiAckPollMs = Number(process.env.SENTRY_ISSUE_JIRA_SCAN_UI_ACK_POLL_MS || 250);
+const uiAckConsecutiveMatches = Number(process.env.SENTRY_ISSUE_JIRA_SCAN_UI_ACK_CONSECUTIVE_MATCHES || 2);
+const requestedMinChromeDwellMs = Number(process.env.SENTRY_ISSUE_JIRA_SCAN_MIN_CHROME_DWELL_MS || 5000);
+const minChromeDwellMs = Math.max(5000, Number.isFinite(requestedMinChromeDwellMs) ? requestedMinChromeDwellMs : 5000);
+const jiraBaseUrl = String(process.env.SENTRY_TRIAGE_JIRA_BASE_URL || process.env.JIRA_BASE_URL || 'https://c24-energie.atlassian.net').replace(/\/+$/, '');
+const jiraEmail = process.env.SENTRY_TRIAGE_JIRA_EMAIL || process.env.JIRA_EMAIL || process.env.ATLASSIAN_EMAIL || 'thien.nguyen@check24.de';
+const jiraApiToken = process.env.SENTRY_TRIAGE_JIRA_API_TOKEN || process.env.JIRA_API_TOKEN || '';
+const jiraProjectKey = process.env.SENTRY_TRIAGE_JIRA_PROJECT || process.env.JIRA_PROJECT || 'PRE';
+const jiraIssueTypeName = process.env.SENTRY_TRIAGE_JIRA_ISSUE_TYPE || 'Bug';
+const jiraAssigneeAccountId = process.env.SENTRY_TRIAGE_JIRA_ASSIGNEE_ACCOUNT_ID || '712020:98c2de13-71c4-48ae-a98a-3baa7fa11ba2';
+const jiraReporterAccountId = process.env.SENTRY_TRIAGE_JIRA_REPORTER_ACCOUNT_ID || jiraAssigneeAccountId;
+const jiraAssignUnassigned = !/^(0|false|no)$/i.test(String(process.env.SENTRY_TRIAGE_JIRA_ASSIGN_UNASSIGNED || '1'));
+const jiraCreateMissing = !/^(0|false|no)$/i.test(String(process.env.SENTRY_TRIAGE_JIRA_CREATE_MISSING || '1'));
+const jiraDryRun = /^(1|true|yes)$/i.test(String(process.env.SENTRY_TRIAGE_JIRA_DRY_RUN || '0'));
 const source = 'sentry-chrome-tab-snapshot-detail-scan';
 const EXIT = {
   SUCCESS: 0,
@@ -65,6 +79,26 @@ function sleep(ms) {
   Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, ms);
 }
 
+function summarizeChromeDwell(row, startedAtMs, label) {
+  const id = issueIdFrom(row.issueId || row.issueUrl);
+  const processingMs = Math.max(0, Date.now() - startedAtMs);
+  const enforcedSleepMs = Math.max(0, minChromeDwellMs - processingMs);
+  if (enforcedSleepMs > 0) {
+    log(`CHROME_DWELL: keeping ${label} focused for ${enforcedSleepMs}ms to satisfy the ${minChromeDwellMs}ms minimum.`);
+    sleep(enforcedSleepMs);
+  }
+  return {
+    issueId: id,
+    sentryKey: firstShortId(row, id) || id,
+    issueUrl: canonicalIssueUrl(row.issueUrl, id),
+    startedAt: new Date(startedAtMs).toISOString(),
+    processingMs,
+    enforcedSleepMs,
+    totalDwellMs: Math.max(0, Date.now() - startedAtMs),
+    minChromeDwellMs,
+  };
+}
+
 function atomicWriteJson(file, data) {
   const dir = dirname(file);
   const tmp = join(dir, `.${basename(file)}.tmp-${process.pid}-${Date.now()}`);
@@ -90,6 +124,10 @@ function cleanText(value, maxLength = 600) {
   return String(value).replace(/\s+/g, ' ').trim().slice(0, maxLength);
 }
 
+function firstPresent(...values) {
+  return values.find((value) => cleanText(value, 1000));
+}
+
 function issueIdFrom(value) {
   if (value === null || value === undefined) return '';
   const text = String(value);
@@ -104,6 +142,251 @@ function canonicalIssueUrl(value, id = issueIdFrom(value)) {
 
 function jiraUrl(key) {
   return `https://c24-energie.atlassian.net/browse/${key}`;
+}
+
+function jiraAuthConfigured() {
+  return Boolean(jiraBaseUrl && jiraEmail && jiraApiToken && jiraAssigneeAccountId);
+}
+
+function jiraAuthHeader() {
+  return `Basic ${Buffer.from(`${jiraEmail}:${jiraApiToken}`).toString('base64')}`;
+}
+
+function escapeJqlText(value) {
+  return cleanText(value, 160).replace(/\\/g, '\\\\').replace(/"/g, '\\"');
+}
+
+async function jiraRequest(path, {method = 'GET', body} = {}) {
+  if (!jiraAuthConfigured()) {
+    throw new Error('Jira REST credentials are not configured.');
+  }
+  const response = await fetch(`${jiraBaseUrl}${path}`, {
+    method,
+    headers: {
+      accept: 'application/json',
+      authorization: jiraAuthHeader(),
+      ...(body ? {'content-type': 'application/json'} : {}),
+    },
+    body: body ? JSON.stringify(body) : undefined,
+  });
+  const payload = await response.json().catch(() => ({}));
+  if (!response.ok) {
+    const message = payload?.errorMessages?.join('; ') ||
+      Object.values(payload?.errors || {}).join('; ') ||
+      `Jira HTTP ${response.status}`;
+    throw new Error(message);
+  }
+  return payload;
+}
+
+function adfParagraph(text) {
+  return {
+    type: 'paragraph',
+    content: cleanText(text, 1200)
+      ? [{type: 'text', text: cleanText(text, 1200)}]
+      : [],
+  };
+}
+
+function sentryIssueSummary(row, id = issueIdFrom(row.issueId || row.issueUrl)) {
+  const key = firstShortId(row, id);
+  const title = cleanText(row.issueTitle || row.title || row.culprit || 'Unresolved Sentry issue', 180);
+  return `[Sentry] ${key ? `${key}: ` : ''}${title}`.slice(0, 250);
+}
+
+function sentryIssueDescription(row, detailState, id = issueIdFrom(row.issueId || row.issueUrl)) {
+  const url = detailState?.url || canonicalIssueUrl(row.issueUrl, id);
+  const lines = [
+    `Sentry issue: ${url}`,
+    `Short id: ${firstShortId(row, id) || id}`,
+    row.project ? `Project: ${row.project}` : '',
+    row.issueTitle ? `Title: ${row.issueTitle}` : '',
+    row.culprit ? `Culprit: ${row.culprit}` : '',
+    row.eventCount || row.frequency ? `Events/frequency: ${firstPresent(row.eventCount, row.frequency)}` : '',
+    row.userCount ? `Users: ${row.userCount}` : '',
+    row.lastSeenText ? `Last seen: ${row.lastSeenText}` : '',
+    '',
+    'Created automatically because the Sentry detail scan found no attached Jira ticket.',
+  ].filter((line) => line !== '');
+  return {
+    type: 'doc',
+    version: 1,
+    content: lines.map(adfParagraph),
+  };
+}
+
+async function assignJiraTicketIfUnassigned(ticket) {
+  const normalized = normalizeTicket(ticket);
+  if (!normalized || !jiraAssignUnassigned) {
+    return {type: 'assign', key: normalized?.key || '', status: 'skipped'};
+  }
+  if (jiraDryRun) {
+    return {type: 'assign', key: normalized.key, status: 'dry-run', message: 'Would assign if currently unassigned.'};
+  }
+  const issue = await jiraRequest(`/rest/api/3/issue/${encodeURIComponent(normalized.key)}?fields=assignee`);
+  const assignee = issue?.fields?.assignee || null;
+  if (assignee?.accountId) {
+    return {
+      type: 'assign',
+      key: normalized.key,
+      status: 'already-assigned',
+      assignee: cleanText(assignee.displayName || assignee.accountId, 160),
+    };
+  }
+  await jiraRequest(`/rest/api/3/issue/${encodeURIComponent(normalized.key)}/assignee`, {
+    method: 'PUT',
+    body: {accountId: jiraAssigneeAccountId},
+  });
+  return {type: 'assign', key: normalized.key, status: 'assigned', assignee: 'Thien Nguyen'};
+}
+
+async function createJiraTicketForSentry(row, detailState) {
+  if (!jiraCreateMissing) {
+    return {ticket: null, action: {type: 'create', status: 'disabled', projectKey: jiraProjectKey}};
+  }
+  const id = issueIdFrom(row.issueId || row.issueUrl);
+  if (jiraDryRun) {
+    return {
+      ticket: null,
+      action: {
+        type: 'create',
+        status: 'dry-run',
+        projectKey: jiraProjectKey,
+        issueType: jiraIssueTypeName,
+        summary: sentryIssueSummary(row, id),
+      },
+    };
+  }
+  const existing = await findExistingJiraForSentry(row);
+  if (existing) {
+    return {
+      ticket: existing,
+      action: {
+        type: 'create',
+        status: 'deduped-existing',
+        key: existing.key,
+        url: existing.url,
+        projectKey: jiraProjectKey,
+        issueType: jiraIssueTypeName,
+        message: 'Found an existing PRE issue before creating a new one.',
+      },
+    };
+  }
+  const payload = await jiraRequest('/rest/api/3/issue', {
+    method: 'POST',
+    body: {
+      fields: {
+        project: {key: jiraProjectKey},
+        issuetype: {name: jiraIssueTypeName},
+        reporter: {accountId: jiraReporterAccountId},
+        assignee: {accountId: jiraAssigneeAccountId},
+        summary: sentryIssueSummary(row, id),
+        description: sentryIssueDescription(row, detailState, id),
+      },
+    },
+  });
+  const key = cleanText(payload.key, 80);
+  const ticket = normalizeTicket({
+    key,
+    url: key ? jiraUrl(key) : cleanText(payload.self, 1000),
+    text: key || 'Created Jira issue',
+    source: 'jira-created-by-automation',
+  });
+  return {
+    ticket,
+    action: {
+      type: 'create',
+      status: ticket ? 'created' : 'created-without-key',
+      key: ticket?.key || '',
+      url: ticket?.url || cleanText(payload.self, 1000),
+      projectKey: jiraProjectKey,
+      issueType: jiraIssueTypeName,
+      assignee: 'Thien Nguyen',
+    },
+  };
+}
+
+async function findExistingJiraForSentry(row) {
+  const id = issueIdFrom(row.issueId || row.issueUrl);
+  const key = firstShortId(row, id);
+  const terms = [key, id].filter((term) => cleanText(term, 160));
+  for (const term of terms) {
+    const params = new URLSearchParams({
+      jql: `project = ${jiraProjectKey} AND text ~ "${escapeJqlText(term)}" ORDER BY updated DESC`,
+      maxResults: '1',
+      fields: 'key,summary',
+    });
+    const result = await jiraRequest(`/rest/api/3/search/jql?${params.toString()}`);
+    const issue = Array.isArray(result.issues) ? result.issues[0] : null;
+    if (issue?.key) {
+      return normalizeTicket({
+        key: issue.key,
+        url: jiraUrl(issue.key),
+        text: issue.fields?.summary || issue.key,
+        source: 'jira-deduped-by-sentry-text',
+      });
+    }
+  }
+  return null;
+}
+
+async function preflightJiraWrites() {
+  if (jiraDryRun || (!jiraCreateMissing && !jiraAssignUnassigned)) {
+    return {
+      ok: true,
+      dryRun: jiraDryRun,
+      message: jiraDryRun ? 'Jira dry-run enabled; no Jira write endpoints will be called.' : 'Jira writes disabled.',
+    };
+  }
+  if (!jiraAuthConfigured()) {
+    return {
+      ok: false,
+      code: 'jira_auth_missing',
+      message: 'Jira REST credentials or assignee account id are missing.',
+    };
+  }
+  try {
+    const me = await jiraRequest('/rest/api/3/myself');
+    await jiraRequest(`/rest/api/3/project/${encodeURIComponent(jiraProjectKey)}`);
+    return {
+      ok: true,
+      accountId: cleanText(me.accountId, 160),
+      displayName: cleanText(me.displayName, 160),
+      projectKey: jiraProjectKey,
+    };
+  } catch (error) {
+    return {
+      ok: false,
+      code: 'jira_preflight_failed',
+      message: error.message,
+    };
+  }
+}
+
+async function ensureJiraTicketActions(row, detailState, tickets) {
+  const actions = [];
+  const currentTickets = mergeTickets(tickets);
+  if (!jiraAuthConfigured()) {
+    actions.push({
+      type: currentTickets.length ? 'assign' : 'create',
+      status: 'blocked',
+      message: 'Jira REST credentials are not configured.',
+      projectKey: jiraProjectKey,
+    });
+    return {tickets: currentTickets, actions};
+  }
+  if (currentTickets.length) {
+    for (const ticket of currentTickets) {
+      actions.push(await assignJiraTicketIfUnassigned(ticket));
+    }
+    return {tickets: currentTickets, actions};
+  }
+  const created = await createJiraTicketForSentry(row, detailState);
+  actions.push(created.action);
+  return {
+    tickets: mergeTickets(currentTickets, created.ticket ? [created.ticket] : []),
+    actions,
+  };
 }
 
 function normalizeTicket(ticket) {
@@ -302,9 +585,27 @@ async function getReport() {
   return getJson(reportApi);
 }
 
-async function signalWorkflow(row, index, total, message, status = 'active') {
+function workflowNeighbor(row) {
+  if (!row) {
+    return {
+      sentryIssueId: undefined,
+      sentryKey: undefined,
+      url: undefined,
+    };
+  }
+  const id = issueIdFrom(row.issueId || row.issueUrl);
+  return {
+    sentryIssueId: id || undefined,
+    sentryKey: firstShortId(row, id) || undefined,
+    url: id ? canonicalIssueUrl(row.issueUrl, id) : undefined,
+  };
+}
+
+async function signalWorkflow(row, index, total, message, status = 'active', scanRequestId = randomUUID(), context = {}) {
   const id = issueIdFrom(row.issueId || row.issueUrl);
   const key = firstShortId(row, id);
+  const previous = workflowNeighbor(context.previousRow);
+  const next = workflowNeighbor(context.nextRow);
   try {
     const payload = await postJson(workflowApi, {
       status,
@@ -316,6 +617,13 @@ async function signalWorkflow(row, index, total, message, status = 'active') {
       sentryKey: key,
       url: canonicalIssueUrl(row.issueUrl, id),
       source,
+      scanRequestId,
+      previousSentryIssueId: previous.sentryIssueId,
+      previousSentryKey: previous.sentryKey,
+      previousUrl: previous.url,
+      nextSentryIssueId: next.sentryIssueId,
+      nextSentryKey: next.sentryKey,
+      nextUrl: next.url,
     });
     return payload.workflow || null;
   } catch (error) {
@@ -333,23 +641,36 @@ function uiAckMatches(ui, row, workflow, expectedJiraKeys = []) {
     cleanText(ui.activeSentryKey, 120).toUpperCase() === cleanText(key, 120).toUpperCase() ||
     cleanText(ui.activeUrl, 1000).includes(id);
   const sameWorkflow = !workflow?.updatedAt || cleanText(ui.workflowUpdatedAt, 80) === cleanText(workflow.updatedAt, 80);
+  const sameRequest = !workflow?.scanRequestId || cleanText(ui.scanRequestId, 120) === cleanText(workflow.scanRequestId, 120);
   const highlighted = Number(ui.highlightedCount || 0) > 0 && (ui.sourceScopeHighlighted === true || ui.visibleFeedHighlighted === true);
+  const focused = ui.activeCardVisible === true && ui.activeCardFocused === true;
+  const expectsPrevious = Boolean(workflow?.previousSentryIssueId || workflow?.previousSentryKey || workflow?.previousUrl);
+  const expectsNext = Boolean(workflow?.nextSentryIssueId || workflow?.nextSentryKey || workflow?.nextUrl);
+  const previousVisible = !expectsPrevious || ui.previousHighlighted === true || Number(ui.previousHighlightedCount || 0) > 0;
+  const nextVisible = !expectsNext || ui.nextHighlighted === true || Number(ui.nextHighlightedCount || 0) > 0;
   const uiKeys = new Set((Array.isArray(ui.activeJiraKeys) ? ui.activeJiraKeys : []).map((item) => cleanText(item, 80).toUpperCase()));
   const jiraVisible = expectedJiraKeys.every((ticket) => uiKeys.has(cleanText(ticket, 80).toUpperCase()));
-  return sameIssue && sameWorkflow && highlighted && jiraVisible;
+  return sameIssue && sameWorkflow && sameRequest && highlighted && focused && previousVisible && nextVisible && jiraVisible;
 }
 
 async function waitForUiAck(row, workflow, expectedJiraKeys = [], label = 'active issue') {
   const started = Date.now();
   let lastUiState = null;
+  let consecutiveMatches = 0;
   while (Date.now() - started < uiAckTimeoutMs) {
     try {
       const payload = await getJson(uiStateApi);
       lastUiState = payload.ui || null;
       if (uiAckMatches(lastUiState, row, workflow, expectedJiraKeys)) {
-        return lastUiState;
+        consecutiveMatches += 1;
+        if (consecutiveMatches >= Math.max(1, uiAckConsecutiveMatches)) {
+          return lastUiState;
+        }
+      } else {
+        consecutiveMatches = 0;
       }
     } catch (error) {
+      consecutiveMatches = 0;
       lastUiState = {error: error.message};
     }
     sleep(uiAckPollMs);
@@ -358,13 +679,16 @@ async function waitForUiAck(row, workflow, expectedJiraKeys = [], label = 'activ
   throw new UiAckAbort(`UI did not acknowledge/render ${label} for Sentry issue ${id} within ${uiAckTimeoutMs}ms.`, row, lastUiState);
 }
 
-function patchSentryItem(item, id, tickets, checkedAt, detailState, row) {
+function patchSentryItem(item, id, tickets, checkedAt, detailState, row, jiraActions = []) {
   const itemId = issueIdFrom(item?.id || item?.sentryIssueId || item?.issueId || item?.sentryUrl || item?.permalink || item?.url);
   if (itemId !== id) return item;
   const existingTickets = itemTickets(item);
   const mergedTickets = mergeTickets(existingTickets, rowTickets(row), tickets);
   const ticketKeys = mergedTickets.map((ticket) => ticket.key);
   const foundThisRun = mergeTickets(rowTickets(row), tickets).length > 0;
+  const jiraActionBlocked = jiraActions.some((action) => action.status === 'blocked');
+  const jiraCreateDryRun = jiraActions.some((action) => action.type === 'create' && action.status === 'dry-run');
+  const jiraTicketCreated = jiraActions.some((action) => action.type === 'create' && action.status === 'created');
   return {
     ...item,
     jiraTickets: mergedTickets,
@@ -374,20 +698,25 @@ function patchSentryItem(item, id, tickets, checkedAt, detailState, row) {
       href: ticket.url || jiraUrl(ticket.key),
       source: ticket.source,
     })),
-    jiraScanStatus: ticketKeys.length
-      ? (foundThisRun ? 'jira-ticket-found' : 'jira-ticket-known-from-report')
-      : 'no-jira-ticket-found',
+    jiraScanStatus: jiraActionBlocked
+      ? 'jira-action-blocked'
+      : jiraCreateDryRun
+        ? 'jira-create-dry-run'
+        : ticketKeys.length
+          ? (jiraTicketCreated ? 'jira-ticket-created' : (foundThisRun ? 'jira-ticket-found' : 'jira-ticket-known-from-report'))
+          : 'no-jira-ticket-found',
     lastJiraLinkScanAt: checkedAt,
     lastJiraLinkScanUrl: detailState.url || canonicalIssueUrl(row.issueUrl, id),
     lastJiraLinkScanTitle: detailState.title || '',
+    lastJiraAutomationActions: jiraActions,
   };
 }
 
-async function updateReport(row, detailState, checkedAt, results, index, total) {
+async function updateReport(row, detailState, checkedAt, results, index, total, ensuredTickets = [], jiraActions = []) {
   const report = await getReport();
   const id = issueIdFrom(row.issueId || row.issueUrl);
-  const tickets = mergeTickets(rowTickets(row), detailState.tickets);
-  const patchItem = (item) => patchSentryItem(item, id, tickets, checkedAt, detailState, row);
+  const tickets = mergeTickets(rowTickets(row), detailState.tickets, ensuredTickets);
+  const patchItem = (item) => patchSentryItem(item, id, tickets, checkedAt, detailState, row, jiraActions);
   const lastFeed = report.lastSentryFeedSnapshot && typeof report.lastSentryFeedSnapshot === 'object'
     ? report.lastSentryFeedSnapshot
     : {};
@@ -402,8 +731,15 @@ async function updateReport(row, detailState, checkedAt, results, index, total) 
     rowIndex: row.rowIndex || index + 1,
     jiraTicketKeys: tickets.map((ticket) => ticket.key),
     jiraTickets: tickets,
-    status: tickets.length ? 'jira-ticket-found' : 'no-jira-ticket-found',
+    status: jiraActions.some((action) => action.status === 'blocked')
+      ? 'jira-action-blocked'
+      : jiraActions.some((action) => action.type === 'create' && action.status === 'dry-run')
+        ? 'jira-create-dry-run'
+        : jiraActions.some((action) => action.type === 'create' && action.status === 'created')
+          ? 'jira-ticket-created'
+          : (tickets.length ? 'jira-ticket-found' : 'no-jira-ticket-found'),
     authState: detailState.authState || null,
+    jiraActions,
   };
   if (existingIndex >= 0) nextResults[existingIndex] = result;
   else nextResults.push(result);
@@ -427,6 +763,9 @@ async function updateReport(row, detailState, checkedAt, results, index, total) 
       totalIssueCount: total,
       checkedIssueCount: index + 1,
       foundIssueCount: nextResults.filter((item) => item.jiraTicketKeys.length).length,
+      createdJiraIssueCount: nextResults.flatMap((item) => item.jiraActions || []).filter((action) => action.type === 'create' && action.status === 'created').length,
+      assignedJiraIssueCount: nextResults.flatMap((item) => item.jiraActions || []).filter((action) => action.type === 'assign' && action.status === 'assigned').length,
+      jiraDryRun,
       currentIssueId: index + 1 >= total ? null : id,
       currentIssueUrl: index + 1 >= total ? null : canonicalIssueUrl(row.issueUrl, id),
       results: nextResults,
@@ -461,18 +800,77 @@ if (!rows.length) {
 const results = [];
 let workflowSignals = 0;
 let uiAcknowledgements = 0;
+const chromeDwellRecords = [];
 let errors = 0;
 let authAbort = null;
 let uiAckAbort = null;
+const jiraPreflight = await preflightJiraWrites();
+
+if (!jiraPreflight.ok) {
+  const finishedAt = new Date().toISOString();
+  writeStatus({
+    ok: false,
+    status: 'blocked',
+    startedAt,
+    finishedAt,
+    checkedIssueCount: 0,
+    plannedIssueCount: rows.length,
+    foundIssueCount: 0,
+    createdJiraIssueCount: 0,
+    assignedJiraIssueCount: 0,
+    blockedJiraActionCount: 1,
+    jiraDryRun,
+    jiraProjectKey,
+    jiraIssueTypeName,
+    jiraAssignee: 'Thien Nguyen',
+    minChromeDwellMs,
+    chromeDwellRecords,
+    blocker: {
+      type: 'JIRA_PREFLIGHT_FAILURE',
+      code: jiraPreflight.code || 'jira_preflight_failed',
+      message: jiraPreflight.message,
+    },
+    workflowSignals,
+    uiAcknowledgements,
+    focusedUiAcknowledgements: uiAcknowledgements,
+    reportApi,
+    workflowApi,
+    uiStateApi,
+    results,
+  });
+  console.log(JSON.stringify({
+    ok: false,
+    status: 'blocked',
+    checkedIssueCount: 0,
+    plannedIssueCount: rows.length,
+    foundIssueCount: 0,
+    createdJiraIssueCount: 0,
+    assignedJiraIssueCount: 0,
+    blockedJiraActionCount: 1,
+    jiraDryRun,
+    minChromeDwellMs,
+    errorCount: 0,
+    blocker: 'JIRA_PREFLIGHT_FAILURE',
+    workflowSignals,
+    uiAcknowledgements,
+    focusedUiAcknowledgements: uiAcknowledgements,
+  }, null, 2));
+  process.exit(EXIT.PRECONDITION);
+}
 
 try {
   for (const [index, row] of rows.entries()) {
     const id = issueIdFrom(row.issueId || row.issueUrl);
     const url = canonicalIssueUrl(row.issueUrl, id);
     const key = firstShortId(row, id) || id;
+    const workflowContext = {
+      previousRow: rows[index - 1],
+      nextRow: rows[index + 1],
+    };
     let detailState = null;
+    let chromeDwellStartedAt = 0;
     try {
-      const openingWorkflow = await signalWorkflow(row, index, rows.length, `Opening ${key} to check attached Jira tickets.`);
+      const openingWorkflow = await signalWorkflow(row, index, rows.length, `Opening ${key} to check attached Jira tickets.`, 'active', randomUUID(), workflowContext);
       if (openingWorkflow) {
         workflowSignals += 1;
         await waitForUiAck(row, openingWorkflow, [], 'opening highlight');
@@ -480,16 +878,22 @@ try {
       }
       navigateActiveTab(url);
       waitForPage(id);
+      chromeDwellStartedAt = Date.now();
       detailState = extractDetailJiraTickets();
       if (detailState.authState === 'login_or_auth_required') {
         throw new AuthAbort(`Sentry detail page for ${id} requires login/authentication.`, row, detailState);
       }
-      results.splice(0, results.length, ...(await updateReport(row, detailState, new Date().toISOString(), results, index, rows.length)));
-      const found = mergeTickets(rowTickets(row), detailState.tickets).map((ticket) => ticket.key).join(', ') || 'no Jira ticket';
-      const resultWorkflow = await signalWorkflow(row, index, rows.length, `${key}: ${found}. Moving to the next issue.`, 'active');
+      const initialTickets = mergeTickets(rowTickets(row), detailState.tickets);
+      const jiraEnsure = await ensureJiraTicketActions(row, detailState, initialTickets);
+      results.splice(0, results.length, ...(await updateReport(row, detailState, new Date().toISOString(), results, index, rows.length, jiraEnsure.tickets, jiraEnsure.actions)));
+      const found = jiraEnsure.tickets.map((ticket) => ticket.key).join(', ') || 'no Jira ticket';
+      const actionSummary = jiraEnsure.actions
+        .map((action) => [action.type, action.status, action.key].filter(Boolean).join(':'))
+        .join(', ');
+      const resultWorkflow = await signalWorkflow(row, index, rows.length, `${key}: ${found}${actionSummary ? ` (${actionSummary})` : ''}. Moving to the next issue.`, 'active', randomUUID(), workflowContext);
       if (resultWorkflow) {
         workflowSignals += 1;
-        const expectedKeys = mergeTickets(rowTickets(row), detailState.tickets).map((ticket) => ticket.key);
+        const expectedKeys = jiraEnsure.tickets.map((ticket) => ticket.key);
         await waitForUiAck(row, resultWorkflow, expectedKeys, 'Jira scan result');
         uiAcknowledgements += 1;
       }
@@ -518,6 +922,10 @@ try {
         status: 'scan-error',
         error: error.message,
       });
+    } finally {
+      if (chromeDwellStartedAt) {
+        chromeDwellRecords.push(summarizeChromeDwell(row, chromeDwellStartedAt, `${key} (${id})`));
+      }
     }
   }
 } finally {
@@ -530,6 +938,9 @@ try {
 
 const finishedAt = new Date().toISOString();
 const foundIssueCount = results.filter((item) => item.jiraTicketKeys.length).length;
+const createdJiraIssueCount = results.flatMap((item) => item.jiraActions || []).filter((action) => action.type === 'create' && action.status === 'created').length;
+const assignedJiraIssueCount = results.flatMap((item) => item.jiraActions || []).filter((action) => action.type === 'assign' && action.status === 'assigned').length;
+const blockedJiraActionCount = results.flatMap((item) => item.jiraActions || []).filter((action) => action.status === 'blocked').length;
 await postJson(workflowApi, {
   status: authAbort || uiAckAbort || errors ? 'blocked' : 'success',
   step: `${results.length}/${rows.length}`,
@@ -542,7 +953,7 @@ await postJson(workflowApi, {
     ? `${authAbort.message} The scan stopped before writing a false no-ticket result.`
     : uiAckAbort
       ? `${uiAckAbort.message} The scan stopped so the next issue is not opened before the app reflects the current action.`
-    : `Checked ${rows.length} visible Sentry issue(s); found Jira tickets for ${foundIssueCount}; scan errors: ${errors}.`,
+    : `Checked ${rows.length} visible Sentry issue(s); found Jira tickets for ${foundIssueCount}; created Jira tickets: ${createdJiraIssueCount}; assigned Jira tickets: ${assignedJiraIssueCount}; scan errors: ${errors}.`,
   phase: 'jira-link-scan',
   sentryIssueId: authAbort || uiAckAbort ? issueIdFrom((authAbort || uiAckAbort).row?.issueId || (authAbort || uiAckAbort).row?.issueUrl) : undefined,
   sentryKey: authAbort || uiAckAbort ? firstShortId((authAbort || uiAckAbort).row, issueIdFrom((authAbort || uiAckAbort).row?.issueId || (authAbort || uiAckAbort).row?.issueUrl)) : undefined,
@@ -559,6 +970,19 @@ writeStatus({
   checkedIssueCount: results.length,
   plannedIssueCount: rows.length,
   foundIssueCount,
+  createdJiraIssueCount,
+  assignedJiraIssueCount,
+  blockedJiraActionCount,
+  jiraDryRun,
+  jiraProjectKey,
+  jiraIssueTypeName,
+  jiraAssignee: 'Thien Nguyen',
+  jiraPreflight,
+  uiAckConsecutiveMatches,
+  minChromeDwellMs,
+  chromeDwellWaitCount: chromeDwellRecords.filter((record) => record.enforcedSleepMs > 0).length,
+  chromeDwellWaitMs: chromeDwellRecords.reduce((total, record) => total + record.enforcedSleepMs, 0),
+  chromeDwellRecords,
   errorCount: errors,
   blocker: authAbort ? {
     type: 'AUTH_FAILURE',
@@ -574,6 +998,7 @@ writeStatus({
   } : null),
   workflowSignals,
   uiAcknowledgements,
+  focusedUiAcknowledgements: uiAcknowledgements,
   reportApi,
   workflowApi,
   uiStateApi,
@@ -586,10 +1011,20 @@ console.log(JSON.stringify({
   checkedIssueCount: results.length,
   plannedIssueCount: rows.length,
   foundIssueCount,
+  createdJiraIssueCount,
+  assignedJiraIssueCount,
+  blockedJiraActionCount,
+  jiraDryRun,
+  jiraPreflight,
+  uiAckConsecutiveMatches,
+  minChromeDwellMs,
+  chromeDwellWaitCount: chromeDwellRecords.filter((record) => record.enforcedSleepMs > 0).length,
+  chromeDwellWaitMs: chromeDwellRecords.reduce((total, record) => total + record.enforcedSleepMs, 0),
   errorCount: errors,
   blocker: authAbort ? 'AUTH_FAILURE' : (uiAckAbort ? 'UI_ACK_FAILURE' : null),
   workflowSignals,
   uiAcknowledgements,
+  focusedUiAcknowledgements: uiAcknowledgements,
 }, null, 2));
 
 if (authAbort || uiAckAbort) {

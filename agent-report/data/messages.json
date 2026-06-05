@@ -1,0 +1,62 @@
+[
+  {
+    "id": "73af1521-856a-44e1-9a1c-c1073c3e3de9",
+    "text": "Agent report is ready. Send a message from the terminal to see live updates here.",
+    "source": "system",
+    "createdAt": "2026-06-03T12:23:19.714Z"
+  },
+  {
+    "id": "781fc09d-26c4-4ab0-b934-58fc46465415",
+    "automationName": "Sentry Jira Cursor Triage Loop",
+    "title": "7.1 PRE-4399 delegation verified",
+    "status": "warning",
+    "text": "7.1 warning: Cursor implemented/tested PRE-4399 in isolated worktree, but report-data.json direct write is blocked by macOS EPERM; live report row still says handoff only.",
+    "source": "terminal",
+    "createdAt": "2026-06-03T12:23:19.716Z"
+  },
+  {
+    "id": "904cdbbf-d457-42e1-96d2-cd0ce3cc718f",
+    "automationName": "Sentry Jira Cursor Triage Loop",
+    "title": "1 startup gate",
+    "status": "warning",
+    "text": "1 warning: live report validates in Chrome/API, but Agent Report ensure script is missing and direct report-data writes are blocked by EPERM; checking whether round can safely continue; next 1.1.",
+    "source": "terminal",
+    "createdAt": "2026-06-03T12:47:09.521Z"
+  },
+  {
+    "id": "f93c0cc4-a866-4a48-9888-afc35181bc96",
+    "automationName": "Sentry Jira Cursor Triage Loop",
+    "title": "1.1 Server manual refresh running",
+    "status": "running",
+    "text": "1.1 running: live report server started report-only manual refresh; no Jira/PR/Sentry mutations in this server prompt; next monitor completion before step 2.",
+    "source": "terminal",
+    "createdAt": "2026-06-03T12:47:55.105Z"
+  },
+  {
+    "id": "e088a0e1-6188-482a-b629-27acfc4c0bd9",
+    "automationName": "Sentry Jira Cursor Triage Loop",
+    "title": "3 Report data write",
+    "status": "success",
+    "text": "3 success: report-data.json updated from current Sentry/Jira/Bitbucket/Jenkins evidence; active rows PRE-4253 and PRE-4285; removed PRE-4401, PRE-4402, PRE-4399, PRE-4286; next 10 final live-report gate.",
+    "source": "terminal",
+    "createdAt": "2026-06-03T13:01:23.792Z"
+  },
+  {
+    "id": "3297f19b-2eaf-4c57-9d92-a48a963d97b7",
+    "automationName": "Sentry Jira Cursor Triage Loop",
+    "title": "10 Final live-report gate",
+    "status": "running",
+    "text": "10 running: reloading Google Chrome after direct report write; verifying active rows PRE-4253 and PRE-4285 and no stale removed rows.",
+    "source": "terminal",
+    "createdAt": "2026-06-03T13:02:43.342Z"
+  },
+  {
+    "id": "3859145a-cc3e-416b-a786-a6ca19942cdf",
+    "automationName": "Sentry Jira Cursor Triage Loop",
+    "title": "10 Final live-report gate",
+    "status": "success",
+    "text": "10 success: Chrome rendered only PRE-4253 and PRE-4285; PRE-4401/PRE-4402/PRE-4399/PRE-4286 absent from active rows; not paused; next round restarts at step 1.",
+    "source": "terminal",
+    "createdAt": "2026-06-03T13:04:05.864Z"
+  }
+]

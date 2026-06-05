@@ -1,0 +1,58 @@
+{
+  "target": "https://www.wishees.com",
+  "freshStartFolder": "wishees-fresh-start-20260605T102928Z",
+  "browserUserFlows": {
+    "mobileOverflow": {
+      "session": "Maya",
+      "url": "https://www.wishees.com/friends/wishlist?invite=user-12&lang=de",
+      "viewport": "320x680",
+      "documentScrollWidth": 320,
+      "bodyScrollWidth": 320,
+      "clientWidth": 320,
+      "overflowPx": 0,
+      "overflowingElements": [],
+      "consoleWarningsOrErrors": [],
+      "affiliateLinksObserved": [
+        "https://www.amazon.de/s?k=burr+coffee+grinder&tag=wishees-20",
+        "https://www.amazon.de/s?k=noise+canceling+headphones&tag=wishees-20"
+      ]
+    },
+    "realtimeSupportUpdate": {
+      "session": "Maya open friend wishlist, Jordan backend support action",
+      "baseline": {
+        "hasTenPercent": false,
+        "hasProgressPhrase": false,
+        "hasContributeControls": true
+      },
+      "createdOutcomeId": "411",
+      "afterJordanSupportWithoutReload": {
+        "hasTenPercent": true,
+        "hasProgressPhrase": true,
+        "snippet": "10 percent already supported, covered/open amount shown",
+        "consoleWarningsOrErrors": []
+      },
+      "afterAlexDeclineWithoutReload": {
+        "hasTenPercent": false,
+        "hasProgressPhrase": false,
+        "consoleWarningsOrErrors": []
+      }
+    },
+    "notificationBadge": {
+      "session": "Alex notifications page",
+      "createdOutcomeId": "412",
+      "beforeRead": {
+        "badgeText": "2",
+        "readButtonCount": 2
+      },
+      "afterOneReadWithoutReload": {
+        "badgeText": "1",
+        "readButtonCount": 1,
+        "consoleWarningsOrErrors": []
+      },
+      "afterCleanupReadsAndReload": {
+        "badgeText": "",
+        "readButtonCount": 0
+      }
+    }
+  }
+}

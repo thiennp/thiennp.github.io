@@ -85,7 +85,9 @@
 
     main {
       padding: 16px 32px 36px;
+      width: min(1480px, 100%);
       max-width: 100%;
+      margin: 0 auto;
     }
 
     h1 {
@@ -274,8 +276,8 @@
 
     .overview {
       display: grid;
-      grid-template-columns: minmax(320px, 0.7fr) minmax(420px, 1.3fr);
-      gap: 12px;
+      grid-template-columns: minmax(280px, 360px) minmax(0, 1fr);
+      gap: 14px;
       align-items: start;
       max-width: 100%;
       margin-bottom: 12px;
@@ -334,9 +336,9 @@
     }
 
     .stats {
-      display: flex;
-      flex-wrap: wrap;
-      align-content: start;
+      grid-column: 1 / -1;
+      display: grid;
+      grid-template-columns: repeat(6, minmax(112px, 1fr));
       gap: 8px;
       margin: 0;
       max-width: 100%;
@@ -344,23 +346,24 @@
 
     .stat {
       display: inline-flex;
-      align-items: baseline;
-      gap: 6px;
-      min-height: 34px;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      min-height: 44px;
       background: var(--panel);
       border: 1px solid var(--line);
-      border-radius: 999px;
+      border-radius: 8px;
       color: var(--text);
       cursor: pointer;
       font: inherit;
-      padding: 6px 10px;
+      padding: 8px 11px;
       box-shadow: 0 3px 12px rgba(40, 34, 61, 0.04);
       text-align: left;
       white-space: normal;
     }
 
     .stat strong {
-      font-size: 15px;
+      font-size: 17px;
       line-height: 1;
     }
 
@@ -384,19 +387,45 @@
     }
 
     .action-panel {
+      grid-column: 1 / -1;
       background: var(--panel);
       border: 1px solid var(--line);
-      border-radius: var(--radius);
+      border-radius: 8px;
       max-width: 100%;
       overflow: hidden;
-      box-shadow: var(--shadow);
+      box-shadow: 0 3px 12px rgba(40, 34, 61, 0.04);
     }
 
-    #sentryScopePanel {
-      grid-column: 1 / -1;
+    #sentryScopePanel,
+    #sentryFeedPanel {
       width: 100%;
       display: grid;
       gap: 8px;
+      min-width: 0;
+      min-height: calc(100vh - 300px);
+      align-content: start;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: rgba(255, 253, 251, 0.9);
+      padding: 11px;
+      box-shadow: 0 3px 12px rgba(40, 34, 61, 0.04);
+    }
+
+    #sentryScopePanel {
+      grid-column: 1;
+    }
+
+    #sentryFeedPanel {
+      grid-column: 2;
+    }
+
+    #sentryScopePanel .source-list,
+    #sentryFeedPanel .source-list {
+      grid-template-columns: 1fr;
+      max-height: calc(100vh - 370px);
+      overflow: auto;
+      padding: 1px 5px 5px 1px;
+      scrollbar-gutter: stable;
     }
 
     .source-scope-heading {
@@ -405,7 +434,8 @@
       justify-content: space-between;
       gap: 10px;
       max-width: 100%;
-      padding: 0 2px;
+      min-height: 24px;
+      padding: 0 1px 2px;
     }
 
     .source-scope-title,
@@ -426,7 +456,8 @@
       cursor: pointer;
       list-style: none;
       margin: 0;
-      padding: 9px 12px;
+      min-height: 42px;
+      padding: 8px 12px;
     }
 
     .panel-heading::-webkit-details-marker {
@@ -475,7 +506,7 @@
       align-items: center;
       flex: 1 1 auto;
       min-width: 0;
-      max-width: min(56vw, 620px);
+      max-width: min(62vw, 760px);
       border: 1px solid #c9b8f0;
       border-radius: 999px;
       background: var(--accent-soft);
@@ -582,58 +613,152 @@
     .source-list {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-      gap: 8px;
+      gap: 7px;
       max-width: 100%;
       overflow: visible;
       padding: 0;
     }
 
     .source-card {
+      display: grid;
+      grid-template-columns: minmax(136px, 0.28fr) minmax(0, 1fr);
+      grid-template-areas:
+        "source-head source-title"
+        "source-meta source-meta";
+      gap: 5px 12px;
+      align-items: start;
       border: 1px solid var(--line);
-      border-radius: 8px;
+      border-radius: 7px;
       background: var(--panel);
-      padding: 9px 10px;
+      min-height: 88px;
+      padding: 9px 11px;
       max-width: 100%;
       overflow: hidden;
+      transition: background 120ms ease, border-color 120ms ease, box-shadow 120ms ease, transform 120ms ease;
+    }
+
+    #sentryScopePanel .source-card {
+      grid-template-columns: minmax(132px, 0.42fr) minmax(0, 1fr);
     }
 
     .source-card.source-working {
-      border-color: #c9b8f0;
-      background: #fbf8ff;
-      box-shadow: 0 0 0 3px rgba(125, 85, 214, 0.14);
+      border-color: #b45309;
+      border-left: 7px solid #f97316;
+      background: linear-gradient(90deg, #fff1d6 0%, #fff7ed 38%, #ffffff 100%);
+      box-shadow: 0 0 0 4px rgba(249, 115, 22, 0.28), 0 14px 28px rgba(154, 52, 18, 0.16);
+      transform: translateY(-1px);
+    }
+
+    .source-card.source-checked {
+      border-color: #b8d7c1;
+      background: #f7fbf8;
+    }
+
+    .source-card.source-blocked {
+      border-color: #edb9ac;
+      background: #fff7f5;
+    }
+
+    .source-card.source-working.source-checked {
+      border-color: #b45309;
+      background: linear-gradient(90deg, #fff1d6 0%, #fff7ed 38%, #ffffff 100%);
+    }
+
+    .source-card.source-next {
+      border-color: #93c5fd;
+      border-left: 4px solid #60a5fa;
+      background: linear-gradient(90deg, #eff6ff 0%, #ffffff 54%);
+      box-shadow: 0 0 0 2px rgba(96, 165, 250, 0.16);
+    }
+
+    .source-card.source-previous {
+      border-color: #99d3b0;
+      border-left: 4px solid #22c55e;
+      background: linear-gradient(90deg, #ecfdf3 0%, #ffffff 54%);
+      opacity: 0.92;
+    }
+
+    .source-card.source-working.source-next,
+    .source-card.source-working.source-previous {
+      border-color: #b45309;
+      border-left: 7px solid #f97316;
+      opacity: 1;
+    }
+
+    .source-card:focus-visible {
+      outline: 3px solid rgba(37, 99, 235, 0.36);
+      outline-offset: 2px;
     }
 
     .source-card header {
-      display: flex;
-      align-items: start;
-      justify-content: space-between;
-      gap: 8px;
-      margin: 0 0 6px;
+      grid-area: source-head;
+      display: grid;
+      justify-items: start;
+      gap: 4px;
+      min-width: 0;
+      margin: 0;
       padding: 0;
       background: transparent;
       color: inherit;
+    }
+
+    .source-card.source-working header {
+      align-items: start;
+      justify-content: flex-start;
+    }
+
+    .source-card.source-working header::after {
+      content: "OPEN NOW";
+      display: inline-flex;
+      align-items: center;
+      border-radius: 999px;
+      background: #9a3412;
+      color: #fff;
+      padding: 4px 8px;
+      font-size: 11px;
+      font-weight: 900;
+      line-height: 1;
     }
 
     .source-key {
       font-size: 13px;
       font-weight: 800;
       line-height: 1.35;
+      min-width: 0;
+      max-width: 100%;
       overflow-wrap: anywhere;
+    }
+
+    .source-card.source-working .source-key {
+      color: #9a3412;
     }
 
     .source-title {
+      grid-area: source-title;
       margin: 0;
       color: var(--text);
-      font-size: 12px;
-      line-height: 1.4;
+      font-size: 13px;
+      line-height: 1.35;
+      min-width: 0;
+      display: -webkit-box;
+      overflow: hidden;
       overflow-wrap: anywhere;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 2;
+    }
+
+    .source-card.source-working .source-title {
+      font-weight: 800;
     }
 
     .source-meta {
+      grid-area: source-meta;
       display: flex;
-      flex-wrap: wrap;
+      flex-wrap: nowrap;
       gap: 5px;
-      margin-top: 7px;
+      margin-top: 2px;
+      min-width: 0;
+      overflow: hidden;
     }
 
     .source-badge {
@@ -645,11 +770,42 @@
       font-size: 11px;
       font-weight: 800;
       line-height: 1.25;
+      max-width: 180px;
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
 
     .source-working-badge {
-      border: 1px solid #c9b8f0;
-      background: #fff;
+      border: 1px solid #9a3412;
+      background: #9a3412;
+      color: #fff;
+      letter-spacing: 0;
+    }
+
+    .source-next-badge {
+      color: #1d4ed8;
+      border: 1px solid #93c5fd;
+      background: #dbeafe;
+    }
+
+    .source-previous-badge {
+      color: #166534;
+      border: 1px solid #99d3b0;
+      background: #dcfce7;
+    }
+
+    .source-checked-badge {
+      color: #276749;
+      border: 1px solid #b8d7c1;
+      background: #edf8ef;
+    }
+
+    .source-blocked-badge {
+      color: #9f2f1d;
+      border: 1px solid #edb9ac;
+      background: #ffe7e0;
     }
 
     .source-warning {
@@ -1550,6 +1706,10 @@
         grid-template-columns: 1fr;
       }
 
+      .stats {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+
       .toolbar {
         grid-template-columns: repeat(2, minmax(0, 1fr));
       }
@@ -1672,6 +1832,7 @@
       }
 
       .stats {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
         gap: 6px;
       }
 
@@ -1744,6 +1905,20 @@
       .source-list {
         grid-template-columns: 1fr;
       }
+
+      .source-card,
+      #sentryScopePanel .source-card {
+        grid-template-columns: 1fr;
+        grid-template-areas:
+          "source-head"
+          "source-title"
+          "source-meta";
+      }
+
+      #sentryScopePanel,
+      #sentryFeedPanel {
+        grid-column: 1 / -1;
+      }
     }
   </style>
 </head>
@@ -1805,6 +1980,7 @@
     let workflowState = {};
     let uiStateReportTimer = null;
     let lastUiStateSignature = '';
+    let lastFocusedWorkflowSignature = '';
     let activeClaudeEvaluationPre = '';
     let claudeEvaluationsByPre = {};
 
@@ -1962,6 +2138,32 @@
         (workflowUrl && candidateKey && workflowUrl.includes(candidateKey))
       );
     };
+    const workflowAdjacentIssueId = (relation) => {
+      const explicit = scalarText(workflowState[`${relation}SentryIssueId`] || workflowState[`${relation}IssueId`]).trim();
+      if (explicit) {
+        return explicit;
+      }
+      const match = scalarText(workflowState[`${relation}Url`]).match(/\/issues\/(\d+)/);
+      return match ? match[1] : '';
+    };
+    const workflowMatchesSentryAdjacentIdentity = (candidate, relation) => {
+      if (!workflowIsActiveTarget() || !candidate) {
+        return false;
+      }
+      const workflowSentryKey = normalize(workflowState[`${relation}SentryKey`]);
+      const workflowSentryIssueId = normalize(workflowState[`${relation}SentryIssueId`] || workflowState[`${relation}IssueId`]);
+      const workflowUrl = normalize(workflowState[`${relation}Url`] || '');
+      const candidateKey = normalize(firstPresent(candidate.sentryKey, candidate.shortId, candidate.key));
+      const candidateId = normalize(firstPresent(candidate.sentryIssueId, candidate.issueId, candidate.id));
+      const candidateUrl = normalize(firstPresent(candidate.sentryUrl, candidate.permalink, candidate.url));
+      return Boolean(
+        (workflowSentryKey && workflowSentryKey === candidateKey) ||
+        (workflowSentryIssueId && workflowSentryIssueId === candidateId) ||
+        (workflowUrl && candidateUrl && workflowUrl === candidateUrl) ||
+        (workflowUrl && candidateId && workflowUrl.includes(candidateId)) ||
+        (workflowUrl && candidateKey && workflowUrl.includes(candidateKey))
+      );
+    };
     const workflowMatchesItem = (item) => {
       if (!workflowIsActiveTarget() || !item) {
         return false;
@@ -2057,11 +2259,62 @@
       }
       renderItems();
     };
+    const elementInViewport = (element) => {
+      if (!element) {
+        return false;
+      }
+      const rect = element.getBoundingClientRect();
+      const height = window.innerHeight || document.documentElement.clientHeight;
+      const width = window.innerWidth || document.documentElement.clientWidth;
+      return rect.bottom > 0 && rect.top < height && rect.right > 0 && rect.left < width;
+    };
+    const activeSentryCard = () => {
+      const cards = [...document.querySelectorAll('.source-card.source-working')];
+      return cards.find(elementInViewport) ||
+        document.querySelector('#sentryFeedList .source-card.source-working') ||
+        document.querySelector('#sentryScopeList .source-card.source-working') ||
+        cards[0] ||
+        null;
+    };
+    const focusActiveSentryCard = () => {
+      if (!workflowIsActiveTarget()) {
+        lastFocusedWorkflowSignature = '';
+        return;
+      }
+      const card = activeSentryCard();
+      if (!card) {
+        return;
+      }
+      const signature = [
+        workflowState.scanRequestId || '',
+        workflowIssueId(),
+        workflowState.sentryKey || '',
+        workflowState.updatedAt || ''
+      ].join('|');
+      if (signature === lastFocusedWorkflowSignature && elementInViewport(card) && document.activeElement === card) {
+        return;
+      }
+      lastFocusedWorkflowSignature = signature;
+      card.scrollIntoView({
+        behavior: 'auto',
+        block: 'center',
+        inline: 'nearest'
+      });
+      try {
+        card.focus({ preventScroll: true });
+      } catch {
+        card.focus();
+      }
+    };
     const reportUiState = async () => {
       if (!['http:', 'https:'].includes(window.location.protocol)) {
         return;
       }
+      focusActiveSentryCard();
       const highlightedCards = [...document.querySelectorAll('.source-card.source-working')];
+      const previousCards = [...document.querySelectorAll('.source-card.source-previous')];
+      const nextCards = [...document.querySelectorAll('.source-card.source-next')];
+      const focusedCard = activeSentryCard();
       const activeJiraKeys = new Set();
       [...sentryScopeItems, ...sentryFeedItems]
         .filter((item) => workflowMatchesSentryIdentity(item))
@@ -2075,10 +2328,24 @@
         activeSentryKey: scalarText(workflowState.sentryKey).trim(),
         activeUrl: workflowTargetUrl(),
         activeJiraKeys: [...activeJiraKeys],
+        scanRequestId: workflowState.scanRequestId || '',
+        previousIssueId: workflowAdjacentIssueId('previous'),
+        previousSentryKey: scalarText(workflowState.previousSentryKey).trim(),
+        previousUrl: workflowState.previousUrl || '',
+        nextIssueId: workflowAdjacentIssueId('next'),
+        nextSentryKey: scalarText(workflowState.nextSentryKey).trim(),
+        nextUrl: workflowState.nextUrl || '',
+        focusedIssueId: focusedCard?.dataset.sentryIssueId || '',
+        activeCardVisible: elementInViewport(focusedCard),
+        activeCardFocused: Boolean(focusedCard && document.activeElement === focusedCard),
         workflowUpdatedAt: workflowState.updatedAt || '',
         highlightedCount: highlightedCards.length,
+        previousHighlightedCount: previousCards.length,
+        nextHighlightedCount: nextCards.length,
         sourceScopeHighlighted: Boolean(document.querySelector('#sentryScopeList .source-card.source-working')),
         visibleFeedHighlighted: Boolean(document.querySelector('#sentryFeedList .source-card.source-working')),
+        previousHighlighted: previousCards.length > 0,
+        nextHighlighted: nextCards.length > 0,
         renderedAt: new Date().toISOString(),
         clientUrl: window.location.href
       };
@@ -2088,10 +2355,24 @@
         activeSentryKey: payload.activeSentryKey,
         activeUrl: payload.activeUrl,
         activeJiraKeys: payload.activeJiraKeys,
+        scanRequestId: payload.scanRequestId,
+        previousIssueId: payload.previousIssueId,
+        previousSentryKey: payload.previousSentryKey,
+        previousUrl: payload.previousUrl,
+        nextIssueId: payload.nextIssueId,
+        nextSentryKey: payload.nextSentryKey,
+        nextUrl: payload.nextUrl,
+        focusedIssueId: payload.focusedIssueId,
+        activeCardVisible: payload.activeCardVisible,
+        activeCardFocused: payload.activeCardFocused,
         workflowUpdatedAt: payload.workflowUpdatedAt,
         highlightedCount: payload.highlightedCount,
+        previousHighlightedCount: payload.previousHighlightedCount,
+        nextHighlightedCount: payload.nextHighlightedCount,
         sourceScopeHighlighted: payload.sourceScopeHighlighted,
-        visibleFeedHighlighted: payload.visibleFeedHighlighted
+        visibleFeedHighlighted: payload.visibleFeedHighlighted,
+        previousHighlighted: payload.previousHighlighted,
+        nextHighlighted: payload.nextHighlighted
       });
       if (signature === lastUiStateSignature) {
         return;
@@ -3621,7 +3902,11 @@
     const sentryScopeSources = (item) => Array.isArray(item.sources) && item.sources.length
       ? item.sources
       : [firstPresent(item.source, item.sentryScope, 'unknown')];
-    const workflowMatchesSentryScopeItem = (item) => workflowIsActiveTarget() && workflowMatchesSentryIdentity(item);
+    const sentryWorkflowState = (item) => ({
+      active: workflowIsActiveTarget() && workflowMatchesSentryIdentity(item),
+      previous: workflowMatchesSentryAdjacentIdentity(item, 'previous'),
+      next: workflowMatchesSentryAdjacentIdentity(item, 'next')
+    });
     const jiraKeysForSentryItem = (item) => {
       const keys = new Set();
       const addKey = (value) => {
@@ -3636,6 +3921,44 @@
       addKey(item.jiraTicket);
       addKey(item.jiraKey);
       return [...keys];
+    };
+    const sentryItemBlocked = (item) => {
+      const status = normalize(item.jiraScanStatus);
+      return status.includes('blocked') || status.includes('error');
+    };
+    const sentryItemChecked = (item) => !sentryItemBlocked(item) && Boolean(item.lastJiraLinkScanAt || item.jiraScanStatus);
+    const sentryItemCheckBadgeClass = (item) => sentryItemBlocked(item) ? 'source-blocked-badge' : 'source-checked-badge';
+    const sentryItemCheckLabel = (item) => {
+      const keys = jiraKeysForSentryItem(item);
+      if (keys.length) {
+        return `checked: ${keys.join(', ')}`;
+      }
+      const status = normalize(item.jiraScanStatus);
+      if (status.includes('blocked')) {
+        return 'Jira blocked';
+      }
+      if (status.includes('dry-run')) {
+        return 'dry-run: Jira create';
+      }
+      if (status.includes('error')) {
+        return 'check failed';
+      }
+      if (status.includes('no-jira')) {
+        return 'checked: no Jira';
+      }
+      if (item.lastJiraLinkScanAt) {
+        return 'checked';
+      }
+      return '';
+    };
+    const sentryCardClass = (item, state = sentryWorkflowState(item)) => {
+      const classes = ['source-card'];
+      if (state.active) classes.push('source-working');
+      if (state.previous) classes.push('source-previous');
+      if (state.next) classes.push('source-next');
+      if (sentryItemBlocked(item)) classes.push('source-blocked');
+      if (sentryItemChecked(item)) classes.push('source-checked');
+      return classes.join(' ');
     };
 
     const renderSentryScopeList = () => {
@@ -3666,9 +3989,12 @@
         : '';
 
       list.innerHTML = `${warning}${sentryScopeItems.map((item) => {
-        const isWorking = workflowMatchesSentryScopeItem(item);
+        const workflowStateForItem = sentryWorkflowState(item);
+        const issueId = sentryScopeItemId(item);
+        const jiraKeys = jiraKeysForSentryItem(item);
+        const checkedLabel = sentryItemCheckLabel(item);
         return `
-        <article class="source-card${isWorking ? ' source-working' : ''}"${isWorking ? ' data-working="true"' : ''}>
+        <article class="${sentryCardClass(item, workflowStateForItem)}" tabindex="-1" data-sentry-issue-id="${escapeHtml(issueId)}"${workflowStateForItem.active ? ' data-working="true"' : ''}>
           <header>
             <a class="source-key" href="${escapeHtml(sentryScopeUrl(item))}" target="_blank" rel="noreferrer">${escapeHtml(sentryScopeLabel(item))}</a>
             <span class="source-badge">${escapeHtml(item.substatus || item.status || 'unresolved')}</span>
@@ -3677,7 +4003,11 @@
           <div class="source-meta">
             <span class="source-badge">${escapeHtml(item.projectSlug || item.projectName || item.repo || 'project')}</span>
             <span class="source-badge">${escapeHtml(item.assignedTo || item.sentryAssignee || 'unassigned')}</span>
-            ${isWorking ? `<span class="source-badge source-working-badge">Working: ${escapeHtml(workflowStepLabel())}</span>` : ''}
+            ${jiraKeys.map((key) => `<span class="source-badge">${escapeHtml(key)}</span>`).join('')}
+            ${checkedLabel ? `<span class="source-badge ${sentryItemCheckBadgeClass(item)}">${escapeHtml(checkedLabel)}</span>` : ''}
+            ${workflowStateForItem.previous ? '<span class="source-badge source-previous-badge">Prev</span>' : ''}
+            ${workflowStateForItem.active ? `<span class="source-badge source-working-badge">Working: ${escapeHtml(workflowStepLabel())}</span>` : ''}
+            ${workflowStateForItem.next ? '<span class="source-badge source-next-badge">Next</span>' : ''}
             ${sentryScopeSources(item).map((source) => `<span class="source-badge">${escapeHtml(source)}</span>`).join('')}
           </div>
         </article>
@@ -3702,10 +4032,12 @@
       }
 
       list.innerHTML = sentryFeedItems.map((item) => {
-        const isWorking = workflowMatchesSentryScopeItem(item);
+        const workflowStateForItem = sentryWorkflowState(item);
         const jiraKeys = jiraKeysForSentryItem(item);
+        const issueId = sentryScopeItemId(item);
+        const checkedLabel = sentryItemCheckLabel(item);
         return `
-        <article class="source-card${isWorking ? ' source-working' : ''}"${isWorking ? ' data-working="true"' : ''}>
+        <article class="${sentryCardClass(item, workflowStateForItem)}" tabindex="-1" data-sentry-issue-id="${escapeHtml(issueId)}"${workflowStateForItem.active ? ' data-working="true"' : ''}>
           <header>
             <a class="source-key" href="${escapeHtml(sentryScopeUrl(item))}" target="_blank" rel="noreferrer">${escapeHtml(sentryScopeLabel(item))}</a>
             <span class="source-badge">${escapeHtml(item.substatus || item.status || 'unresolved')}</span>
@@ -3715,8 +4047,11 @@
             <span class="source-badge">${escapeHtml(item.project || item.projectSlug || item.projectName || item.repo || 'project')}</span>
             ${jiraKeys.length
               ? jiraKeys.map((key) => `<span class="source-badge">${escapeHtml(key)}</span>`).join('')
-              : `<span class="source-badge">${escapeHtml(item.jiraScanStatus || 'jira unknown')}</span>`}
-            ${isWorking ? `<span class="source-badge source-working-badge">Opening now</span>` : ''}
+              : (checkedLabel ? '' : `<span class="source-badge">${escapeHtml(item.jiraScanStatus || 'jira unknown')}</span>`)}
+            ${checkedLabel ? `<span class="source-badge ${sentryItemCheckBadgeClass(item)}">${escapeHtml(checkedLabel)}</span>` : ''}
+            ${workflowStateForItem.previous ? '<span class="source-badge source-previous-badge">Prev</span>' : ''}
+            ${workflowStateForItem.active ? '<span class="source-badge source-working-badge">Opening now</span>' : ''}
+            ${workflowStateForItem.next ? '<span class="source-badge source-next-badge">Next</span>' : ''}
           </div>
         </article>
       `;
