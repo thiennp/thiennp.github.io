@@ -20,3 +20,4 @@
 {"elapsedTime":"00:00:01","currentUserSession":"jordan","coveragePercentage":"93%","activeWorkflow":"jordan fulfill probe submitted","identifiedBugs":[]}
 {"elapsedTime":"00:00:01","currentUserSession":"matrix","coveragePercentage":"93%","activeWorkflow":"friend snapshot completed","identifiedBugs":[]}
 {"elapsedTime":"00:00:02","currentUserSession":"matrix","coveragePercentage":"93%","activeWorkflow":"cleanup-only completed","identifiedBugs":[]}
+{"elapsedTime":"00:00:14","currentUserSession":"matrix","coveragePercentage":"97%","activeWorkflow":"extended same-origin guard probe completed","identifiedBugs":[]}

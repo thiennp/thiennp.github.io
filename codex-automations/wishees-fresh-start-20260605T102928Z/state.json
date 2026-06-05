@@ -1,9 +1,9 @@
 {
-  "runId": "20260605103611",
+  "runId": "20260605103804",
   "requestedTarget": "https://wishees/",
   "actualTarget": "https://www.wishees.com",
   "startedAt": "2026-06-05T10:29:39.246Z",
-  "updatedAt": "2026-06-05T10:36:12.151Z",
+  "updatedAt": "2026-06-05T10:39:38.321Z",
   "coverage": {
     "target.host-resolution": {
       "count": 1,
@@ -15,32 +15,32 @@
       }
     },
     "auth.member-login.alex": {
-      "count": 19,
-      "lastAt": "2026-06-05T10:36:05.162Z",
+      "count": 20,
+      "lastAt": "2026-06-05T10:38:05.052Z",
       "lastDetail": {
         "ok": true,
         "cleanupOnly": true
       }
     },
     "auth.member-login.maya": {
-      "count": 19,
-      "lastAt": "2026-06-05T10:36:05.321Z",
+      "count": 20,
+      "lastAt": "2026-06-05T10:38:05.206Z",
       "lastDetail": {
         "ok": true,
         "cleanupOnly": true
       }
     },
     "auth.member-login.jordan": {
-      "count": 19,
-      "lastAt": "2026-06-05T10:36:05.471Z",
+      "count": 20,
+      "lastAt": "2026-06-05T10:38:05.412Z",
       "lastDetail": {
         "ok": true,
         "cleanupOnly": true
       }
     },
     "auth.viewer-login.lina": {
-      "count": 19,
-      "lastAt": "2026-06-05T10:36:05.626Z",
+      "count": 20,
+      "lastAt": "2026-06-05T10:38:05.585Z",
       "lastDetail": {
         "ok": true,
         "cleanupOnly": true
@@ -96,10 +96,28 @@
       }
     },
     "boundary.viewer-wishlist-update-denied": {
-      "count": 0
+      "count": 1,
+      "lastAt": "2026-06-05T10:39:37.816Z",
+      "lastDetail": {
+        "status": 403,
+        "body": {
+          "ok": false,
+          "reason": "invalid-action"
+        },
+        "baselineStatus": 200
+      }
     },
     "boundary.viewer-wishlist-delete-denied": {
-      "count": 0
+      "count": 1,
+      "lastAt": "2026-06-05T10:39:38.154Z",
+      "lastDetail": {
+        "status": 403,
+        "body": {
+          "ok": false,
+          "reason": "invalid-action"
+        },
+        "baselineStatus": 200
+      }
     },
     "boundary.viewer-support-denied": {
       "count": 1,
@@ -677,20 +695,20 @@
       "count": 0
     },
     "gift-intent.owner-outcome-visible": {
-      "count": 25,
-      "lastAt": "2026-06-05T10:36:05.796Z",
+      "count": 29,
+      "lastAt": "2026-06-05T10:38:17.080Z",
       "lastDetail": {
         "count": 1,
         "outcomeIds": [
-          "412"
+          "416"
         ]
       }
     },
     "gift-intent.owner-decline-cleanup": {
-      "count": 21,
-      "lastAt": "2026-06-05T10:36:05.993Z",
+      "count": 25,
+      "lastAt": "2026-06-05T10:38:17.253Z",
       "lastDetail": {
-        "outcomeId": "412"
+        "outcomeId": "416"
       }
     },
     "gift-intent.concurrent-helpers-same-item": {
@@ -949,13 +967,10 @@
       }
     },
     "notifications.qa-artifacts-cleanup": {
-      "count": 57,
-      "lastAt": "2026-06-05T10:36:06.512Z",
+      "count": 65,
+      "lastAt": "2026-06-05T10:38:18.891Z",
       "lastDetail": {
-        "deleted": [
-          "user_notification:457",
-          "user_notification:455"
-        ]
+        "deleted": []
       }
     },
     "notifications.owner-mark-read": {
@@ -1466,19 +1481,63 @@
       }
     },
     "external.same-origin-owner-outcome-guard": {
-      "count": 0
+      "count": 1,
+      "lastAt": "2026-06-05T10:38:07.713Z",
+      "lastDetail": {
+        "status": 403,
+        "body": {
+          "ok": false,
+          "reason": "same-origin-required"
+        },
+        "remainingActiveMarkedOutcomes": 1
+      }
     },
     "external.same-origin-helper-cancel-guard": {
-      "count": 0
+      "count": 1,
+      "lastAt": "2026-06-05T10:38:10.257Z",
+      "lastDetail": {
+        "status": 400,
+        "body": {
+          "ok": false,
+          "status": "invalid-action"
+        },
+        "remainingActiveMarkedOutcomes": 1
+      }
     },
     "external.same-origin-notification-read-guard": {
-      "count": 0
+      "count": 1,
+      "lastAt": "2026-06-05T10:38:13.805Z",
+      "lastDetail": {
+        "status": 403,
+        "body": {
+          "ok": false,
+          "reason": "same-origin-required"
+        },
+        "changedOwnerReadState": false
+      }
     },
     "external.same-origin-notification-delete-guard": {
-      "count": 0
+      "count": 1,
+      "lastAt": "2026-06-05T10:38:16.920Z",
+      "lastDetail": {
+        "status": 403,
+        "body": {
+          "ok": false,
+          "reason": "same-origin-required"
+        },
+        "stillPresent": true
+      }
     },
     "external.same-origin-friend-invite-guard": {
-      "count": 0
+      "count": 1,
+      "lastAt": "2026-06-05T10:38:18.566Z",
+      "lastDetail": {
+        "status": 403,
+        "body": {
+          "ok": false,
+          "reason": "same-origin-required"
+        }
+      }
     },
     "realtime.browser-smoke": {
       "count": 0
@@ -1496,8 +1555,8 @@
       }
     },
     "cleanup.run-prefix-removed": {
-      "count": 62,
-      "lastAt": "2026-06-05T10:36:07.167Z",
+      "count": 70,
+      "lastAt": "2026-06-05T10:38:19.547Z",
       "lastDetail": {
         "prefix": "wish_codex_matrix_"
       }
@@ -1519,6 +1578,24 @@
       "lastDetail": {
         "status": 200,
         "count": 0
+      }
+    },
+    "boundary.viewer-wishlist-put-shapes-fix-verified": {
+      "count": 1,
+      "lastAt": "2026-06-05T10:39:38.321Z",
+      "lastDetail": {
+        "beforeStatus": 200,
+        "updateStatus": 403,
+        "updateBody": {
+          "ok": false,
+          "reason": "invalid-action"
+        },
+        "deleteStatus": 403,
+        "deleteBody": {
+          "ok": false,
+          "reason": "invalid-action"
+        },
+        "afterStatus": 200
       }
     }
   },
