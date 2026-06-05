@@ -1,0 +1,4068 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>CHECK24 Energie Sentry Triage History</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #fff8f1;
+      --panel: #fffdfb;
+      --text: #28223d;
+      --muted: #71657f;
+      --line: #eadfd6;
+      --accent: #7d55d6;
+      --accent-soft: #eee8ff;
+      --mint: #e5f7ef;
+      --peach: #fde9e2;
+      --sky: #e5f1ff;
+      --ok: #2f7358;
+      --warn: #8d5a23;
+      --danger: #9d3737;
+      --shadow: 0 10px 30px rgba(40, 34, 61, 0.08);
+      --radius: 8px;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    html {
+      width: 100%;
+      max-width: 100%;
+      overflow-x: hidden;
+    }
+
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      min-width: 0;
+    }
+
+    body {
+      margin: 0;
+      width: 100%;
+      max-width: 100%;
+      overflow-x: hidden;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.45;
+    }
+
+    a {
+      color: var(--accent);
+      text-decoration: none;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+
+    a:focus-visible,
+    button:focus-visible,
+    input:focus-visible,
+    select:focus-visible,
+    summary:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 2px;
+    }
+
+    header {
+      border-bottom: 1px solid var(--line);
+      background: var(--panel);
+      box-shadow: 0 1px 0 rgba(40, 34, 61, 0.04);
+      padding: 16px 32px;
+      max-width: 100%;
+    }
+
+    .header-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    main {
+      padding: 16px 32px 36px;
+      max-width: 100%;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 22px;
+      letter-spacing: 0;
+      color: var(--text);
+    }
+
+    .subhead {
+      margin: 0;
+      color: var(--muted);
+      max-width: 900px;
+      line-height: 1.45;
+      overflow-wrap: anywhere;
+    }
+
+    .live-indicator {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      flex: 0 0 auto;
+      max-width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: var(--panel);
+      color: var(--muted);
+      padding: 6px 10px;
+      font-size: 12px;
+      font-weight: 600;
+      line-height: 1.35;
+      white-space: normal;
+    }
+
+    .live-indicator::before {
+      content: "";
+      width: 8px;
+      height: 8px;
+      border-radius: 999px;
+      background: currentColor;
+      opacity: 0.75;
+    }
+
+    .live-indicator[data-state="live"] {
+      border-color: #b6dfcc;
+      background: var(--mint);
+      color: var(--ok);
+    }
+
+    .live-indicator[data-state="waiting"] {
+      border-color: #f4cdbf;
+      background: var(--peach);
+      color: var(--warn);
+    }
+
+    .live-indicator[data-state="offline"] {
+      border-color: #edb9ac;
+      background: var(--peach);
+      color: var(--danger);
+    }
+
+    .header-actions {
+      display: flex;
+      flex: 0 0 auto;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 8px;
+      max-width: 100%;
+    }
+
+    .update-button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 32px;
+      border: 1px solid #6d48c1;
+      border-radius: 999px;
+      background: var(--accent);
+      color: #ffffff;
+      cursor: pointer;
+      font: inherit;
+      font-size: 12px;
+      font-weight: 800;
+      line-height: 1.35;
+      padding: 6px 11px;
+      white-space: normal;
+    }
+
+    .update-button:hover {
+      background: #6845ba;
+    }
+
+    .update-button:disabled {
+      border-color: var(--line);
+      background: #eee8df;
+      color: var(--muted);
+      cursor: wait;
+    }
+
+    .update-status {
+      flex: 1 1 260px;
+      margin-left: auto;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 600;
+      line-height: 1.35;
+      max-width: 340px;
+      overflow-wrap: anywhere;
+      text-align: right;
+    }
+
+    .update-status.status-blocked {
+      color: var(--danger);
+    }
+
+    .update-status.status-done {
+      color: var(--ok);
+    }
+
+    .update-status.status-active {
+      color: var(--warn);
+    }
+
+    .workflow-panel {
+      display: none;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 10px;
+      align-items: center;
+      max-width: 1400px;
+      margin: 0 auto 12px;
+      border: 1px solid #c9b8f0;
+      border-radius: 8px;
+      background: var(--accent-soft);
+      box-shadow: var(--shadow);
+      padding: 10px 12px;
+    }
+
+    .workflow-panel.workflow-visible {
+      display: grid;
+    }
+
+    .workflow-copy {
+      display: grid;
+      gap: 3px;
+      max-width: 100%;
+    }
+
+    .workflow-kicker {
+      color: var(--accent);
+      font-size: 11px;
+      font-weight: 900;
+      letter-spacing: 0;
+      text-transform: uppercase;
+    }
+
+    .workflow-title,
+    .workflow-message {
+      margin: 0;
+      overflow-wrap: anywhere;
+    }
+
+    .workflow-title {
+      color: var(--text);
+      font-size: 14px;
+      font-weight: 900;
+    }
+
+    .workflow-message {
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 650;
+    }
+
+    .workflow-link {
+      justify-self: end;
+      border: 1px solid #c9b8f0;
+      border-radius: 999px;
+      background: var(--panel);
+      color: var(--accent);
+      font-size: 12px;
+      font-weight: 900;
+      padding: 6px 10px;
+      white-space: nowrap;
+    }
+
+    .overview {
+      display: grid;
+      grid-template-columns: minmax(320px, 0.7fr) minmax(420px, 1.3fr);
+      gap: 12px;
+      align-items: start;
+      max-width: 100%;
+      margin-bottom: 12px;
+    }
+
+    .toolbar {
+      display: grid;
+      grid-template-columns: minmax(260px, 2fr) repeat(4, minmax(150px, 1fr));
+      gap: 12px;
+      margin: 12px 0 14px;
+      max-width: 100%;
+    }
+
+    input,
+    select {
+      width: 100%;
+      min-height: 38px;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      background: var(--panel);
+      color: var(--text);
+      font: inherit;
+      padding: 8px 10px;
+    }
+
+    input:focus,
+    select:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(125, 85, 214, 0.14);
+    }
+
+    .toggle-filter {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      min-height: 38px;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      background: var(--panel);
+      color: var(--muted);
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 800;
+      line-height: 1.35;
+      padding: 8px 10px;
+      user-select: none;
+    }
+
+    .toggle-filter input {
+      flex: 0 0 auto;
+      width: 16px;
+      height: 16px;
+      min-height: 0;
+      margin: 0;
+      accent-color: var(--accent);
+    }
+
+    .stats {
+      display: flex;
+      flex-wrap: wrap;
+      align-content: start;
+      gap: 8px;
+      margin: 0;
+      max-width: 100%;
+    }
+
+    .stat {
+      display: inline-flex;
+      align-items: baseline;
+      gap: 6px;
+      min-height: 34px;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      color: var(--text);
+      cursor: pointer;
+      font: inherit;
+      padding: 6px 10px;
+      box-shadow: 0 3px 12px rgba(40, 34, 61, 0.04);
+      text-align: left;
+      white-space: normal;
+    }
+
+    .stat strong {
+      font-size: 15px;
+      line-height: 1;
+    }
+
+    .stat span {
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 700;
+      line-height: 1.35;
+    }
+
+    .stat:hover,
+    .stat:focus-visible {
+      border-color: var(--accent);
+      background: var(--accent-soft);
+    }
+
+    .stat[aria-pressed="true"] {
+      border-color: #c8b9f5;
+      background: var(--accent-soft);
+      color: #5c3fad;
+    }
+
+    .action-panel {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      max-width: 100%;
+      overflow: hidden;
+      box-shadow: var(--shadow);
+    }
+
+    #sentryScopePanel {
+      grid-column: 1 / -1;
+      width: 100%;
+      display: grid;
+      gap: 8px;
+    }
+
+    .source-scope-heading {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      max-width: 100%;
+      padding: 0 2px;
+    }
+
+    .source-scope-title,
+    .source-scope-count {
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 0;
+      line-height: 1.35;
+      text-transform: uppercase;
+    }
+
+    .panel-heading {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      cursor: pointer;
+      list-style: none;
+      margin: 0;
+      padding: 9px 12px;
+    }
+
+    .panel-heading::-webkit-details-marker {
+      display: none;
+    }
+
+    .panel-heading::before {
+      content: "+";
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex: 0 0 auto;
+      width: 18px;
+      height: 18px;
+      border: 1px solid var(--line);
+      border-radius: 4px;
+      background: var(--accent-soft);
+      color: var(--accent);
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .action-panel[open] .panel-heading::before {
+      content: "-";
+    }
+
+    .panel-title {
+      margin: 0;
+      flex: 1 1 auto;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 0;
+      line-height: 1.35;
+      text-transform: uppercase;
+    }
+
+    .panel-heading span {
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .panel-current-work {
+      display: inline-flex;
+      align-items: center;
+      flex: 1 1 auto;
+      min-width: 0;
+      max-width: min(56vw, 620px);
+      border: 1px solid #c9b8f0;
+      border-radius: 999px;
+      background: var(--accent-soft);
+      color: var(--accent);
+      padding: 4px 9px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      text-transform: none;
+    }
+
+    .panel-current-work[hidden] {
+      display: none;
+    }
+
+    .panel-current-work.status-blocked {
+      border-color: #edb9ac;
+      background: var(--peach);
+      color: var(--danger);
+    }
+
+    .panel-current-work.status-done {
+      border-color: #b6dfcc;
+      background: var(--mint);
+      color: var(--ok);
+    }
+
+    .action-list {
+      display: grid;
+      gap: 8px;
+      max-width: 100%;
+      border-top: 1px solid var(--line);
+      padding: 10px 12px 12px;
+    }
+
+    .action-card {
+      display: grid;
+      grid-template-columns: 6px minmax(0, 1fr) auto;
+      gap: 10px;
+      align-items: start;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--panel);
+      padding: 8px 10px;
+      max-width: 100%;
+    }
+
+    .action-marker {
+      width: 6px;
+      height: 100%;
+      min-height: 34px;
+      border-radius: 999px;
+      background: var(--accent);
+    }
+
+    .action-card.action-blocked .action-marker,
+    .item.item-blocked {
+      border-color: #edb9ac;
+    }
+
+    .action-card.action-blocked .action-marker {
+      background: var(--danger);
+    }
+
+    .action-card.action-active .action-marker {
+      background: var(--warn);
+    }
+
+    .action-card.action-done .action-marker {
+      background: var(--ok);
+    }
+
+    .action-card.action-working {
+      border-color: #c9b8f0;
+      background: #fbf8ff;
+    }
+
+    .action-card.action-working .action-marker {
+      background: var(--accent);
+    }
+
+    .action-main {
+      display: grid;
+      gap: 4px;
+      max-width: 100%;
+    }
+
+    .action-title {
+      margin: 0;
+      font-size: 13px;
+      font-weight: 800;
+      line-height: 1.35;
+      overflow-wrap: anywhere;
+    }
+
+    .action-context,
+    .action-copy {
+      margin: 0;
+      color: var(--muted);
+      font-size: 12px;
+      overflow-wrap: anywhere;
+    }
+
+    .source-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 8px;
+      max-width: 100%;
+      overflow: visible;
+      padding: 0;
+    }
+
+    .source-card {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--panel);
+      padding: 9px 10px;
+      max-width: 100%;
+      overflow: hidden;
+    }
+
+    .source-card.source-working {
+      border-color: #c9b8f0;
+      background: #fbf8ff;
+      box-shadow: 0 0 0 3px rgba(125, 85, 214, 0.14);
+    }
+
+    .source-card header {
+      display: flex;
+      align-items: start;
+      justify-content: space-between;
+      gap: 8px;
+      margin: 0 0 6px;
+      padding: 0;
+      background: transparent;
+      color: inherit;
+    }
+
+    .source-key {
+      font-size: 13px;
+      font-weight: 800;
+      line-height: 1.35;
+      overflow-wrap: anywhere;
+    }
+
+    .source-title {
+      margin: 0;
+      color: var(--text);
+      font-size: 12px;
+      line-height: 1.4;
+      overflow-wrap: anywhere;
+    }
+
+    .source-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+      margin-top: 7px;
+    }
+
+    .source-badge {
+      display: inline-flex;
+      border-radius: 999px;
+      background: var(--accent-soft);
+      color: var(--accent);
+      padding: 3px 7px;
+      font-size: 11px;
+      font-weight: 800;
+      line-height: 1.25;
+    }
+
+    .source-working-badge {
+      border: 1px solid #c9b8f0;
+      background: #fff;
+    }
+
+    .source-warning {
+      grid-column: 1 / -1;
+      border-color: #edb9ac;
+      background: #fff7f5;
+    }
+
+    .action-links {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: flex-start;
+      gap: 6px;
+      max-width: 100%;
+    }
+
+    .action-empty {
+      border: 1px dashed var(--line);
+      border-radius: 8px;
+      padding: 16px;
+      color: var(--muted);
+      text-align: center;
+      font-size: 13px;
+    }
+
+    .timeline {
+      display: grid;
+      gap: 14px;
+    }
+
+    .item {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      max-width: 100%;
+      overflow: hidden;
+      box-shadow: var(--shadow);
+    }
+
+    .item.item-active {
+      border-color: #f4cdbf;
+      background: #fffaf5;
+    }
+
+    .item.item-working {
+      border-color: #c9b8f0;
+      background: #fbf8ff;
+      box-shadow: 0 0 0 3px rgba(125, 85, 214, 0.14), var(--shadow);
+    }
+
+    .item.item-working .item-summary {
+      background: rgba(238, 232, 255, 0.72);
+    }
+
+    .working-badge {
+      display: inline-flex;
+      align-items: center;
+      width: fit-content;
+      max-width: 100%;
+      margin-top: 8px;
+      border: 1px solid #c9b8f0;
+      border-radius: 999px;
+      background: var(--panel);
+      color: var(--accent);
+      font-size: 11px;
+      font-weight: 900;
+      line-height: 1.35;
+      padding: 4px 8px;
+    }
+
+    .item.item-done {
+      border-color: #b6dfcc;
+      background: #fbfffc;
+    }
+
+    .item.item-blocked {
+      border-color: #edb9ac;
+      background: #fff8f5;
+    }
+
+    .item-summary {
+      display: grid;
+      grid-template-columns: auto minmax(0, 1fr) auto;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 14px 16px;
+      cursor: pointer;
+      list-style: none;
+      max-width: 100%;
+    }
+
+    .item-summary::-webkit-details-marker {
+      display: none;
+    }
+
+    .item[open] .item-summary {
+      border-bottom: 1px solid var(--line);
+    }
+
+    .item-summary:hover {
+      background: rgba(238, 232, 255, 0.42);
+    }
+
+    .item-toggle {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 22px;
+      height: 22px;
+      border: 1px solid var(--line);
+      border-radius: 5px;
+      background: var(--accent-soft);
+      color: var(--accent);
+      font-size: 14px;
+      font-weight: 700;
+      line-height: 1;
+      margin-top: 1px;
+    }
+
+    .item-toggle::before {
+      content: "+";
+    }
+
+    .item[open] .item-toggle::before {
+      content: "-";
+    }
+
+    .item-heading {
+      display: grid;
+      gap: 7px;
+      max-width: 100%;
+    }
+
+    .summary-actions {
+      display: flex;
+      justify-content: flex-end;
+      min-width: 0;
+      max-width: 100%;
+    }
+
+    .item-status {
+      flex: 0 0 auto;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      justify-content: flex-end;
+    }
+
+    .title-line {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 6px;
+      max-width: 100%;
+    }
+
+    .title {
+      flex: 1 1 280px;
+      margin: 0;
+      font-size: 17px;
+      overflow-wrap: anywhere;
+    }
+
+    .summary-line {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 6px 8px;
+      max-width: 100%;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.35;
+      overflow-wrap: anywhere;
+    }
+
+    .summary-line-title {
+      align-items: baseline;
+    }
+
+    .summary-label {
+      flex: 0 0 auto;
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 900;
+      letter-spacing: 0;
+      line-height: 1.35;
+      text-transform: uppercase;
+    }
+
+    .summary-title {
+      flex: 1 1 280px;
+      color: var(--text);
+      font-size: 16px;
+      font-weight: 800;
+      line-height: 1.35;
+      overflow-wrap: anywhere;
+    }
+
+    .summary-title:hover {
+      color: var(--accent);
+    }
+
+    .summary-link {
+      font-weight: 800;
+      overflow-wrap: anywhere;
+    }
+
+    .summary-muted {
+      color: var(--muted);
+      overflow-wrap: anywhere;
+    }
+
+    .summary-tickets {
+      display: inline-flex;
+      flex-wrap: wrap;
+      gap: 5px;
+      max-width: 100%;
+    }
+
+    .pre-badge {
+      display: inline-flex;
+      align-items: center;
+      flex: 0 0 auto;
+      max-width: 100%;
+      border: 1px solid #c8b9f5;
+      border-radius: 5px;
+      background: var(--accent-soft);
+      color: #5c3fad;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+      font-size: 12px;
+      font-weight: 700;
+      line-height: 1.35;
+      padding: 3px 6px;
+    }
+
+    .primary-action {
+      flex: 0 1 auto;
+      max-width: 180px;
+      font-weight: 700;
+    }
+
+    .env-matrix {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px 10px;
+      margin-top: 8px;
+      max-width: 100%;
+    }
+
+    .env-group {
+      display: grid;
+      grid-template-columns: 38px repeat(3, 22px);
+      gap: 3px;
+      align-items: center;
+    }
+
+    .env-group.env-check {
+      grid-template-columns: 42px repeat(2, 22px);
+    }
+
+    .env-label {
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 700;
+      line-height: 1;
+      text-transform: uppercase;
+    }
+
+    .env-cell {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 22px;
+      height: 22px;
+      border: 1px solid var(--line);
+      border-radius: 5px;
+      background: var(--panel);
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 900;
+      line-height: 1;
+    }
+
+    .env-cell.env-empty {
+      opacity: 0.38;
+    }
+
+    .env-key-long {
+      display: none;
+    }
+
+    .item-detail {
+      padding: 16px 16px 20px;
+      background: var(--panel);
+      max-width: 100%;
+    }
+
+    .item-detail > .meta {
+      margin-bottom: 12px;
+    }
+
+    .meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      color: var(--muted);
+      font-size: 13px;
+      max-width: 100%;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      max-width: 100%;
+      border-radius: 999px;
+      background: var(--accent-soft);
+      color: #5c3fad;
+      padding: 3px 8px;
+      font-size: 12px;
+      font-weight: 600;
+      line-height: 1.35;
+      overflow-wrap: anywhere;
+      text-align: left;
+      white-space: normal;
+    }
+
+    a.pill,
+    a.status-pill {
+      text-decoration: none;
+    }
+
+    a.pill:hover,
+    a.status-pill:hover {
+      border-color: var(--accent);
+      background: var(--accent-soft);
+      text-decoration: none;
+    }
+
+    .meta-text {
+      color: var(--muted);
+      font-size: 13px;
+      overflow-wrap: anywhere;
+    }
+
+    .status-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 10px;
+      max-width: 100%;
+    }
+
+    .status-pill {
+      display: inline-flex;
+      align-items: center;
+      max-width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      background: var(--panel);
+      color: var(--muted);
+      padding: 3px 7px;
+      font-size: 11px;
+      font-weight: 700;
+      line-height: 1.35;
+      overflow-wrap: anywhere;
+      text-align: left;
+      white-space: normal;
+    }
+
+    .item-refresh-button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      max-width: 100%;
+      min-height: 28px;
+      border: 1px solid var(--accent);
+      border-radius: 999px;
+      background: var(--accent);
+      color: #ffffff;
+      cursor: pointer;
+      font: inherit;
+      font-size: 12px;
+      font-weight: 900;
+      line-height: 1.35;
+      padding: 4px 8px;
+      white-space: normal;
+    }
+
+    .item-refresh-button:hover {
+      background: #6845ba;
+    }
+
+    .item-refresh-button:disabled {
+      border-color: var(--line);
+      background: #eee8df;
+      color: var(--muted);
+      cursor: wait;
+    }
+
+    .item-evaluate-button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      max-width: 100%;
+      min-height: 28px;
+      border: 1px solid #2f7358;
+      border-radius: 999px;
+      background: var(--mint);
+      color: #245f48;
+      cursor: pointer;
+      font: inherit;
+      font-size: 12px;
+      font-weight: 900;
+      line-height: 1.35;
+      padding: 4px 8px;
+      white-space: normal;
+    }
+
+    .item-evaluate-button:hover,
+    .item-evaluate-button[aria-expanded="true"] {
+      background: #d7f0e6;
+      border-color: #245f48;
+    }
+
+    .claude-evaluation {
+      display: grid;
+      gap: 12px;
+      max-width: 100%;
+      margin: 0 0 12px;
+      border: 1px solid #b6dfcc;
+      border-radius: 8px;
+      background: #f5fff9;
+      box-shadow: 0 8px 22px rgba(47, 115, 88, 0.08);
+      padding: 12px;
+    }
+
+    .claude-evaluation-header {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 8px;
+      max-width: 100%;
+    }
+
+    .claude-evaluation h3,
+    .claude-evaluation h4,
+    .claude-evaluation p {
+      margin: 0;
+    }
+
+    .claude-evaluation h3 {
+      color: #245f48;
+      font-size: 14px;
+      font-weight: 900;
+      line-height: 1.35;
+    }
+
+    .claude-evaluation-kicker {
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 800;
+      line-height: 1.35;
+      overflow-wrap: anywhere;
+    }
+
+    .claude-evaluation-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+      max-width: 100%;
+    }
+
+    .claude-evaluation-section {
+      display: grid;
+      gap: 7px;
+      min-width: 0;
+    }
+
+    .claude-evaluation-section h4 {
+      color: var(--text);
+      font-size: 12px;
+      font-weight: 900;
+      letter-spacing: 0;
+      line-height: 1.35;
+      text-transform: uppercase;
+    }
+
+    .claude-evaluation-section ul {
+      display: grid;
+      gap: 6px;
+      margin: 0;
+      padding-left: 18px;
+    }
+
+    .claude-evaluation-section li,
+    .claude-evaluation-section p {
+      color: var(--text);
+      font-size: 13px;
+      line-height: 1.45;
+      overflow-wrap: anywhere;
+    }
+
+    .claude-evaluation-status {
+      border: 1px dashed #9ccfba;
+      border-radius: 6px;
+      background: #ffffff;
+      color: var(--text);
+      font-size: 13px;
+      font-weight: 800;
+      line-height: 1.45;
+      padding: 9px 10px;
+      overflow-wrap: anywhere;
+    }
+
+    .claude-evaluation-output {
+      display: grid;
+      gap: 8px;
+      max-width: 100%;
+      border-radius: 6px;
+      background: #ffffff;
+      padding: 10px;
+    }
+
+    .claude-evaluation-output h4 {
+      margin: 4px 0 0;
+      color: #245f48;
+      font-size: 13px;
+      font-weight: 900;
+      line-height: 1.35;
+    }
+
+    .claude-evaluation-output p {
+      margin: 0;
+      color: var(--text);
+      font-size: 13px;
+      line-height: 1.5;
+      overflow-wrap: anywhere;
+      white-space: pre-wrap;
+    }
+
+    .claude-evaluation-output ul {
+      display: grid;
+      gap: 6px;
+      margin: 0;
+      padding-left: 18px;
+    }
+
+    .claude-evaluation-output li {
+      color: var(--text);
+      font-size: 13px;
+      line-height: 1.5;
+      overflow-wrap: anywhere;
+    }
+
+    .claude-evaluation-fallback {
+      display: grid;
+      gap: 10px;
+    }
+
+    .claude-next-action {
+      border-left: 4px solid #2f7358;
+      background: #ffffff;
+      border-radius: 6px;
+      padding: 9px 10px;
+    }
+
+    .status-active {
+      border-color: #f4cdbf;
+      background: var(--peach);
+      color: var(--warn);
+    }
+
+    .status-done {
+      border-color: #b6dfcc;
+      background: var(--mint);
+      color: var(--ok);
+    }
+
+    .status-blocked {
+      border-color: #edb9ac;
+      background: var(--peach);
+      color: var(--danger);
+    }
+
+    .next-action {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 10px;
+      align-items: center;
+      border: 2px solid var(--accent);
+      border-radius: 8px;
+      background: var(--accent-soft);
+      padding: 14px;
+      margin-bottom: 16px;
+      max-width: 100%;
+    }
+
+    .next-action strong {
+      display: block;
+      margin-bottom: 5px;
+      color: var(--accent);
+      font-size: 15px;
+      overflow-wrap: anywhere;
+    }
+
+    .next-action p {
+      margin: 0;
+      color: var(--text);
+      font-size: 13px;
+      overflow-wrap: anywhere;
+    }
+
+    .next-action .action-links {
+      justify-content: flex-start;
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    .next-action .action-links a.pill {
+      border: 1px solid var(--accent);
+      border-radius: 6px;
+      background: var(--accent);
+      color: #ffffff;
+      padding: 6px 11px;
+      font-weight: 700;
+      text-decoration: none;
+      white-space: nowrap;
+    }
+
+    .next-action .action-links a.pill:hover {
+      border-color: #6845ba;
+      background: #6845ba;
+      text-decoration: none;
+    }
+
+    .next-action.action-blocked {
+      border-color: #edb9ac;
+      background: var(--peach);
+    }
+
+    .next-action.action-active {
+      border-color: #f4cdbf;
+      background: #fff6ef;
+    }
+
+    .next-action.action-done {
+      border-color: #b6dfcc;
+      background: var(--mint);
+    }
+
+    .content-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 22px 14px;
+      max-width: 100%;
+    }
+
+    .section {
+      max-width: 100%;
+    }
+
+    .content-grid > .section {
+      padding-top: 18px;
+      border-top: 1px solid var(--line);
+    }
+
+    .section h3 {
+      margin: 0 0 8px;
+      font-size: 14px;
+      text-transform: none;
+      color: var(--muted);
+      letter-spacing: 0;
+      line-height: 1.3;
+    }
+
+    .section p {
+      margin: 0;
+      line-height: 1.5;
+      overflow-wrap: anywhere;
+    }
+
+    .verification {
+      margin-top: 12px;
+      border-top: 1px solid var(--line);
+      padding-top: 12px;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.45;
+    }
+
+    .reviewer-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      max-width: 100%;
+    }
+
+    .reviewer-link {
+      display: inline-flex;
+      align-items: center;
+      max-width: 100%;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: var(--sky);
+      color: var(--accent);
+      padding: 4px 9px;
+      font-size: 12px;
+      font-weight: 700;
+      line-height: 1.3;
+      overflow-wrap: anywhere;
+      white-space: normal;
+    }
+
+    a.reviewer-link:hover {
+      border-color: var(--accent);
+      background: var(--accent-soft);
+      text-decoration: none;
+    }
+
+    .comment-list {
+      display: grid;
+      gap: 10px;
+      max-width: 100%;
+    }
+
+    .comment-item {
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      background: var(--panel);
+      max-width: 100%;
+      overflow: hidden;
+    }
+
+    .comment-summary {
+      display: grid;
+      grid-template-columns: auto minmax(0, 1fr) auto;
+      align-items: start;
+      gap: 8px;
+      padding: 10px 12px;
+      cursor: pointer;
+      list-style: none;
+      max-width: 100%;
+    }
+
+    .comment-summary::-webkit-details-marker {
+      display: none;
+    }
+
+    .comment-toggle {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 24px;
+      height: 24px;
+      border: 1px solid var(--line);
+      border-radius: 4px;
+      background: var(--accent-soft);
+      color: var(--accent);
+      font-size: 14px;
+      font-weight: 800;
+      line-height: 1;
+    }
+
+    .comment-toggle::before {
+      content: "+";
+    }
+
+    .comment-item[open] .comment-toggle::before {
+      content: "-";
+    }
+
+    .comment-detail {
+      max-width: 100%;
+      padding: 0 10px 10px 36px;
+    }
+
+    .comment-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 6px;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 700;
+      max-width: 100%;
+      overflow-wrap: anywhere;
+    }
+
+    .comment-summary .comment-meta {
+      margin-bottom: 0;
+    }
+
+    .comment-status {
+      justify-self: end;
+    }
+
+    .comment-body {
+      margin: 0;
+      white-space: pre-wrap;
+      line-height: 1.45;
+      overflow-wrap: anywhere;
+    }
+
+    .comment-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    .comment-link,
+    .comment-answer {
+      display: inline-flex;
+      max-width: 100%;
+      border-radius: 6px;
+      border: 1px solid var(--line);
+      background: var(--panel);
+      padding: 4px 8px;
+      font-size: 12px;
+      font-weight: 700;
+      line-height: 1.3;
+      overflow-wrap: anywhere;
+      white-space: normal;
+    }
+
+    .comment-answer {
+      display: block;
+      margin-top: 8px;
+      color: var(--ok);
+      background: var(--mint);
+      border-color: #b6dfcc;
+      font-weight: 600;
+    }
+
+    .smoke-evidence {
+      display: grid;
+      gap: 8px;
+      max-width: 100%;
+    }
+
+    .smoke-note,
+    .smoke-blocker,
+    .status-note,
+    .status-blocker {
+      margin: 0;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.45;
+      overflow-wrap: anywhere;
+    }
+
+    .smoke-blocker,
+    .status-blocker {
+      color: var(--danger);
+      font-weight: 700;
+    }
+
+    .smoke-shot {
+      display: block;
+      width: 100%;
+      max-height: 260px;
+      object-fit: contain;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      background: var(--panel);
+    }
+
+    .note {
+      margin-top: 18px;
+      color: var(--muted);
+      font-size: 13px;
+      overflow-wrap: anywhere;
+    }
+
+    .empty {
+      display: none;
+      border: 1px dashed var(--line);
+      border-radius: var(--radius);
+      background: var(--panel);
+      padding: 24px;
+      color: var(--muted);
+      text-align: center;
+    }
+
+    @media (max-width: 920px) {
+      header,
+      main {
+        padding-left: 18px;
+        padding-right: 18px;
+      }
+
+      .header-inner,
+      .overview,
+      .content-grid,
+      .claude-evaluation-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .toolbar {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .header-inner {
+        display: grid;
+      }
+
+      .live-indicator {
+        justify-self: start;
+      }
+
+      .header-actions {
+        justify-content: flex-start;
+      }
+
+      .update-status {
+        margin-left: 0;
+        text-align: left;
+      }
+
+      .item-summary {
+        grid-template-columns: auto minmax(0, 1fr);
+      }
+
+      .summary-actions {
+        grid-column: 2;
+        justify-content: flex-start;
+      }
+
+      .item-summary .item-status {
+        grid-column: 2;
+      }
+
+      .item-header {
+        flex-direction: column;
+      }
+
+      .item-status {
+        flex: 1 1 auto;
+      }
+
+    }
+
+    @media (max-width: 520px) {
+      header {
+        padding: 22px 12px 18px;
+      }
+
+      main {
+        padding: 16px 12px 32px;
+      }
+
+      h1 {
+        font-size: 21px;
+      }
+
+      header {
+        padding-top: 16px;
+        padding-bottom: 12px;
+      }
+
+      .header-inner {
+        gap: 10px;
+      }
+
+      .subhead-description {
+        display: none;
+      }
+
+      .update-status {
+        flex-basis: auto;
+        max-width: none;
+      }
+
+      .toolbar {
+        gap: 8px;
+      }
+
+      #searchInput {
+        grid-column: 1 / -1;
+      }
+
+      .item-summary,
+      .item-detail {
+        padding: 12px;
+      }
+
+      .item-summary .item-status {
+        grid-column: 1 / -1;
+        justify-content: flex-start;
+        margin-top: 2px;
+      }
+
+      .summary-actions {
+        grid-column: 1 / -1;
+      }
+
+      .env-cell {
+        width: auto;
+        min-width: 34px;
+        padding: 0 4px;
+      }
+
+      .env-group {
+        grid-template-columns: 38px repeat(3, auto);
+      }
+
+      .env-group.env-check {
+        grid-template-columns: 42px repeat(2, auto);
+      }
+
+      .env-key-short {
+        display: none;
+      }
+
+      .env-key-long {
+        display: inline;
+        font-size: 10px;
+      }
+
+      .stats {
+        gap: 6px;
+      }
+
+      .stat {
+        flex: 1 1 92px;
+        justify-content: center;
+        min-height: 30px;
+        padding: 5px 7px;
+      }
+
+      .stat strong {
+        font-size: 14px;
+      }
+
+      .stat span {
+        font-size: 11px;
+      }
+
+      .next-action {
+        grid-template-columns: 1fr;
+      }
+
+      .action-list {
+        display: flex;
+        gap: 8px;
+        overflow-x: auto;
+        padding-bottom: 14px;
+        scroll-snap-type: x mandatory;
+        -webkit-overflow-scrolling: touch;
+      }
+
+      .action-card {
+        flex: 0 0 min(300px, 86vw);
+        grid-template-columns: 5px minmax(0, 1fr);
+        grid-template-rows: auto auto;
+        gap: 6px 10px;
+        scroll-snap-align: start;
+      }
+
+      .action-marker {
+        width: 5px;
+        height: 100%;
+        min-height: 42px;
+      }
+
+      .action-links {
+        grid-column: 2;
+        justify-content: flex-start;
+        margin-top: 4px;
+      }
+
+      .comment-item {
+        padding: 0;
+      }
+
+      .comment-summary {
+        grid-template-columns: auto minmax(0, 1fr);
+        padding: 8px;
+      }
+
+      .comment-status {
+        grid-column: 2;
+        justify-self: start;
+      }
+
+      .comment-detail {
+        padding: 0 8px 8px 34px;
+      }
+
+      .source-list {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="header-inner">
+      <div>
+        <h1>CHECK24 Energie Sentry Triage</h1>
+      </div>
+      <div class="header-actions">
+        <button class="update-button" id="manualUpdateButton" type="button">Update Report</button>
+        <span class="live-indicator" id="liveStatus" data-state="waiting">Connecting</span>
+        <span class="update-status" id="manualUpdateStatus">Manual update ready</span>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <div class="overview">
+      <div class="stats" id="stats" aria-label="Status shortcuts"></div>
+      <details class="action-panel" id="actionQueuePanel">
+        <summary class="panel-heading">
+          <span class="panel-title" id="actionQueueTitle">Action Queue</span>
+          <span class="panel-current-work" id="currentWorkSummary" hidden></span>
+          <span id="actionQueueCount"></span>
+        </summary>
+        <div class="action-list" id="actionQueue"></div>
+      </details>
+      <section id="sentryScopePanel" aria-label="Sentry Source Scope">
+        <div class="source-scope-heading">
+          <span class="source-scope-title">Sentry Source Scope</span>
+          <span class="source-scope-count" id="sentryScopeCount">Not verified</span>
+        </div>
+        <div class="source-list" id="sentryScopeList"></div>
+      </section>
+    </div>
+
+    <p class="note">
+      Live data source: <code>report-data.json</code>. No report data is stored in this app shell.
+    </p>
+  </main>
+
+  <script>
+    let lastUpdated = '';
+    let triageItems = [];
+    let statusByPre = {};
+    let sentryScopeItems = [];
+    let sentrySourceVerification = {};
+    let workflowState = {};
+    let activeClaudeEvaluationPre = '';
+    let claudeEvaluationsByPre = {};
+
+    const repoLabels = {
+      'enrg-web-frontend': 'Web Frontend',
+      'enrg-energymodule': 'EnergyModule',
+      'enrg-energycenter-rev': 'EnergyCenter REV',
+      'enrg-tarifvergleich': 'Tarifvergleich'
+    };
+
+    const reviewerSlackUrls = {
+      'Aleksandar Jaksic': 'https://grid-check24.enterprise.slack.com/team/U01C3GT9Q6L',
+      'Andreas Buchenrieder': 'https://grid-check24.enterprise.slack.com/team/U07UK6GT6N6',
+      'Daria Honcharuk': 'https://grid-check24.enterprise.slack.com/team/U07NC54458Q',
+      'Hamed Okhovvat': 'https://grid-check24.enterprise.slack.com/team/U06JXEUBQ0N',
+      'Hassan Farooq': 'https://grid-check24.enterprise.slack.com/team/UGAD7ELQK',
+      'Jan Herman': 'https://grid-check24.enterprise.slack.com/team/U034FUFT56F',
+      'Martin Schwarzböck Pino': 'https://grid-check24.enterprise.slack.com/team/U04QTP92AKA',
+      'Viktor Brusylovets': 'https://grid-check24.enterprise.slack.com/team/U01KKMQ4ZC6'
+    };
+
+    const jiraUrl = (pre) => `https://c24-energie.atlassian.net/browse/${pre}`;
+    const repoUrl = (repo) => `https://bitbucket.org/check24/${repo}`;
+    const isPrReference = (value) => /^\d+$/.test(String(value ?? ''));
+    const prUrl = (item) => isPrReference(item.pr) ? `https://bitbucket.org/check24/${item.repo}/pull-requests/${item.pr}` : `${repoUrl(item.repo)}/pull-requests/`;
+    const SENTRY_ISSUES_URL = 'https://check24-energie.sentry.io/issues/';
+    const sentrySearchUrl = (key) => `https://check24-energie.sentry.io/issues/?query=${encodeURIComponent(key)}`;
+    const sentryUrlFor = (item) => item.sentryUrl || (item.sentryKey ? sentrySearchUrl(item.sentryKey) : SENTRY_ISSUES_URL);
+    const commentStatusFor = (comment) => comment.status || (comment.answer ? 'Answered' : 'Open');
+    const commentUrlFor = (item, comment) => comment.url || (comment.id ? `${prUrl(item)}#comment-${encodeURIComponent(comment.id)}` : prUrl(item));
+
+    const scalarText = (value) => {
+      if (value === null || value === undefined) {
+        return '';
+      }
+      if (typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean') {
+        return String(value);
+      }
+      return '';
+    };
+    const normalize = (value) => scalarText(value).toLowerCase();
+    const firstPresent = (...values) => values.find((value) => scalarText(value).trim());
+    const isAssignedAwaySentry = (item, status = getStatus(item)) => {
+      const scopeValues = [
+        status.scopeStatus,
+        item.scopeStatus,
+        status.sentryScope,
+        item.sentryScope,
+        status.sentryScopeStatus,
+        item.sentryScopeStatus,
+        status.reason,
+        item.reason
+      ].map(normalize);
+      return Boolean(status.outOfScope || item.outOfScope || status.sentryOutOfScope || item.sentryOutOfScope) ||
+        scopeValues.some((value) => value === 'out-of-scope' || value === 'out-of-scope-not-in-union');
+    };
+    const hasPositiveWord = (value, word) => {
+      const normalized = normalize(value);
+      const escaped = word.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      return new RegExp(`\\b${escaped}\\b`).test(normalized) &&
+        !new RegExp(`\\b(?:not|no)\\s+${escaped}\\b`).test(normalized);
+    };
+    const hasNegativeWord = (value, word) => {
+      const normalized = normalize(value);
+      const escaped = word.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      return new RegExp(`\\b(?:not|no)\\s+${escaped}\\b`).test(normalized);
+    };
+    const escapeHtml = (value) => String(value ?? '')
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#039;');
+    const getStatus = (item) => statusByPre[item.pre] ?? {
+      jira: 'Unknown',
+      jiraCategory: 'unknown',
+      pr: 'UNKNOWN',
+      sentry: 'unknown'
+    };
+    const prWorkflowState = (item = {}, status = getStatus(item)) => {
+      const explicit = firstPresent(status.prState, status.prStatus, item.prState, item.prStatus, '');
+      if (explicit) {
+        return normalize(explicit);
+      }
+      const raw = firstPresent(status.pr, item.pr, '');
+      return /^[a-z\s]+$/i.test(String(raw).trim()) ? normalize(raw) : '';
+    };
+    const workflowIsVisible = () => {
+      const status = normalize(workflowState.status);
+      return Boolean(
+        status &&
+        status !== 'idle' &&
+        (
+          workflowState.step ||
+          workflowState.phase ||
+          workflowState.title ||
+          workflowState.message ||
+          workflowState.pre ||
+          workflowState.sentryKey ||
+          workflowState.sentryIssueId ||
+          workflowState.url
+        )
+      );
+    };
+    const workflowStepLabel = () => firstPresent(
+      workflowState.phase,
+      workflowState.title,
+      workflowState.step,
+      'Workflow update'
+    );
+    const workflowTargetLabel = () => firstPresent(
+      workflowState.pre,
+      workflowState.sentryKey,
+      workflowState.sentryIssueId,
+      workflowState.repo && workflowState.pr ? `${workflowState.repo} #${workflowState.pr}` : '',
+      workflowState.repo,
+      'global'
+    );
+    const workflowStatusClass = () => {
+      const status = normalize(workflowState.status);
+      if (status.includes('block') || status.includes('fail') || status.includes('error')) {
+        return 'status-blocked';
+      }
+      if (status.includes('success') || status.includes('done') || status.includes('complete')) {
+        return 'status-done';
+      }
+      return 'status-active';
+    };
+    const workflowIsCompleted = () => {
+      const status = normalize(workflowState.status);
+      return status.includes('success') || status.includes('done') || status.includes('complete');
+    };
+    const workflowIsActiveTarget = () => workflowIsVisible() && !workflowIsCompleted();
+    const normalizedWorkflowUrl = () => normalize(workflowState.url || '');
+    const workflowMatchesSentryIdentity = (candidate) => {
+      const workflowSentryKey = normalize(workflowState.sentryKey);
+      const workflowSentryIssueId = normalize(workflowState.sentryIssueId);
+      const workflowUrl = normalizedWorkflowUrl();
+      const candidateKey = normalize(firstPresent(candidate.sentryKey, candidate.shortId, candidate.key));
+      const candidateId = normalize(firstPresent(candidate.sentryIssueId, candidate.issueId, candidate.id));
+      const candidateUrl = normalize(firstPresent(candidate.sentryUrl, candidate.permalink, candidate.url));
+      return Boolean(
+        (workflowSentryKey && workflowSentryKey === candidateKey) ||
+        (workflowSentryIssueId && workflowSentryIssueId === candidateId) ||
+        (workflowUrl && candidateUrl && workflowUrl === candidateUrl) ||
+        (workflowUrl && candidateId && workflowUrl.includes(candidateId)) ||
+        (workflowUrl && candidateKey && workflowUrl.includes(candidateKey))
+      );
+    };
+    const workflowMatchesItem = (item) => {
+      if (!workflowIsActiveTarget() || !item) {
+        return false;
+      }
+      const workflowPre = normalize(workflowState.pre);
+      const workflowSentryKey = normalize(workflowState.sentryKey);
+      const workflowRepo = normalize(workflowState.repo);
+      const workflowPr = normalize(workflowState.pr);
+      if (workflowPre && workflowPre === normalize(item.pre)) {
+        return true;
+      }
+      if (workflowSentryKey && workflowSentryKey === normalize(item.sentryKey)) {
+        return true;
+      }
+      if (workflowMatchesSentryIdentity(item)) {
+        return true;
+      }
+      return Boolean(
+        workflowRepo &&
+        workflowPr &&
+        workflowRepo === normalize(item.repo) &&
+        workflowPr === normalize(item.pr || item.prNumber)
+      );
+    };
+    const workflowTargetUrl = () => {
+      if (workflowState.url && /^https?:\/\//i.test(workflowState.url)) {
+        return workflowState.url;
+      }
+      if (workflowState.pre && /^PRE-\d+$/i.test(workflowState.pre)) {
+        return jiraUrl(workflowState.pre.toUpperCase());
+      }
+      if (workflowState.repo && workflowState.pr) {
+        return `https://bitbucket.org/check24/${workflowState.repo}/pull-requests/${workflowState.pr}`;
+      }
+      if (workflowState.sentryIssueId) {
+        return `https://check24-energie.sentry.io/issues/${workflowState.sentryIssueId}/`;
+      }
+      if (workflowState.sentryKey) {
+        return sentrySearchUrl(workflowState.sentryKey);
+      }
+      return '';
+    };
+    const renderCurrentWork = () => {
+      const currentWork = document.getElementById('currentWorkSummary');
+      if (!currentWork) {
+        return;
+      }
+      if (!workflowIsVisible()) {
+        currentWork.hidden = true;
+        currentWork.textContent = '';
+        currentWork.className = 'panel-current-work';
+        return;
+      }
+      currentWork.hidden = false;
+      currentWork.className = `panel-current-work ${workflowStatusClass()}`;
+      const step = workflowState.step ? `${workflowState.step} ` : '';
+      const prefix = workflowIsCompleted()
+        ? 'Last'
+        : workflowStatusClass() === 'status-blocked'
+          ? 'Blocked'
+          : 'Working';
+      currentWork.textContent = `${prefix}: ${step}${workflowStepLabel()} · ${workflowTargetLabel()}`;
+      currentWork.title = workflowState.message || currentWork.textContent;
+    };
+    const setWorkflowState = (state = {}) => {
+      workflowState = state && typeof state === 'object' ? state : {};
+      const panel = document.getElementById('workflowPanel');
+      const kicker = document.getElementById('workflowKicker');
+      const title = document.getElementById('workflowTitle');
+      const message = document.getElementById('workflowMessage');
+      const link = document.getElementById('workflowLink');
+      if (!panel || !kicker || !title || !message || !link) {
+        renderItems();
+        return;
+      }
+      const visible = workflowIsVisible();
+      panel.classList.toggle('workflow-visible', visible);
+      if (!visible) {
+        return;
+      }
+      const step = workflowState.step ? `${workflowState.step} ` : '';
+      const target = workflowState.pre || workflowState.sentryKey || (workflowState.repo && workflowState.pr ? `${workflowState.repo} #${workflowState.pr}` : '');
+      kicker.textContent = `${workflowState.status || 'info'}${target ? ` · ${target}` : ''}`;
+      title.textContent = `${step}${workflowState.title || 'Workflow update'}`;
+      message.textContent = workflowState.message || 'Automation status updated.';
+      const targetUrl = workflowTargetUrl();
+      if (targetUrl) {
+        link.href = targetUrl;
+        link.style.display = 'inline-flex';
+      } else {
+        link.removeAttribute('href');
+        link.style.display = 'none';
+      }
+      renderItems();
+    };
+    const isResolvedSentry = (item) => normalize(getStatus(item).sentry) === 'resolved';
+    const releaseMainStatus = (status, item = {}) => {
+      if (status.releaseMain) {
+        return status.releaseMain;
+      }
+      const merge = normalize(status.merge);
+      const release = normalize(status.release);
+      const prState = prWorkflowState(item, status);
+      if (prState === 'declined') {
+        return 'Declined';
+      }
+      if (prState === 'merged' || hasPositiveWord(merge, 'merged') || release === 'merged') {
+        return 'Merged';
+      }
+      if (prState === 'open' || hasNegativeWord(merge, 'merged') || release.includes('not')) {
+        return 'Not merged';
+      }
+      return '';
+    };
+    const releaseBuildStatus = (status) => {
+      if (status.releaseBuild) {
+        return status.releaseBuild;
+      }
+      const releaseMain = releaseMainStatus(status);
+      const production = normalize(status.production);
+      if (releaseMain === 'Not merged' || releaseMain === 'Declined') {
+        return 'Not built';
+      }
+      if (hasPositiveWord(production, 'built')) {
+        return 'Built';
+      }
+      if (releaseMain === 'Merged') {
+        return 'Not verified';
+      }
+      return '';
+    };
+    const releaseActivationStatus = (status) => {
+      if (status.releaseActivated) {
+        return status.releaseActivated;
+      }
+      const releaseMain = releaseMainStatus(status);
+      const production = normalize(status.production);
+      if (releaseMain === 'Not merged' || releaseMain === 'Declined' || production.includes('not released')) {
+        return 'Not activated';
+      }
+      if (hasPositiveWord(production, 'released') || hasPositiveWord(production, 'activated')) {
+        return 'Activated';
+      }
+      if (releaseMain === 'Merged') {
+        return 'Not verified';
+      }
+      return '';
+    };
+    const stagingBuildStatus = (status) => {
+      if (status.stagingBuild) {
+        return status.stagingBuild;
+      }
+      if (status.staging === 'Not merged' || status.staging === 'Conflict') {
+        return 'Not built';
+      }
+      return status.staging ? 'Not verified' : '';
+    };
+    const stagingActivationStatus = (status) => {
+      if (status.stagingActivated) {
+        return status.stagingActivated;
+      }
+      if (status.staging === 'Not merged' || status.staging === 'Conflict') {
+        return 'Not activated';
+      }
+      return status.staging ? 'Not verified' : '';
+    };
+    const regressionStatusFor = (item, status = getStatus(item)) => {
+      const explicit = firstPresent(status.regressionStatus, status.regression, item.regressionStatus, item.regression);
+      if (explicit) {
+        return explicit;
+      }
+      const blocker = firstPresent(status.regressionBlocker, item.regressionBlocker);
+      if (blocker) {
+        return 'Blocked';
+      }
+      const evidenceText = normalize([
+        status.regressionEvidence,
+        status.regressionNote,
+        item.regressionEvidence,
+        item.regressionNote,
+        item.verification
+      ].filter(Boolean).join(' '));
+      if (!evidenceText.includes('regression')) {
+        const prState = prWorkflowState(item, status);
+        return item.pr || prState === 'open' || prState === 'merged' || item.verification ? 'Not verified' : '';
+      }
+      if (evidenceText.includes('failed') || evidenceText.includes('failure')) {
+        return 'Failed';
+      }
+      if (evidenceText.includes('blocked') || evidenceText.includes('could not run') || evidenceText.includes('cannot run')) {
+        return 'Blocked';
+      }
+      if (evidenceText.includes('not verified')) {
+        return 'Not verified';
+      }
+      if (evidenceText.includes('not run')) {
+        return 'Not run';
+      }
+      if (evidenceText.includes('unavailable')) {
+        return 'Unavailable';
+      }
+      if (/\bpass(ed|ing)?\b/.test(evidenceText) || evidenceText.includes('green')) {
+        return 'Passed';
+      }
+      return 'Recorded';
+    };
+    const regressionMetaFor = (item, status = getStatus(item)) => {
+      const blocker = firstPresent(status.regressionBlocker, item.regressionBlocker) || '';
+      const note = firstPresent(status.regressionNote, item.regressionNote) || '';
+      const evidence = firstPresent(status.regressionEvidence, item.regressionEvidence) || '';
+      return {
+        status: regressionStatusFor(item, status),
+        note,
+        evidence,
+        blocker
+      };
+    };
+    const notVerifiedFields = (status) => [
+      ['Release/Main build', releaseBuildStatus(status)],
+      ['Release/Main activation', releaseActivationStatus(status)],
+      ['Staging build', stagingBuildStatus(status)],
+      ['Staging activation', stagingActivationStatus(status)]
+    ].filter(([, value]) => normalize(value) === 'not verified');
+    const hasNotVerifiedStatus = (status) => notVerifiedFields(status).length > 0;
+    const actionableCommentFor = (item) => (item.prComments ?? []).find((comment) => {
+      const status = normalize(commentStatusFor(comment));
+      return status.includes('needs answer') ||
+        status.includes('request changes') ||
+        status.includes('decision needed') ||
+        status.includes('open');
+    });
+    const isPassed = (value) => normalize(value).includes('passed');
+    const isFailed = (value) => normalize(value).includes('failed');
+    const isPending = (value) => normalize(value).includes('pending');
+    const actionToneClass = (action) => `action-${action.tone}`;
+    const deriveNextAction = (item) => {
+      const status = getStatus(item);
+      const comment = actionableCommentFor(item);
+      const sync = status.sync || item.prCommentStatus || '';
+      const base = {
+        priority: 9,
+        tone: 'done',
+        label: 'Tracked',
+        title: 'No immediate action',
+        body: status.sync || 'No blocker recorded in the report.',
+        links: [
+          { label: 'Jira', href: jiraUrl(item.pre) },
+          { label: item.pr ? `PR #${item.pr}` : 'PRs', href: prUrl(item) }
+        ]
+      };
+
+      if (comment) {
+        return {
+          priority: 0,
+          tone: 'blocked',
+          label: 'Needs answer',
+          title: 'Answer PR comment',
+          body: `${comment.author}: ${comment.comment}`,
+          links: [
+            { label: comment.id ? `Comment #${comment.id}` : 'PR comments', href: commentUrlFor(item, comment) },
+            { label: `PR #${item.pr}`, href: prUrl(item) },
+            { label: item.pre, href: jiraUrl(item.pre) }
+          ]
+        };
+      }
+
+      if (isFailed(status.jenkins)) {
+        return {
+          priority: 1,
+          tone: 'blocked',
+          label: 'Jenkins failed',
+          title: 'Inspect latest Jenkins failure',
+          body: status.sync || 'Latest Jenkins build is failed; inspect the build before staging or resolving.',
+          links: [
+            { label: `PR #${item.pr}`, href: prUrl(item) },
+            { label: item.pre, href: jiraUrl(item.pre) }
+          ]
+        };
+      }
+
+      const regression = regressionStatusFor(item, status);
+      const regressionNormalized = normalize(regression);
+      if (regressionNormalized.includes('failed') || regressionNormalized.includes('blocked')) {
+        return {
+          priority: 1,
+          tone: 'blocked',
+          label: 'Regression issue',
+          title: 'Inspect regression status',
+          body: status.sync || 'Regression status is not green; inspect the evidence before staging, release, or Sentry resolution.',
+          links: [
+            { label: item.pr ? `PR #${item.pr}` : 'PRs', href: prUrl(item) },
+            { label: item.pre, href: jiraUrl(item.pre) }
+          ]
+        };
+      }
+
+      if (normalize(status.staging).includes('conflict')) {
+        return {
+          priority: 1,
+          tone: 'blocked',
+          label: 'Staging conflict',
+          title: 'Resolve staging cherry-pick conflict',
+          body: status.sync || item.stagingResult || 'The fix is not safely on staging yet.',
+          links: [
+            { label: `PR #${item.pr}`, href: prUrl(item) },
+            { label: item.pre, href: jiraUrl(item.pre) }
+          ]
+        };
+      }
+
+      if (isFailed(status.sonar)) {
+        return {
+          priority: 2,
+          tone: 'blocked',
+          label: 'Sonar failed',
+          title: 'Fix Sonar quality gate',
+          body: status.sync || 'Sonar is failing; inspect and amend if the finding is safe to resolve.',
+          links: [
+            { label: `PR #${item.pr}`, href: prUrl(item) },
+            { label: item.pre, href: jiraUrl(item.pre) }
+          ]
+        };
+      }
+
+      if (isPending(status.sonar)) {
+        return {
+          priority: 3,
+          tone: 'active',
+          label: 'Waiting on Sonar',
+          title: 'Wait for Sonar rerun',
+          body: status.sync || 'Jenkins is green, but Sonar has not reported a final state yet.',
+          links: [
+            { label: `PR #${item.pr}`, href: prUrl(item) },
+            { label: item.pre, href: jiraUrl(item.pre) }
+          ]
+        };
+      }
+
+      if (regressionNormalized.includes('not verified') || regressionNormalized.includes('not run') || regressionNormalized.includes('unavailable')) {
+        return {
+          priority: 4,
+          tone: 'active',
+          label: 'Regression not verified',
+          title: 'Verify regression status',
+          body: status.sync || 'Regression status needs evidence; run or gather the relevant regression check and update the report.',
+          links: [
+            { label: item.pr ? `PR #${item.pr}` : 'PRs', href: prUrl(item) },
+            { label: item.pre, href: jiraUrl(item.pre) }
+          ]
+        };
+      }
+
+      const notVerified = notVerifiedFields(status);
+      if (notVerified.length) {
+        return {
+          priority: 4,
+          tone: 'active',
+          label: 'Not verified',
+          title: 'Verify environment status',
+          body: `${notVerified.map(([label]) => label).join(', ')} ${notVerified.length === 1 ? 'is' : 'are'} not verified; check Jenkins/build/activation evidence and update the report.`,
+          links: [
+            { label: item.pr ? `PR #${item.pr}` : 'PRs', href: prUrl(item) },
+            { label: item.pre, href: jiraUrl(item.pre) }
+          ]
+        };
+      }
+
+      if (prWorkflowState(item, status) === 'open' && isPassed(status.jenkins) && isPassed(status.sonar)) {
+        return {
+          priority: 4,
+          tone: 'active',
+          label: 'Green PR',
+          title: 'Move PR toward merge',
+          body: status.sync || 'Checks are green; keep reviewer/merge state moving.',
+          links: [
+            { label: `PR #${item.pr}`, href: prUrl(item) },
+            { label: item.pre, href: jiraUrl(item.pre) }
+          ]
+        };
+      }
+
+      if (prWorkflowState(item, status) === 'open') {
+        return {
+          priority: 5,
+          tone: 'active',
+          label: 'Open PR',
+          title: 'Keep PR moving',
+          body: status.sync || 'PR is still open; continue checking reviewers, comments, and CI.',
+          links: [
+            { label: `PR #${item.pr}`, href: prUrl(item) },
+            { label: item.pre, href: jiraUrl(item.pre) }
+          ]
+        };
+      }
+
+      if (prWorkflowState(item, status) === 'merged' && (releaseBuildStatus(status) !== 'Built' || releaseActivationStatus(status) !== 'Activated')) {
+        return {
+          priority: 6,
+          tone: 'active',
+          label: 'Release check',
+          title: 'Verify release build and activation',
+          body: status.sync || 'The PR is merged; release build or activation is not fully verified.',
+          links: [
+            { label: `PR #${item.pr}`, href: prUrl(item) },
+            { label: item.pre, href: jiraUrl(item.pre) }
+          ]
+        };
+      }
+
+      if (status.sentry === 'unresolved') {
+        return {
+          ...base,
+          priority: 7,
+          tone: 'active',
+          label: 'Sentry unresolved',
+          title: 'Recheck production before resolving Sentry',
+          body: status.sync || 'Sentry is still recorded unresolved; only resolve after production build and activation are verified.'
+        };
+      }
+
+      return base;
+    };
+    const isActive = (item) => {
+      const status = getStatus(item);
+      return prWorkflowState(item, status) === 'open' ||
+        normalize(status.jiraCategory) !== 'done' ||
+        normalize(status.sentry) === 'unresolved';
+    };
+    const statusTone = (kind, value, category) => {
+      if (kind === 'pr' && value === 'OPEN') {
+        return 'status-active';
+      }
+      if (kind === 'pr' && value === 'DECLINED') {
+        return 'status-blocked';
+      }
+      if (kind === 'jira' && normalize(category) !== 'done') {
+        return 'status-active';
+      }
+      if (kind === 'sentry' && value === 'unresolved') {
+        return 'status-active';
+      }
+      if ((kind === 'pr' && value === 'MERGED') || (kind === 'jira' && category === 'done')) {
+        return 'status-done';
+      }
+      return '';
+    };
+    const detailTone = (value) => {
+      const normalized = normalize(value);
+      if (!normalized) {
+        return '';
+      }
+      if (normalized.includes('failed') || normalized.includes('request changes') || normalized.includes('decision needed') || normalized.includes('blocked') || normalized.includes('declined') || normalized.includes('conflict')) {
+        return 'status-blocked';
+      }
+      if (normalized.includes('pending') || normalized.includes('comments in pr') || normalized.includes('not merged') || normalized.includes('not built') || normalized.includes('not activated') || normalized.includes('not verified') || normalized.includes('not released') || normalized.includes('not staged') || normalized.includes('not exposed') || normalized.includes('unavailable') || normalized.includes('not run') || normalized.includes('see pr') || normalized.includes('recorded')) {
+        return 'status-active';
+      }
+      if (normalized.includes('passed') || normalized.includes('approved') || normalized.includes('merged') || normalized.includes('released') || normalized.includes('built') || normalized.includes('activated') || normalized.includes('staged')) {
+        return 'status-done';
+      }
+      return '';
+    };
+    const sentrySummaryStatus = (item, status = getStatus(item)) => {
+      const explicit = firstPresent(
+        status.sentrySubstatus,
+        item.sentrySubstatus,
+        status.sentryStatusDetails?.substatus,
+        item.sentryStatusDetails?.substatus
+      );
+      if (explicit && normalize(explicit) !== 'unknown') {
+        return explicit;
+      }
+      const sentry = firstPresent(status.sentry, item.sentry, 'unknown');
+      const sentryEvidence = normalize([
+        status.sentryEvidence,
+        status.lastVerifiedSentryEvidence,
+        item.sentryEvidence,
+        item.lastVerifiedSentryEvidence,
+        status.regressionEvidence,
+        item.regressionEvidence
+      ].filter(Boolean).join(' '));
+      if (normalize(sentry) === 'unresolved') {
+        if (sentryEvidence.includes('regressed')) {
+          return 'regressed';
+        }
+        if (sentryEvidence.includes('ongoing')) {
+          return 'ongoing';
+        }
+      }
+      return sentry;
+    };
+    const parseSentryLastSeen = (value) => {
+      const text = String(value ?? '');
+      const match = text.match(/(?:lastSeen|last seen|last happened|last occurrence|last event)(?:\/firstSeen)?\s*[=:]?\s*([0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(?:\.[0-9]+)?(?:Z|[+-][0-9]{2}:?[0-9]{2})?)/i);
+      return match?.[1] || '';
+    };
+    const pluralize = (value, unit) => `${value} ${unit}${value === 1 ? '' : 's'}`;
+    const formatRelativeAge = (date) => {
+      const diffMs = Date.now() - date.getTime();
+      const isFuture = diffMs < 0;
+      const absMs = Math.abs(diffMs);
+      const minutes = Math.floor(absMs / 60000);
+      const hours = Math.floor(minutes / 60);
+      const days = Math.floor(hours / 24);
+
+      if (minutes < 1) {
+        return isFuture ? 'in less than 1 minute' : 'less than 1 minute ago';
+      }
+
+      const suffix = isFuture ? '' : ' ago';
+      const prefix = isFuture ? 'in ' : '';
+      if (days > 0) {
+        const remainingHours = hours % 24;
+        return `${prefix}${pluralize(days, 'day')}${remainingHours ? ` ${pluralize(remainingHours, 'hour')}` : ''}${suffix}`;
+      }
+      if (hours > 0) {
+        const remainingMinutes = minutes % 60;
+        return `${prefix}${pluralize(hours, 'hour')}${remainingMinutes ? ` ${pluralize(remainingMinutes, 'minute')}` : ''}${suffix}`;
+      }
+      return `${prefix}${pluralize(minutes, 'minute')}${suffix}`;
+    };
+    const parseSentryDate = (value) => {
+      if (!value) {
+        return null;
+      }
+      const raw = String(value);
+      const normalized = /(?:Z|[+-][0-9]{2}:?[0-9]{2})$/.test(raw) ? raw : `${raw}Z`;
+      const date = new Date(normalized);
+      if (Number.isNaN(date.getTime())) {
+        return null;
+      }
+      return date;
+    };
+    const formatSentryLastSeen = (value) => {
+      const date = parseSentryDate(value);
+      if (!date) {
+        return value ? String(value) : '';
+      }
+      return formatRelativeAge(date);
+    };
+    const formatAbsoluteSentryDate = (value) => {
+      const date = parseSentryDate(value);
+      if (!date) {
+        return value ? String(value) : '';
+      }
+      return new Intl.DateTimeFormat(undefined, {
+        dateStyle: 'medium',
+        timeStyle: 'short'
+      }).format(date);
+    };
+    const sentryLastHappenedFor = (item, status = getStatus(item)) => {
+      const explicit = firstPresent(
+        status.sentryLastSeen,
+        item.sentryLastSeen,
+        status.lastSeen,
+        item.lastSeen,
+        status.sentryStatusDetails?.lastSeen,
+        item.sentryStatusDetails?.lastSeen
+      );
+      const raw = explicit || [
+        status.lastVerifiedSentryEvidence,
+        item.lastVerifiedSentryEvidence,
+        status.sentryEvidence,
+        item.sentryEvidence,
+        status.regressionEvidence,
+        item.regressionEvidence
+      ].map(parseSentryLastSeen).find(Boolean);
+      return {
+        raw: raw || '',
+        label: raw ? formatSentryLastSeen(raw) : '',
+        absoluteLabel: raw ? formatAbsoluteSentryDate(raw) : ''
+      };
+    };
+    const isMergedPr = (status, item = {}) => {
+      const pr = prWorkflowState(item, status) || normalize(status.pr);
+      return pr === 'merged' || hasPositiveWord(status.merge, 'merged') || hasPositiveWord(status.releaseMain, 'merged');
+    };
+    const blockedCheck = (blockers = [], hrefs = []) => {
+      const blocker = firstPresent(...blockers);
+      const explicitBlocked = blockers.some((value) => normalize(value).includes('blocked'));
+      if (!blocker && !explicitBlocked) {
+        return null;
+      }
+      return {
+        value: 'Blocked',
+        href: firstPresent(...hrefs, '')
+      };
+    };
+    const prBlockedCheck = (item, status = getStatus(item)) => blockedCheck(
+      [
+        status.prBlocker,
+        item.prBlocker,
+        status.prLookupBlocker,
+        item.prLookupBlocker,
+        status.prCreationBlocker,
+        item.prCreationBlocker
+      ],
+      [
+        status.prBlockerUrl,
+        item.prBlockerUrl,
+        status.prUrl,
+        item.prUrl,
+        item.pullRequestUrl,
+        item.bitbucketPrUrl,
+        status.rawCreatePrUrl,
+        item.rawCreatePrUrl,
+        status.recommendedCreatePrUrl,
+        item.recommendedCreatePrUrl,
+        prUrl(item)
+      ]
+    );
+    const sonarBlockedCheck = (item, status = getStatus(item)) => blockedCheck(
+      [
+        status.sonarBlocker,
+        item.sonarBlocker,
+        status.sonarEvidence && normalize(status.sonarEvidence).includes('blocked') ? status.sonarEvidence : '',
+        item.sonarEvidence && normalize(item.sonarEvidence).includes('blocked') ? item.sonarEvidence : ''
+      ],
+      [
+        status.sonarBlockerUrl,
+        item.sonarBlockerUrl,
+        status.sonarUrl,
+        item.sonarUrl,
+        status.sonarQubeUrl,
+        item.sonarQubeUrl
+      ]
+    );
+    const prSummaryStatus = (item, status = getStatus(item)) => {
+      const review = normalize(firstPresent(status.review, item.review, ''));
+      const requestChanges = normalize(firstPresent(status.requestChangesState, item.requestChangesState, ''));
+      const approval = normalize(firstPresent(status.approvalState, item.approvalState, ''));
+      const commentSummary = normalize(firstPresent(status.prCommentStatus, item.prCommentStatus, ''));
+      const comments = [
+        ...(Array.isArray(item.prComments) ? item.prComments : []),
+        ...(Array.isArray(status.prComments) ? status.prComments : [])
+      ];
+      const resolvedCommentStatus = (value) => {
+        const normalized = normalize(value);
+        return normalized.includes('resolved') || normalized.includes('answered') || normalized.includes('done');
+      };
+      const openCommentStatus = (value) => {
+        const normalized = normalize(value);
+        if (!normalized) {
+          return false;
+        }
+        if (resolvedCommentStatus(normalized)) {
+          return false;
+        }
+        return normalized.includes('open') ||
+          normalized.includes('needs answer') ||
+          normalized.includes('request changes') ||
+          normalized.includes('decision needed') ||
+          normalized.includes('unresolved') ||
+          normalized.includes('blocked');
+      };
+      const openCommentText = (value) => {
+        const normalized = normalize(value);
+        if (!normalized) {
+          return false;
+        }
+        if (normalized.includes('no open') || normalized.includes('no new actionable') || normalized.includes('no actionable') || normalized.includes('resolved/answered')) {
+          return false;
+        }
+        return normalized.includes('open comment') ||
+          normalized.includes('unresolved comment') ||
+          normalized.includes('needs answer') ||
+          normalized.includes('request changes') ||
+          normalized.includes('decision needed');
+      };
+      const hasOpenComments = comments.some((comment) => openCommentStatus(comment.status || comment.state));
+
+      if (prBlockedCheck(item, status)) {
+        return 'Blocked';
+      }
+      if (isMergedPr(status, item)) {
+        return 'merged';
+      }
+      if (prWorkflowState(item, status) === 'declined') {
+        return 'declined';
+      }
+      if ((review.includes('request changes') && !hasNegativeWord(review, 'request')) ||
+        (requestChanges.includes('request') && !hasNegativeWord(requestChanges, 'request'))) {
+        return 'change requested';
+      }
+      if (review.includes('decision needed') || commentSummary.includes('decision needed')) {
+        return 'commented';
+      }
+      if (hasOpenComments || openCommentText(review) || openCommentText(commentSummary)) {
+        return 'commented';
+      }
+      if (review.includes('approved') || approval.includes('approved')) {
+        return 'approved';
+      }
+      if (!item.pr && !status.pr) {
+        return 'no PR';
+      }
+      return 'open';
+    };
+    const reviewerTextFor = (item, status = getStatus(item)) => {
+      const reviewers = status.reviewers?.length ? status.reviewers : (item.reviewers ?? []);
+      return reviewers.length ? reviewers.join(', ') : 'no reviewer';
+    };
+    const jenkinsStatusValue = (value) => {
+      if (value && typeof value === 'object') {
+        return firstPresent(value.status, value.name, value.label, value.result, value.state, 'Recorded');
+      }
+      return value;
+    };
+    const jenkinsUrlValue = (value) => {
+      if (value && typeof value === 'object') {
+        return firstPresent(value.url, value.href, '');
+      }
+      return '';
+    };
+    const jenkinsBlockedCheck = (item, status = getStatus(item)) => {
+      const latest = status.latestJenkinsBuild || item.latestJenkinsBuild;
+      return blockedCheck(
+        [
+          status.jenkinsBlocker,
+          item.jenkinsBlocker,
+          latest?.blocker,
+          normalize(status.jenkins) === 'blocked' ? status.jenkins : '',
+          normalize(item.jenkins) === 'blocked' ? item.jenkins : ''
+        ],
+        [
+          status.jenkinsBlockerUrl,
+          item.jenkinsBlockerUrl,
+          jenkinsUrlValue(latest),
+          status.jenkinsUrl,
+          item.jenkinsUrl,
+          'https://jenkins.energie.check24.de/'
+        ]
+      );
+    };
+    const releaseJenkinsBlockedCheck = (item, status = getStatus(item)) => blockedCheck(
+      [
+        status.releaseJenkinsBlocker,
+        item.releaseJenkinsBlocker,
+        status.releaseBuildBlocker,
+        item.releaseBuildBlocker,
+        status.productionBuildBlocker,
+        item.productionBuildBlocker,
+        normalize(status.releaseJenkins) === 'blocked' ? status.releaseJenkins : '',
+        normalize(item.releaseJenkins) === 'blocked' ? item.releaseJenkins : '',
+        normalize(status.releaseBuild) === 'blocked' ? status.releaseBuild : '',
+        normalize(item.releaseBuild) === 'blocked' ? item.releaseBuild : ''
+      ],
+      [
+        status.releaseJenkinsBlockerUrl,
+        item.releaseJenkinsBlockerUrl,
+        status.releaseBuildBlockerUrl,
+        item.releaseBuildBlockerUrl,
+        status.productionBuildBlockerUrl,
+        item.productionBuildBlockerUrl,
+        status.releaseJenkinsUrl,
+        item.releaseJenkinsUrl,
+        status.releaseBuildUrl,
+        item.releaseBuildUrl,
+        status.productionBuildUrl,
+        item.productionBuildUrl,
+        'https://jenkins.energie.check24.de/'
+      ]
+    );
+    const stagingBlockedCheck = (item, status = getStatus(item)) => {
+      const smoke = item.stagingSmoke || status.stagingSmoke || {};
+      return blockedCheck(
+        [
+          status.stagingJenkinsBlocker,
+          item.stagingJenkinsBlocker,
+          status.stagingBuildBlocker,
+          item.stagingBuildBlocker,
+          status.stagingBlocker,
+          item.stagingBlocker,
+          status.stagingActivationBlocker,
+          item.stagingActivationBlocker,
+          smoke.blocker,
+          normalize(status.stagingBuild) === 'blocked' ? status.stagingBuild : '',
+          normalize(item.stagingBuild) === 'blocked' ? item.stagingBuild : '',
+          normalize(status.staging) === 'blocked' ? status.staging : '',
+          normalize(item.staging) === 'blocked' ? item.staging : ''
+        ],
+        [
+          status.stagingJenkinsUrl,
+          item.stagingJenkinsUrl,
+          status.stagingBuildUrl,
+          item.stagingBuildUrl,
+          status.stagingBlockerUrl,
+          item.stagingBlockerUrl,
+          status.stagingUrl,
+          item.stagingUrl,
+          'https://jenkins.energie.check24.de/'
+        ]
+      );
+    };
+    const releaseJenkinsStatus = (item, status = getStatus(item)) => firstPresent(
+      status.releaseJenkins,
+      item.releaseJenkins,
+      status.releaseBuild,
+      item.releaseBuild,
+      status.productionBuild,
+      item.productionBuild,
+      'Not verified'
+    );
+    const releaseJenkinsUrl = (item, status = getStatus(item)) => firstPresent(
+      status.releaseJenkinsUrl,
+      item.releaseJenkinsUrl,
+      status.releaseBuildUrl,
+      item.releaseBuildUrl,
+      status.productionBuildUrl,
+      item.productionBuildUrl,
+      ''
+    );
+    const ticketRefsFor = (item, status = getStatus(item)) => {
+      const tickets = new Map();
+      const addTicket = (pre, candidate = {}) => {
+        if (!pre || !/^PRE-\d+$/i.test(String(pre))) {
+          return;
+        }
+        const key = String(pre).toUpperCase();
+        const candidateStatus = getStatus(candidate.pre ? candidate : { pre: key });
+        tickets.set(key, {
+          pre: key,
+          url: firstPresent(candidate.jiraUrl, candidateStatus.jiraUrl, jiraUrl(key)),
+          status: firstPresent(candidate.jiraStatus, candidate.jira, candidateStatus.jiraStatus, candidateStatus.jira, 'Unknown'),
+          blocker: firstPresent(candidate.jiraBlocker, candidateStatus.jiraBlocker, candidate.jiraRefreshBlocker, candidateStatus.jiraRefreshBlocker, ''),
+          blockerUrl: firstPresent(
+            candidate.jiraBlockerUrl,
+            candidateStatus.jiraBlockerUrl,
+            candidate.jiraUrl,
+            candidateStatus.jiraUrl,
+            jiraUrl(key)
+          )
+        });
+      };
+      addTicket(item.pre, { ...item, ...status, pre: item.pre });
+      [
+        item.coveredByPre,
+        status.coveredByPre,
+        item.duplicateOf,
+        status.duplicateOf,
+        item.duplicatePre,
+        status.duplicatePre
+      ].forEach((pre) => addTicket(pre));
+      if (isPrReference(item.pr || status.pr)) {
+        const pr = String(item.pr || status.pr);
+        const repo = item.repo || status.repo;
+        triageItems
+          .filter((candidate) => String(candidate.pr || '') === pr && (!repo || candidate.repo === repo))
+          .forEach((candidate) => addTicket(candidate.pre, candidate));
+      }
+      return [...tickets.values()].sort((a, b) => a.pre.localeCompare(b.pre));
+    };
+    const ticketStatusFor = (tickets) => {
+      const blockedTicket = tickets.find((ticket) => ticket.blocker || normalize(ticket.status) === 'blocked');
+      if (blockedTicket) {
+        return { value: 'Blocked', href: blockedTicket.blockerUrl || blockedTicket.url };
+      }
+      const statuses = [...new Set(tickets.map((ticket) => ticket.status).filter(Boolean))];
+      return { value: statuses.length ? statuses.join(' / ') : 'Unknown', href: '' };
+    };
+    const stagingSummaryState = (item, status = getStatus(item)) => {
+      const staging = normalize(status.staging);
+      const stagingBuild = normalize(stagingBuildStatus(status));
+      const stagingResult = normalize(firstPresent(status.stagingResult, item.stagingResult, status.stagingEvidence, item.stagingEvidence, ''));
+      if (staging.includes('not applicable') || stagingBuild.includes('not applicable')) {
+        return 'Not applicable';
+      }
+      if (hasNegativeWord(staging, 'merged') || hasNegativeWord(stagingBuild, 'built')) {
+        return 'Not on staging';
+      }
+      if (
+        hasPositiveWord(staging, 'merged') ||
+        hasPositiveWord(stagingBuild, 'built') ||
+        stagingResult.includes('origin/staging') ||
+        stagingResult.includes('cherry-picked') ||
+        stagingResult.includes('staging build')
+      ) {
+        return 'On staging';
+      }
+      return 'Not on staging';
+    };
+    const summaryStatusPill = (value, href = '') => {
+      const label = escapeHtml(value);
+      const className = `status-pill ${detailTone(value)}`;
+      return href
+        ? `<a class="${className}" href="${escapeHtml(href)}" target="_blank" rel="noreferrer">${label}</a>`
+        : `<span class="${className}">${label}</span>`;
+    };
+    const summaryLink = (href, label, className = 'summary-link') => (
+      `<a class="${className}" href="${escapeHtml(href)}" target="_blank" rel="noreferrer">${escapeHtml(label)}</a>`
+    );
+    const prLabelFor = (value, emptyLabel = 'PR: none') => {
+      if (!value) {
+        return emptyLabel;
+      }
+      return isPrReference(value) ? `PR #${value}` : `PR: ${value}`;
+    };
+    const renderCollapsedSummary = (item, status = getStatus(item)) => {
+      const tickets = ticketRefsFor(item, status);
+      const ticketLinks = tickets.map((ticket) => summaryLink(ticket.url, ticket.pre, 'summary-link')).join('');
+      const prValue = item.pr || status.pr;
+      const prLabel = prLabelFor(prValue);
+      const prHref = firstPresent(status.prUrl, item.prUrl, item.pullRequestUrl, item.bitbucketPrUrl, prUrl(item));
+      const prMerged = isMergedPr(status, item);
+      const latestJenkins = status.latestJenkinsBuild || item.latestJenkinsBuild;
+      const prBlock = prBlockedCheck(item, status);
+      const jenkinsBlock = jenkinsBlockedCheck(item, status);
+      const sonarBlock = sonarBlockedCheck(item, status);
+      const releaseBlock = releaseJenkinsBlockedCheck(item, status);
+      const stagingBlock = stagingBlockedCheck(item, status);
+      const jenkinsStatus = jenkinsBlock?.value || firstPresent(jenkinsStatusValue(latestJenkins), status.jenkins, item.jenkins, 'Not verified');
+      const jenkinsHref = firstPresent(jenkinsBlock?.href, jenkinsUrlValue(latestJenkins), status.jenkinsUrl, item.jenkinsUrl, '');
+      const sonarStatus = sonarBlock?.value || firstPresent(
+        normalize(status.sonar) === 'not verified' ? '' : status.sonar,
+        status.sonarState,
+        normalize(item.sonar) === 'not verified' ? '' : item.sonar,
+        item.sonarState,
+        'Not verified'
+      );
+      const sonarHref = firstPresent(sonarBlock?.href, status.sonarUrl, item.sonarUrl, status.sonarQubeUrl, item.sonarQubeUrl, '');
+      const releaseStatus = releaseBlock?.value || releaseJenkinsStatus(item, status);
+      const releaseHref = firstPresent(releaseBlock?.href, releaseJenkinsUrl(item, status), '');
+      const ticketStatus = ticketStatusFor(tickets);
+      const stagingSummary = stagingBlock || { value: stagingSummaryState(item, status), href: '' };
+      const lastHappened = sentryLastHappenedFor(item, status);
+      return `
+        <div class="summary-line summary-line-title">
+          ${summaryLink(sentryUrlFor(item), item.title || item.sentryKey || item.pre, 'summary-title')}
+          ${summaryStatusPill(sentrySummaryStatus(item, status))}
+          <span class="summary-muted" title="${escapeHtml(lastHappened.absoluteLabel || '')}">Last happened: ${escapeHtml(lastHappened.label || 'Not recorded')}</span>
+        </div>
+        <div class="summary-line">
+          <span class="summary-label">PR</span>
+          ${summaryLink(prHref, prLabel)}
+          <span class="summary-muted">Reviewer: ${escapeHtml(reviewerTextFor(item, status))}</span>
+          ${summaryStatusPill(prBlock?.value || prSummaryStatus(item, status), prBlock?.href || '')}
+        </div>
+        <div class="summary-line">
+          ${prMerged ? `
+            <span class="summary-label">Release Jenkins</span>
+            ${releaseHref ? summaryLink(releaseHref, 'Release build') : ''}
+            ${summaryStatusPill(releaseStatus, releaseBlock?.href || '')}
+          ` : `
+            <span class="summary-label">PR Sonar</span>
+            ${summaryStatusPill(sonarStatus, sonarBlock?.href || '')}
+            <span class="summary-label">PR Jenkins</span>
+            ${jenkinsHref ? summaryLink(jenkinsHref, 'Jenkins') : ''}
+            ${summaryStatusPill(jenkinsStatus, jenkinsBlock?.href || '')}
+          `}
+        </div>
+        <div class="summary-line">
+          <span class="summary-label">Tickets</span>
+          <span class="summary-tickets">${ticketLinks}</span>
+          ${summaryStatusPill(ticketStatus.value, ticketStatus.href)}
+        </div>
+        <div class="summary-line">
+          <span class="summary-label">Staging</span>
+          ${summaryStatusPill(stagingSummary.value, stagingSummary.href)}
+        </div>
+      `;
+    };
+    const activeRank = (item) => {
+      const status = getStatus(item);
+      const prState = prWorkflowState(item, status);
+      const jiraCategory = normalize(status.jiraCategory);
+      const jiraStatus = normalize(firstPresent(status.jiraStatus, status.jira, item.jiraStatus, item.jira, ''));
+      if (prState === 'open') {
+        return 0;
+      }
+      if (jiraCategory !== 'done' && !jiraStatus.includes('done') && !jiraStatus.includes('closed')) {
+        return 1;
+      }
+      if (normalize(status.sentry) === 'unresolved' || normalize(item.sentry) === 'unresolved') {
+        return 2;
+      }
+      return 3;
+    };
+    const sortByActiveFirst = (items) => [...items].sort((a, b) => {
+      const workflowDiff = Number(!workflowMatchesItem(a)) - Number(!workflowMatchesItem(b));
+      if (workflowDiff !== 0) {
+        return workflowDiff;
+      }
+      const rankDiff = activeRank(a) - activeRank(b);
+      if (rankDiff !== 0) {
+        return rankDiff;
+      }
+      return (Number(b.pr) || 0) - (Number(a.pr) || 0);
+    });
+    const isHttpUrl = (value) => /^https?:\/\//i.test(value);
+    const STAGING_SMOKE_URL = 'https://www.check24-test.de/strom/';
+    const evidenceUrlFor = (value) => {
+      if (!value) {
+        return '';
+      }
+      const raw = String(value);
+      if (isHttpUrl(raw) || raw.startsWith('/evidence/')) {
+        return raw;
+      }
+      const marker = '/Sentry Triage History/';
+      const localPath = raw.includes(marker) ? raw.slice(raw.indexOf(marker) + marker.length) : raw.replace(/^\.?\//, '');
+      if (!localPath.startsWith('evidence/')) {
+        return raw;
+      }
+      return `/${localPath.split('/').map(encodeURIComponent).join('/')}`;
+    };
+    const isEvidenceImage = (value) => /\.(png|jpe?g|webp)$/i.test(String(value).split('?')[0]);
+    const formatAffectedUrl = (value) => {
+      if (!value) {
+        return '<span class="meta-text">Bug URL: not captured</span>';
+      }
+      const parts = value.split(',').map((part) => part.trim()).filter(Boolean);
+      const formatted = parts.map((part) => {
+        if (!isHttpUrl(part)) {
+          return `<span class="meta-text">${part}</span>`;
+        }
+        return `<a class="pill" href="${part}" target="_blank" rel="noreferrer">Bug URL</a>`;
+      }).join('');
+      return formatted;
+    };
+    const renderRegressionStatus = (item, status) => {
+      const regression = regressionMetaFor(item, status);
+      if (!regression.status && !regression.note && !regression.evidence && !regression.blocker) {
+        return '';
+      }
+      const evidence = evidenceUrlFor(regression.evidence);
+      const evidenceIsLink = evidence && (isHttpUrl(evidence) || evidence.startsWith('/evidence/'));
+      const safeEvidenceUrl = escapeHtml(evidence);
+      return `
+        <section class="section">
+          <h3>Regression</h3>
+          <div class="status-row">
+            ${regression.status ? `<span class="status-pill ${detailTone(regression.status)}">Status: ${escapeHtml(regression.status)}</span>` : ''}
+            ${evidenceIsLink ? `<a class="status-pill" href="${safeEvidenceUrl}" target="_blank" rel="noreferrer">Evidence</a>` : ''}
+          </div>
+          ${regression.note ? `<p class="status-note">${escapeHtml(regression.note)}</p>` : ''}
+          ${regression.evidence && !evidenceIsLink ? `<p class="status-note">${escapeHtml(regression.evidence)}</p>` : ''}
+          ${regression.blocker ? `<p class="status-blocker">Blocked: ${escapeHtml(regression.blocker)}</p>` : ''}
+        </section>
+      `;
+    };
+    const stagingSmokeFor = (item) => {
+      const raw = item.stagingSmoke;
+      const smoke = raw && typeof raw === 'object' && !Array.isArray(raw) ? raw : {};
+      const textEvidence = typeof raw === 'string' ? raw : '';
+      const blocker = smoke.blocker || item.stagingSmokeBlocker || '';
+      const screenshot = smoke.screenshot || item.stagingSmokeScreenshot || item.stagingScreenshot || '';
+      const note = smoke.note || smoke.summary || item.stagingSmokeNote || item.stagingSmokeEvidence || textEvidence || '';
+      const status = smoke.status || item.stagingSmokeStatus || (blocker ? 'Blocked' : (screenshot || note ? 'Recorded' : ''));
+      return {
+        status,
+        url: smoke.url || item.stagingSmokeUrl || '',
+        screenshot,
+        note,
+        blocker,
+        testedAt: smoke.testedAt || item.stagingSmokeTestedAt || ''
+      };
+    };
+    const hasStagingSmoke = (item) => {
+      const smoke = stagingSmokeFor(item);
+      return Boolean(smoke.status || smoke.url || smoke.screenshot || smoke.note || smoke.blocker || smoke.testedAt);
+    };
+    const renderStagingSmoke = (item) => {
+      const smoke = stagingSmokeFor(item);
+      if (!hasStagingSmoke(item)) {
+        return '';
+      }
+      const evidenceUrl = evidenceUrlFor(smoke.screenshot);
+      const checkedUrl = smoke.url || STAGING_SMOKE_URL;
+      const safeEvidenceUrl = escapeHtml(evidenceUrl);
+      const safeCheckedUrl = escapeHtml(checkedUrl);
+      return `
+        <section class="section">
+          <h3>Staging Smoke</h3>
+          <div class="smoke-evidence">
+            <div class="status-row">
+              ${smoke.status ? `<span class="status-pill ${detailTone(smoke.status)}">Status: ${escapeHtml(smoke.status)}</span>` : ''}
+              ${smoke.testedAt ? `<span class="status-pill">Checked: ${escapeHtml(smoke.testedAt)}</span>` : ''}
+              <a class="status-pill" href="${safeCheckedUrl}" target="_blank" rel="noreferrer">URL: staging strom</a>
+              ${evidenceUrl ? `<a class="status-pill ${detailTone(smoke.status || 'Recorded')}" href="${safeEvidenceUrl}" target="_blank" rel="noreferrer">Screenshot</a>` : ''}
+            </div>
+            ${smoke.note ? `<p class="smoke-note">${escapeHtml(smoke.note)}</p>` : ''}
+            ${smoke.blocker ? `<p class="smoke-blocker">Blocked: ${escapeHtml(smoke.blocker)}</p>` : ''}
+            ${evidenceUrl && isEvidenceImage(evidenceUrl) ? `<a href="${safeEvidenceUrl}" target="_blank" rel="noreferrer"><img class="smoke-shot" src="${safeEvidenceUrl}" alt="Staging smoke evidence for ${escapeHtml(item.pre)}"></a>` : ''}
+          </div>
+        </section>
+      `;
+    };
+    const renderPrComments = (item) => {
+      if (!item.prComments?.length) {
+        return '';
+      }
+      const commentStatus = (comment) => comment.status || (comment.answer ? 'Answered' : 'Open');
+      const commentTone = (status) => {
+        const normalized = normalize(status);
+        if (normalized.includes('resolved') || normalized.includes('answered')) {
+          return 'status-done';
+        }
+        if (normalized.includes('needs answer') || normalized.includes('request changes') || normalized.includes('open') || normalized.includes('blocked')) {
+          return 'status-blocked';
+        }
+        return detailTone(status);
+      };
+      const isResolvedComment = (comment) => normalize(commentStatus(comment)).includes('resolved');
+      const commentUrl = (comment) => comment.url || (comment.id ? `${prUrl(item)}#comment-${encodeURIComponent(comment.id)}` : prUrl(item));
+      const commentLinkLabel = (comment) => comment.id ? `Open comment #${comment.id}` : 'Open PR comments';
+      const comments = item.prComments.map((comment) => {
+        const status = commentStatus(comment);
+        const resolved = isResolvedComment(comment);
+        return `
+        <details class="comment-item ${resolved ? 'comment-resolved' : 'comment-open'}" ${resolved ? '' : 'open'}>
+          <summary class="comment-summary">
+            <span class="comment-toggle" aria-hidden="true"></span>
+            <span class="comment-meta">
+              <span>${escapeHtml(comment.author)}</span>
+              <span>${escapeHtml(comment.context)}</span>
+            </span>
+            <span class="status-pill comment-status ${commentTone(status)}">Status: ${escapeHtml(status)}</span>
+          </summary>
+          <div class="comment-detail">
+            <p class="comment-body">${escapeHtml(comment.comment)}</p>
+            ${comment.answer ? `<div class="comment-answer">Answered: ${escapeHtml(comment.answer)}</div>` : ''}
+            <div class="comment-actions">
+              <a class="comment-link" href="${commentUrl(comment)}" target="_blank" rel="noreferrer">${commentLinkLabel(comment)}</a>
+            </div>
+          </div>
+        </details>
+        `;
+      }).join('');
+      return `
+        <section class="section">
+          <h3>PR Comments</h3>
+          <div class="comment-list">${comments}</div>
+        </section>
+      `;
+    };
+    const renderAmendment = (item) => {
+      if (!item.amendmentSummary) {
+        return '';
+      }
+      return `
+        <section class="section">
+          <h3>Amendment</h3>
+          <p>${escapeHtml(item.amendmentSummary)}</p>
+        </section>
+      `;
+    };
+    const includesAny = (value, patterns) => patterns.some((pattern) => (
+      pattern instanceof RegExp ? pattern.test(value) : value.includes(pattern)
+    ));
+    const deriveVerificationStatus = (item) => {
+      const text = normalize(item.verification);
+      const fields = [];
+      const addStatus = (label, status) => {
+        if (status && !fields.some((field) => field.label === label)) {
+          fields.push({ label, status });
+        }
+      };
+      const addFromText = (label, config) => {
+        if (!includesAny(text, config.mentions)) {
+          return;
+        }
+        if (includesAny(text, config.unavailable ?? [])) {
+          addStatus(label, 'Unavailable');
+          return;
+        }
+        if (includesAny(text, config.blocked ?? [])) {
+          addStatus(label, 'Blocked');
+          return;
+        }
+        if (includesAny(text, config.notRun ?? [])) {
+          addStatus(label, 'Not run');
+          return;
+        }
+        if (includesAny(text, config.passed ?? [])) {
+          addStatus(label, 'Passed');
+          return;
+        }
+        if (includesAny(text, config.failed ?? [])) {
+          addStatus(label, 'Failed');
+          return;
+        }
+        addStatus(label, 'Recorded');
+      };
+
+      addFromText('Diff check', {
+        mentions: ['git diff --check'],
+        passed: [/git diff --check[^;]*passed/],
+        failed: [/git diff --check[^;]*failed/]
+      });
+      addFromText('PHP lint', {
+        mentions: ['php -l', 'php lint'],
+        passed: [/php -l[^;]*passed/, /php lint[^;]*passed/],
+        failed: [/php -l[^;]*failed/, /php lint[^;]*failed/]
+      });
+      addFromText('ESLint', {
+        mentions: ['eslint'],
+        passed: [/eslint[^;]*pass/, /eslint[^;]*passing/],
+        blocked: [/eslint[^;]*blocked/],
+        failed: [/eslint[^;]*fail/]
+      });
+      addFromText('Vitest', {
+        mentions: ['vitest'],
+        passed: [/vitest[^;]*passed/],
+        failed: [/vitest[^;]*failed/]
+      });
+      addFromText('CI tests', {
+        mentions: ['ci:test'],
+        passed: [/ci:test[^;]*passed/],
+        failed: [/ci:test[^;]*failed/]
+      });
+      addFromText('Focused tests', {
+        mentions: ['focused test', 'focused vitest', 'local utility test', 'test-update'],
+        passed: [/focused[^;]*test[^;]*passed/, /local utility test[^;]*passed/, /test-update[^;]*passing/],
+        failed: [/focused[^;]*test[^;]*failed/]
+      });
+      addFromText('Typecheck', {
+        mentions: ['typecheck', 'typescript no-emit', 'tsc'],
+        passed: [/typecheck[^;]*passed/, /tsc[^;]*passed/, /no-emit[^;]*passed/],
+        blocked: ['typecheck had pre-existing', 'tsc remain blocked', 'dependency typing conflicts', 'node_modules errors', 'failed before project code'],
+        failed: [/typecheck[^;]*failed/, /tsc[^;]*failed/, /no-emit[^;]*failed/]
+      });
+      addFromText('Build', {
+        mentions: ['pnpm build', 'wireframe:build'],
+        passed: [/pnpm build[^;]*passed/, /wireframe:build[^;]*passed/],
+        failed: [/pnpm build[^;]*failed/, /wireframe:build[^;]*failed/]
+      });
+      addFromText('Composer validate', {
+        mentions: ['composer validate'],
+        passed: [/composer validate[^;]*passed/],
+        failed: [/composer validate[^;]*failed/]
+      });
+      addFromText('PHPUnit', {
+        mentions: ['phpunit'],
+        passed: [/phpunit[^;]*passed/],
+        failed: [/phpunit[^;]*failed/],
+        unavailable: ['phpunit could not run', 'phpunit/phpcs could not run', 'phpunit unavailable', 'phpunit remain unavailable', 'phpunit remains unavailable', 'phpstan/phpunit unavailable', 'phpstan/phpunit/phpcs/psalm remain unavailable', 'vendor/bin/phpunit is missing', 'vendor/bin/phpunit missing']
+      });
+      addFromText('PHPCS', {
+        mentions: ['phpcs'],
+        passed: [/phpcs[^;]*passed/],
+        failed: [/phpcs[^;]*failed/],
+        unavailable: ['phpcs could not run', 'phpunit/phpcs could not run', 'phpcs unavailable', 'phpcs remain unavailable', 'phpcs remains unavailable', 'phpstan/phpunit/phpcs/psalm remain unavailable', 'vendor/bin/phpcs is missing', 'vendor/bin/phpcs missing']
+      });
+      addFromText('PhpStan', {
+        mentions: ['phpstan'],
+        passed: [/phpstan[^;]*passed/],
+        failed: [/phpstan[^;]*failed/],
+        unavailable: ['phpstan unavailable', 'phpstan remain unavailable', 'phpstan remains unavailable', 'phpstan/phpunit unavailable', 'phpstan/phpunit/phpcs/psalm remain unavailable']
+      });
+      addFromText('Psalm', {
+        mentions: ['psalm'],
+        passed: [/psalm[^;]*passed/],
+        failed: [/psalm[^;]*failed/],
+        unavailable: ['psalm unavailable', 'psalm remain unavailable', 'psalm remains unavailable', 'phpstan/phpunit/phpcs/psalm remain unavailable']
+      });
+      if (!fields.length && text.includes('see pr for exact command output')) {
+        addStatus('Verification', 'See PR');
+      }
+      if (!fields.length && text) {
+        addStatus('Verification', 'Recorded');
+      }
+      return fields;
+    };
+    const renderVerification = (item) => {
+      const fields = deriveVerificationStatus(item);
+      if (!fields.length) {
+        return '';
+      }
+      const chips = fields.map(({ label, status }) => (
+        `<span class="status-pill ${detailTone(status)}">${label}: ${status}</span>`
+      )).join('');
+      return `
+        <section class="verification section">
+          <h3>Verification</h3>
+          <div class="status-row">${chips}</div>
+        </section>
+      `;
+    };
+
+    const renderActionLinks = (links) => {
+      const seen = new Set();
+      return (links ?? [])
+        .filter((link) => {
+          if (!link.href || seen.has(link.href)) {
+            return false;
+          }
+          seen.add(link.href);
+          return true;
+        })
+        .map((link) => `<a class="pill" href="${link.href}" target="_blank" rel="noreferrer">${escapeHtml(link.label)}</a>`)
+        .join('');
+    };
+    const renderItemRefreshButton = (item) => `
+      <button class="item-refresh-button" type="button" data-refresh-pre="${escapeHtml(item.pre)}" data-refresh-title="${escapeHtml(item.title)}" title="Refresh this item from PR, Sentry, Jira, Jenkins, staging, and release sources">Refresh</button>
+    `;
+    const renderClaudeEvaluateButton = (item) => `
+      <button class="item-evaluate-button" type="button" data-evaluate-pre="${escapeHtml(item.pre)}" aria-expanded="${activeClaudeEvaluationPre === item.pre ? 'true' : 'false'}" title="Explain this issue history in Vietnamese and suggest the next action">Evaluate with Claude</button>
+    `;
+
+    const renderNextAction = (item) => {
+      const action = deriveNextAction(item);
+      if (action.priority > 7) {
+        return '';
+      }
+      return `
+        <section class="next-action ${actionToneClass(action)}">
+          <div>
+            <strong>${escapeHtml(action.title)}</strong>
+            <p>${escapeHtml(action.body)}</p>
+          </div>
+          <div class="action-links">${renderActionLinks(action.links)}</div>
+        </section>
+      `;
+    };
+
+    const compactText = (value) => scalarText(value).replace(/\s+/g, ' ').trim();
+    const firstCompactText = (...values) => compactText(firstPresent(...values));
+    const uniqueTexts = (values) => {
+      const seen = new Set();
+      return values
+        .map(compactText)
+        .filter(Boolean)
+        .filter((value) => {
+          const key = normalize(value);
+          if (seen.has(key)) {
+            return false;
+          }
+          seen.add(key);
+          return true;
+        });
+    };
+    const formatViTime = (value) => {
+      if (!value) {
+        return '';
+      }
+      try {
+        return new Intl.DateTimeFormat('vi-VN', {
+          dateStyle: 'medium',
+          timeStyle: 'short'
+        }).format(new Date(value));
+      } catch (_error) {
+        return value;
+      }
+    };
+    const viValue = (value, fallback = 'chưa có dữ liệu') => compactText(value) || fallback;
+    const renderViBullets = (items) => uniqueTexts(items)
+      .map((item) => `<li>${escapeHtml(item)}</li>`)
+      .join('');
+    const summarizeCommentsVi = (item) => {
+      if (!Array.isArray(item.prComments) || !item.prComments.length) {
+        return '';
+      }
+      const openCount = item.prComments.filter((comment) => {
+        const status = normalize(commentStatusFor(comment));
+        return status && !status.includes('resolved') && !status.includes('answered');
+      }).length;
+      return openCount
+        ? `PR có ${item.prComments.length} bình luận được ghi nhận, trong đó còn ${openCount} bình luận cần chú ý.`
+        : `PR có ${item.prComments.length} bình luận được ghi nhận và hiện đều đã được trả lời hoặc đánh dấu resolved.`;
+    };
+    const nextActionVi = (item, status, action) => {
+      const prState = normalize(firstPresent(status.prState, status.prStatus, item.prState, item.prStatus, ''));
+      const rawPrValue = firstPresent(item.pr, item.prNumber, status.pr, status.prNumber, '');
+      const hasRealPr = isPrReference(rawPrValue);
+      const jiraStatus = firstCompactText(status.jiraStatus, status.jira, item.jiraStatus, item.jira);
+      const jenkins = firstCompactText(jenkinsStatusValue(status.latestJenkinsBuild || item.latestJenkinsBuild), status.jenkins, item.jenkins);
+      const sonar = firstCompactText(status.sonar, item.sonar, status.sonarState, item.sonarState);
+      const staging = firstCompactText(status.staging, item.staging, status.stagingResult, item.stagingResult);
+      if (!hasRealPr && item.cursorHandoffPath) {
+        return `Chạy Cursor với /agent-fix-bug theo handoff ${item.cursorHandoffPath}, tạo PR mới cho ${item.pre}, rồi quay lại report để refresh Jira/PR/Sentry.`;
+      }
+      if (prState === 'open') {
+        if (!isPassed(sonar) && normalize(sonar).includes('not reported')) {
+          return `Giữ PR #${rawPrValue} ở trạng thái chờ: Jenkins đã có dữ liệu, nhưng Sonar chưa được report cho head hiện tại. Bước tiếp theo là kiểm tra/refresh Sonar hoặc xác nhận vì sao không có quality gate trước khi staging.`;
+        }
+        if (!isPassed(jenkins)) {
+          return `Tập trung vào PR #${rawPrValue}: Jenkins hiện chưa pass (${jenkins || 'chưa rõ'}). Kiểm tra build log trước khi staging.`;
+        }
+        if (!isPassed(sonar)) {
+          return `Tập trung vào PR #${rawPrValue}: Sonar hiện chưa pass (${sonar || 'chưa rõ'}). Xử lý quality gate trước khi staging.`;
+        }
+        if (normalize(staging).includes('blocked') || !hasPositiveWord(staging, 'merged')) {
+          return `PR #${rawPrValue} đã sẵn sàng hơn về CI; bước tiếp theo là staging an toàn, smoke test, rồi mới chuyển Jira sang In Test nếu evidence ổn.`;
+        }
+      }
+      if (isMergedPr(status, item) && normalize(status.sentry || item.sentryStatus || item.sentry).includes('unresolved')) {
+        return `Không sửa PR cũ đã merged. Vì Sentry vẫn unresolved, hãy dùng Cursor handoff/follow-up để tạo fix mới hoặc xác nhận release/staging còn thiếu trước khi resolve Sentry.`;
+      }
+      if (normalize(jiraStatus).includes('open') || normalize(jiraStatus).includes('to do')) {
+        return `Đưa Jira ${item.pre} sang In Progress sau khi xác nhận mount Sentry/Jira, rồi chuẩn bị fix hoặc Cursor handoff.`;
+      }
+      return `${action.title}: ${action.body}`;
+    };
+    const renderClaudeMarkdown = (text) => {
+      const lines = String(text || '').split(/\n/);
+      let html = '';
+      let listOpen = false;
+      const closeList = () => {
+        if (listOpen) {
+          html += '</ul>';
+          listOpen = false;
+        }
+      };
+      lines.forEach((line) => {
+        const trimmed = line.trim();
+        if (!trimmed) {
+          closeList();
+          return;
+        }
+        const headingMatch = trimmed.match(/^#{1,4}\s+(.+)$/);
+        if (headingMatch) {
+          closeList();
+          html += `<h4>${escapeHtml(headingMatch[1])}</h4>`;
+          return;
+        }
+        const bulletMatch = trimmed.match(/^[-*]\s+(.+)$/);
+        if (bulletMatch) {
+          if (!listOpen) {
+            html += '<ul>';
+            listOpen = true;
+          }
+          html += `<li>${escapeHtml(bulletMatch[1])}</li>`;
+          return;
+        }
+        closeList();
+        html += `<p>${escapeHtml(trimmed)}</p>`;
+      });
+      closeList();
+      return html || '<p>Claude chưa trả về nội dung.</p>';
+    };
+    const renderClaudeEvaluation = (item, status = getStatus(item), evaluationState = claudeEvaluationsByPre[item.pre]) => {
+      const action = deriveNextAction(item);
+      const rawPrValue = firstPresent(item.pr, item.prNumber, status.pr, status.prNumber, '');
+      const prValue = isPrReference(rawPrValue) ? rawPrValue : '';
+      const prState = firstCompactText(status.prState, status.prStatus, item.prState, item.prStatus, prValue ? 'OPEN' : 'No PR');
+      const jiraStatus = firstCompactText(status.jiraStatus, status.jira, item.jiraStatus, item.jira);
+      const sentryStatus = `${viValue(firstPresent(status.sentryStatus, item.sentryStatus, status.sentry, item.sentry), 'unknown')}/${viValue(firstPresent(status.sentrySubstatus, item.sentrySubstatus), 'no substatus')}`;
+      const lastSeen = firstPresent(status.sentryLastSeen, item.sentryLastSeen, status.lastSeen, item.lastSeen);
+      const firstSeen = firstPresent(status.sentryFirstSeen, item.sentryFirstSeen);
+      const history = [
+        `Sentry ${viValue(item.sentryKey)} đang là ${sentryStatus}, issue id ${viValue(item.sentryIssueId)}, project ${viValue(item.repo || status.repo)}.`,
+        firstSeen ? `Issue xuất hiện lần đầu: ${formatViTime(firstSeen)}.` : '',
+        lastSeen ? `Lần xảy ra gần nhất: ${formatViTime(lastSeen)}.` : '',
+        firstPresent(status.sentryCount, item.sentryCount) ? `Số event ghi nhận: ${firstPresent(status.sentryCount, item.sentryCount)}${firstPresent(status.sentryUserCount, item.sentryUserCount) ? `; users: ${firstPresent(status.sentryUserCount, item.sentryUserCount)}` : ''}.` : '',
+        firstPresent(status.sentryAssignee, item.sentryAssignee, status.sentryAssigneeEmail, item.sentryAssigneeEmail) ? `Sentry assignee hiện tại: ${firstPresent(status.sentryAssignee, item.sentryAssignee, status.sentryAssigneeEmail, item.sentryAssigneeEmail)}.` : '',
+        `Jira ${viValue(item.pre)} hiện là ${viValue(jiraStatus)}${firstPresent(status.jiraAssignee, item.jiraAssignee) ? `, assignee ${firstPresent(status.jiraAssignee, item.jiraAssignee)}` : ''}.`,
+        prValue ? `PR liên quan: #${prValue}, trạng thái ${viValue(prState)}${reviewerTextFor(item, status) ? `, reviewer: ${reviewerTextFor(item, status)}` : ''}.` : 'Chưa có PR cho issue này.',
+        summarizeCommentsVi(item)
+      ];
+      const workDone = [
+        firstCompactText(item.bugReason) ? `Nguyên nhân/giả thuyết hiện tại: ${item.bugReason}` : '',
+        firstCompactText(item.fixSummary) ? `Fix hoặc kế hoạch fix đã ghi nhận: ${item.fixSummary}` : '',
+        firstCompactText(item.verification) ? `Verification: ${item.verification}` : '',
+        firstCompactText(item.amendmentSummary) ? `Amendment mới nhất: ${item.amendmentSummary}` : '',
+        firstCompactText(item.regressionStatus || item.regressionNote) ? `Regression: ${firstCompactText(item.regressionStatus, item.regressionNote)}` : '',
+        firstCompactText(status.jenkins || item.jenkins || status.latestJenkinsBuild?.status || item.latestJenkinsBuild?.status) ? `Jenkins: ${firstCompactText(status.jenkins, item.jenkins, status.latestJenkinsBuild?.status, item.latestJenkinsBuild?.status)}.` : '',
+        firstCompactText(status.sonar || item.sonar) ? `Sonar: ${firstCompactText(status.sonar, item.sonar)}.` : '',
+        firstCompactText(status.staging || item.staging || item.stagingResult) ? `Staging: ${firstCompactText(status.staging, item.staging, item.stagingResult)}.` : '',
+        firstCompactText(status.releaseJenkins || item.releaseJenkins || status.releaseMain || item.releaseMain) ? `Release/production: ${firstCompactText(status.releaseJenkins, item.releaseJenkins, status.releaseMain, item.releaseMain)}.` : ''
+      ];
+      const risks = [
+        firstCompactText(status.sentryBlocker || item.sentryBlocker) ? `Sentry blocker: ${firstCompactText(status.sentryBlocker, item.sentryBlocker)}.` : '',
+        firstCompactText(status.jiraBlocker || item.jiraBlocker) ? `Jira blocker: ${firstCompactText(status.jiraBlocker, item.jiraBlocker)}.` : '',
+        firstCompactText(status.prBlocker || item.prBlocker) ? `PR blocker: ${firstCompactText(status.prBlocker, item.prBlocker)}.` : '',
+        firstCompactText(status.jenkinsBlocker || item.jenkinsBlocker) ? `Jenkins blocker: ${firstCompactText(status.jenkinsBlocker, item.jenkinsBlocker)}.` : '',
+        firstCompactText(status.stagingBlocker || item.stagingBlocker || item.stagingSmoke?.blocker) ? `Staging blocker: ${firstCompactText(status.stagingBlocker, item.stagingBlocker, item.stagingSmoke?.blocker)}.` : '',
+        firstCompactText(item.neededThienAction) ? `Việc cần Thien làm: ${item.neededThienAction}` : '',
+        !prValue && item.cursorHandoffPath ? `Fix code đang chờ Cursor handoff: ${item.cursorHandoffPath}` : ''
+      ];
+      const visibleRisks = uniqueTexts(risks);
+      const nextAction = nextActionVi(item, status, action);
+      const localSummary = `
+        <div class="claude-evaluation-grid">
+          <div class="claude-evaluation-section">
+            <h4>Lịch sử issue</h4>
+            <ul>${renderViBullets(history)}</ul>
+          </div>
+          <div class="claude-evaluation-section">
+            <h4>Đã làm / đang có</h4>
+            <ul>${renderViBullets(workDone)}</ul>
+          </div>
+          <div class="claude-evaluation-section">
+            <h4>Rủi ro còn lại</h4>
+            <ul>${renderViBullets(visibleRisks.length ? visibleRisks : ['Chưa thấy blocker rõ ràng trong report; vẫn cần refresh nguồn trước khi chuyển trạng thái hoặc resolve Sentry.'])}</ul>
+          </div>
+          <div class="claude-evaluation-section claude-next-action">
+            <h4>Hành động tiếp theo</h4>
+            <p>${escapeHtml(nextAction)}</p>
+          </div>
+        </div>
+      `;
+      const isLoading = evaluationState?.status === 'loading';
+      const isSuccess = evaluationState?.status === 'success';
+      const isError = evaluationState?.status === 'error';
+      const subtitle = isSuccess
+        ? `Claude CLI · ${formatViTime(evaluationState.generatedAt)}`
+        : 'Tóm tắt tiếng Việt từ dữ liệu hiện có trong report';
+      const statusMessage = isLoading
+        ? '<div class="claude-evaluation-status">Claude đang đọc lịch sử issue và viết đề xuất bằng tiếng Việt...</div>'
+        : isError
+          ? `<div class="claude-evaluation-status">Claude chưa trả lời được (${escapeHtml(evaluationState.error || 'unknown error')}). Đang hiển thị bản fallback từ dữ liệu report.</div>`
+          : '';
+      const claudeOutput = isSuccess
+        ? `<div class="claude-evaluation-output">${renderClaudeMarkdown(evaluationState.text)}</div>`
+        : '';
+      return `
+        <section class="claude-evaluation" id="claude-evaluation-${escapeHtml(item.pre)}">
+          <div class="claude-evaluation-header">
+            <h3>Evaluate with Claude</h3>
+            <span class="claude-evaluation-kicker">${escapeHtml(subtitle)}</span>
+          </div>
+          ${statusMessage}
+          ${claudeOutput || `<div class="claude-evaluation-fallback">${localSummary}</div>`}
+        </section>
+      `;
+    };
+
+    const scrollActiveClaudeEvaluationIntoView = () => {
+      if (!activeClaudeEvaluationPre) {
+        return;
+      }
+      requestAnimationFrame(() => {
+        document.getElementById(`claude-evaluation-${activeClaudeEvaluationPre}`)?.scrollIntoView({
+          behavior: 'smooth',
+          block: 'nearest'
+        });
+      });
+    };
+    const requestClaudeEvaluation = async (pre) => {
+      try {
+        const response = await fetch('/api/claude-evaluate', {
+          method: 'POST',
+          headers: {
+            'content-type': 'application/json'
+          },
+          body: JSON.stringify({ pre })
+        });
+        const payload = await response.json().catch(() => ({}));
+        if (!response.ok || !payload.ok) {
+          throw new Error(payload.error || `HTTP ${response.status}`);
+        }
+        claudeEvaluationsByPre = {
+          ...claudeEvaluationsByPre,
+          [pre]: {
+            status: 'success',
+            text: payload.evaluation || '',
+            generatedAt: payload.generatedAt || new Date().toISOString(),
+            source: payload.source || 'claude-cli'
+          }
+        };
+      } catch (error) {
+        claudeEvaluationsByPre = {
+          ...claudeEvaluationsByPre,
+          [pre]: {
+            status: 'error',
+            error: error.message || String(error)
+          }
+        };
+      }
+      if (activeClaudeEvaluationPre === pre) {
+        renderItems();
+        scrollActiveClaudeEvaluationIntoView();
+      }
+    };
+
+    const renderActionQueue = (items) => {
+      const actionQueue = document.getElementById('actionQueue');
+      const actionQueueCount = document.getElementById('actionQueueCount');
+      const actions = items
+        .map((item) => ({ item, action: deriveNextAction(item) }))
+        .filter(({ action }) => action.priority <= 6)
+        .sort((a, b) => a.action.priority - b.action.priority || activeRank(a.item) - activeRank(b.item));
+      const shownActions = actions.slice(0, 8);
+      const blockedCount = actions.filter(({ action }) => action.tone === 'blocked').length;
+      actionQueueCount.textContent = actions.length
+        ? `${blockedCount} blocked / ${actions.length} to check`
+        : 'No urgent work';
+
+      if (!shownActions.length) {
+        actionQueue.innerHTML = '<div class="action-empty">No immediate action in the current view.</div>';
+        return;
+      }
+
+      actionQueue.innerHTML = shownActions.map(({ item, action }) => `
+        <article class="action-card ${actionToneClass(action)}${workflowMatchesItem(item) ? ' action-working' : ''}">
+          <span class="action-marker" aria-hidden="true"></span>
+          <div class="action-main">
+            <p class="action-title">${escapeHtml(item.pre)}: ${escapeHtml(action.title)}${workflowMatchesItem(item) ? ' · Working now' : ''}</p>
+            <p class="action-context">${escapeHtml(repoLabels[item.repo] ?? item.repo)} &middot; ${item.pr ? `PR #${item.pr}` : 'No PR yet'} &middot; ${escapeHtml(action.label)}</p>
+            <p class="action-copy">${escapeHtml(action.body)}</p>
+          </div>
+          <div class="action-links">${renderActionLinks(action.links)}</div>
+        </article>
+      `).join('');
+    };
+
+    const sentryScopeItemId = (item) => scalarText(item.id || item.sentryIssueId || item.issueId).trim();
+    const sentryScopeUrl = (item) => item.permalink || item.sentryUrl || (sentryScopeItemId(item) ? `https://check24-energie.sentry.io/issues/${sentryScopeItemId(item)}/` : SENTRY_ISSUES_URL);
+    const sentryScopeLabel = (item) => firstPresent(item.shortId, item.sentryKey, item.key, sentryScopeItemId(item), 'Sentry issue');
+    const sentryScopeSources = (item) => Array.isArray(item.sources) && item.sources.length
+      ? item.sources
+      : [firstPresent(item.source, item.sentryScope, 'unknown')];
+    const workflowMatchesSentryScopeItem = (item) => workflowIsActiveTarget() && workflowMatchesSentryIdentity(item);
+
+    const renderSentryScopeList = () => {
+      const count = document.getElementById('sentryScopeCount');
+      const list = document.getElementById('sentryScopeList');
+      const expectedIds = new Set(Array.isArray(sentrySourceVerification.unionIds) ? sentrySourceVerification.unionIds.map(String) : []);
+      const actualIds = new Set(sentryScopeItems.map(sentryScopeItemId).filter(Boolean));
+      const missing = [...expectedIds].filter((id) => !actualIds.has(id));
+      const extra = [...actualIds].filter((id) => expectedIds.size && !expectedIds.has(id));
+      const verified = sentrySourceVerification.status === 'verified';
+      const expectedCount = Number(sentrySourceVerification.unionCount || expectedIds.size || sentryScopeItems.length);
+
+      if (!verified) {
+        count.textContent = 'Not verified';
+      } else if (missing.length || extra.length || sentryScopeItems.length !== expectedCount) {
+        count.textContent = `${sentryScopeItems.length}/${expectedCount} mismatch`;
+      } else {
+        count.textContent = `${sentryScopeItems.length} in scope`;
+      }
+
+      if (!sentryScopeItems.length) {
+        list.innerHTML = '<div class="action-empty">No Sentry source scope items recorded.</div>';
+        return;
+      }
+
+      const warning = (verified && (missing.length || extra.length || sentryScopeItems.length !== expectedCount))
+        ? `<article class="source-card source-warning"><p class="source-title">Scope mismatch: ${missing.length} missing, ${extra.length} extra. Re-run Sentry source verification before acting.</p></article>`
+        : '';
+
+      list.innerHTML = `${warning}${sentryScopeItems.map((item) => {
+        const isWorking = workflowMatchesSentryScopeItem(item);
+        return `
+        <article class="source-card${isWorking ? ' source-working' : ''}"${isWorking ? ' data-working="true"' : ''}>
+          <header>
+            <a class="source-key" href="${escapeHtml(sentryScopeUrl(item))}" target="_blank" rel="noreferrer">${escapeHtml(sentryScopeLabel(item))}</a>
+            <span class="source-badge">${escapeHtml(item.substatus || item.status || 'unresolved')}</span>
+          </header>
+          <p class="source-title">${escapeHtml(item.title || 'Untitled Sentry issue')}</p>
+          <div class="source-meta">
+            <span class="source-badge">${escapeHtml(item.projectSlug || item.projectName || item.repo || 'project')}</span>
+            <span class="source-badge">${escapeHtml(item.assignedTo || item.sentryAssignee || 'unassigned')}</span>
+            ${isWorking ? `<span class="source-badge source-working-badge">Working: ${escapeHtml(workflowStepLabel())}</span>` : ''}
+            ${sentryScopeSources(item).map((source) => `<span class="source-badge">${escapeHtml(source)}</span>`).join('')}
+          </div>
+        </article>
+      `;
+      }).join('')}`;
+    };
+
+    const hasStagingWork = (item) => {
+      const status = getStatus(item);
+      const staging = normalize(status.staging);
+      const build = normalize(stagingBuildStatus(status));
+      const activated = normalize(stagingActivationStatus(status));
+      return staging.includes('conflict') ||
+        staging.includes('not merged') ||
+        build.includes('not built') ||
+        build.includes('not verified') ||
+        activated.includes('not activated') ||
+        activated.includes('not verified') ||
+        (prWorkflowState(item, status) === 'open' && isPassed(status.jenkins) && isPassed(status.sonar) && !hasPositiveWord(staging, 'merged'));
+    };
+
+    const matchesWorkFilter = (item, work) => {
+      const status = getStatus(item);
+      const action = deriveNextAction(item);
+      if (work === 'needs-action') {
+        return action.priority <= 6;
+      }
+      if (work === 'blocked') {
+        return action.tone === 'blocked';
+      }
+      if (work === 'open-pr') {
+        return prWorkflowState(item, status) === 'open';
+      }
+      if (work === 'staging') {
+        return hasStagingWork(item);
+      }
+      if (work === 'done') {
+        return normalize(status.jiraCategory) === 'done' || prWorkflowState(item, status) === 'merged';
+      }
+      return true;
+    };
+
+    const renderStats = (items, currentWorkFilter = '') => {
+      const stats = document.getElementById('stats');
+      const statItems = [
+        { filter: 'needs-action', value: items.filter((item) => matchesWorkFilter(item, 'needs-action')).length, label: 'Actions' },
+        { filter: 'blocked', value: items.filter((item) => matchesWorkFilter(item, 'blocked')).length, label: 'Blocked' },
+        { filter: 'open-pr', value: items.filter((item) => matchesWorkFilter(item, 'open-pr')).length, label: 'Open PRs' },
+        { filter: 'staging', value: items.filter((item) => matchesWorkFilter(item, 'staging')).length, label: 'Staging' },
+        { filter: 'done', value: items.filter((item) => matchesWorkFilter(item, 'done')).length, label: 'Done/Merged' },
+        { filter: '', value: items.length, label: 'Total' }
+      ];
+      stats.innerHTML = statItems.map((item) => `
+        <button class="stat" type="button" data-work-filter="${item.filter}" aria-pressed="${currentWorkFilter === item.filter ? 'true' : 'false'}">
+          <strong>${item.value}</strong><span>${item.label}</span>
+        </button>
+      `).join('');
+      stats.querySelectorAll('[data-work-filter]').forEach((button) => {
+        button.addEventListener('click', () => {
+          const workFilter = document.getElementById('workFilter');
+          if (workFilter) {
+            workFilter.value = button.dataset.workFilter || '';
+          }
+          renderItems();
+        });
+      });
+    };
+
+    const renderFilters = () => {
+      const repoFilter = document.getElementById('repoFilter');
+      if (!repoFilter) {
+        return;
+      }
+      const selectedRepo = repoFilter.value;
+      repoFilter.querySelectorAll('option:not([value=""])').forEach((option) => option.remove());
+      const repos = Array.from(new Set(triageItems.map((item) => item.repo))).sort();
+      repos.forEach((repo) => {
+        const option = document.createElement('option');
+        option.value = repo;
+        option.textContent = repoLabels[repo] ?? repo;
+        repoFilter.appendChild(option);
+      });
+      repoFilter.value = repos.includes(selectedRepo) ? selectedRepo : '';
+    };
+
+    const itemMatches = (item, search, repo, detail, work, showResolvedSentry) => {
+      const status = getStatus(item);
+      if (item.hiddenFromTimeline || status.hiddenFromTimeline || isAssignedAwaySentry(item, status)) {
+        return false;
+      }
+      const haystack = [
+        JSON.stringify(status),
+        item.sentryKey,
+        item.pre,
+        item.repo,
+        item.pr,
+        item.title,
+        item.bugReason,
+        item.fixSummary,
+        item.rebaseResult,
+        item.pipelineResult,
+        item.amendmentResult,
+        item.stagingResult,
+        item.reviewerDecision,
+        item.amendmentSummary,
+        JSON.stringify(item.stagingSmoke ?? {}),
+        item.stagingSmokeStatus,
+        item.stagingSmokeNote,
+        item.stagingSmokeEvidence,
+        item.stagingSmokeBlocker,
+        item.regression,
+        item.regressionStatus,
+        item.regressionNote,
+        item.regressionEvidence,
+        item.regressionBlocker,
+        JSON.stringify(item.prComments ?? []),
+        item.prCommentStatus,
+        item.affectedUrl
+      ].map(normalize).join(' ');
+      return (showResolvedSentry || !isResolvedSentry(item)) &&
+        (!search || haystack.includes(search)) &&
+        (!repo || item.repo === repo) &&
+        (!detail || item.detailLevel === detail) &&
+        matchesWorkFilter(item, work);
+    };
+
+    const renderItems = () => {
+      const searchInput = document.getElementById('searchInput');
+      const repoFilter = document.getElementById('repoFilter');
+      const workFilter = document.getElementById('workFilter');
+      const detailFilter = document.getElementById('detailFilter');
+      const showResolvedSentryToggle = document.getElementById('showResolvedSentry');
+      const search = normalize((searchInput?.value || '').trim());
+      const repo = repoFilter?.value || '';
+      const work = workFilter?.value || '';
+      const detail = detailFilter?.value || '';
+      const showResolvedSentry = Boolean(showResolvedSentryToggle?.checked);
+      const visibleItems = triageItems.filter((item) => {
+        const status = getStatus(item);
+        return !item.hiddenFromTimeline &&
+          !status.hiddenFromTimeline &&
+          !isAssignedAwaySentry(item, status) &&
+          (showResolvedSentry || !isResolvedSentry(item));
+      });
+      const items = sortByActiveFirst(triageItems.filter((item) => {
+        const status = getStatus(item);
+        return !item.hiddenFromTimeline &&
+          !status.hiddenFromTimeline &&
+          !isAssignedAwaySentry(item, status) &&
+          itemMatches(item, search, repo, detail, work, showResolvedSentry);
+      }));
+      const timeline = document.getElementById('timeline');
+      const emptyState = document.getElementById('emptyState');
+      renderCurrentWork();
+      renderStats(visibleItems, work);
+      renderActionQueue(items);
+      renderSentryScopeList();
+      return;
+
+      if (!timeline || !emptyState) {
+        return;
+      }
+
+      timeline.innerHTML = items.map((item) => `
+        ${(() => {
+          const status = getStatus(item);
+          const action = deriveNextAction(item);
+          return `
+        <details class="item item-${action.tone}${workflowMatchesItem(item) ? ' item-working' : ''}" ${activeClaudeEvaluationPre === item.pre ? 'open' : ''}>
+          <summary class="item-summary">
+            <span class="item-toggle" aria-hidden="true"></span>
+            <div class="item-heading">
+              ${renderCollapsedSummary(item, status)}
+              ${workflowMatchesItem(item) ? `<span class="working-badge">${escapeHtml(workflowState.step || 'Workflow')}: Working now</span>` : ''}
+            </div>
+            <div class="summary-actions">${renderClaudeEvaluateButton(item)}</div>
+          </summary>
+          <div class="item-detail">
+            <div class="meta">
+              <a class="pill" href="${repoUrl(item.repo)}" target="_blank" rel="noreferrer">${repoLabels[item.repo] ?? item.repo}</a>
+              ${formatAffectedUrl(item.affectedUrl)}
+              ${renderItemRefreshButton(item)}
+            </div>
+            ${renderNextAction(item)}
+            ${activeClaudeEvaluationPre === item.pre ? renderClaudeEvaluation(item, status, claudeEvaluationsByPre[item.pre]) : ''}
+            <div class="content-grid">
+              <section class="section">
+                <h3>Bug Reason</h3>
+                <p>${item.bugReason}</p>
+              </section>
+              <section class="section">
+                <h3>How It Was Fixed</h3>
+                <p>${item.fixSummary}</p>
+              </section>
+              ${renderAmendment(item)}
+              ${renderRegressionStatus(item, status)}
+              ${renderStagingSmoke(item)}
+              ${renderPrComments(item)}
+            </div>
+            ${renderVerification(item)}
+          </div>
+        </details>
+          `;
+        })()}
+      `).join('');
+      timeline.querySelectorAll('[data-refresh-pre]').forEach((button) => {
+        button.addEventListener('click', (event) => {
+          event.preventDefault();
+          event.stopPropagation();
+          startManualUpdate({
+            pre: button.dataset.refreshPre || '',
+            title: button.dataset.refreshTitle || ''
+          });
+        });
+      });
+      timeline.querySelectorAll('[data-evaluate-pre]').forEach((button) => {
+        button.addEventListener('click', (event) => {
+          event.preventDefault();
+          event.stopPropagation();
+          const pre = button.dataset.evaluatePre || '';
+          if (activeClaudeEvaluationPre === pre) {
+            activeClaudeEvaluationPre = '';
+            renderItems();
+            return;
+          }
+          activeClaudeEvaluationPre = pre;
+          if (!claudeEvaluationsByPre[pre] || claudeEvaluationsByPre[pre].status === 'error') {
+            claudeEvaluationsByPre = {
+              ...claudeEvaluationsByPre,
+              [pre]: {
+                status: 'loading'
+              }
+            };
+            requestClaudeEvaluation(pre);
+          }
+          renderItems();
+          scrollActiveClaudeEvaluationIntoView();
+        });
+      });
+      timeline.querySelectorAll('.item-summary a[href]').forEach((link) => {
+        link.addEventListener('click', (event) => {
+          event.stopPropagation();
+        });
+      });
+      emptyState.style.display = items.length === 0 ? 'block' : 'none';
+    };
+
+    const setUpdatedAt = (value) => {
+      const updatedAt = document.getElementById('updatedAt');
+      if (updatedAt) {
+        updatedAt.textContent = value;
+      }
+    };
+
+    const applyReportData = (data = {}) => {
+      lastUpdated = data.lastUpdated || '';
+      triageItems = Array.isArray(data.triageItems) ? data.triageItems : [];
+      statusByPre = data.statusByPre && typeof data.statusByPre === 'object' ? data.statusByPre : {};
+      sentryScopeItems = Array.isArray(data.sentryScopeItems) ? data.sentryScopeItems : [];
+      sentrySourceVerification = data.sentrySourceVerification && typeof data.sentrySourceVerification === 'object' ? data.sentrySourceVerification : {};
+      setUpdatedAt(lastUpdated || 'Live');
+      renderFilters();
+      renderItems();
+    };
+
+    const loadReportData = async () => {
+      if (!['http:', 'https:'].includes(window.location.protocol)) {
+        setUpdatedAt('Open live server');
+        renderFilters();
+        renderItems();
+        return;
+      }
+
+      try {
+        const response = await fetch('/api/report-data', { cache: 'no-store' });
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}`);
+        }
+        applyReportData(await response.json());
+      } catch (error) {
+        setUpdatedAt('Data unavailable');
+        const timeline = document.getElementById('timeline');
+        const emptyState = document.getElementById('emptyState');
+        if (timeline) {
+          timeline.innerHTML = '';
+        }
+        if (emptyState) {
+          emptyState.textContent = `Live data unavailable: ${error.message}`;
+          emptyState.style.display = 'block';
+        }
+      }
+    };
+
+    setUpdatedAt('Loading');
+    loadReportData();
+    [
+      ['searchInput', 'input'],
+      ['repoFilter', 'change'],
+      ['workFilter', 'change'],
+      ['detailFilter', 'change'],
+      ['showResolvedSentry', 'change']
+    ].forEach(([id, eventName]) => {
+      document.getElementById(id)?.addEventListener(eventName, renderItems);
+    });
+
+    const manualUpdateButton = document.getElementById('manualUpdateButton');
+    const manualUpdateStatus = document.getElementById('manualUpdateStatus');
+    const liveStatus = document.getElementById('liveStatus');
+
+    const formatUpdateTime = (value) => {
+      if (!value) {
+        return '';
+      }
+      try {
+        return new Intl.DateTimeFormat(undefined, {
+          hour: '2-digit',
+          minute: '2-digit',
+          second: '2-digit'
+        }).format(new Date(value));
+      } catch {
+        return '';
+      }
+    };
+
+    const updateStatusClass = (status) => {
+      const normalized = normalize(status);
+      if (normalized.includes('failed') || normalized.includes('stale') || normalized.includes('not-configured')) {
+        return 'status-blocked';
+      }
+      if (normalized.includes('running')) {
+        return 'status-active';
+      }
+      if (normalized.includes('succeeded')) {
+        return 'status-done';
+      }
+      return '';
+    };
+
+    const setManualUpdateState = (state = {}) => {
+      const status = state.status || 'idle';
+      const idle = status === 'idle' && !state.startedAt && !state.completedAt;
+      const completedAt = formatUpdateTime(state.completedAt);
+      const startedAt = formatUpdateTime(state.startedAt);
+      const detail = idle
+        ? 'Ready'
+        : state.running
+        ? `Running since ${startedAt || 'now'}`
+        : (completedAt ? `Last run ${completedAt}` : 'Manual update ready');
+      const message = idle ? '' : state.message;
+      manualUpdateButton.disabled = Boolean(state.running);
+      manualUpdateButton.textContent = state.running ? 'Updating...' : 'Update Report';
+      document.querySelectorAll('[data-refresh-pre]').forEach((button) => {
+        const isTarget = state.pre && button.dataset.refreshPre === state.pre;
+        button.disabled = Boolean(state.running);
+        button.textContent = state.running && isTarget ? 'Refreshing...' : 'Refresh';
+      });
+      manualUpdateStatus.className = `update-status ${updateStatusClass(status)}`;
+      manualUpdateStatus.textContent = message && detail !== 'Manual update ready'
+        ? `${message} ${detail}`
+        : (message || detail);
+      manualUpdateStatus.title = state.logTail || manualUpdateStatus.textContent;
+    };
+
+    const setLiveState = (state, label) => {
+      liveStatus.dataset.state = state;
+      liveStatus.textContent = label;
+    };
+
+    const fetchManualUpdateStatus = async () => {
+      if (!['http:', 'https:'].includes(window.location.protocol)) {
+        setManualUpdateState({
+          status: 'not-configured',
+          message: 'Open the live report server to run manual updates.'
+        });
+        manualUpdateButton.disabled = true;
+        return;
+      }
+
+      try {
+        const response = await fetch('/api/update-status', { cache: 'no-store' });
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}`);
+        }
+        const body = await response.json();
+        setManualUpdateState(body.update);
+      } catch (error) {
+        setManualUpdateState({
+          status: 'failed',
+          message: `Manual update status unavailable: ${error.message}`
+        });
+      }
+    };
+
+    const startManualUpdate = async (context = {}) => {
+      const pre = context.pre || '';
+      setManualUpdateState({
+        running: true,
+        status: 'running',
+        pre: pre || null,
+        startedAt: new Date().toISOString(),
+        message: pre ? `Starting refresh for ${pre}.` : 'Starting manual update.'
+      });
+      try {
+        const response = await fetch('/api/update', {
+          method: 'POST',
+          cache: 'no-store',
+          headers: {
+            'content-type': 'application/json'
+          },
+          body: JSON.stringify(context)
+        });
+        const body = await response.json();
+        if (!response.ok) {
+          throw new Error(body.error || `HTTP ${response.status}`);
+        }
+        setManualUpdateState(body.update);
+      } catch (error) {
+        setManualUpdateState({
+          running: false,
+          status: 'failed',
+          completedAt: new Date().toISOString(),
+          message: `Manual update failed to start: ${error.message}`
+        });
+      }
+    };
+
+    manualUpdateButton.addEventListener('click', () => startManualUpdate());
+    fetchManualUpdateStatus();
+
+    const connectLiveReport = () => {
+      if (!['http:', 'https:'].includes(window.location.protocol)) {
+        return;
+      }
+
+      const wsProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+      const socketUrl = `${wsProtocol}//${window.location.host}/ws`;
+      let retryDelay = 800;
+
+      const connect = () => {
+        const socket = new WebSocket(socketUrl);
+        socket.addEventListener('open', () => {
+          retryDelay = 800;
+          setLiveState('live', 'Live');
+        });
+        socket.addEventListener('message', (event) => {
+          try {
+            const message = JSON.parse(event.data);
+            if (message.update) {
+              setManualUpdateState(message.update);
+            }
+            if (message.workflow) {
+              setWorkflowState(message.workflow);
+            }
+            if ((message.type === 'report:data' || message.type === 'report:connected') && message.data) {
+              applyReportData(message.data);
+            }
+            if (message.type === 'report:reload') {
+              window.location.reload();
+            }
+          } catch {
+            // Ignore malformed live-report messages.
+          }
+        });
+        socket.addEventListener('close', () => {
+          setLiveState('offline', 'Reconnecting');
+          window.setTimeout(connect, retryDelay);
+          retryDelay = Math.min(retryDelay * 1.6, 8000);
+        });
+        socket.addEventListener('error', () => {
+          setLiveState('offline', 'Offline');
+        });
+      };
+
+      connect();
+    };
+
+    connectLiveReport();
+  </script>
+</body>
+</html>

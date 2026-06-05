@@ -1,0 +1,15 @@
+{
+  "status": "idle",
+  "step": "",
+  "title": "",
+  "message": "No workflow status has been reported yet.",
+  "pre": null,
+  "sentryKey": null,
+  "sentryIssueId": null,
+  "repo": null,
+  "pr": null,
+  "phase": null,
+  "url": null,
+  "source": "example",
+  "updatedAt": "2026-06-05T00:00:00.000Z"
+}

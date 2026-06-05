@@ -1,0 +1,14 @@
+report-data.json
+report-data.*.json
+report-data.json.*
+!report-data.example.json
+workflow-status.json
+!workflow-status.example.json
+manual-update-status.json
+manual-update-*.md
+manual-update.lock/
+*.log
+*.pid
+*.tmp
+evidence/*
+!evidence/.gitkeep

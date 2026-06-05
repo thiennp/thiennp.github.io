@@ -1,0 +1,12 @@
+{
+  "name": "sentry-triage-report",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "node server.mjs",
+    "dev": "node server.mjs",
+    "check": "node --check server.mjs && node --check bin/send-workflow-status.mjs",
+    "send": "node bin/send-workflow-status.mjs"
+  }
+}
