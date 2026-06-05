@@ -27,7 +27,7 @@ AGENT_REPORT_WS=ws://localhost:3100/stream npm run send -- --automation-name "<a
 
 ## Automations
 
-- `agent-report-server-guard` - Agent Report server guard: cron automation that checks every 30 minutes and starts the Agent Report server if it is down.
+- `agent-report-server-guard` - Agent Report server guard: cron automation that checks every 30 minutes and starts the Agent Report server if it is down. Current status: `PAUSED`.
 - `automation-improvement-review-loop` - Automation improvement review loop: hourly heartbeat automation that audits all mirrored automations and runs the improvement review loop for explicit change requests in this thread.
 - `check24-package-audit-extractor` - CHECK24 package audit extractor: cron automation for rechecking the Power package-audit dashboard and exporting details to `~/sec.check24.de.json`.
 - `continue-nrg-readme-sweep` - Continue NRG README sweep: heartbeat automation to continue the NRG Jira/MR documentation sweep.
