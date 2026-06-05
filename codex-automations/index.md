@@ -12,5 +12,6 @@ All automations should first run `/Users/thien.nguyen/thiennp.github.io/agent-re
 | `continue-nrg-readme-sweep` | Continue NRG README sweep | heartbeat | PAUSED | [automation.toml](continue-nrg-readme-sweep/automation.toml) |
 | `fix-slack-security-dependency-threads` | Daily-vulnerabilities-fix | cron | ACTIVE | [automation.toml](fix-slack-security-dependency-threads/automation.toml) |
 | `hourly-bitbucket-dependency-pr-cleanup` | Hourly assigned Bitbucket PR review | cron | PAUSED | [automation.toml](hourly-bitbucket-dependency-pr-cleanup/automation.toml) |
+| `sentry-chrome-tab-snapshot` | Sentry Chrome Tab Snapshot | heartbeat | ACTIVE | [automation.toml](sentry-chrome-tab-snapshot/automation.toml) |
 | `sentry-jira-cursor-triage-loop` | Sentry Jira Cursor Triage Loop | heartbeat | ACTIVE | [automation.toml](sentry-jira-cursor-triage-loop/automation.toml) |
 | `sync-codex-automations-to-thiennp-github-io` | Sync Codex automations to thiennp.github.io | cron | ACTIVE | [automation.toml](sync-codex-automations-to-thiennp-github-io/automation.toml) |

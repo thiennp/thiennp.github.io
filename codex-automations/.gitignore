@@ -5,3 +5,24 @@
 
 **/price-history.json
 **/index.html
+
+# Generated screenshots and visual artifacts.
+*.png
+*.jpg
+*.jpeg
+*.gif
+*.webp
+*.svg
+*.bmp
+*.tif
+*.tiff
+*.ico
+*.avif
+*.heic
+*.heif
+
+sentry-chrome-tab-snapshot.json
+sentry-chrome-tab-snapshot/snapshot-compact.json
+sentry-chrome-tab-snapshot/snapshot-last.stderr.log
+sentry-chrome-tab-snapshot/live-report-sync-status.json
+sentry-chrome-tab-snapshot/issue-jira-scan-status.json

@@ -1779,6 +1779,13 @@
         </div>
         <div class="source-list" id="sentryScopeList"></div>
       </section>
+      <section id="sentryFeedPanel" aria-label="Visible Sentry Feed">
+        <div class="source-scope-heading">
+          <span class="source-scope-title">Visible Sentry Feed</span>
+          <span class="source-scope-count" id="sentryFeedCount">No snapshot</span>
+        </div>
+        <div class="source-list" id="sentryFeedList"></div>
+      </section>
     </div>
 
     <p class="note">
@@ -1792,7 +1799,12 @@
     let statusByPre = {};
     let sentryScopeItems = [];
     let sentrySourceVerification = {};
+    let sentryFeedItems = [];
+    let sentryFeedSnapshot = {};
+    let sentryJiraScan = {};
     let workflowState = {};
+    let uiStateReportTimer = null;
+    let lastUiStateSignature = '';
     let activeClaudeEvaluationPre = '';
     let claudeEvaluationsByPre = {};
 
@@ -1927,6 +1939,14 @@
     };
     const workflowIsActiveTarget = () => workflowIsVisible() && !workflowIsCompleted();
     const normalizedWorkflowUrl = () => normalize(workflowState.url || '');
+    const workflowIssueId = () => {
+      const explicit = scalarText(workflowState.sentryIssueId).trim();
+      if (explicit) {
+        return explicit;
+      }
+      const match = scalarText(workflowState.url).match(/\/issues\/(\d+)/);
+      return match ? match[1] : '';
+    };
     const workflowMatchesSentryIdentity = (candidate) => {
       const workflowSentryKey = normalize(workflowState.sentryKey);
       const workflowSentryIssueId = normalize(workflowState.sentryIssueId);
@@ -2036,6 +2056,63 @@
         link.style.display = 'none';
       }
       renderItems();
+    };
+    const reportUiState = async () => {
+      if (!['http:', 'https:'].includes(window.location.protocol)) {
+        return;
+      }
+      const highlightedCards = [...document.querySelectorAll('.source-card.source-working')];
+      const activeJiraKeys = new Set();
+      [...sentryScopeItems, ...sentryFeedItems]
+        .filter((item) => workflowMatchesSentryIdentity(item))
+        .flatMap(jiraKeysForSentryItem)
+        .forEach((key) => activeJiraKeys.add(key));
+      const payload = {
+        status: workflowIsActiveTarget()
+          ? (highlightedCards.length ? 'highlighted' : 'rendered-without-highlight')
+          : (workflowIsVisible() ? 'rendered-inactive' : 'idle'),
+        activeIssueId: workflowIssueId(),
+        activeSentryKey: scalarText(workflowState.sentryKey).trim(),
+        activeUrl: workflowTargetUrl(),
+        activeJiraKeys: [...activeJiraKeys],
+        workflowUpdatedAt: workflowState.updatedAt || '',
+        highlightedCount: highlightedCards.length,
+        sourceScopeHighlighted: Boolean(document.querySelector('#sentryScopeList .source-card.source-working')),
+        visibleFeedHighlighted: Boolean(document.querySelector('#sentryFeedList .source-card.source-working')),
+        renderedAt: new Date().toISOString(),
+        clientUrl: window.location.href
+      };
+      const signature = JSON.stringify({
+        status: payload.status,
+        activeIssueId: payload.activeIssueId,
+        activeSentryKey: payload.activeSentryKey,
+        activeUrl: payload.activeUrl,
+        activeJiraKeys: payload.activeJiraKeys,
+        workflowUpdatedAt: payload.workflowUpdatedAt,
+        highlightedCount: payload.highlightedCount,
+        sourceScopeHighlighted: payload.sourceScopeHighlighted,
+        visibleFeedHighlighted: payload.visibleFeedHighlighted
+      });
+      if (signature === lastUiStateSignature) {
+        return;
+      }
+      lastUiStateSignature = signature;
+      try {
+        await fetch('/api/ui-state', {
+          method: 'POST',
+          cache: 'no-store',
+          headers: {
+            'content-type': 'application/json'
+          },
+          body: JSON.stringify(payload)
+        });
+      } catch {
+        // UI render acknowledgements are for automation gating only.
+      }
+    };
+    const scheduleUiStateReport = () => {
+      window.clearTimeout(uiStateReportTimer);
+      uiStateReportTimer = window.setTimeout(reportUiState, 80);
     };
     const isResolvedSentry = (item) => normalize(getStatus(item).sentry) === 'resolved';
     const releaseMainStatus = (status, item = {}) => {
@@ -3545,6 +3622,21 @@
       ? item.sources
       : [firstPresent(item.source, item.sentryScope, 'unknown')];
     const workflowMatchesSentryScopeItem = (item) => workflowIsActiveTarget() && workflowMatchesSentryIdentity(item);
+    const jiraKeysForSentryItem = (item) => {
+      const keys = new Set();
+      const addKey = (value) => {
+        const key = scalarText(value).trim().toUpperCase();
+        if (/^[A-Z][A-Z0-9]+-\d+$/.test(key)) {
+          keys.add(key);
+        }
+      };
+      (Array.isArray(item.jiraTicketKeys) ? item.jiraTicketKeys : []).forEach(addKey);
+      (Array.isArray(item.jiraTickets) ? item.jiraTickets : []).forEach((ticket) => addKey(ticket.key || ticket));
+      (Array.isArray(item.linkedJiraKeys) ? item.linkedJiraKeys : []).forEach((ticket) => addKey(ticket.key || ticket));
+      addKey(item.jiraTicket);
+      addKey(item.jiraKey);
+      return [...keys];
+    };
 
     const renderSentryScopeList = () => {
       const count = document.getElementById('sentryScopeCount');
@@ -3591,6 +3683,44 @@
         </article>
       `;
       }).join('')}`;
+    };
+
+    const renderSentryFeedList = () => {
+      const count = document.getElementById('sentryFeedCount');
+      const list = document.getElementById('sentryFeedList');
+      if (!count || !list) {
+        return;
+      }
+      const checkedCount = Number(sentryJiraScan.checkedIssueCount || sentryJiraScan.scannedIssueCount || 0);
+      count.textContent = sentryFeedItems.length
+        ? `${sentryFeedItems.length} visible${checkedCount ? ` · ${checkedCount} checked` : ''}`
+        : 'No snapshot';
+
+      if (!sentryFeedItems.length) {
+        list.innerHTML = '<div class="action-empty">No visible Sentry feed snapshot recorded.</div>';
+        return;
+      }
+
+      list.innerHTML = sentryFeedItems.map((item) => {
+        const isWorking = workflowMatchesSentryScopeItem(item);
+        const jiraKeys = jiraKeysForSentryItem(item);
+        return `
+        <article class="source-card${isWorking ? ' source-working' : ''}"${isWorking ? ' data-working="true"' : ''}>
+          <header>
+            <a class="source-key" href="${escapeHtml(sentryScopeUrl(item))}" target="_blank" rel="noreferrer">${escapeHtml(sentryScopeLabel(item))}</a>
+            <span class="source-badge">${escapeHtml(item.substatus || item.status || 'unresolved')}</span>
+          </header>
+          <p class="source-title">${escapeHtml(item.title || 'Untitled Sentry issue')}</p>
+          <div class="source-meta">
+            <span class="source-badge">${escapeHtml(item.project || item.projectSlug || item.projectName || item.repo || 'project')}</span>
+            ${jiraKeys.length
+              ? jiraKeys.map((key) => `<span class="source-badge">${escapeHtml(key)}</span>`).join('')
+              : `<span class="source-badge">${escapeHtml(item.jiraScanStatus || 'jira unknown')}</span>`}
+            ${isWorking ? `<span class="source-badge source-working-badge">Opening now</span>` : ''}
+          </div>
+        </article>
+      `;
+      }).join('');
     };
 
     const hasStagingWork = (item) => {
@@ -3743,6 +3873,8 @@
       renderStats(visibleItems, work);
       renderActionQueue(items);
       renderSentryScopeList();
+      renderSentryFeedList();
+      scheduleUiStateReport();
       return;
 
       if (!timeline || !emptyState) {
@@ -3846,6 +3978,9 @@
       statusByPre = data.statusByPre && typeof data.statusByPre === 'object' ? data.statusByPre : {};
       sentryScopeItems = Array.isArray(data.sentryScopeItems) ? data.sentryScopeItems : [];
       sentrySourceVerification = data.sentrySourceVerification && typeof data.sentrySourceVerification === 'object' ? data.sentrySourceVerification : {};
+      sentryFeedSnapshot = data.lastSentryFeedSnapshot && typeof data.lastSentryFeedSnapshot === 'object' ? data.lastSentryFeedSnapshot : {};
+      sentryFeedItems = Array.isArray(sentryFeedSnapshot.items) ? sentryFeedSnapshot.items : [];
+      sentryJiraScan = data.lastChromeProfileSentryJiraScan && typeof data.lastChromeProfileSentryJiraScan === 'object' ? data.lastChromeProfileSentryJiraScan : {};
       setUpdatedAt(lastUpdated || 'Live');
       renderFilters();
       renderItems();

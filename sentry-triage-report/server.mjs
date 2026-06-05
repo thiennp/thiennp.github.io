@@ -108,6 +108,19 @@ function loadWorkflowState() {
 }
 
 let workflowState = loadWorkflowState();
+let uiState = {
+  status: 'unknown',
+  activeIssueId: null,
+  activeSentryKey: null,
+  activeUrl: null,
+  activeJiraKeys: [],
+  workflowUpdatedAt: null,
+  highlightedCount: 0,
+  sourceScopeHighlighted: false,
+  visibleFeedHighlighted: false,
+  renderedAt: null,
+  clientUrl: null,
+};
 
 const contentTypes = {
   '.html': 'text/html; charset=utf-8',
@@ -229,6 +242,33 @@ function scheduleUpdateStateBroadcast(reason) {
 
 function publicWorkflowState() {
   return workflowState;
+}
+
+function normalizeUiState(input = {}) {
+  return {
+    status: cleanText(input.status, 32) || 'rendered',
+    activeIssueId: cleanText(input.activeIssueId || input.sentryIssueId || input.issueId, 80),
+    activeSentryKey: cleanText(input.activeSentryKey || input.sentryKey, 120),
+    activeUrl: cleanText(input.activeUrl || input.url, 600),
+    activeJiraKeys: Array.isArray(input.activeJiraKeys)
+      ? input.activeJiraKeys.map((key) => cleanText(key, 80)).filter(Boolean)
+      : [],
+    workflowUpdatedAt: cleanText(input.workflowUpdatedAt, 80),
+    highlightedCount: Number(input.highlightedCount || 0),
+    sourceScopeHighlighted: input.sourceScopeHighlighted === true,
+    visibleFeedHighlighted: input.visibleFeedHighlighted === true,
+    renderedAt: cleanText(input.renderedAt, 80) || new Date().toISOString(),
+    clientUrl: cleanText(input.clientUrl, 600),
+  };
+}
+
+function publicUiState() {
+  return uiState;
+}
+
+function setUiState(nextState) {
+  uiState = normalizeUiState(nextState);
+  return uiState;
 }
 
 function saveWorkflowState() {
@@ -1057,6 +1097,40 @@ const server = createServer((req, res) => {
       ...reportMetadata(),
       update: publicUpdateState(),
       workflow: publicWorkflowState(),
+      ui: publicUiState(),
+    });
+    return;
+  }
+
+  if (url.pathname === '/api/ui-state') {
+    if (req.method === 'GET') {
+      writeJson(res, 200, {
+        ok: true,
+        ui: publicUiState(),
+      });
+      return;
+    }
+
+    if (req.method !== 'POST') {
+      writeJson(res, 405, {
+        ok: false,
+        error: 'Use GET to read or POST to update UI render state.',
+      });
+      return;
+    }
+
+    readJsonRequest(req, (error, context) => {
+      if (error) {
+        writeJson(res, 400, {
+          ok: false,
+          error: `Invalid UI state JSON: ${error.message}`,
+        });
+        return;
+      }
+      writeJson(res, 200, {
+        ok: true,
+        ui: setUiState(context),
+      });
     });
     return;
   }
