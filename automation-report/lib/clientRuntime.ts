@@ -23,7 +23,10 @@ export function getDashboardUrl(mode: RuntimeMode) {
   if (mode === 'live') {
     return '/api/dashboard';
   }
-  return '/report/dashboard.json';
+  if (typeof window === 'undefined') {
+    return '/report/dashboard.json';
+  }
+  return new URL('dashboard.json', window.location.href).toString();
 }
 
 export function getHealthUrl(mode: RuntimeMode) {

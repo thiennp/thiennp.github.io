@@ -3,4 +3,5 @@ node_modules/
 out/
 data/
 logs/
+bin/pages-ingest.js
 *.log

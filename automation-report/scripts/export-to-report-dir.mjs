@@ -45,6 +45,11 @@ if (fs.existsSync(reportDir)) {
 copyDirectory(outDir, reportDir);
 fs.writeFileSync(path.join(reportDir, '.nojekyll'), '');
 
+const siteNojekyll = path.resolve(appDir, '..', '.nojekyll');
+if (!fs.existsSync(siteNojekyll)) {
+  fs.writeFileSync(siteNojekyll, '');
+}
+
 if (preservedDashboard) {
   fs.writeFileSync(preservedDashboardPath, preservedDashboard);
 } else if (!fs.existsSync(preservedDashboardPath)) {

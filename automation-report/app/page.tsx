@@ -8,6 +8,11 @@ import {
   getWebSocketUrl,
   type RuntimeMode
 } from '../lib/clientRuntime';
+import {
+  installDashboardIngest,
+  readDashboardCache,
+  writeDashboardCache
+} from '../lib/dashboardStorage';
 
 type Status = string;
 
@@ -155,31 +160,63 @@ export default function Home() {
   });
   const [wsState, setWsState] = useState('static');
   const [lastWsEvent, setLastWsEvent] = useState('none');
+  const [dataSource, setDataSource] = useState('loading');
   const [query, setQuery] = useState('');
 
-  const loadDashboard = async (mode = runtimeMode) => {
-    const dashboardData = await fetchJson<DashboardSnapshot>(getDashboardUrl(mode));
+  const applyDashboard = (dashboardData: DashboardSnapshot, source: string) => {
     setDashboard(dashboardData);
-
-    const healthUrl = getHealthUrl(mode);
-    if (healthUrl) {
-      const healthData = await fetchJson<Health>(healthUrl);
-      setHealth(healthData);
-      return;
+    setDataSource(source);
+    if (getRuntimeMode() === 'static') {
+      writeDashboardCache(dashboardData);
     }
+  };
 
-    setHealth({
-      status: 'github-pages',
-      storeVersion: 0,
-      websocket: { ready: false, clients: 0 }
-    });
+  const loadDashboard = async (mode = runtimeMode) => {
+    try {
+      const dashboardData = await fetchJson<DashboardSnapshot>(getDashboardUrl(mode));
+      applyDashboard(dashboardData, mode === 'live' ? 'live-api' : 'dashboard.json');
+
+      const healthUrl = getHealthUrl(mode);
+      if (healthUrl) {
+        const healthData = await fetchJson<Health>(healthUrl);
+        setHealth(healthData);
+        return;
+      }
+
+      setHealth({
+        status: 'github-pages',
+        storeVersion: 0,
+        websocket: { ready: false, clients: 0 }
+      });
+    } catch {
+      if (mode === 'static') {
+        const cached = readDashboardCache();
+        if (cached) {
+          applyDashboard(cached as DashboardSnapshot, 'localStorage');
+          setHealth({
+            status: 'github-pages-cache',
+            storeVersion: 0,
+            websocket: { ready: false, clients: 0 }
+          });
+        }
+      }
+    }
   };
 
   useEffect(() => {
+    const cached = readDashboardCache();
+    if (cached) {
+      applyDashboard(cached as DashboardSnapshot, 'localStorage');
+    }
+
     const mode = getRuntimeMode();
     setRuntimeMode(mode);
     setWsState(mode === 'live' ? 'connecting' : 'snapshot');
     loadDashboard(mode).catch(() => undefined);
+
+    return installDashboardIngest((snapshot) => {
+      applyDashboard(snapshot as DashboardSnapshot, 'ingest');
+    });
   }, []);
 
   useEffect(() => {
@@ -401,7 +438,7 @@ export default function Home() {
         <span>
           {runtimeMode === 'live'
             ? `Store v${health.storeVersion ?? 0}: ${health.storePath || 'not loaded'}`
-            : 'Published snapshot from /report/dashboard.json'}
+            : `Data source: ${dataSource}`}
         </span>
         <span>
           {runtimeMode === 'live'
