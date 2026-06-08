@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { MAX_RECENT_EVENTS } from '../lib/constants';
 import {
   getDashboardUrl,
@@ -10,11 +10,14 @@ import {
   type RuntimeMode
 } from '../lib/clientRuntime';
 import {
-  clearDashboardCache,
+  clearDashboardClearedMark,
   installDashboardIngest,
+  isDashboardCleared,
+  markDashboardCleared,
   readDashboardCache,
   writeDashboardCache
 } from '../lib/dashboardStorage';
+import { createEmptyStoredDashboard } from '../lib/emptyDashboard';
 import UsageInstructions from './UsageInstructions';
 
 type Status = string;
@@ -106,23 +109,8 @@ const emptyWorkStatus: WorkStatus = {
   updatedAt: new Date().toISOString()
 };
 
-const emptyReport: CurrentReport = {
-  title: 'Check24 Sentry Issues',
-  message: 'Waiting for the first Sentry refresh.',
-  status: 'pending',
-  updatedAt: new Date().toISOString(),
-  issueCount: 0,
-  issues: []
-};
-
 function createEmptyDashboard(): DashboardSnapshot {
-  const updatedAt = new Date().toISOString();
-  return {
-    workStatus: { ...emptyWorkStatus, updatedAt },
-    automations: [],
-    recentEvents: [],
-    report: { ...emptyReport, updatedAt }
-  };
+  return createEmptyStoredDashboard() as DashboardSnapshot;
 }
 
 function statusClass(status?: string) {
@@ -173,7 +161,6 @@ export default function Home() {
   const [dataSource, setDataSource] = useState('loading');
   const [query, setQuery] = useState('');
   const [isClearing, setIsClearing] = useState(false);
-  const skipRemoteLoadRef = useRef(false);
 
   const applyDashboard = (dashboardData: DashboardSnapshot, source: string) => {
     const nextDashboard = {
@@ -182,17 +169,28 @@ export default function Home() {
     };
     setDashboard(nextDashboard);
     setDataSource(source);
-    if (getRuntimeMode() === 'static') {
+    if (getRuntimeMode() === 'static' && source !== 'cleared') {
       writeDashboardCache(nextDashboard);
     }
   };
 
   const loadDashboard = async (mode = runtimeMode, force = false) => {
-    if (mode === 'static' && skipRemoteLoadRef.current && !force) {
+    if (mode === 'static' && isDashboardCleared() && !force) {
+      const cached = readDashboardCache();
+      applyDashboard((cached ?? createEmptyDashboard()) as DashboardSnapshot, 'cleared');
+      setHealth({
+        status: 'github-pages-cleared',
+        storeVersion: 0,
+        websocket: { ready: false, clients: 0 }
+      });
       return;
     }
+
     try {
       const dashboardData = await fetchJson<DashboardSnapshot>(getDashboardUrl(mode));
+      if (mode === 'static') {
+        clearDashboardClearedMark();
+      }
       applyDashboard(dashboardData, mode === 'live' ? 'live-api' : 'dashboard.json');
 
       const healthUrl = getHealthUrl(mode);
@@ -224,7 +222,9 @@ export default function Home() {
 
   const clearDashboardView = async () => {
     const confirmed = window.confirm(
-      'Clear the dashboard? This removes current work, activities, automations, and issues.'
+      runtimeMode === 'live'
+        ? 'Clear the dashboard? This removes current work, activities, automations, and issues from the server.'
+        : 'Clear the dashboard in this browser? The published snapshot at dashboard.json is unchanged until you click Refresh.'
     );
     if (!confirmed) {
       return;
@@ -237,27 +237,20 @@ export default function Home() {
         if (!response.ok) {
           throw new Error(`${response.status} ${response.statusText}`);
         }
-        skipRemoteLoadRef.current = false;
         await loadDashboard('live', true);
         return;
       }
 
-      clearDashboardCache();
-      skipRemoteLoadRef.current = true;
+      markDashboardCleared();
       applyDashboard(createEmptyDashboard(), 'cleared');
     } catch {
-      window.alert('Could not clear the dashboard. On GitHub Pages this only clears the browser cache; use Refresh to reload the published snapshot.');
+      window.alert('Could not clear the dashboard. On the live server, check that DELETE /api/dashboard is allowed.');
     } finally {
       setIsClearing(false);
     }
   };
 
   useEffect(() => {
-    const cached = readDashboardCache();
-    if (cached) {
-      applyDashboard(cached as DashboardSnapshot, 'localStorage');
-    }
-
     const mode = getRuntimeMode();
     setRuntimeMode(mode);
     setWsState(mode === 'live' ? 'connecting' : 'snapshot');
@@ -396,7 +389,7 @@ export default function Home() {
         </label>
         <button
           onClick={() => {
-            skipRemoteLoadRef.current = false;
+            clearDashboardClearedMark();
             loadDashboard(runtimeMode, true).catch(() => undefined);
           }}
         >

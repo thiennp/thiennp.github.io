@@ -1,4 +1,7 @@
+import { createEmptyStoredDashboard } from './emptyDashboard';
+
 const STORAGE_KEY = 'automation-report-dashboard-v1';
+const CLEARED_FLAG_KEY = 'automation-report-cleared-v1';
 
 export type StoredDashboard = {
   readonly workStatus: {
@@ -47,11 +50,34 @@ export function writeDashboardCache(snapshot: StoredDashboard) {
   window.localStorage.setItem(STORAGE_KEY, JSON.stringify(snapshot));
 }
 
+export function isDashboardCleared() {
+  if (typeof window === 'undefined') {
+    return false;
+  }
+  return window.localStorage.getItem(CLEARED_FLAG_KEY) === '1';
+}
+
+export function markDashboardCleared() {
+  if (typeof window === 'undefined') {
+    return;
+  }
+  window.localStorage.setItem(CLEARED_FLAG_KEY, '1');
+  writeDashboardCache(createEmptyStoredDashboard());
+}
+
+export function clearDashboardClearedMark() {
+  if (typeof window === 'undefined') {
+    return;
+  }
+  window.localStorage.removeItem(CLEARED_FLAG_KEY);
+}
+
 export function clearDashboardCache() {
   if (typeof window === 'undefined') {
     return;
   }
   window.localStorage.removeItem(STORAGE_KEY);
+  clearDashboardClearedMark();
 }
 
 export function installDashboardIngest(handler: (snapshot: StoredDashboard) => void) {
@@ -69,6 +95,7 @@ export function installDashboardIngest(handler: (snapshot: StoredDashboard) => v
     if (!isStoredDashboard(snapshot)) {
       return;
     }
+    clearDashboardClearedMark();
     writeDashboardCache(snapshot);
     handler(snapshot);
   };

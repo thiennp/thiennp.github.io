@@ -1,0 +1,22 @@
+export function createEmptyStoredDashboard() {
+  const updatedAt = new Date().toISOString();
+  return {
+    workStatus: {
+      status: 'pending',
+      title: 'Waiting for work status',
+      message: 'Agents should log work status to https://thiennp.github.io/report/ using the prompt below.',
+      source: 'automation-report',
+      updatedAt
+    },
+    automations: [] as ReadonlyArray<Record<string, unknown>>,
+    recentEvents: [] as ReadonlyArray<Record<string, unknown>>,
+    report: {
+      title: 'Check24 Sentry Issues',
+      message: 'Waiting for the first Sentry refresh.',
+      status: 'pending',
+      updatedAt,
+      issueCount: 0,
+      issues: [] as ReadonlyArray<Record<string, unknown>>
+    }
+  };
+}
