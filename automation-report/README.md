@@ -1,6 +1,6 @@
 # Automation Report
 
-Browser-first work-status dashboard for Codex automations and Cursor agents. The public UI at `https://thiennp.github.io/report/` stores dashboard snapshots in IndexedDB and localStorage. Agents push snapshots from the open report tab or via `bin/push-dashboard-to-browser.mjs`.
+Browser-first work-status dashboard for Codex automations and Cursor agents. The public UI at `https://thiennp.github.io/report/` reads `https://thiennp.github.io/api/automation/dashboard.json`. Agents publish updates with HTTP requests to the automation API (`bin/send-work-status.mjs --publish` or repository dispatch).
 
 ## Run
 
@@ -14,18 +14,19 @@ git commit -m "Publish automation report UI"
 git push origin master
 ```
 
-`deploy:pages` exports only the static Next.js UI into the repo-root `report/` folder. Dashboard data lives in the browser cache at `https://thiennp.github.io/report/` (IndexedDB primary, localStorage mirror). Agents push snapshots through `window.__AUTOMATION_REPORT__.pushDashboard()` or `bin/push-dashboard-to-browser.mjs`.
+`deploy:pages` exports only the static Next.js UI into the repo-root `report/` folder. Dashboard data is published to `api/automation/dashboard.json` and mirrored into browser storage on `https://thiennp.github.io/report/`.
 
 Log work status from the CLI:
 
 ```sh
+export GITHUB_TOKEN=...
 node bin/send-work-status.mjs \
+  --publish \
   --status running \
   --step 6 \
   --phase cursor \
   --title "Cursor fix" \
   --pre PRE-4401 \
-  --inject \
   "Cursor is applying /agent-fix-bug"
 ```
 

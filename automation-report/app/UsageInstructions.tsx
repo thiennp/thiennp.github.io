@@ -1,86 +1,84 @@
+import {
+  AUTOMATION_DASHBOARD_URL,
+  AUTOMATION_REPOSITORY_DISPATCH_URL,
+  AUTOMATION_WORK_STATUS_URL
+} from '../lib/publicApi';
+
 const REPORT_URL = 'https://thiennp.github.io/report/';
 
 const agentLoggingPrompt = `AUTOMATION REPORT — AGENT LOGGING PROMPT
 
-Public dashboard UI: ${REPORT_URL}
-Storage: IndexedDB (primary) + localStorage (mirror) in the browser viewing ${REPORT_URL}
-Do not use dashboard.json, GitHub Pages APIs, or any http://127.0.0.1 endpoint.
+Dashboard UI: ${REPORT_URL}
+Read API: GET ${AUTOMATION_DASHBOARD_URL}
+Work status route: ${AUTOMATION_WORK_STATUS_URL}
+Write API: POST ${AUTOMATION_REPOSITORY_DISPATCH_URL}
 
-You are an automation agent (Codex, Cursor, or similar). Log every meaningful workflow step so ${REPORT_URL} shows current work. Push a dashboard snapshot into the open report tab. The page keeps IndexedDB and localStorage in sync automatically.
+You are an automation agent (Codex, Cursor, or similar). Log every meaningful workflow step with an HTTP request. The report UI polls ${AUTOMATION_DASHBOARD_URL} and mirrors it into browser storage.
 
 WHEN TO LOG
 - At run start, each step transition, blocker, success, and terminal state.
 - After Jira/PR/Sentry actions that change current work.
 - When status changes: running, success, warning, blocked, pending.
 
-PREFERRED — PUSH A DASHBOARD SNAPSHOT
-Open ${REPORT_URL} in the browser, then run this in the page console or via pages-ingest.js:
-window.__AUTOMATION_REPORT__.pushDashboard({
-  workStatus: {
-    status: "running",
-    step: "2.1",
-    phase: "cursor",
-    title: "Short headline of current work",
-    message: "One-line message describing what you are doing right now.",
-    pre: "PRE-4401",
-    automationId: "my-automation-id",
-    runId: "20260608T120000Z",
-    agentName: "Codex",
-    nextStep: "2.2",
-    updatedAt: new Date().toISOString(),
-    source: "automation-report"
-  },
-  automations: [{
-    automationId: "my-automation-id",
-    latestRunId: "20260608T120000Z",
-    latestStatus: "running",
-    latestUpdateTime: new Date().toISOString(),
-    activeBlockerCount: 0
-  }],
-  recentEvents: [{
-    id: "evt-1",
-    title: "Step title",
-    status: "running",
-    message: "What happened in this step.",
-    stepNumber: "2.1",
-    nextStep: "2.2",
-    agentName: "Codex",
-    createdAt: new Date().toISOString(),
-    automationId: "my-automation-id",
-    runId: "20260608T120000Z"
-  }],
-  report: {
-    title: "Check24 Sentry Issues",
-    message: "Waiting for the first Sentry refresh.",
-    status: "pending",
-    updatedAt: new Date().toISOString(),
-    issueCount: 0,
-    issues: []
-  }
-});
+PREFERRED — CLI PUBLISH
+node automation-report/bin/send-work-status.mjs \\
+  --publish \\
+  --status running \\
+  --step 2.1 \\
+  --phase cursor \\
+  --title "Short headline of current work" \\
+  --automationId my-automation-id \\
+  --runId 20260608T120000Z \\
+  --agentName Codex \\
+  "One-line message describing what you are doing right now."
 
-ALTERNATIVE — POSTMESSAGE FROM ANOTHER TAB
-window.postMessage({
-  type: "dashboard.update",
-  payload: { /* same snapshot object as above */ }
-}, "*");
+Requires GITHUB_TOKEN or AUTOMATION_REPORT_GITHUB_TOKEN with repo scope.
 
-CLI HELPER — WRITE SNAPSHOT FILE AND INJECT
-1. Save the snapshot JSON to /tmp/automation-report-snapshot.json
-2. Run:
-   node bin/push-dashboard-to-browser.mjs --file /tmp/automation-report-snapshot.json
-3. Paste the generated pages-ingest.js into the open ${REPORT_URL} console if auto-open fails.
+HTTP — POST WORK STATUS
+curl -X POST '${AUTOMATION_REPOSITORY_DISPATCH_URL}' \\
+  -H 'Accept: application/vnd.github+json' \\
+  -H 'Authorization: Bearer $GITHUB_TOKEN' \\
+  -H 'Content-Type: application/json' \\
+  -d '{
+    "event_type": "automation-work-status",
+    "client_payload": {
+      "status": "running",
+      "step": "2.1",
+      "phase": "cursor",
+      "title": "Short headline of current work",
+      "message": "One-line message describing what you are doing right now.",
+      "pre": "PRE-4401",
+      "automationId": "my-automation-id",
+      "runId": "20260608T120000Z",
+      "agentName": "Codex",
+      "nextStep": "2.2"
+    }
+  }'
 
-SYNC RULES
-- IndexedDB is the durable cache; localStorage mirrors it for fast reloads.
-- If one store is newer, the page copies it into the other on load.
-- Activity history is capped at 200 events.
-- Clear report wipes both browser stores in this tab/browser profile.
+After ingest, the published snapshot is served from ${AUTOMATION_DASHBOARD_URL}.
+
+HTTP — REPLACE FULL DASHBOARD
+curl -X POST '${AUTOMATION_REPOSITORY_DISPATCH_URL}' \\
+  -H 'Accept: application/vnd.github+json' \\
+  -H 'Authorization: Bearer $GITHUB_TOKEN' \\
+  -H 'Content-Type: application/json' \\
+  -d '{
+    "event_type": "automation-dashboard",
+    "client_payload": {
+      "snapshot": {
+        "workStatus": { "status": "running", "title": "...", "message": "...", "updatedAt": "2026-06-08T12:00:00.000Z" },
+        "automations": [],
+        "recentEvents": [],
+        "report": { "title": "Check24 Sentry Issues", "message": "...", "status": "pending", "updatedAt": "2026-06-08T12:00:00.000Z", "issueCount": 0, "issues": [] }
+      }
+    }
+  }'
 
 RULES
 - Use real status values; mark blockers as blocked with an actionable message.
 - Include PRE-#### when tied to Jira.
-- Every push must include workStatus, automations, recentEvents, and report.`;
+- Activity history is capped at 200 events.
+- Every full snapshot must include workStatus, automations, recentEvents, and report.`;
 
 export default function UsageInstructions() {
   return (
@@ -92,8 +90,8 @@ export default function UsageInstructions() {
         </span>
       </div>
       <p className="muted instructions_lead">
-        Copy this prompt into Codex automations or Cursor rules. Agents push snapshots into the browser cache for{' '}
-        {REPORT_URL}; no local server is required.
+        Copy this prompt into Codex automations or Cursor rules. Agents publish work status with HTTP POST requests; the UI reads{' '}
+        {AUTOMATION_DASHBOARD_URL}.
       </p>
       <pre className="instructions_code instructions_prompt">
         <code>{agentLoggingPrompt}</code>

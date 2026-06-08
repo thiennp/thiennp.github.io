@@ -1,4 +1,4 @@
-export function createEmptyStoredDashboard() {
+export function createEmptyDashboardSnapshot() {
   const updatedAt = new Date().toISOString();
   return {
     workStatus: {
@@ -8,15 +8,15 @@ export function createEmptyStoredDashboard() {
       source: 'automation-report',
       updatedAt
     },
-    automations: [] as Array<Record<string, unknown>>,
-    recentEvents: [] as Array<Record<string, unknown>>,
+    automations: [],
+    recentEvents: [],
     report: {
       title: 'Check24 Sentry Issues',
       message: 'Waiting for the first Sentry refresh.',
       status: 'pending',
       updatedAt,
       issueCount: 0,
-      issues: [] as Array<Record<string, unknown>>
+      issues: []
     }
   };
 }

@@ -1,81 +1,73 @@
-<!DOCTYPE html><html lang="en"><head><meta charSet="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/><link rel="stylesheet" href="/report/_next/static/chunks/2avb4fbkh3hwq.css" data-precedence="next"/><link rel="preload" as="script" fetchPriority="low" href="/report/_next/static/chunks/1jq4o6yq14o4c.js"/><script src="/report/_next/static/chunks/0let9toni62a1.js" async=""></script><script src="/report/_next/static/chunks/3n7dm2ojtyzwn.js" async=""></script><script src="/report/_next/static/chunks/turbopack-06lf1el35y7_2.js" async=""></script><script src="/report/_next/static/chunks/158myu8e_yme3.js" async=""></script><script src="/report/_next/static/chunks/2uyzx3o2kmkm7.js" async=""></script><title>Work Status Dashboard</title><meta name="description" content="Live dashboard for current work, automation activity, and Sentry issues"/><script src="/report/_next/static/chunks/0cz1d0mv5g_q7.js" noModule=""></script></head><body><div hidden=""><!--$--><!--/$--></div><main><header class="topbar"><div><p class="eyebrow">automation-report</p><h1>Waiting for work status</h1><p class="lead">Agents should log work status to https://thiennp.github.io/report/ using the prompt below.</p></div><div class="status-grid"><span class="pill warn">pending</span><span class="pill neutral">browser cache</span><span class="pill neutral">health unknown</span></div></header><section class="work-hero"><div class="work-hero_main"><div class="work-hero_meta"></div><p class="work-hero_target">No active target yet</p></div><div class="work-hero_links"><span class="muted">No linked evidence yet.</span></div></section><section class="metrics"><div><span>Automations</span><strong>0</strong></div><div><span>Blocked Items</span><strong>0</strong></div><div><span>Recent Events</span><strong>0</strong></div><div><span>Updated</span><strong class="metric-time">6/8/2026, 2:06:35 PM</strong></div></section><section class="toolbar"><label>Filter Sentry issues<input placeholder="Project, title, culprit, status..." value=""/></label><button>Refresh</button><button class="button-danger">Clear report</button></section><section class="dashboard-grid"><section class="panel"><div class="panel-head"><h2>Recent Activity</h2><span class="muted">0<!-- --> events · max <!-- -->200</span></div><div class="timeline"><p class="muted">No automation events yet.</p></div></section><section class="panel"><div class="panel-head"><h2>Automations</h2><span class="muted">0<!-- --> tracked</span></div><div class="automation-list"><p class="muted">No automations registered yet.</p></div></section></section><section class="panel"><div class="panel-head"><h2>Sentry Issues</h2><span class="muted">0<!-- --> shown · <!-- -->Waiting for the first Sentry refresh.</span></div><div class="issue-list"><p class="muted">No issues in the current report.</p></div></section><section class="panel instructions"><div class="panel-head"><h2>Agent logging prompt</h2><span class="muted"><a href="https://thiennp.github.io/report/">https://thiennp.github.io/report/</a></span></div><p class="muted instructions_lead">Copy this prompt into Codex automations or Cursor rules. Agents push snapshots into the browser cache for<!-- --> <!-- -->https://thiennp.github.io/report/<!-- -->; no local server is required.</p><pre class="instructions_code instructions_prompt"><code>AUTOMATION REPORT — AGENT LOGGING PROMPT
+<!DOCTYPE html><html lang="en"><head><meta charSet="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/><link rel="stylesheet" href="/report/_next/static/chunks/2avb4fbkh3hwq.css" data-precedence="next"/><link rel="preload" as="script" fetchPriority="low" href="/report/_next/static/chunks/1jq4o6yq14o4c.js"/><script src="/report/_next/static/chunks/0let9toni62a1.js" async=""></script><script src="/report/_next/static/chunks/3n7dm2ojtyzwn.js" async=""></script><script src="/report/_next/static/chunks/turbopack-06lf1el35y7_2.js" async=""></script><script src="/report/_next/static/chunks/158myu8e_yme3.js" async=""></script><script src="/report/_next/static/chunks/3q3zq-fbofr9l.js" async=""></script><title>Work Status Dashboard</title><meta name="description" content="Live dashboard for current work, automation activity, and Sentry issues"/><script src="/report/_next/static/chunks/0cz1d0mv5g_q7.js" noModule=""></script></head><body><div hidden=""><!--$--><!--/$--></div><main><header class="topbar"><div><p class="eyebrow">automation-report</p><h1>Waiting for work status</h1><p class="lead">Agents should POST work status to https://thiennp.github.io/api/automation/work-status</p></div><div class="status-grid"><span class="pill warn">pending</span><span class="pill neutral">browser cache</span><span class="pill neutral">health unknown</span></div></header><section class="work-hero"><div class="work-hero_main"><div class="work-hero_meta"></div><p class="work-hero_target">No active target yet</p></div><div class="work-hero_links"><span class="muted">No linked evidence yet.</span></div></section><section class="metrics"><div><span>Automations</span><strong>0</strong></div><div><span>Blocked Items</span><strong>0</strong></div><div><span>Recent Events</span><strong>0</strong></div><div><span>Updated</span><strong class="metric-time">6/8/2026, 2:12:52 PM</strong></div></section><section class="toolbar"><label>Filter Sentry issues<input placeholder="Project, title, culprit, status..." value=""/></label><button>Refresh</button><button class="button-danger">Clear report</button></section><section class="dashboard-grid"><section class="panel"><div class="panel-head"><h2>Recent Activity</h2><span class="muted">0<!-- --> events · max <!-- -->200</span></div><div class="timeline"><p class="muted">No automation events yet.</p></div></section><section class="panel"><div class="panel-head"><h2>Automations</h2><span class="muted">0<!-- --> tracked</span></div><div class="automation-list"><p class="muted">No automations registered yet.</p></div></section></section><section class="panel"><div class="panel-head"><h2>Sentry Issues</h2><span class="muted">0<!-- --> shown · <!-- -->Waiting for the first Sentry refresh.</span></div><div class="issue-list"><p class="muted">No issues in the current report.</p></div></section><section class="panel instructions"><div class="panel-head"><h2>Agent logging prompt</h2><span class="muted"><a href="https://thiennp.github.io/report/">https://thiennp.github.io/report/</a></span></div><p class="muted instructions_lead">Copy this prompt into Codex automations or Cursor rules. Agents publish work status with HTTP POST requests; the UI reads<!-- --> <!-- -->https://thiennp.github.io/api/automation/dashboard.json<!-- -->.</p><pre class="instructions_code instructions_prompt"><code>AUTOMATION REPORT — AGENT LOGGING PROMPT
 
-Public dashboard UI: https://thiennp.github.io/report/
-Storage: IndexedDB (primary) + localStorage (mirror) in the browser viewing https://thiennp.github.io/report/
-Do not use dashboard.json, GitHub Pages APIs, or any http://127.0.0.1 endpoint.
+Dashboard UI: https://thiennp.github.io/report/
+Read API: GET https://thiennp.github.io/api/automation/dashboard.json
+Work status route: https://thiennp.github.io/api/automation/work-status
+Write API: POST https://api.github.com/repos/thiennp/thiennp.github.io/dispatches
 
-You are an automation agent (Codex, Cursor, or similar). Log every meaningful workflow step so https://thiennp.github.io/report/ shows current work. Push a dashboard snapshot into the open report tab. The page keeps IndexedDB and localStorage in sync automatically.
+You are an automation agent (Codex, Cursor, or similar). Log every meaningful workflow step with an HTTP request. The report UI polls https://thiennp.github.io/api/automation/dashboard.json and mirrors it into browser storage.
 
 WHEN TO LOG
 - At run start, each step transition, blocker, success, and terminal state.
 - After Jira/PR/Sentry actions that change current work.
 - When status changes: running, success, warning, blocked, pending.
 
-PREFERRED — PUSH A DASHBOARD SNAPSHOT
-Open https://thiennp.github.io/report/ in the browser, then run this in the page console or via pages-ingest.js:
-window.__AUTOMATION_REPORT__.pushDashboard({
-  workStatus: {
-    status: &quot;running&quot;,
-    step: &quot;2.1&quot;,
-    phase: &quot;cursor&quot;,
-    title: &quot;Short headline of current work&quot;,
-    message: &quot;One-line message describing what you are doing right now.&quot;,
-    pre: &quot;PRE-4401&quot;,
-    automationId: &quot;my-automation-id&quot;,
-    runId: &quot;20260608T120000Z&quot;,
-    agentName: &quot;Codex&quot;,
-    nextStep: &quot;2.2&quot;,
-    updatedAt: new Date().toISOString(),
-    source: &quot;automation-report&quot;
-  },
-  automations: [{
-    automationId: &quot;my-automation-id&quot;,
-    latestRunId: &quot;20260608T120000Z&quot;,
-    latestStatus: &quot;running&quot;,
-    latestUpdateTime: new Date().toISOString(),
-    activeBlockerCount: 0
-  }],
-  recentEvents: [{
-    id: &quot;evt-1&quot;,
-    title: &quot;Step title&quot;,
-    status: &quot;running&quot;,
-    message: &quot;What happened in this step.&quot;,
-    stepNumber: &quot;2.1&quot;,
-    nextStep: &quot;2.2&quot;,
-    agentName: &quot;Codex&quot;,
-    createdAt: new Date().toISOString(),
-    automationId: &quot;my-automation-id&quot;,
-    runId: &quot;20260608T120000Z&quot;
-  }],
-  report: {
-    title: &quot;Check24 Sentry Issues&quot;,
-    message: &quot;Waiting for the first Sentry refresh.&quot;,
-    status: &quot;pending&quot;,
-    updatedAt: new Date().toISOString(),
-    issueCount: 0,
-    issues: []
-  }
-});
+PREFERRED — CLI PUBLISH
+node automation-report/bin/send-work-status.mjs \
+  --publish \
+  --status running \
+  --step 2.1 \
+  --phase cursor \
+  --title &quot;Short headline of current work&quot; \
+  --automationId my-automation-id \
+  --runId 20260608T120000Z \
+  --agentName Codex \
+  &quot;One-line message describing what you are doing right now.&quot;
 
-ALTERNATIVE — POSTMESSAGE FROM ANOTHER TAB
-window.postMessage({
-  type: &quot;dashboard.update&quot;,
-  payload: { /* same snapshot object as above */ }
-}, &quot;*&quot;);
+Requires GITHUB_TOKEN or AUTOMATION_REPORT_GITHUB_TOKEN with repo scope.
 
-CLI HELPER — WRITE SNAPSHOT FILE AND INJECT
-1. Save the snapshot JSON to /tmp/automation-report-snapshot.json
-2. Run:
-   node bin/push-dashboard-to-browser.mjs --file /tmp/automation-report-snapshot.json
-3. Paste the generated pages-ingest.js into the open https://thiennp.github.io/report/ console if auto-open fails.
+HTTP — POST WORK STATUS
+curl -X POST &#x27;https://api.github.com/repos/thiennp/thiennp.github.io/dispatches&#x27; \
+  -H &#x27;Accept: application/vnd.github+json&#x27; \
+  -H &#x27;Authorization: Bearer $GITHUB_TOKEN&#x27; \
+  -H &#x27;Content-Type: application/json&#x27; \
+  -d &#x27;{
+    &quot;event_type&quot;: &quot;automation-work-status&quot;,
+    &quot;client_payload&quot;: {
+      &quot;status&quot;: &quot;running&quot;,
+      &quot;step&quot;: &quot;2.1&quot;,
+      &quot;phase&quot;: &quot;cursor&quot;,
+      &quot;title&quot;: &quot;Short headline of current work&quot;,
+      &quot;message&quot;: &quot;One-line message describing what you are doing right now.&quot;,
+      &quot;pre&quot;: &quot;PRE-4401&quot;,
+      &quot;automationId&quot;: &quot;my-automation-id&quot;,
+      &quot;runId&quot;: &quot;20260608T120000Z&quot;,
+      &quot;agentName&quot;: &quot;Codex&quot;,
+      &quot;nextStep&quot;: &quot;2.2&quot;
+    }
+  }&#x27;
 
-SYNC RULES
-- IndexedDB is the durable cache; localStorage mirrors it for fast reloads.
-- If one store is newer, the page copies it into the other on load.
-- Activity history is capped at 200 events.
-- Clear report wipes both browser stores in this tab/browser profile.
+After ingest, the published snapshot is served from https://thiennp.github.io/api/automation/dashboard.json.
+
+HTTP — REPLACE FULL DASHBOARD
+curl -X POST &#x27;https://api.github.com/repos/thiennp/thiennp.github.io/dispatches&#x27; \
+  -H &#x27;Accept: application/vnd.github+json&#x27; \
+  -H &#x27;Authorization: Bearer $GITHUB_TOKEN&#x27; \
+  -H &#x27;Content-Type: application/json&#x27; \
+  -d &#x27;{
+    &quot;event_type&quot;: &quot;automation-dashboard&quot;,
+    &quot;client_payload&quot;: {
+      &quot;snapshot&quot;: {
+        &quot;workStatus&quot;: { &quot;status&quot;: &quot;running&quot;, &quot;title&quot;: &quot;...&quot;, &quot;message&quot;: &quot;...&quot;, &quot;updatedAt&quot;: &quot;2026-06-08T12:00:00.000Z&quot; },
+        &quot;automations&quot;: [],
+        &quot;recentEvents&quot;: [],
+        &quot;report&quot;: { &quot;title&quot;: &quot;Check24 Sentry Issues&quot;, &quot;message&quot;: &quot;...&quot;, &quot;status&quot;: &quot;pending&quot;, &quot;updatedAt&quot;: &quot;2026-06-08T12:00:00.000Z&quot;, &quot;issueCount&quot;: 0, &quot;issues&quot;: [] }
+      }
+    }
+  }&#x27;
 
 RULES
 - Use real status values; mark blockers as blocked with an actionable message.
 - Include PRE-#### when tied to Jira.
-- Every push must include workStatus, automations, recentEvents, and report.</code></pre></section><footer><span>Storage IndexedDB + localStorage · source <!-- -->loading</span><span>Status <!-- -->unknown<!-- --> · updated <!-- -->6/8/2026, 2:06:35 PM</span></footer></main><!--$--><!--/$--><script src="/report/_next/static/chunks/1jq4o6yq14o4c.js" id="_R_" async=""></script><script>(self.__next_f=self.__next_f||[]).push([0])</script><script>self.__next_f.push([1,"1:\"$Sreact.fragment\"\n2:I[39756,[\"/report/_next/static/chunks/158myu8e_yme3.js\"],\"default\"]\n3:I[37457,[\"/report/_next/static/chunks/158myu8e_yme3.js\"],\"default\"]\n4:I[47257,[\"/report/_next/static/chunks/158myu8e_yme3.js\"],\"ClientPageRoot\"]\n5:I[31713,[\"/report/_next/static/chunks/158myu8e_yme3.js\",\"/report/_next/static/chunks/2uyzx3o2kmkm7.js\"],\"default\"]\n8:I[97367,[\"/report/_next/static/chunks/158myu8e_yme3.js\"],\"OutletBoundary\"]\n9:\"$Sreact.suspense\"\nb:I[97367,[\"/report/_next/static/chunks/158myu8e_yme3.js\"],\"ViewportBoundary\"]\nd:I[97367,[\"/report/_next/static/chunks/158myu8e_yme3.js\"],\"MetadataBoundary\"]\nf:I[68027,[\"/report/_next/static/chunks/158myu8e_yme3.js\"],\"default\",1]\n:HL[\"/report/_next/static/chunks/2avb4fbkh3hwq.css\",\"style\"]\n"])</script><script>self.__next_f.push([1,"0:{\"P\":null,\"c\":[\"\",\"\"],\"q\":\"\",\"i\":false,\"f\":[[[\"\",{\"children\":[\"__PAGE__\",{}]},\"$undefined\",\"$undefined\",16],[[\"$\",\"$1\",\"c\",{\"children\":[[[\"$\",\"link\",\"0\",{\"rel\":\"stylesheet\",\"href\":\"/report/_next/static/chunks/2avb4fbkh3hwq.css\",\"precedence\":\"next\",\"crossOrigin\":\"$undefined\",\"nonce\":\"$undefined\"}],[\"$\",\"script\",\"script-0\",{\"src\":\"/report/_next/static/chunks/158myu8e_yme3.js\",\"async\":true,\"nonce\":\"$undefined\"}]],[\"$\",\"html\",null,{\"lang\":\"en\",\"children\":[\"$\",\"body\",null,{\"children\":[\"$\",\"$L2\",null,{\"parallelRouterKey\":\"children\",\"error\":\"$undefined\",\"errorStyles\":\"$undefined\",\"errorScripts\":\"$undefined\",\"template\":[\"$\",\"$L3\",null,{}],\"templateStyles\":\"$undefined\",\"templateScripts\":\"$undefined\",\"notFound\":[[[\"$\",\"title\",null,{\"children\":\"404: This page could not be found.\"}],[\"$\",\"div\",null,{\"style\":{\"fontFamily\":\"system-ui,\\\"Segoe UI\\\",Roboto,Helvetica,Arial,sans-serif,\\\"Apple Color Emoji\\\",\\\"Segoe UI Emoji\\\"\",\"height\":\"100vh\",\"textAlign\":\"center\",\"display\":\"flex\",\"flexDirection\":\"column\",\"alignItems\":\"center\",\"justifyContent\":\"center\"},\"children\":[\"$\",\"div\",null,{\"children\":[[\"$\",\"style\",null,{\"dangerouslySetInnerHTML\":{\"__html\":\"body{color:#000;background:#fff;margin:0}.next-error-h1{border-right:1px solid rgba(0,0,0,.3)}@media (prefers-color-scheme:dark){body{color:#fff;background:#000}.next-error-h1{border-right:1px solid rgba(255,255,255,.3)}}\"}}],[\"$\",\"h1\",null,{\"className\":\"next-error-h1\",\"style\":{\"display\":\"inline-block\",\"margin\":\"0 20px 0 0\",\"padding\":\"0 23px 0 0\",\"fontSize\":24,\"fontWeight\":500,\"verticalAlign\":\"top\",\"lineHeight\":\"49px\"},\"children\":404}],[\"$\",\"div\",null,{\"style\":{\"display\":\"inline-block\"},\"children\":[\"$\",\"h2\",null,{\"style\":{\"fontSize\":14,\"fontWeight\":400,\"lineHeight\":\"49px\",\"margin\":0},\"children\":\"This page could not be found.\"}]}]]}]}]],[]],\"forbidden\":\"$undefined\",\"unauthorized\":\"$undefined\"}]}]}]]}],{\"children\":[[\"$\",\"$1\",\"c\",{\"children\":[[\"$\",\"$L4\",null,{\"Component\":\"$5\",\"serverProvidedParams\":{\"searchParams\":{},\"params\":{},\"promises\":[\"$@6\",\"$@7\"]}}],[[\"$\",\"script\",\"script-0\",{\"src\":\"/report/_next/static/chunks/2uyzx3o2kmkm7.js\",\"async\":true,\"nonce\":\"$undefined\"}]],[\"$\",\"$L8\",null,{\"children\":[\"$\",\"$9\",null,{\"name\":\"Next.MetadataOutlet\",\"children\":\"$@a\"}]}]]}],{},null,false,null]},null,false,null],[\"$\",\"$1\",\"h\",{\"children\":[null,[\"$\",\"$Lb\",null,{\"children\":\"$Lc\"}],[\"$\",\"div\",null,{\"hidden\":true,\"children\":[\"$\",\"$Ld\",null,{\"children\":[\"$\",\"$9\",null,{\"name\":\"Next.Metadata\",\"children\":\"$Le\"}]}]}],null]}],false]],\"m\":\"$undefined\",\"G\":[\"$f\",[[\"$\",\"link\",\"0\",{\"rel\":\"stylesheet\",\"href\":\"/report/_next/static/chunks/2avb4fbkh3hwq.css\",\"precedence\":\"next\",\"crossOrigin\":\"$undefined\",\"nonce\":\"$undefined\"}]]],\"S\":true,\"h\":null,\"s\":\"$undefined\",\"l\":\"$undefined\",\"p\":\"$undefined\",\"d\":\"$undefined\",\"b\":\"t5fW-_xvb7sLWrQ_ZTuVh\"}\n"])</script><script>self.__next_f.push([1,"6:{}\n7:\"$0:f:0:1:1:children:0:props:children:0:props:serverProvidedParams:params\"\n"])</script><script>self.__next_f.push([1,"c:[[\"$\",\"meta\",\"0\",{\"charSet\":\"utf-8\"}],[\"$\",\"meta\",\"1\",{\"name\":\"viewport\",\"content\":\"width=device-width, initial-scale=1\"}]]\n"])</script><script>self.__next_f.push([1,"a:null\ne:[[\"$\",\"title\",\"0\",{\"children\":\"Work Status Dashboard\"}],[\"$\",\"meta\",\"1\",{\"name\":\"description\",\"content\":\"Live dashboard for current work, automation activity, and Sentry issues\"}]]\n"])</script></body></html>
+- Activity history is capped at 200 events.
+- Every full snapshot must include workStatus, automations, recentEvents, and report.</code></pre></section><footer><span>API https://thiennp.github.io/api/automation/dashboard.json · source <!-- -->loading</span><span>Status <!-- -->unknown<!-- --> · updated <!-- -->6/8/2026, 2:12:52 PM</span></footer></main><!--$--><!--/$--><script src="/report/_next/static/chunks/1jq4o6yq14o4c.js" id="_R_" async=""></script><script>(self.__next_f=self.__next_f||[]).push([0])</script><script>self.__next_f.push([1,"1:\"$Sreact.fragment\"\n2:I[39756,[\"/report/_next/static/chunks/158myu8e_yme3.js\"],\"default\"]\n3:I[37457,[\"/report/_next/static/chunks/158myu8e_yme3.js\"],\"default\"]\n4:I[47257,[\"/report/_next/static/chunks/158myu8e_yme3.js\"],\"ClientPageRoot\"]\n5:I[31713,[\"/report/_next/static/chunks/158myu8e_yme3.js\",\"/report/_next/static/chunks/3q3zq-fbofr9l.js\"],\"default\"]\n8:I[97367,[\"/report/_next/static/chunks/158myu8e_yme3.js\"],\"OutletBoundary\"]\n9:\"$Sreact.suspense\"\nb:I[97367,[\"/report/_next/static/chunks/158myu8e_yme3.js\"],\"ViewportBoundary\"]\nd:I[97367,[\"/report/_next/static/chunks/158myu8e_yme3.js\"],\"MetadataBoundary\"]\nf:I[68027,[\"/report/_next/static/chunks/158myu8e_yme3.js\"],\"default\",1]\n:HL[\"/report/_next/static/chunks/2avb4fbkh3hwq.css\",\"style\"]\n"])</script><script>self.__next_f.push([1,"0:{\"P\":null,\"c\":[\"\",\"\"],\"q\":\"\",\"i\":false,\"f\":[[[\"\",{\"children\":[\"__PAGE__\",{}]},\"$undefined\",\"$undefined\",16],[[\"$\",\"$1\",\"c\",{\"children\":[[[\"$\",\"link\",\"0\",{\"rel\":\"stylesheet\",\"href\":\"/report/_next/static/chunks/2avb4fbkh3hwq.css\",\"precedence\":\"next\",\"crossOrigin\":\"$undefined\",\"nonce\":\"$undefined\"}],[\"$\",\"script\",\"script-0\",{\"src\":\"/report/_next/static/chunks/158myu8e_yme3.js\",\"async\":true,\"nonce\":\"$undefined\"}]],[\"$\",\"html\",null,{\"lang\":\"en\",\"children\":[\"$\",\"body\",null,{\"children\":[\"$\",\"$L2\",null,{\"parallelRouterKey\":\"children\",\"error\":\"$undefined\",\"errorStyles\":\"$undefined\",\"errorScripts\":\"$undefined\",\"template\":[\"$\",\"$L3\",null,{}],\"templateStyles\":\"$undefined\",\"templateScripts\":\"$undefined\",\"notFound\":[[[\"$\",\"title\",null,{\"children\":\"404: This page could not be found.\"}],[\"$\",\"div\",null,{\"style\":{\"fontFamily\":\"system-ui,\\\"Segoe UI\\\",Roboto,Helvetica,Arial,sans-serif,\\\"Apple Color Emoji\\\",\\\"Segoe UI Emoji\\\"\",\"height\":\"100vh\",\"textAlign\":\"center\",\"display\":\"flex\",\"flexDirection\":\"column\",\"alignItems\":\"center\",\"justifyContent\":\"center\"},\"children\":[\"$\",\"div\",null,{\"children\":[[\"$\",\"style\",null,{\"dangerouslySetInnerHTML\":{\"__html\":\"body{color:#000;background:#fff;margin:0}.next-error-h1{border-right:1px solid rgba(0,0,0,.3)}@media (prefers-color-scheme:dark){body{color:#fff;background:#000}.next-error-h1{border-right:1px solid rgba(255,255,255,.3)}}\"}}],[\"$\",\"h1\",null,{\"className\":\"next-error-h1\",\"style\":{\"display\":\"inline-block\",\"margin\":\"0 20px 0 0\",\"padding\":\"0 23px 0 0\",\"fontSize\":24,\"fontWeight\":500,\"verticalAlign\":\"top\",\"lineHeight\":\"49px\"},\"children\":404}],[\"$\",\"div\",null,{\"style\":{\"display\":\"inline-block\"},\"children\":[\"$\",\"h2\",null,{\"style\":{\"fontSize\":14,\"fontWeight\":400,\"lineHeight\":\"49px\",\"margin\":0},\"children\":\"This page could not be found.\"}]}]]}]}]],[]],\"forbidden\":\"$undefined\",\"unauthorized\":\"$undefined\"}]}]}]]}],{\"children\":[[\"$\",\"$1\",\"c\",{\"children\":[[\"$\",\"$L4\",null,{\"Component\":\"$5\",\"serverProvidedParams\":{\"searchParams\":{},\"params\":{},\"promises\":[\"$@6\",\"$@7\"]}}],[[\"$\",\"script\",\"script-0\",{\"src\":\"/report/_next/static/chunks/3q3zq-fbofr9l.js\",\"async\":true,\"nonce\":\"$undefined\"}]],[\"$\",\"$L8\",null,{\"children\":[\"$\",\"$9\",null,{\"name\":\"Next.MetadataOutlet\",\"children\":\"$@a\"}]}]]}],{},null,false,null]},null,false,null],[\"$\",\"$1\",\"h\",{\"children\":[null,[\"$\",\"$Lb\",null,{\"children\":\"$Lc\"}],[\"$\",\"div\",null,{\"hidden\":true,\"children\":[\"$\",\"$Ld\",null,{\"children\":[\"$\",\"$9\",null,{\"name\":\"Next.Metadata\",\"children\":\"$Le\"}]}]}],null]}],false]],\"m\":\"$undefined\",\"G\":[\"$f\",[[\"$\",\"link\",\"0\",{\"rel\":\"stylesheet\",\"href\":\"/report/_next/static/chunks/2avb4fbkh3hwq.css\",\"precedence\":\"next\",\"crossOrigin\":\"$undefined\",\"nonce\":\"$undefined\"}]]],\"S\":true,\"h\":null,\"s\":\"$undefined\",\"l\":\"$undefined\",\"p\":\"$undefined\",\"d\":\"$undefined\",\"b\":\"8ikjCdMqY0vEG3qlroa2P\"}\n"])</script><script>self.__next_f.push([1,"6:{}\n7:\"$0:f:0:1:1:children:0:props:children:0:props:serverProvidedParams:params\"\n"])</script><script>self.__next_f.push([1,"c:[[\"$\",\"meta\",\"0\",{\"charSet\":\"utf-8\"}],[\"$\",\"meta\",\"1\",{\"name\":\"viewport\",\"content\":\"width=device-width, initial-scale=1\"}]]\n"])</script><script>self.__next_f.push([1,"a:null\ne:[[\"$\",\"title\",\"0\",{\"children\":\"Work Status Dashboard\"}],[\"$\",\"meta\",\"1\",{\"name\":\"description\",\"content\":\"Live dashboard for current work, automation activity, and Sentry issues\"}]]\n"])</script></body></html>

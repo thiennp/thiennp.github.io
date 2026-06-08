@@ -1,0 +1,19 @@
+{
+  "name": "automation-report-api",
+  "dashboardUrl": "https://thiennp.github.io/api/automation/dashboard.json",
+  "workStatusUrl": "https://thiennp.github.io/api/automation/work-status",
+  "clearEventType": "automation-dashboard-clear",
+  "ingest": {
+    "eventTypes": [
+      "automation-work-status",
+      "automation-dashboard",
+      "automation-dashboard-clear"
+    ],
+    "repositoryDispatchUrl": "https://api.github.com/repos/thiennp/thiennp.github.io/dispatches",
+    "cli": {
+      "workStatus": "node automation-report/bin/send-work-status.mjs --publish --status running --message \"...\"",
+      "dashboard": "node automation-report/bin/publish-automation-api.mjs dashboard --file snapshot.json",
+      "clear": "node automation-report/bin/publish-automation-api.mjs clear"
+    }
+  }
+}

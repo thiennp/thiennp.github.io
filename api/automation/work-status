@@ -1,0 +1,8 @@
+{
+  "method": "POST",
+  "description": "Publish work status to the automation report. POST to the repository dispatch URL with event_type automation-work-status.",
+  "repositoryDispatchUrl": "https://api.github.com/repos/thiennp/thiennp.github.io/dispatches",
+  "eventType": "automation-work-status",
+  "dashboardUrl": "https://thiennp.github.io/api/automation/dashboard.json",
+  "cli": "node automation-report/bin/send-work-status.mjs --publish --status running --message \"...\""
+}

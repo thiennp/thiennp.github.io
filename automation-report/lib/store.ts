@@ -47,7 +47,7 @@ function emptyWorkStatus(): WorkStatus {
   return {
     status: 'pending',
     title: 'Waiting for work status',
-    message: 'Agents should push dashboard snapshots to https://thiennp.github.io/report/ using the agent prompt on that page.',
+    message: 'Agents should POST work status to https://thiennp.github.io/api/automation/work-status',
     source: 'automation-report',
     updatedAt: now()
   };

@@ -3,6 +3,9 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
+import { createEmptyDashboardSnapshot } from '../scripts/empty-dashboard-snapshot.mjs';
+import { mergeWorkStatusIntoSnapshot } from '../scripts/merge-work-status-snapshot.mjs';
+import { publishWorkStatus } from './publish-automation-api.mjs';
 
 const options = {
   status: '',
@@ -26,7 +29,7 @@ const messageParts = [];
 
 for (let index = 2; index < process.argv.length; index += 1) {
   const argument = process.argv[index];
-  if (argument === '--inject') {
+  if (argument === '--inject' || argument === '--publish') {
     continue;
   }
   const assign = argument.match(/^--([^=]+)=(.*)$/);
@@ -56,7 +59,7 @@ if (!options.message && messageParts.length) {
 }
 
 if (!options.status || !options.message) {
-  console.error('Usage: node send-work-status.mjs --status running --step 2.3 --phase cursor --title "Cursor fix" --pre PRE-4309 "Applying the bug fix"');
+  console.error('Usage: node send-work-status.mjs --publish --status running --step 2.3 --phase cursor --title "Cursor fix" --pre PRE-4309 "Applying the bug fix"');
   console.error('Optional: --file snapshot.json --out snapshot.json --inject');
   process.exit(1);
 }
@@ -78,29 +81,6 @@ function readBaseSnapshot() {
   return null;
 }
 
-function emptySnapshot() {
-  const updatedAt = new Date().toISOString();
-  return {
-    workStatus: {
-      status: 'pending',
-      title: 'Waiting for work status',
-      message: 'Agents should log work status to https://thiennp.github.io/report/ using the prompt below.',
-      source: 'automation-report',
-      updatedAt
-    },
-    automations: [],
-    recentEvents: [],
-    report: {
-      title: 'Check24 Sentry Issues',
-      message: 'Waiting for the first Sentry refresh.',
-      status: 'pending',
-      updatedAt,
-      issueCount: 0,
-      issues: []
-    }
-  };
-}
-
 const updatedAt = new Date().toISOString();
 const workStatus = {
   ...options,
@@ -108,59 +88,13 @@ const workStatus = {
   updatedAt
 };
 
-const base = readBaseSnapshot() || emptySnapshot();
-const automationId = workStatus.automationId || base.workStatus?.automationId || 'manual';
-const runId = workStatus.runId || base.workStatus?.runId || updatedAt.replace(/[:.]/g, '-');
-
-const event = {
-  id: `evt-${updatedAt}`,
-  title: workStatus.title,
-  status: workStatus.status,
-  message: workStatus.message,
-  stepNumber: workStatus.step || undefined,
-  nextStep: workStatus.nextStep || undefined,
-  agentName: workStatus.agentName || undefined,
-  createdAt: updatedAt,
-  automationId,
-  runId
-};
-
-const automations = Array.isArray(base.automations) ? [...base.automations] : [];
-const existingAutomationIndex = automations.findIndex((item) => item.automationId === automationId);
-const automationSummary = {
-  automationId,
-  latestRunId: runId,
-  latestStatus: workStatus.status,
-  latestUpdateTime: updatedAt,
-  activeBlockerCount: workStatus.status === 'blocked' ? 1 : 0
-};
-
-if (existingAutomationIndex >= 0) {
-  automations[existingAutomationIndex] = {
-    ...automations[existingAutomationIndex],
-    ...automationSummary,
-    activeBlockerCount:
-      workStatus.status === 'blocked'
-        ? (automations[existingAutomationIndex].activeBlockerCount || 0) + 1
-        : automations[existingAutomationIndex].activeBlockerCount || 0
-  };
-} else {
-  automations.unshift(automationSummary);
-}
-
-const recentEvents = [event, ...(Array.isArray(base.recentEvents) ? base.recentEvents : [])].slice(0, 200);
-
-const snapshot = {
-  ...base,
-  workStatus,
-  automations,
-  recentEvents,
-  report: base.report || emptySnapshot().report
-};
+const base = readBaseSnapshot() || createEmptyDashboardSnapshot();
+const snapshot = mergeWorkStatusIntoSnapshot(base, workStatus);
 
 const outFlagIndex = process.argv.indexOf('--out');
 const outPath = outFlagIndex >= 0 ? process.argv[outFlagIndex + 1] : '';
 const shouldInject = process.argv.includes('--inject');
+const shouldPublish = process.argv.includes('--publish');
 const serialized = `${JSON.stringify(snapshot, null, 2)}\n`;
 const targetPath = outPath ? path.resolve(outPath) : path.join(process.cwd(), 'automation-report-snapshot.json');
 
@@ -173,6 +107,11 @@ if (outPath || shouldInject) {
   process.stdout.write(serialized);
 }
 
+if (shouldPublish) {
+  await publishWorkStatus(workStatus);
+  console.error('Published work status to https://thiennp.github.io/api/automation/dashboard.json');
+}
+
 if (shouldInject) {
   const pushScript = path.join(path.dirname(fileURLToPath(import.meta.url)), 'push-dashboard-to-browser.mjs');
   const result = spawnSync(process.execPath, [pushScript, '--file', targetPath], { stdio: 'inherit' });
@@ -182,6 +121,3 @@ if (shouldInject) {
 }
 
 console.error(`work status prepared: ${workStatus.step || 'step'} ${workStatus.status}`);
-if (shouldInject) {
-  console.error('Open https://thiennp.github.io/report/ and paste pages-ingest.js into the browser console.');
-}

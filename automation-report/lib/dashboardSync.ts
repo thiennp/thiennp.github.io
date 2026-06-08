@@ -14,6 +14,7 @@ import {
 } from './dashboardIndexedDb';
 import { createEmptyStoredDashboard } from './emptyDashboard';
 import { getSnapshotRevision, isEmptyDashboardSnapshot } from './dashboardRevision';
+import { getAutomationDashboardUrl } from './publicApi';
 import type { DashboardSnapshot } from './types';
 
 type HealthResponse = {
@@ -92,6 +93,18 @@ async function persistEverywhere(snapshot: DashboardSnapshot) {
   await writeDashboardIndexedDb(stored);
 }
 
+async function fetchRemoteDashboard(): Promise<DashboardSnapshot | null> {
+  try {
+    const response = await fetch(getAutomationDashboardUrl(true));
+    if (!response.ok) {
+      return null;
+    }
+    return normalizeSnapshot((await response.json()) as DashboardSnapshot);
+  } catch {
+    return null;
+  }
+}
+
 export async function syncDashboard(force = false): Promise<DashboardSyncResult> {
   const emptySnapshot = normalizeSnapshot(createEmptyStoredDashboard() as unknown as DashboardSnapshot);
 
@@ -115,18 +128,24 @@ export async function syncDashboard(force = false): Promise<DashboardSyncResult>
 
   const cached = readDashboardCache();
   const indexed = await readDashboardIndexedDb();
+  const remoteSnapshot = await fetchRemoteDashboard();
   const localSnapshot = cached ? cacheToSnapshot(cached) : null;
   const indexedSnapshot = indexed ? cacheToSnapshot(indexed) : null;
-  const winner = pickNewerSnapshot(localSnapshot, indexedSnapshot) || emptySnapshot;
+  const localWinner = pickNewerSnapshot(localSnapshot, indexedSnapshot);
+  const winner = pickNewerSnapshot(localWinner, remoteSnapshot) || emptySnapshot;
 
-  if (!isEmptyDashboardSnapshot(winner) || localSnapshot || indexedSnapshot) {
+  if (!isEmptyDashboardSnapshot(winner) || localSnapshot || indexedSnapshot || remoteSnapshot) {
     await persistEverywhere(winner);
   }
 
+  const source = remoteSnapshot && winner === remoteSnapshot
+    ? 'api/automation/dashboard.json'
+    : resolveSource(winner, localSnapshot, indexedSnapshot);
+
   return {
     snapshot: winner,
-    source: resolveSource(winner, localSnapshot, indexedSnapshot),
-    health: { status: 'client-cache', storeVersion: 0 }
+    source,
+    health: { status: remoteSnapshot ? 'api-synced' : 'client-cache', storeVersion: 0 }
   };
 }
 

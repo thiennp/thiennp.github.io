@@ -91,7 +91,7 @@ type Health = {
 const emptyWorkStatus: WorkStatus = {
   status: 'pending',
   title: 'Waiting for work status',
-  message: 'Agents should log work status to https://thiennp.github.io/report/ using the prompt below.',
+  message: 'Agents should POST work status to https://thiennp.github.io/api/automation/work-status',
   source: 'automation-report',
   updatedAt: new Date().toISOString()
 };
@@ -191,8 +191,15 @@ export default function Home() {
       }
     };
 
+    const pollTimer = setInterval(() => {
+      loadDashboard().catch(() => undefined);
+    }, 30000);
+
     window.addEventListener('storage', onStorage);
-    return () => window.removeEventListener('storage', onStorage);
+    return () => {
+      clearInterval(pollTimer);
+      window.removeEventListener('storage', onStorage);
+    };
   }, []);
 
   const work = dashboard.workStatus || emptyWorkStatus;
@@ -382,7 +389,7 @@ export default function Home() {
       <UsageInstructions />
 
       <footer>
-        <span>Storage IndexedDB + localStorage · source {dataSource}</span>
+        <span>API https://thiennp.github.io/api/automation/dashboard.json · source {dataSource}</span>
         <span>Status {health.status || 'unknown'} · updated {formatDate(work.updatedAt)}</span>
       </footer>
     </main>
