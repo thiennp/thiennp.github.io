@@ -101,7 +101,7 @@ type Health = {
 const emptyWorkStatus: WorkStatus = {
   status: 'pending',
   title: 'Waiting for work status',
-  message: 'Send a workflow update over HTTP or WebSocket to show what you are working on.',
+  message: 'Agents should log work status to https://thiennp.github.io/report/ using the prompt below.',
   source: 'automation-report',
   updatedAt: new Date().toISOString()
 };
@@ -501,7 +501,7 @@ export default function Home() {
         </div>
       </section>
 
-      <UsageInstructions runtimeMode={runtimeMode} />
+      <UsageInstructions />
 
       <footer>
         <span>

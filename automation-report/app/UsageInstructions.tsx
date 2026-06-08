@@ -1,122 +1,99 @@
-import type { RuntimeMode } from '../lib/clientRuntime';
+const REPORT_URL = 'https://thiennp.github.io/report/';
+const SNAPSHOT_URL = 'https://thiennp.github.io/report/dashboard.json';
 
-type UsageInstructionsProps = {
-  readonly runtimeMode: RuntimeMode;
-};
+const agentLoggingPrompt = `AUTOMATION REPORT — AGENT LOGGING PROMPT
 
-const wsExample = `const ws = new WebSocket('ws://127.0.0.1:3120/ws');
+Public dashboard: ${REPORT_URL}
+Published snapshot: ${SNAPSHOT_URL}
 
-ws.onopen = () => {
-  ws.send(JSON.stringify({
-    type: 'work-status.update',
-    payload: {
-      status: 'running',
-      step: '2.1',
-      phase: 'cursor',
-      title: 'Cursor fix',
-      message: 'Applying the bug fix',
-      pre: 'PRE-4401',
-      automationId: 'my-automation',
-      runId: '20260608T120000Z'
-    }
-  }));
-};
+You are an automation agent (Codex, Cursor, or similar). Log every meaningful workflow step so this dashboard shows what you are doing. Humans read ${REPORT_URL}; you write through the local Automation Report API, then publish when the public snapshot should change.
 
-ws.onmessage = (event) => console.log(event.data);`;
+WHEN TO LOG
+- At run start, each step transition, blocker, success, and terminal state.
+- After Jira/PR/Sentry actions that change current work.
+- When status changes: running, success, warning, blocked, pending.
 
-const httpExample = `curl -fsS -X POST http://127.0.0.1:3120/api/work-status \\
-  -H 'Content-Type: application/json' \\
-  -d '{
+BEFORE WRITING
+1. Ensure the local server is up:
+   cd automation-report && ./scripts/ensure-automation-report-server.sh
+2. Local write endpoints (not exposed on GitHub Pages):
+   - HTTP work status: http://127.0.0.1:3120/api/work-status
+   - WebSocket ingest: ws://127.0.0.1:3120/ws
+   - Dashboard read/clear: http://127.0.0.1:3120/api/dashboard
+
+PREFERRED — LOG CURRENT WORK (run each step)
+node bin/send-work-status.mjs \\
+  --status running \\
+  --step "2.1" \\
+  --phase cursor \\
+  --title "Short headline of current work" \\
+  --pre PRE-4401 \\
+  --automationId "my-automation-id" \\
+  --runId "20260608T120000Z" \\
+  --agentName "Codex" \\
+  --nextStep "2.2" \\
+  "One-line message describing what you are doing right now."
+
+ALTERNATIVE — WEBSOCKET MESSAGE
+Send to ws://127.0.0.1:3120/ws after connect:
+{
+  "type": "work-status.update",
+  "payload": {
     "status": "running",
     "step": "2.1",
-    "title": "Cursor fix",
-    "message": "Applying the bug fix",
-    "pre": "PRE-4401"
-  }'`;
+    "phase": "cursor",
+    "title": "Short headline of current work",
+    "message": "One-line message describing what you are doing right now.",
+    "pre": "PRE-4401",
+    "automationId": "my-automation-id",
+    "runId": "20260608T120000Z",
+    "agentName": "Codex",
+    "nextStep": "2.2"
+  }
+}
 
-const cliExample = `node bin/send-work-status.mjs \\
-  --status running \\
-  --step 2.1 \\
-  --title "Cursor fix" \\
-  --pre PRE-4401 \\
-  "Applying the bug fix"`;
+OPTIONAL — APPEND ACTIVITY EVENT
+curl -fsS -X POST http://127.0.0.1:3120/api/automations/{automationId}/runs/{runId}/events \\
+  -H 'Content-Type: application/json' \\
+  -d '{
+    "stepNumber": "2.1",
+    "title": "Step title",
+    "status": "running",
+    "message": "What happened in this step.",
+    "nextStep": "2.2",
+    "agentName": "Codex"
+  }'
 
-const pagesIngestExample = `window.__AUTOMATION_REPORT__?.pushDashboard(snapshot);
-// or postMessage from another tab:
-// window.postMessage({ type: 'dashboard.update', payload: snapshot }, '*');`;
+PUBLISH TO ${REPORT_URL}
+After material updates, sync the public snapshot:
+cd automation-report && npm run deploy:pages
+git add report/ && git commit -m "Sync automation report snapshot" && git push origin master
 
-export default function UsageInstructions({ runtimeMode }: UsageInstructionsProps) {
-  const isLive = runtimeMode === 'live';
+CLEAR DASHBOARD
+DELETE http://127.0.0.1:3120/api/dashboard
+Then redeploy if the public snapshot should reset.
 
+RULES
+- Use real status values; mark blockers as blocked with an actionable message.
+- Include PRE-#### when tied to Jira.
+- Activity history is capped at 200 events; older entries are trimmed automatically.
+- Do not treat ${REPORT_URL} as a write target; GitHub Pages is read-only except via deploy:pages.`;
+
+export default function UsageInstructions() {
   return (
     <section className="panel instructions">
       <div className="panel-head">
-        <h2>How to update this dashboard</h2>
-        <span className="muted">{isLive ? 'Live server' : 'GitHub Pages snapshot'}</span>
+        <h2>Agent logging prompt</h2>
+        <span className="muted">
+          <a href={REPORT_URL}>{REPORT_URL}</a>
+        </span>
       </div>
-
-      <ol className="instructions_steps">
-        <li>
-          <strong>Start the local server</strong>
-          <p className="muted">
-            From <code>automation-report/</code>: <code>npm install</code>, then{' '}
-            <code>AUTOMATION_REPORT_PORT=3120 npm run start</code>. Open{' '}
-            <a href="http://127.0.0.1:3120/">http://127.0.0.1:3120/</a> for live WebSocket updates.
-          </p>
-        </li>
-        <li>
-          <strong>Send a WebSocket message</strong>
-          <p className="muted">
-            Connect to <code>ws://127.0.0.1:3120/ws</code> and send JSON with{' '}
-            <code>type: &quot;work-status.update&quot;</code> and a <code>payload</code> object. The UI
-            refreshes automatically when the server accepts the update.
-          </p>
-          <pre className="instructions_code">
-            <code>{wsExample}</code>
-          </pre>
-        </li>
-        <li>
-          <strong>Or use HTTP instead of WebSocket</strong>
-          <p className="muted">
-            POST the same fields to <code>/api/work-status</code>. Successful writes are broadcast to
-            connected WebSocket clients.
-          </p>
-          <pre className="instructions_code">
-            <code>{httpExample}</code>
-          </pre>
-        </li>
-        <li>
-          <strong>CLI shortcut</strong>
-          <pre className="instructions_code">
-            <code>{cliExample}</code>
-          </pre>
-        </li>
-        <li>
-          <strong>Clear the dashboard</strong>
-          <p className="muted">
-            Use the <strong>Clear report</strong> button on the live server, or send{' '}
-            <code>DELETE /api/dashboard</code>. Activity history is capped at 200 events; older entries are
-            trimmed automatically.
-          </p>
-        </li>
-      </ol>
-
-      <div className="instructions_note">
-        <p>
-          <strong>GitHub Pages:</strong> this public URL cannot accept WebSocket connections. Run the local
-          server, push updates there, then publish a snapshot with <code>npm run deploy:pages</code> and
-          commit <code>report/dashboard.json</code>. For a one-off browser update without redeploying,
-          paste a dashboard snapshot into the console:
-        </p>
-        <pre className="instructions_code">
-          <code>{pagesIngestExample}</code>
-        </pre>
-        <p className="muted">
-          Generate the ingest script with <code>node bin/push-dashboard-to-browser.mjs</code>. The page also
-          caches the latest snapshot in <code>localStorage</code> under{' '}
-          <code>automation-report-dashboard-v1</code>.
-        </p>
-      </div>
+      <p className="muted instructions_lead">
+        Copy this prompt into Codex automations, Cursor rules, or runbooks so agents log actions to the dashboard.
+      </p>
+      <pre className="instructions_code instructions_prompt">
+        <code>{agentLoggingPrompt}</code>
+      </pre>
     </section>
   );
 }
