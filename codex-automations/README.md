@@ -8,22 +8,37 @@ The public site navigation includes an `Automations` link to `codex-automations/
 
 ## Shared Reporting Contract
 
-Every automation should report to the Agent Report page at the start of a run or heartbeat, after major step completion, when every individual item finishes, when blocked or paused, and at the final state.
+Every automation should log meaningful workflow steps to the Automation Report dashboard at the start of a run or heartbeat, on step transitions, after Jira/PR/Sentry actions that change current work, when blocked, and at the final state.
 
-Item-finished reports are mandatory. Whenever a ticket, PR, vulnerability, listing, persona review, file sync, subagent assignment, scan row, or other discrete work item completes, send a report immediately before moving to the next item.
+The public dashboard is <https://thiennp.github.io/report/> and the published snapshot is <https://thiennp.github.io/report/dashboard.json>. Automations do not write to GitHub Pages directly; they write through the local Automation Report API and publish the snapshot only when the public dashboard should change.
 
-At the start of each automation, run this first so the report server is available without producing an extra autostart message:
-
-```bash
-AGENT_REPORT_SEND_STATUS=0 /Users/thien.nguyen/thiennp.github.io/agent-report/scripts/ensure-agent-report-server.sh
-```
-
-Use `automationName`, `title`, `status`, and `text` when sending to `ws://localhost:3100/stream`. Keep `source` as `terminal` or `browser`; do not put the automation name in `source`.
+At the start of each automation, ensure the local report server is available:
 
 ```bash
-cd /Users/thien.nguyen/thiennp.github.io/agent-report
-AGENT_REPORT_WS=ws://localhost:3100/stream npm run send -- --automation-name "<automation name>" --title "<item or step title>" --status <running|success|warning|blocked|error|pending|info> "<concise update>"
+cd automation-report && ./scripts/ensure-automation-report-server.sh
 ```
+
+Preferred current-work update:
+
+```bash
+node bin/send-work-status.mjs \
+  --status running \
+  --step "2.1" \
+  --phase cursor \
+  --title "Short headline of current work" \
+  --pre PRE-4401 \
+  --automationId "my-automation-id" \
+  --runId "20260608T120000Z" \
+  --agentName "Codex" \
+  --nextStep "2.2" \
+  "One-line message describing what you are doing right now."
+```
+
+Local endpoints:
+
+- HTTP work status: `http://127.0.0.1:3120/api/work-status`
+- WebSocket ingest: `ws://127.0.0.1:3120/ws`
+- Dashboard read/clear: `http://127.0.0.1:3120/api/dashboard`
 
 ## Automations
 

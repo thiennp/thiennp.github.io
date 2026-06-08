@@ -57,7 +57,87 @@ Write/sync behavior after a successful per-target review:
 - Update README/index metadata only for touched reviewed automations.
 - Commit/push only when scope is clean and safe: staged changes are limited to intended automation artifacts, no unrelated dirty paths are included, and no ownership or validation policy is violated. If the shared repo has unrelated dirty changes that make a safe commit ambiguous, skip commit/push and report why.
 
-If there is no pending explicit automation-change request in this thread, do not modify automation content. Complete the all-automation audit, report scanned count, valid/invalid TOML count, local/repo drift count, docs metadata drift count, conflicts, race/lock status, skipped items, blocker summary, and whether the dedicated sync automation should be allowed to reconcile anything. Then state that the loop is active and waiting for the next automation-change request."""
+If there is no pending explicit automation-change request in this thread, do not modify automation content. Complete the all-automation audit, report scanned count, valid/invalid TOML count, local/repo drift count, docs metadata drift count, conflicts, race/lock status, skipped items, blocker summary, and whether the dedicated sync automation should be allowed to reconcile anything. Then state that the loop is active and waiting for the next automation-change request.
+
+AUTOMATION REPORT — AGENT LOGGING PROMPT
+
+Public dashboard: https://thiennp.github.io/report/
+Published snapshot: https://thiennp.github.io/report/dashboard.json
+
+You are an automation agent (Codex, Cursor, or similar). Log every meaningful workflow step so this dashboard shows what you are doing. Humans read https://thiennp.github.io/report/; you write through the local Automation Report API, then publish when the public snapshot should change.
+
+This Automation Report contract supersedes older Agent Report, agent-report, localhost:3100, and ws://localhost:3100/stream reporting instructions when they conflict. Keep existing domain workflow requirements unchanged.
+
+WHEN TO LOG
+- At run start, each step transition, blocker, success, and terminal state.
+- After Jira/PR/Sentry actions that change current work.
+- When status changes: running, success, warning, blocked, pending.
+
+BEFORE WRITING
+1. Ensure the local server is up:
+   cd automation-report && ./scripts/ensure-automation-report-server.sh
+2. Local write endpoints (not exposed on GitHub Pages):
+   - HTTP work status: http://127.0.0.1:3120/api/work-status
+   - WebSocket ingest: ws://127.0.0.1:3120/ws
+   - Dashboard read/clear: http://127.0.0.1:3120/api/dashboard
+
+PREFERRED — LOG CURRENT WORK (run each step)
+node bin/send-work-status.mjs \
+  --status running \
+  --step "2.1" \
+  --phase cursor \
+  --title "Short headline of current work" \
+  --pre PRE-4401 \
+  --automationId "my-automation-id" \
+  --runId "20260608T120000Z" \
+  --agentName "Codex" \
+  --nextStep "2.2" \
+  "One-line message describing what you are doing right now."
+
+ALTERNATIVE — WEBSOCKET MESSAGE
+Send to ws://127.0.0.1:3120/ws after connect:
+{
+  "type": "work-status.update",
+  "payload": {
+    "status": "running",
+    "step": "2.1",
+    "phase": "cursor",
+    "title": "Short headline of current work",
+    "message": "One-line message describing what you are doing right now.",
+    "pre": "PRE-4401",
+    "automationId": "my-automation-id",
+    "runId": "20260608T120000Z",
+    "agentName": "Codex",
+    "nextStep": "2.2"
+  }
+}
+
+OPTIONAL — APPEND ACTIVITY EVENT
+curl -fsS -X POST http://127.0.0.1:3120/api/automations/{automationId}/runs/{runId}/events \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "stepNumber": "2.1",
+    "title": "Step title",
+    "status": "running",
+    "message": "What happened in this step.",
+    "nextStep": "2.2",
+    "agentName": "Codex"
+  }'
+
+PUBLISH TO https://thiennp.github.io/report/
+After material updates, sync the public snapshot:
+cd automation-report && npm run deploy:pages
+git add report/ && git commit -m "Sync automation report snapshot" && git push origin master
+
+CLEAR DASHBOARD
+DELETE http://127.0.0.1:3120/api/dashboard
+Then redeploy if the public snapshot should reset.
+
+RULES
+- Use real status values; mark blockers as blocked with an actionable message.
+- Include PRE-#### when tied to Jira.
+- Activity history is capped at 200 events; older entries are trimmed automatically.
+- Do not treat https://thiennp.github.io/report/ as a write target; GitHub Pages is read-only except via deploy:pages."""
 status = "ACTIVE"
 rrule = "FREQ=HOURLY;INTERVAL=1"
 target_thread_id = "019e8c3a-961b-7350-99f8-67adec1955a9"

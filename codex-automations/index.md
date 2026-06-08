@@ -2,7 +2,7 @@
 
 This mirror is maintained as a two-way sync between `~/.codex/automations` and this repo export. A missing copy on one side should be restored from the other side, not treated as a deletion, unless explicitly directed otherwise.
 
-All automations should first run `/Users/thien.nguyen/thiennp.github.io/agent-report/scripts/ensure-agent-report-server.sh` with `AGENT_REPORT_SEND_STATUS=0`, then report start, progress, every item finished, blockers, and final state to the Agent Report app at `ws://localhost:3100/stream` using `automationName`, `title`, `status`, and `text`.
+All automations should log meaningful workflow steps to the Automation Report dashboard: public UI `https://thiennp.github.io/report/`, published snapshot `https://thiennp.github.io/report/dashboard.json`, local API `http://127.0.0.1:3120/api/work-status`, WebSocket ingest `ws://127.0.0.1:3120/ws`, and dashboard read/clear `http://127.0.0.1:3120/api/dashboard`. At run start, each automation should run `cd automation-report && ./scripts/ensure-automation-report-server.sh`, then use `node bin/send-work-status.mjs` or the WebSocket ingest for run start, step transitions, blockers, successes, and terminal state. GitHub Pages is read-only for agents except by publishing the snapshot with `npm run deploy:pages`.
 
 | Automation ID | Name | Type | Status | File |
 | --- | --- | --- | --- | --- |
