@@ -13,6 +13,7 @@ import {
   readDashboardCache,
   writeDashboardCache
 } from '../lib/dashboardStorage';
+import UsageInstructions from './UsageInstructions';
 
 type Status = string;
 
@@ -433,6 +434,8 @@ export default function Home() {
           })}
         </div>
       </section>
+
+      <UsageInstructions runtimeMode={runtimeMode} />
 
       <footer>
         <span>
