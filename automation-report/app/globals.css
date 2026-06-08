@@ -275,6 +275,17 @@ button,
   cursor: pointer;
 }
 
+button.button-danger {
+  background: var(--red-bg);
+  border-color: #f6b4ae;
+  color: var(--red);
+}
+
+button.button-danger:disabled {
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
 .panel {
   min-width: 0;
   padding: 16px;

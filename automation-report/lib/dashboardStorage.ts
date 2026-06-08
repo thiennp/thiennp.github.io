@@ -47,6 +47,13 @@ export function writeDashboardCache(snapshot: StoredDashboard) {
   window.localStorage.setItem(STORAGE_KEY, JSON.stringify(snapshot));
 }
 
+export function clearDashboardCache() {
+  if (typeof window === 'undefined') {
+    return;
+  }
+  window.localStorage.removeItem(STORAGE_KEY);
+}
+
 export function installDashboardIngest(handler: (snapshot: StoredDashboard) => void) {
   if (typeof window === 'undefined') {
     return () => undefined;

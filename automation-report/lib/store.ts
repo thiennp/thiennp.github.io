@@ -2,6 +2,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { redactSecrets } from './redact';
 import { broadcast } from './realtime';
+import { MAX_RECENT_EVENTS } from './constants';
 import {
   AutomationRecord,
   AutomationState,
@@ -16,6 +17,8 @@ import {
   WorkStatus,
   WsMessage
 } from './types';
+
+export { MAX_RECENT_EVENTS };
 
 const defaultDataDir = path.join(process.cwd(), 'data');
 const dataDir = process.env.AUTOMATION_REPORT_DATA_DIR || defaultDataDir;
@@ -251,7 +254,46 @@ export async function replaceWorkStatus(input: Record<string, unknown>) {
   });
 }
 
-export function getRecentEvents(limit = 20) {
+function pruneRecentEvents(store: ReportStore) {
+  const entries: Array<{
+    automationId: string;
+    runId: string;
+    eventId: string;
+    createdAt: string;
+  }> = [];
+
+  for (const automation of Object.values(store.automations)) {
+    for (const run of Object.values(automation.runs)) {
+      for (const reportEvent of run.events) {
+        entries.push({
+          automationId: automation.automationId,
+          runId: run.runId,
+          eventId: reportEvent.id,
+          createdAt: reportEvent.createdAt
+        });
+      }
+    }
+  }
+
+  if (entries.length <= MAX_RECENT_EVENTS) {
+    return;
+  }
+
+  const keepIds = new Set(
+    entries
+      .sort((left, right) => right.createdAt.localeCompare(left.createdAt))
+      .slice(0, MAX_RECENT_EVENTS)
+      .map((entry) => entry.eventId)
+  );
+
+  for (const automation of Object.values(store.automations)) {
+    for (const run of Object.values(automation.runs)) {
+      run.events = run.events.filter((reportEvent) => keepIds.has(reportEvent.id));
+    }
+  }
+}
+
+export function getRecentEvents(limit = MAX_RECENT_EVENTS) {
   const store = readStoreUnsafe();
   const events: Array<ReportEvent & { automationId: string; runId: string }> = [];
   for (const automation of Object.values(store.automations)) {
@@ -274,9 +316,26 @@ export function getDashboardSnapshot(): DashboardSnapshot {
   return {
     workStatus: getWorkStatus(),
     automations: listAutomations(),
-    recentEvents: getRecentEvents(),
+    recentEvents: getRecentEvents(MAX_RECENT_EVENTS),
     report: getReport()
   };
+}
+
+export async function clearDashboard() {
+  return withStore((store) => {
+    store.automations = {};
+    store.workStatus = emptyWorkStatus();
+    store.report = emptyReport();
+    const event = changed(store, {
+      type: 'dashboard.cleared',
+      status: 'pending',
+      payload: { clearedAt: now() }
+    });
+    return {
+      snapshot: getDashboardSnapshot(),
+      event
+    };
+  });
 }
 
 export async function replaceReport(input: Record<string, unknown>) {
@@ -469,6 +528,7 @@ export async function appendEvent(automationId: string, runId: string, input: Pa
       createdAt: input.createdAt || now()
     }) as ReportEvent;
     run.events.push(reportEvent);
+    pruneRecentEvents(store);
     run.status = reportEvent.status;
     run.updatedAt = now();
     automation.state.latestStatus = run.status;

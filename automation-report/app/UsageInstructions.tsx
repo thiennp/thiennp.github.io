@@ -91,6 +91,14 @@ export default function UsageInstructions({ runtimeMode }: UsageInstructionsProp
             <code>{cliExample}</code>
           </pre>
         </li>
+        <li>
+          <strong>Clear the dashboard</strong>
+          <p className="muted">
+            Use the <strong>Clear report</strong> button on the live server, or send{' '}
+            <code>DELETE /api/dashboard</code>. Activity history is capped at 200 events; older entries are
+            trimmed automatically.
+          </p>
+        </li>
       </ol>
 
       <div className="instructions_note">

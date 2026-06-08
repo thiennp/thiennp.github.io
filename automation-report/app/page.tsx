@@ -1,6 +1,7 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { MAX_RECENT_EVENTS } from '../lib/constants';
 import {
   getDashboardUrl,
   getHealthUrl,
@@ -9,6 +10,7 @@ import {
   type RuntimeMode
 } from '../lib/clientRuntime';
 import {
+  clearDashboardCache,
   installDashboardIngest,
   readDashboardCache,
   writeDashboardCache
@@ -104,6 +106,25 @@ const emptyWorkStatus: WorkStatus = {
   updatedAt: new Date().toISOString()
 };
 
+const emptyReport: CurrentReport = {
+  title: 'Check24 Sentry Issues',
+  message: 'Waiting for the first Sentry refresh.',
+  status: 'pending',
+  updatedAt: new Date().toISOString(),
+  issueCount: 0,
+  issues: []
+};
+
+function createEmptyDashboard(): DashboardSnapshot {
+  const updatedAt = new Date().toISOString();
+  return {
+    workStatus: { ...emptyWorkStatus, updatedAt },
+    automations: [],
+    recentEvents: [],
+    report: { ...emptyReport, updatedAt }
+  };
+}
+
 function statusClass(status?: string) {
   const value = (status || '').toLowerCase();
   if (value.includes('fatal') || value.includes('error') || value.includes('critical') || value.includes('blocked')) return 'danger';
@@ -146,33 +167,30 @@ async function fetchJson<T>(url: string): Promise<T> {
 export default function Home() {
   const [runtimeMode, setRuntimeMode] = useState<RuntimeMode>('static');
   const [health, setHealth] = useState<Health>({});
-  const [dashboard, setDashboard] = useState<DashboardSnapshot>({
-    workStatus: emptyWorkStatus,
-    automations: [],
-    recentEvents: [],
-    report: {
-      title: 'Check24 Sentry Issues',
-      message: 'Waiting for the first Sentry refresh.',
-      status: 'pending',
-      updatedAt: new Date().toISOString(),
-      issueCount: 0,
-      issues: []
-    }
-  });
+  const [dashboard, setDashboard] = useState<DashboardSnapshot>(createEmptyDashboard());
   const [wsState, setWsState] = useState('static');
   const [lastWsEvent, setLastWsEvent] = useState('none');
   const [dataSource, setDataSource] = useState('loading');
   const [query, setQuery] = useState('');
+  const [isClearing, setIsClearing] = useState(false);
+  const skipRemoteLoadRef = useRef(false);
 
   const applyDashboard = (dashboardData: DashboardSnapshot, source: string) => {
-    setDashboard(dashboardData);
+    const nextDashboard = {
+      ...dashboardData,
+      recentEvents: dashboardData.recentEvents.slice(0, MAX_RECENT_EVENTS)
+    };
+    setDashboard(nextDashboard);
     setDataSource(source);
     if (getRuntimeMode() === 'static') {
-      writeDashboardCache(dashboardData);
+      writeDashboardCache(nextDashboard);
     }
   };
 
-  const loadDashboard = async (mode = runtimeMode) => {
+  const loadDashboard = async (mode = runtimeMode, force = false) => {
+    if (mode === 'static' && skipRemoteLoadRef.current && !force) {
+      return;
+    }
     try {
       const dashboardData = await fetchJson<DashboardSnapshot>(getDashboardUrl(mode));
       applyDashboard(dashboardData, mode === 'live' ? 'live-api' : 'dashboard.json');
@@ -201,6 +219,36 @@ export default function Home() {
           });
         }
       }
+    }
+  };
+
+  const clearDashboardView = async () => {
+    const confirmed = window.confirm(
+      'Clear the dashboard? This removes current work, activities, automations, and issues.'
+    );
+    if (!confirmed) {
+      return;
+    }
+
+    setIsClearing(true);
+    try {
+      if (runtimeMode === 'live') {
+        const response = await fetch('/api/dashboard', { method: 'DELETE' });
+        if (!response.ok) {
+          throw new Error(`${response.status} ${response.statusText}`);
+        }
+        skipRemoteLoadRef.current = false;
+        await loadDashboard('live', true);
+        return;
+      }
+
+      clearDashboardCache();
+      skipRemoteLoadRef.current = true;
+      applyDashboard(createEmptyDashboard(), 'cleared');
+    } catch {
+      window.alert('Could not clear the dashboard. On GitHub Pages this only clears the browser cache; use Refresh to reload the published snapshot.');
+    } finally {
+      setIsClearing(false);
     }
   };
 
@@ -346,7 +394,23 @@ export default function Home() {
           Filter Sentry issues
           <input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Project, title, culprit, status..." />
         </label>
-        <button onClick={() => loadDashboard().catch(() => undefined)}>Refresh</button>
+        <button
+          onClick={() => {
+            skipRemoteLoadRef.current = false;
+            loadDashboard(runtimeMode, true).catch(() => undefined);
+          }}
+        >
+          Refresh
+        </button>
+        <button
+          className="button-danger"
+          disabled={isClearing}
+          onClick={() => {
+            clearDashboardView().catch(() => undefined);
+          }}
+        >
+          {isClearing ? 'Clearing…' : 'Clear report'}
+        </button>
         {dashboard.report.url ? <a className="button-link" href={dashboard.report.url}>Open Sentry</a> : null}
       </section>
 
@@ -354,7 +418,9 @@ export default function Home() {
         <section className="panel">
           <div className="panel-head">
             <h2>Recent Activity</h2>
-            <span className="muted">{dashboard.recentEvents.length} events</span>
+            <span className="muted">
+              {dashboard.recentEvents.length} events · max {MAX_RECENT_EVENTS}
+            </span>
           </div>
           <div className="timeline">
             {dashboard.recentEvents.length === 0 ? <p className="muted">No automation events yet.</p> : null}
