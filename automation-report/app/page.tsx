@@ -86,7 +86,7 @@ type Health = {
 const emptyWorkStatus: WorkStatus = {
   status: 'pending',
   title: 'Waiting for work status',
-  message: 'Open this page and click Log work status to record agent activity.',
+  message: 'Paste work-status JSON into the Log work status field at the bottom of this page.',
   source: 'automation-report',
   updatedAt: new Date().toISOString()
 };
@@ -266,14 +266,6 @@ export default function Home() {
         </div>
       </section>
 
-      <AgentUpdatePanel
-        dashboard={dashboard}
-        onUpdated={(snapshot, source) => {
-          applyDashboard(snapshot, source);
-          setHealth({ status: 'localStorage', storeVersion: 0 });
-        }}
-      />
-
       <section className="toolbar">
         <label>
           Filter Sentry issues
@@ -380,6 +372,14 @@ export default function Home() {
       </section>
 
       <UsageInstructions />
+
+      <AgentUpdatePanel
+        dashboard={dashboard}
+        onUpdated={(snapshot, source) => {
+          applyDashboard(snapshot, source);
+          setHealth({ status: 'localStorage', storeVersion: 0 });
+        }}
+      />
 
       <footer>
         <span>Storage localStorage · source {dataSource}</span>

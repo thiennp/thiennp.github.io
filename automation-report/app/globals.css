@@ -302,39 +302,43 @@ select {
   padding: 7px 10px;
 }
 
-.agent-update_lead {
-  margin: 0 0 12px;
-}
-
-.agent-update_body {
-  display: grid;
-  gap: 12px;
-}
-
-.agent-update_modes {
+.agent-log {
+  align-items: center;
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
+  margin-bottom: 8px;
+  padding-top: 8px;
 }
 
-.agent-update_form,
-.agent-update_json {
-  display: grid;
-  gap: 10px;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+.agent-log_label {
+  color: var(--muted);
+  flex: 0 0 auto;
+  font-size: 11px;
+  font-weight: 700;
+  min-width: auto;
 }
 
-.agent-update_full {
-  grid-column: 1 / -1;
+.agent-log_input {
+  flex: 1 1 240px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+  font-size: 11px;
+  min-height: 30px;
+  min-width: 180px;
+  padding: 5px 8px;
 }
 
-.agent-update_submit {
-  grid-column: 1 / -1;
-  justify-self: start;
+.agent-log_submit {
+  flex: 0 0 auto;
+  font-size: 11px;
+  min-height: 30px;
+  padding: 5px 10px;
 }
 
-.agent-update_error {
+.agent-log_error {
   color: var(--red);
+  flex: 1 1 100%;
+  font-size: 11px;
   margin: 0;
 }
 

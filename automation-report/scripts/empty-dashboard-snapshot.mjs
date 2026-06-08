@@ -4,7 +4,7 @@ export function createEmptyDashboardSnapshot() {
     workStatus: {
       status: 'pending',
       title: 'Waiting for work status',
-      message: 'Open https://thiennp.github.io/report/ and click Log work status to record agent activity.',
+      message: 'Paste work-status JSON into the Log work status field at https://thiennp.github.io/report/.',
       source: 'automation-report',
       updatedAt
     },

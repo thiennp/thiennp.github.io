@@ -4,7 +4,7 @@ export function createEmptyStoredDashboard() {
     workStatus: {
       status: 'pending',
       title: 'Waiting for work status',
-      message: 'Open this page and click Log work status to record agent activity.',
+      message: 'Paste work-status JSON into the Log work status field at the bottom of this page.',
       source: 'automation-report',
       updatedAt
     },
