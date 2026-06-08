@@ -6,8 +6,7 @@
     "dev": "NODE_ENV=development node server.mjs",
     "build": "next build",
     "build:pages": "node scripts/build-github-pages.mjs",
-    "sync:pages": "node scripts/sync-dashboard-snapshot.mjs",
-    "deploy:pages": "npm run sync:pages && npm run build:pages",
+    "deploy:pages": "npm run build:pages",
     "start": "NODE_ENV=production node server.mjs",
     "lint": "next lint"
   },

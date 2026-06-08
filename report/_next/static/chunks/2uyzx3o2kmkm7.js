@@ -1,0 +1,81 @@
+(globalThis.TURBOPACK||(globalThis.TURBOPACK=[])).push(["object"==typeof document?document.currentScript:void 0,31713,e=>{"use strict";var t=e.i(43476),s=e.i(71645);function n(){let e=new Date().toISOString();return{workStatus:{status:"pending",title:"Waiting for work status",message:"Agents should log work status to https://thiennp.github.io/report/ using the prompt below.",source:"automation-report",updatedAt:e},automations:[],recentEvents:[],report:{title:"Check24 Sentry Issues",message:"Waiting for the first Sentry refresh.",status:"pending",updatedAt:e,issueCount:0,issues:[]}}}let a="automation-report-dashboard-v1",r="automation-report-cleared-v1";function o(e){return!!e&&"object"==typeof e&&!!(e.workStatus&&e.report)}function i(){try{let e=window.localStorage.getItem(a);if(!e)return null;let t=JSON.parse(e);if(o(t))return t}catch{}return null}function l(e){window.localStorage.setItem(a,JSON.stringify(e))}function c(){window.localStorage.removeItem(r)}let d="dashboard",u="snapshot";function h(){return new Promise((e,t)=>{if(!window.indexedDB)return void t(Error("IndexedDB unavailable"));let s=window.indexedDB.open("automation-report-v1",1);s.onupgradeneeded=()=>{let e=s.result;e.objectStoreNames.contains(d)||e.createObjectStore(d)},s.onsuccess=()=>e(s.result),s.onerror=()=>t(s.error)})}async function p(){if(!window.indexedDB)return null;try{let e=await h();return await new Promise((t,s)=>{let n=e.transaction(d,"readonly"),a=n.objectStore(d).get(u);a.onsuccess=()=>{let e=a.result;t(e&&"object"==typeof e&&e.workStatus&&e.report?e:null)},a.onerror=()=>s(a.error),n.oncomplete=()=>e.close()})}catch{return null}}async function m(e){if(!window.indexedDB)return;let t=await h();await new Promise((s,n)=>{let a=t.transaction(d,"readwrite"),r=a.objectStore(d).put(e,u);r.onsuccess=()=>s(),r.onerror=()=>n(r.error),a.oncomplete=()=>t.close()})}async function g(){if(window.indexedDB)try{let e=await h();await new Promise((t,s)=>{let n=e.transaction(d,"readwrite"),a=n.objectStore(d).delete(u);a.onsuccess=()=>t(),a.onerror=()=>s(a.error),n.oncomplete=()=>e.close()})}catch{return}}function x(e){let t=[e.workStatus?.updatedAt,e.report?.updatedAt,...e.recentEvents.map(e=>e.createdAt),...e.automations.map(e=>e.latestUpdateTime).filter(Boolean)].filter(e=>!!e);return 0===t.length?"":t.sort((e,t)=>t.localeCompare(e))[0]}function w(e){return{...e,automations:e.automations||[],recentEvents:e.recentEvents||[],report:e.report||n().report,workStatus:e.workStatus||n().workStatus}}function j(e,t){if(!e)return t;if(!t)return e;let s=x(e);return x(t).localeCompare(s)>0?t:e}async function N(e){l(e),await m(e)}async function S(e=!1){var t,s,a;let o,l,d,u,h=w(n());if(e&&c(),"1"===window.localStorage.getItem(r)&&!e){let e=i(),t=await p();return{snapshot:j(e?w(e):null,t?w(t):null)||h,source:"cleared",health:{status:"cleared-local",storeVersion:0}}}let m=i(),g=await p(),v=m?w(m):null,f=g?w(g):null,b=j(v,f)||h;return o=b.workStatus?.title==="Waiting for work status",l=0===b.automations.length,d=0===b.recentEvents.length,u=(b.report?.issueCount??0)===0,o&&l&&d&&u&&!v&&!f||await N(b),{snapshot:b,source:(t=b,s=v,a=f,s||a?s?a?x(s)===x(a)?"localStorage+indexedDB":t===a?"indexedDB-synced":"localStorage-synced":"localStorage":"indexedDB":"empty"),health:{status:"client-cache",storeVersion:0}}}async function v(){window.localStorage.setItem(r,"1"),l(n());let e=w(n());return window.localStorage.removeItem(a),c(),await g(),l(e),await m(e),{snapshot:e}}async function f(e){let t=w(e);return c(),await N(t),{snapshot:t,source:"ingest"}}let b="https://thiennp.github.io/report/",y=`AUTOMATION REPORT — AGENT LOGGING PROMPT
+
+Public dashboard UI: ${b}
+Storage: IndexedDB (primary) + localStorage (mirror) in the browser viewing ${b}
+Do not use dashboard.json, GitHub Pages APIs, or any http://127.0.0.1 endpoint.
+
+You are an automation agent (Codex, Cursor, or similar). Log every meaningful workflow step so ${b} shows current work. Push a dashboard snapshot into the open report tab. The page keeps IndexedDB and localStorage in sync automatically.
+
+WHEN TO LOG
+- At run start, each step transition, blocker, success, and terminal state.
+- After Jira/PR/Sentry actions that change current work.
+- When status changes: running, success, warning, blocked, pending.
+
+PREFERRED — PUSH A DASHBOARD SNAPSHOT
+Open ${b} in the browser, then run this in the page console or via pages-ingest.js:
+window.__AUTOMATION_REPORT__.pushDashboard({
+  workStatus: {
+    status: "running",
+    step: "2.1",
+    phase: "cursor",
+    title: "Short headline of current work",
+    message: "One-line message describing what you are doing right now.",
+    pre: "PRE-4401",
+    automationId: "my-automation-id",
+    runId: "20260608T120000Z",
+    agentName: "Codex",
+    nextStep: "2.2",
+    updatedAt: new Date().toISOString(),
+    source: "automation-report"
+  },
+  automations: [{
+    automationId: "my-automation-id",
+    latestRunId: "20260608T120000Z",
+    latestStatus: "running",
+    latestUpdateTime: new Date().toISOString(),
+    activeBlockerCount: 0
+  }],
+  recentEvents: [{
+    id: "evt-1",
+    title: "Step title",
+    status: "running",
+    message: "What happened in this step.",
+    stepNumber: "2.1",
+    nextStep: "2.2",
+    agentName: "Codex",
+    createdAt: new Date().toISOString(),
+    automationId: "my-automation-id",
+    runId: "20260608T120000Z"
+  }],
+  report: {
+    title: "Check24 Sentry Issues",
+    message: "Waiting for the first Sentry refresh.",
+    status: "pending",
+    updatedAt: new Date().toISOString(),
+    issueCount: 0,
+    issues: []
+  }
+});
+
+ALTERNATIVE — POSTMESSAGE FROM ANOTHER TAB
+window.postMessage({
+  type: "dashboard.update",
+  payload: { /* same snapshot object as above */ }
+}, "*");
+
+CLI HELPER — WRITE SNAPSHOT FILE AND INJECT
+1. Save the snapshot JSON to /tmp/automation-report-snapshot.json
+2. Run:
+   node bin/push-dashboard-to-browser.mjs --file /tmp/automation-report-snapshot.json
+3. Paste the generated pages-ingest.js into the open ${b} console if auto-open fails.
+
+SYNC RULES
+- IndexedDB is the durable cache; localStorage mirrors it for fast reloads.
+- If one store is newer, the page copies it into the other on load.
+- Activity history is capped at 200 events.
+- Clear report wipes both browser stores in this tab/browser profile.
+
+RULES
+- Use real status values; mark blockers as blocked with an actionable message.
+- Include PRE-#### when tied to Jira.
+- Every push must include workStatus, automations, recentEvents, and report.`;function I(){return(0,t.jsxs)("section",{className:"panel instructions",children:[(0,t.jsxs)("div",{className:"panel-head",children:[(0,t.jsx)("h2",{children:"Agent logging prompt"}),(0,t.jsx)("span",{className:"muted",children:(0,t.jsx)("a",{href:b,children:b})})]}),(0,t.jsxs)("p",{className:"muted instructions_lead",children:["Copy this prompt into Codex automations or Cursor rules. Agents push snapshots into the browser cache for"," ",b,"; no local server is required."]}),(0,t.jsx)("pre",{className:"instructions_code instructions_prompt",children:(0,t.jsx)("code",{children:y})})]})}let k={status:"pending",title:"Waiting for work status",message:"Agents should log work status to https://thiennp.github.io/report/ using the prompt below.",source:"automation-report",updatedAt:new Date().toISOString()};function E(e){let t=(e||"").toLowerCase();return t.includes("fatal")||t.includes("error")||t.includes("critical")||t.includes("blocked")?"danger":t.includes("warning")||t.includes("warn")||t.includes("pending")?"warn":t.includes("resolved")||t.includes("success")||t.includes("healthy")||t.includes("done")?"good":(t.includes("running")||t.includes("info"),"neutral")}function A(e){if(!e)return"n/a";let t=new Date(e);return Number.isNaN(t.getTime())?e:t.toLocaleString()}e.s(["default",0,function(){var e,a,r,i;let[d,u]=(0,s.useState)({}),[h,p]=(0,s.useState)(n()),[m,g]=(0,s.useState)("loading"),[x,w]=(0,s.useState)(""),[j,N]=(0,s.useState)(!1),b=(e,t)=>{p({...e,recentEvents:e.recentEvents.slice(0,200)}),g(t)},y=async(e=!1)=>{let t=await S(e);b(t.snapshot,t.source),u(t.health)},O=async()=>{if(window.confirm("Clear the dashboard? This removes current work, activities, automations, and issues from IndexedDB and localStorage in this browser.")){N(!0);try{let e=await v();b(e.snapshot,"cleared"),u({status:"cleared-local",storeVersion:0})}catch{window.alert("Could not clear the dashboard cache in this browser.")}finally{N(!1)}}};(0,s.useEffect)(()=>{var e;let t,s,n;return y().catch(()=>void 0),e=e=>{f(e).then(e=>{b(e.snapshot,e.source)}).catch(()=>void 0)},t=window,s=t=>{o(t)&&(c(),l(t),e(t))},t.__AUTOMATION_REPORT__={...t.__AUTOMATION_REPORT__,pushDashboard:s},n=e=>{let t=e.data;t?.type==="dashboard.update"&&o(t.payload)&&s(t.payload)},window.addEventListener("message",n),()=>{window.removeEventListener("message",n),t.__AUTOMATION_REPORT__?.pushDashboard===s&&delete t.__AUTOMATION_REPORT__?.pushDashboard}},[]),(0,s.useEffect)(()=>{let e=e=>{"automation-report-dashboard-v1"===e.key&&y().catch(()=>void 0)};return window.addEventListener("storage",e),()=>window.removeEventListener("storage",e)},[]);let T=h.workStatus||k,R=h.report.issues||[],_=(0,s.useMemo)(()=>{let e=x.trim().toLowerCase();return e?R.filter(t=>JSON.stringify(t).toLowerCase().includes(e)):R},[R,x]),C=[T.url?{label:"Evidence",href:T.url}:null,T.pre?{label:T.pre,href:(e=T.pre)&&/^PRE-\d+$/i.test(e)?`https://c24-energie.atlassian.net/browse/${e.toUpperCase()}`:""}:null,T.repo&&T.pr?{label:`${T.repo} #${T.pr}`,href:(a=T.repo,r=T.pr,a&&r?`https://bitbucket.org/check24/${a}/pull-requests/${r}`:"")}:null,T.sentryIssueId?{label:`Sentry ${T.sentryIssueId}`,href:(i=T.sentryIssueId)?`https://check24-energie.sentry.io/issues/${i}/`:""}:null].filter(e=>!!e?.href),P=h.automations.reduce((e,t)=>e+t.activeBlockerCount,0);return(0,t.jsxs)("main",{children:[(0,t.jsxs)("header",{className:"topbar",children:[(0,t.jsxs)("div",{children:[(0,t.jsx)("p",{className:"eyebrow",children:T.source||"current work"}),(0,t.jsx)("h1",{children:T.title}),(0,t.jsx)("p",{className:"lead",children:T.message})]}),(0,t.jsxs)("div",{className:"status-grid",children:[(0,t.jsx)("span",{className:`pill ${E(T.status)}`,children:T.status||"unknown"}),(0,t.jsx)("span",{className:"pill neutral",children:"browser cache"}),(0,t.jsx)("span",{className:`pill ${E(d.status)}`,children:d.status||"health unknown"})]})]}),(0,t.jsxs)("section",{className:"work-hero",children:[(0,t.jsxs)("div",{className:"work-hero_main",children:[(0,t.jsxs)("div",{className:"work-hero_meta",children:[T.step?(0,t.jsxs)("span",{className:"pill neutral",children:["Step ",T.step]}):null,T.phase?(0,t.jsx)("span",{className:"pill neutral",children:T.phase}):null,T.nextStep?(0,t.jsxs)("span",{className:"pill warn",children:["Next ",T.nextStep]}):null,T.agentName?(0,t.jsx)("span",{className:"pill neutral",children:T.agentName}):null]}),(0,t.jsx)("p",{className:"work-hero_target",children:T.pre||T.sentryKey||(T.repo&&T.pr?`${T.repo} #${T.pr}`:"No active target yet")}),T.automationId?(0,t.jsxs)("p",{className:"muted",children:[T.automationId,T.runId?` \xb7 ${T.runId}`:""]}):null]}),(0,t.jsxs)("div",{className:"work-hero_links",children:[0===C.length?(0,t.jsx)("span",{className:"muted",children:"No linked evidence yet."}):null,C.map(e=>(0,t.jsx)("a",{className:"button-link",href:e.href,children:e.label},e.href))]})]}),(0,t.jsxs)("section",{className:"metrics",children:[(0,t.jsxs)("div",{children:[(0,t.jsx)("span",{children:"Automations"}),(0,t.jsx)("strong",{children:h.automations.length})]}),(0,t.jsxs)("div",{children:[(0,t.jsx)("span",{children:"Blocked Items"}),(0,t.jsx)("strong",{children:P})]}),(0,t.jsxs)("div",{children:[(0,t.jsx)("span",{children:"Recent Events"}),(0,t.jsx)("strong",{children:h.recentEvents.length})]}),(0,t.jsxs)("div",{children:[(0,t.jsx)("span",{children:"Updated"}),(0,t.jsx)("strong",{className:"metric-time",children:A(T.updatedAt)})]})]}),(0,t.jsxs)("section",{className:"toolbar",children:[(0,t.jsxs)("label",{children:["Filter Sentry issues",(0,t.jsx)("input",{value:x,onChange:e=>w(e.target.value),placeholder:"Project, title, culprit, status..."})]}),(0,t.jsx)("button",{onClick:()=>y(!0).catch(()=>void 0),children:"Refresh"}),(0,t.jsx)("button",{className:"button-danger",disabled:j,onClick:()=>{O().catch(()=>void 0)},children:j?"Clearing…":"Clear report"}),h.report.url?(0,t.jsx)("a",{className:"button-link",href:h.report.url,children:"Open Sentry"}):null]}),(0,t.jsxs)("section",{className:"dashboard-grid",children:[(0,t.jsxs)("section",{className:"panel",children:[(0,t.jsxs)("div",{className:"panel-head",children:[(0,t.jsx)("h2",{children:"Recent Activity"}),(0,t.jsxs)("span",{className:"muted",children:[h.recentEvents.length," events · max ",200]})]}),(0,t.jsxs)("div",{className:"timeline",children:[0===h.recentEvents.length?(0,t.jsx)("p",{className:"muted",children:"No automation events yet."}):null,h.recentEvents.map(e=>(0,t.jsxs)("article",{className:"timeline-item",children:[(0,t.jsxs)("div",{className:"timeline-item_head",children:[(0,t.jsx)("strong",{children:e.title}),(0,t.jsx)("span",{className:`pill ${E(e.status)}`,children:e.status||"info"})]}),(0,t.jsx)("p",{children:e.message||`${e.automationId} \xb7 ${e.runId}`}),(0,t.jsxs)("div",{className:"timeline-item_meta",children:[e.stepNumber?(0,t.jsxs)("span",{children:["Step ",e.stepNumber]}):null,e.nextStep?(0,t.jsxs)("span",{children:["Next ",e.nextStep]}):null,e.agentName?(0,t.jsx)("span",{children:e.agentName}):null,(0,t.jsx)("span",{children:A(e.createdAt)})]})]},`${e.automationId}-${e.runId}-${e.id}`))]})]}),(0,t.jsxs)("section",{className:"panel",children:[(0,t.jsxs)("div",{className:"panel-head",children:[(0,t.jsx)("h2",{children:"Automations"}),(0,t.jsxs)("span",{className:"muted",children:[h.automations.length," tracked"]})]}),(0,t.jsxs)("div",{className:"automation-list",children:[0===h.automations.length?(0,t.jsx)("p",{className:"muted",children:"No automations registered yet."}):null,h.automations.map(e=>(0,t.jsxs)("article",{className:"automation-card",children:[(0,t.jsxs)("div",{className:"automation-card_head",children:[(0,t.jsx)("strong",{children:e.automationId}),(0,t.jsx)("span",{className:`pill ${E(e.latestStatus)}`,children:e.latestStatus||"info"})]}),(0,t.jsxs)("div",{className:"automation-card_meta",children:[e.latestRunId?(0,t.jsxs)("span",{children:["Run ",e.latestRunId]}):null,(0,t.jsxs)("span",{children:[e.activeBlockerCount," blocked"]}),(0,t.jsx)("span",{children:A(e.latestUpdateTime)})]})]},e.automationId))]})]})]}),(0,t.jsxs)("section",{className:"panel",children:[(0,t.jsxs)("div",{className:"panel-head",children:[(0,t.jsx)("h2",{children:"Sentry Issues"}),(0,t.jsxs)("span",{className:"muted",children:[_.length," shown · ",h.report.message]})]}),(0,t.jsxs)("div",{className:"issue-list",children:[0===_.length?(0,t.jsx)("p",{className:"muted",children:"No issues in the current report."}):null,_.map(e=>{let s=e.issueUrl||"";return(0,t.jsxs)("article",{className:"issue",children:[(0,t.jsxs)("div",{className:"issue-main",children:[(0,t.jsxs)("div",{children:[(0,t.jsxs)("div",{className:"issue-title",children:[(0,t.jsx)("strong",{children:e.title}),e.shortId?(0,t.jsx)("span",{children:e.shortId}):null]}),(0,t.jsx)("p",{children:e.culprit||e.project||"Sentry issue"})]}),(0,t.jsxs)("div",{className:"issue-pills",children:[(0,t.jsx)("span",{className:`pill ${E(e.status||h.report.status)}`,children:e.status||"unresolved"}),e.level?(0,t.jsx)("span",{className:`pill ${E(e.level)}`,children:e.level}):null]})]}),(0,t.jsxs)("div",{className:"issue-meta",children:[e.project?(0,t.jsx)("span",{children:e.project}):null,e.lastSeen?(0,t.jsxs)("span",{children:["Last ",A(e.lastSeen)]}):null,s?(0,t.jsx)("a",{href:s,children:"View"}):null]})]},e.id)})]})]}),(0,t.jsx)(I,{}),(0,t.jsxs)("footer",{children:[(0,t.jsxs)("span",{children:["Storage IndexedDB + localStorage · source ",m]}),(0,t.jsxs)("span",{children:["Status ",d.status||"unknown"," · updated ",A(T.updatedAt)]})]})]})}],31713)}]);

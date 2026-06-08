@@ -47,7 +47,7 @@ function emptyWorkStatus(): WorkStatus {
   return {
     status: 'pending',
     title: 'Waiting for work status',
-    message: 'Agents should log work status to https://thiennp.github.io/report/ using the agent prompt on that page.',
+    message: 'Agents should push dashboard snapshots to https://thiennp.github.io/report/ using the agent prompt on that page.',
     source: 'automation-report',
     updatedAt: now()
   };
@@ -331,6 +331,72 @@ export async function clearDashboard() {
       status: 'pending',
       payload: { clearedAt: now() }
     });
+    return {
+      snapshot: getDashboardSnapshot(),
+      event
+    };
+  });
+}
+
+export async function importDashboardSnapshot(input: DashboardSnapshot) {
+  return withStore((store) => {
+    store.workStatus = normalizeWorkStatus(input.workStatus as Record<string, unknown>);
+    store.report = redactSecrets({
+      ...input.report,
+      title: String(input.report?.title || 'Check24 Sentry Issues'),
+      message: String(input.report?.message || 'Waiting for the first Sentry refresh.'),
+      status: String(input.report?.status || 'pending'),
+      updatedAt: String(input.report?.updatedAt || now()),
+      issueCount: Array.isArray(input.report?.issues) ? input.report.issues.length : 0,
+      issues: normalizeIssues(input.report?.issues)
+    }) as CurrentReport;
+
+    store.automations = {};
+    for (const summary of input.automations || []) {
+      const automation = ensureAutomation(store, summary.automationId);
+      automation.state.latestStatus = summary.latestStatus || automation.state.latestStatus;
+      automation.state.lastUpdatedAt = summary.latestUpdateTime || automation.state.lastUpdatedAt;
+      if (summary.latestRunId) {
+        automation.state.activeRunId = summary.latestRunId;
+      }
+    }
+
+    const orderedEvents = [...(input.recentEvents || [])].sort((left, right) => {
+      return left.createdAt.localeCompare(right.createdAt);
+    });
+
+    for (const event of orderedEvents) {
+      const automation = ensureAutomation(store, event.automationId);
+      const run = ensureRun(automation, event.runId);
+      const alreadyStored = run.events.some((storedEvent) => storedEvent.id === event.id);
+      if (!alreadyStored) {
+        run.events.push(redactSecrets({
+          id: event.id,
+          title: event.title,
+          status: event.status || 'info',
+          message: event.message,
+          nextStep: event.nextStep,
+          agentName: event.agentName,
+          agentRole: event.agentRole,
+          stepNumber: event.stepNumber,
+          createdAt: event.createdAt
+        }) as ReportEvent);
+      }
+      run.status = event.status || run.status;
+      run.updatedAt = event.createdAt;
+      automation.state.activeRunId = event.runId;
+      automation.state.latestStatus = run.status;
+      automation.state.lastUpdatedAt = event.createdAt;
+    }
+
+    pruneRecentEvents(store);
+
+    const event = changed(store, {
+      type: 'dashboard.synced',
+      status: store.workStatus?.status,
+      payload: { source: 'client-cache', updatedAt: now() }
+    });
+
     return {
       snapshot: getDashboardSnapshot(),
       event

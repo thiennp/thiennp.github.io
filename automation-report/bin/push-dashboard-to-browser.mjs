@@ -1,34 +1,29 @@
 #!/usr/bin/env node
 import fs from 'node:fs';
-import http from 'node:http';
 import path from 'node:path';
 import { spawn } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 
 const pagesUrl = process.env.AUTOMATION_REPORT_PAGES_URL || 'https://thiennp.github.io/report/';
-const dashboardUrl = new URL(process.env.AUTOMATION_REPORT_DASHBOARD_URL || 'http://127.0.0.1:3120/api/dashboard');
 
-function fetchDashboard() {
-  return new Promise((resolve, reject) => {
-    const request = http.get(dashboardUrl, (response) => {
-      let body = '';
-      response.setEncoding('utf8');
-      response.on('data', (chunk) => {
-        body += chunk;
-      });
-      response.on('end', () => {
-        if (response.statusCode < 200 || response.statusCode >= 300) {
-          reject(new Error(`HTTP ${response.statusCode} ${body}`));
-          return;
-        }
-        resolve(body);
-      });
-    });
-    request.on('error', reject);
-  });
+function readSnapshotFromArgs() {
+  const fileFlagIndex = process.argv.indexOf('--file');
+  if (fileFlagIndex >= 0) {
+    const filePath = process.argv[fileFlagIndex + 1];
+    if (!filePath) {
+      throw new Error('Missing path after --file');
+    }
+    return fs.readFileSync(path.resolve(filePath), 'utf8');
+  }
+
+  if (!process.stdin.isTTY) {
+    return fs.readFileSync(0, 'utf8');
+  }
+
+  throw new Error('Provide --file <snapshot.json> or pipe snapshot JSON on stdin');
 }
 
-const snapshot = JSON.parse(await fetchDashboard());
+const snapshot = JSON.parse(readSnapshotFromArgs());
 const scriptPath = path.join(path.dirname(fileURLToPath(import.meta.url)), 'pages-ingest.js');
 const ingestScript = `(() => {
   const snapshot = ${JSON.stringify(snapshot)};

@@ -1,49 +1,42 @@
 # Automation Report
 
-API-first, local work-status dashboard for Codex automations and Cursor agents. Push what you are working on over HTTP or WebSocket. The browser UI subscribes to live updates and shows current work, recent automation events, and the latest Sentry report.
+Browser-first work-status dashboard for Codex automations and Cursor agents. The public UI at `https://thiennp.github.io/report/` stores dashboard snapshots in IndexedDB and localStorage. Agents push snapshots from the open report tab or via `bin/push-dashboard-to-browser.mjs`.
 
 ## Run
-
-Local live server:
-
-```sh
-npm install
-npm run build
-AUTOMATION_REPORT_PORT=3120 npm run start
-```
 
 GitHub Pages deploy at `https://thiennp.github.io/report/`:
 
 ```sh
-AUTOMATION_REPORT_PORT=3120 npm run start
+npm install
 npm run deploy:pages
 git add report/
-git commit -m "Publish automation report snapshot"
+git commit -m "Publish automation report UI"
 git push origin master
 ```
 
-`deploy:pages` syncs `report/dashboard.json` from the local API, then exports the static Next.js UI into the repo-root `report/` folder. GitHub Pages serves that folder from the site root, so the app is available at `/report/`.
+`deploy:pages` exports only the static Next.js UI into the repo-root `report/` folder. Dashboard data lives in the browser cache at `https://thiennp.github.io/report/` (IndexedDB primary, localStorage mirror). Agents push snapshots through `window.__AUTOMATION_REPORT__.pushDashboard()` or `bin/push-dashboard-to-browser.mjs`.
 
-Development mode:
-
-```sh
-npm run dev
-```
-
-Ensure server:
+Log work status from the CLI:
 
 ```sh
-./scripts/ensure-automation-report-server.sh
+node bin/send-work-status.mjs \
+  --status running \
+  --step 6 \
+  --phase cursor \
+  --title "Cursor fix" \
+  --pre PRE-4401 \
+  --inject \
+  "Cursor is applying /agent-fix-bug"
 ```
 
-Default endpoints:
+Optional local API server for development only:
 
-- UI: `http://127.0.0.1:3120/`
-- API: `http://127.0.0.1:3120/api`
-- Dashboard API: `http://127.0.0.1:3120/api/dashboard`
-- Work status API: `http://127.0.0.1:3120/api/work-status`
-- Current report API: `http://127.0.0.1:3120/api/report`
-- WebSocket: `ws://127.0.0.1:3120/ws`
+```sh
+npm run build
+AUTOMATION_REPORT_PORT=3120 npm run start
+```
+
+The GitHub Pages UI does not call this server.
 
 ## Environment
 

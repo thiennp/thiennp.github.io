@@ -2,21 +2,8 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import { MAX_RECENT_EVENTS } from '../lib/constants';
-import {
-  getDashboardUrl,
-  getHealthUrl,
-  getRuntimeMode,
-  getWebSocketUrl,
-  type RuntimeMode
-} from '../lib/clientRuntime';
-import {
-  clearDashboardClearedMark,
-  installDashboardIngest,
-  isDashboardCleared,
-  markDashboardCleared,
-  readDashboardCache,
-  writeDashboardCache
-} from '../lib/dashboardStorage';
+import { clearDashboardEverywhere, pushDashboardSnapshot, syncDashboard } from '../lib/dashboardSync';
+import { installDashboardIngest } from '../lib/dashboardStorage';
 import { createEmptyStoredDashboard } from '../lib/emptyDashboard';
 import UsageInstructions from './UsageInstructions';
 
@@ -144,87 +131,30 @@ function sentryUrl(issueId?: string) {
   return `https://check24-energie.sentry.io/issues/${issueId}/`;
 }
 
-async function fetchJson<T>(url: string): Promise<T> {
-  const response = await fetch(url, { cache: 'no-store' });
-  if (!response.ok) {
-    throw new Error(`${response.status} ${response.statusText}`);
-  }
-  return response.json();
-}
-
 export default function Home() {
-  const [runtimeMode, setRuntimeMode] = useState<RuntimeMode>('static');
   const [health, setHealth] = useState<Health>({});
   const [dashboard, setDashboard] = useState<DashboardSnapshot>(createEmptyDashboard());
-  const [wsState, setWsState] = useState('static');
-  const [lastWsEvent, setLastWsEvent] = useState('none');
   const [dataSource, setDataSource] = useState('loading');
   const [query, setQuery] = useState('');
   const [isClearing, setIsClearing] = useState(false);
 
   const applyDashboard = (dashboardData: DashboardSnapshot, source: string) => {
-    const nextDashboard = {
+    setDashboard({
       ...dashboardData,
       recentEvents: dashboardData.recentEvents.slice(0, MAX_RECENT_EVENTS)
-    };
-    setDashboard(nextDashboard);
+    });
     setDataSource(source);
-    if (getRuntimeMode() === 'static' && source !== 'cleared') {
-      writeDashboardCache(nextDashboard);
-    }
   };
 
-  const loadDashboard = async (mode = runtimeMode, force = false) => {
-    if (mode === 'static' && isDashboardCleared() && !force) {
-      const cached = readDashboardCache();
-      applyDashboard((cached ?? createEmptyDashboard()) as DashboardSnapshot, 'cleared');
-      setHealth({
-        status: 'github-pages-cleared',
-        storeVersion: 0,
-        websocket: { ready: false, clients: 0 }
-      });
-      return;
-    }
-
-    try {
-      const dashboardData = await fetchJson<DashboardSnapshot>(getDashboardUrl(mode));
-      if (mode === 'static') {
-        clearDashboardClearedMark();
-      }
-      applyDashboard(dashboardData, mode === 'live' ? 'live-api' : 'dashboard.json');
-
-      const healthUrl = getHealthUrl(mode);
-      if (healthUrl) {
-        const healthData = await fetchJson<Health>(healthUrl);
-        setHealth(healthData);
-        return;
-      }
-
-      setHealth({
-        status: 'github-pages',
-        storeVersion: 0,
-        websocket: { ready: false, clients: 0 }
-      });
-    } catch {
-      if (mode === 'static') {
-        const cached = readDashboardCache();
-        if (cached) {
-          applyDashboard(cached as DashboardSnapshot, 'localStorage');
-          setHealth({
-            status: 'github-pages-cache',
-            storeVersion: 0,
-            websocket: { ready: false, clients: 0 }
-          });
-        }
-      }
-    }
+  const loadDashboard = async (force = false) => {
+    const result = await syncDashboard(force);
+    applyDashboard(result.snapshot, result.source);
+    setHealth(result.health);
   };
 
   const clearDashboardView = async () => {
     const confirmed = window.confirm(
-      runtimeMode === 'live'
-        ? 'Clear the dashboard? This removes current work, activities, automations, and issues from the server.'
-        : 'Clear the dashboard in this browser? The published snapshot at dashboard.json is unchanged until you click Refresh.'
+      'Clear the dashboard? This removes current work, activities, automations, and issues from IndexedDB and localStorage in this browser.'
     );
     if (!confirmed) {
       return;
@@ -232,74 +162,38 @@ export default function Home() {
 
     setIsClearing(true);
     try {
-      if (runtimeMode === 'live') {
-        const response = await fetch('/api/dashboard', { method: 'DELETE' });
-        if (!response.ok) {
-          throw new Error(`${response.status} ${response.statusText}`);
-        }
-        await loadDashboard('live', true);
-        return;
-      }
-
-      markDashboardCleared();
-      applyDashboard(createEmptyDashboard(), 'cleared');
+      const result = await clearDashboardEverywhere();
+      applyDashboard(result.snapshot, 'cleared');
+      setHealth({ status: 'cleared-local', storeVersion: 0 });
     } catch {
-      window.alert('Could not clear the dashboard. On the live server, check that DELETE /api/dashboard is allowed.');
+      window.alert('Could not clear the dashboard cache in this browser.');
     } finally {
       setIsClearing(false);
     }
   };
 
   useEffect(() => {
-    const mode = getRuntimeMode();
-    setRuntimeMode(mode);
-    setWsState(mode === 'live' ? 'connecting' : 'snapshot');
-    loadDashboard(mode).catch(() => undefined);
+    loadDashboard().catch(() => undefined);
 
     return installDashboardIngest((snapshot) => {
-      applyDashboard(snapshot as DashboardSnapshot, 'ingest');
+      pushDashboardSnapshot(snapshot)
+        .then((result) => {
+          applyDashboard(result.snapshot, result.source);
+        })
+        .catch(() => undefined);
     });
   }, []);
 
   useEffect(() => {
-    if (runtimeMode !== 'live') {
-      const pollTimer = setInterval(() => {
-        loadDashboard('static').catch(() => undefined);
-      }, 60000);
-      return () => clearInterval(pollTimer);
-    }
-
-    let socket: WebSocket | null = null;
-    let closed = false;
-    let reconnectTimer: ReturnType<typeof setTimeout> | null = null;
-    const wsUrl = getWebSocketUrl('live');
-
-    const connect = () => {
-      if (!wsUrl) {
-        return;
+    const onStorage = (event: StorageEvent) => {
+      if (event.key === 'automation-report-dashboard-v1') {
+        loadDashboard().catch(() => undefined);
       }
-      socket = new WebSocket(wsUrl);
-      socket.onopen = () => setWsState('connected');
-      socket.onclose = () => {
-        setWsState('reconnecting');
-        if (!closed) {
-          reconnectTimer = setTimeout(connect, 1200);
-        }
-      };
-      socket.onerror = () => setWsState('error');
-      socket.onmessage = (message) => {
-        setLastWsEvent(message.data);
-        loadDashboard('live').catch(() => undefined);
-      };
     };
 
-    connect();
-    return () => {
-      closed = true;
-      if (reconnectTimer) clearTimeout(reconnectTimer);
-      socket?.close();
-    };
-  }, [runtimeMode]);
+    window.addEventListener('storage', onStorage);
+    return () => window.removeEventListener('storage', onStorage);
+  }, []);
 
   const work = dashboard.workStatus || emptyWorkStatus;
   const issues = dashboard.report.issues || [];
@@ -328,9 +222,7 @@ export default function Home() {
         </div>
         <div className="status-grid">
           <span className={`pill ${statusClass(work.status)}`}>{work.status || 'unknown'}</span>
-          <span className={`pill ${wsState === 'connected' ? 'good' : 'warn'}`}>
-            {runtimeMode === 'live' ? `WS ${wsState}` : 'GitHub Pages snapshot'}
-          </span>
+          <span className="pill neutral">browser cache</span>
           <span className={`pill ${statusClass(health.status)}`}>{health.status || 'health unknown'}</span>
         </div>
       </header>
@@ -387,14 +279,7 @@ export default function Home() {
           Filter Sentry issues
           <input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Project, title, culprit, status..." />
         </label>
-        <button
-          onClick={() => {
-            clearDashboardClearedMark();
-            loadDashboard(runtimeMode, true).catch(() => undefined);
-          }}
-        >
-          Refresh
-        </button>
+        <button onClick={() => loadDashboard(true).catch(() => undefined)}>Refresh</button>
         <button
           className="button-danger"
           disabled={isClearing}
@@ -497,16 +382,8 @@ export default function Home() {
       <UsageInstructions />
 
       <footer>
-        <span>
-          {runtimeMode === 'live'
-            ? `Store v${health.storeVersion ?? 0}: ${health.storePath || 'not loaded'}`
-            : `Data source: ${dataSource}`}
-        </span>
-        <span>
-          {runtimeMode === 'live'
-            ? `WS clients ${health.websocket?.clients ?? 0}; last ${lastWsEvent.slice(0, 140)}`
-            : `Snapshot updated ${formatDate(work.updatedAt)}`}
-        </span>
+        <span>Storage IndexedDB + localStorage · source {dataSource}</span>
+        <span>Status {health.status || 'unknown'} · updated {formatDate(work.updatedAt)}</span>
       </footer>
     </main>
   );
