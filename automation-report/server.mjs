@@ -30,6 +30,46 @@ globalThis.__AUTOMATION_REPORT_WS__ = {
   }
 };
 
+function mutationHeaders() {
+  const headers = { 'Content-Type': 'application/json' };
+  if (process.env.AUTOMATION_REPORT_TOKEN) {
+    headers['X-Automation-Report-Token'] = process.env.AUTOMATION_REPORT_TOKEN;
+  }
+  return headers;
+}
+
+async function handleSocketMessage(raw) {
+  let message;
+  try {
+    message = JSON.parse(String(raw));
+  } catch {
+    return;
+  }
+
+  const type = String(message.type || '').toLowerCase();
+  const payload = message.payload && typeof message.payload === 'object' ? message.payload : message;
+  const isWorkStatus =
+    type === 'work-status.update' ||
+    type === 'workflow-status.update' ||
+    type === 'work.status' ||
+    (payload.status && (payload.title || payload.message || payload.step || payload.phase));
+
+  if (!isWorkStatus) {
+    return;
+  }
+
+  const response = await fetch(`http://${hostname}:${port}/api/work-status`, {
+    method: 'POST',
+    headers: mutationHeaders(),
+    body: JSON.stringify(payload)
+  });
+
+  if (!response.ok) {
+    const body = await response.text();
+    console.error(`WebSocket work-status update failed: HTTP ${response.status} ${body}`);
+  }
+}
+
 wss.on('connection', (socket) => {
   socket.send(JSON.stringify({
     type: 'connection.ready',
@@ -37,6 +77,12 @@ wss.on('connection', (socket) => {
     createdAt: new Date().toISOString(),
     payload: { message: 'Automation Report WebSocket connected' }
   }));
+
+  socket.on('message', (raw) => {
+    handleSocketMessage(raw).catch((error) => {
+      console.error('WebSocket message handler failed', error);
+    });
+  });
 });
 
 server.on('upgrade', (request, socket, head) => {

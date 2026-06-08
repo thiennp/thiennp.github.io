@@ -131,6 +131,75 @@ h2 {
   border-color: #b7d6eb;
 }
 
+.work-hero {
+  display: grid;
+  gap: 16px;
+  margin-bottom: 16px;
+  padding: 18px;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+}
+
+.work-hero_main {
+  display: grid;
+  gap: 10px;
+}
+
+.work-hero_meta,
+.work-hero_links,
+.timeline-item_meta,
+.automation-card_meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.work-hero_target {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 700;
+  overflow-wrap: anywhere;
+}
+
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.timeline,
+.automation-list {
+  display: grid;
+  gap: 10px;
+}
+
+.timeline-item,
+.automation-card {
+  display: grid;
+  gap: 8px;
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--panel-soft);
+}
+
+.timeline-item_head,
+.automation-card_head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.timeline-item p,
+.automation-card p {
+  margin: 0;
+  color: var(--muted);
+  overflow-wrap: anywhere;
+}
+
 .metrics {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -293,7 +362,10 @@ footer {
   .topbar,
   footer,
   .panel-head,
-  .issue-main {
+  .issue-main,
+  .dashboard-grid,
+  .timeline-item_head,
+  .automation-card_head {
     display: grid;
   }
 
@@ -301,7 +373,8 @@ footer {
     justify-content: flex-start;
   }
 
-  .metrics {
+  .metrics,
+  .dashboard-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }

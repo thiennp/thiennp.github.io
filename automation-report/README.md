@@ -1,14 +1,28 @@
 # Automation Report
 
-API-first, local Automation Report app for Codex automations. Agents write and read report state through HTTP APIs. The browser UI subscribes to WebSocket updates and refreshes live after each persisted mutation.
+API-first, local work-status dashboard for Codex automations and Cursor agents. Push what you are working on over HTTP or WebSocket. The browser UI subscribes to live updates and shows current work, recent automation events, and the latest Sentry report.
 
 ## Run
+
+Local live server:
 
 ```sh
 npm install
 npm run build
 AUTOMATION_REPORT_PORT=3120 npm run start
 ```
+
+GitHub Pages deploy at `https://thiennp.github.io/report/`:
+
+```sh
+AUTOMATION_REPORT_PORT=3120 npm run start
+npm run deploy:pages
+git add report/
+git commit -m "Publish automation report snapshot"
+git push origin master
+```
+
+`deploy:pages` syncs `report/dashboard.json` from the local API, then exports the static Next.js UI into the repo-root `report/` folder. GitHub Pages serves that folder from the site root, so the app is available at `/report/`.
 
 Development mode:
 
@@ -26,6 +40,8 @@ Default endpoints:
 
 - UI: `http://127.0.0.1:3120/`
 - API: `http://127.0.0.1:3120/api`
+- Dashboard API: `http://127.0.0.1:3120/api/dashboard`
+- Work status API: `http://127.0.0.1:3120/api/work-status`
 - Current report API: `http://127.0.0.1:3120/api/report`
 - WebSocket: `ws://127.0.0.1:3120/ws`
 
@@ -42,6 +58,35 @@ Health:
 
 ```sh
 curl -fsS http://127.0.0.1:3120/api/health | jq
+```
+
+Update what you are working on:
+
+```sh
+node bin/send-work-status.mjs \
+  --status running \
+  --step 6 \
+  --phase cursor \
+  --title "Cursor fix" \
+  --pre PRE-4401 \
+  "Cursor is applying /agent-fix-bug"
+```
+
+Or with curl:
+
+```sh
+curl -fsS -X POST http://127.0.0.1:3120/api/work-status \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "status": "running",
+    "step": "6",
+    "phase": "cursor",
+    "title": "Cursor fix",
+    "message": "Cursor is applying /agent-fix-bug",
+    "pre": "PRE-4401",
+    "automationId": "sentry-triage",
+    "runId": "20260608T120000Z"
+  }' | jq
 ```
 
 Replace the current Sentry report:
@@ -154,11 +199,36 @@ curl -fsS 'http://127.0.0.1:3120/api/search?q=PRE-4300' | jq
 
 ## WebSocket Example
 
+Subscribe to live updates:
+
 ```sh
 node - <<'NODE'
 const WebSocket = require('ws');
 const ws = new WebSocket('ws://127.0.0.1:3120/ws');
 ws.on('open', () => console.log('connected'));
+ws.on('message', (message) => console.log(String(message)));
+NODE
+```
+
+Push work status over WebSocket:
+
+```sh
+node - <<'NODE'
+const WebSocket = require('ws');
+const ws = new WebSocket('ws://127.0.0.1:3120/ws');
+ws.on('open', () => {
+  ws.send(JSON.stringify({
+    type: 'work-status.update',
+    payload: {
+      status: 'running',
+      step: '2.1',
+      phase: 'review',
+      title: 'PR review',
+      message: 'Reviewing Bitbucket comments',
+      pre: 'PRE-4309'
+    }
+  }));
+});
 ws.on('message', (message) => console.log(String(message)));
 NODE
 ```

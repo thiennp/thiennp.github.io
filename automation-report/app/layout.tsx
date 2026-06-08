@@ -2,8 +2,8 @@ import type { Metadata } from 'next';
 import './globals.css';
 
 export const metadata: Metadata = {
-  title: 'Automation Report',
-  description: 'API-first automation reporting with live WebSocket updates'
+  title: 'Work Status Dashboard',
+  description: 'Live dashboard for current work, automation activity, and Sentry issues'
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

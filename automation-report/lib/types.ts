@@ -99,10 +99,46 @@ export interface AutomationRecord {
   runs: Record<string, ReportRun>;
 }
 
+export interface WorkStatus {
+  status: Status;
+  step?: string;
+  phase?: string;
+  title: string;
+  message: string;
+  pre?: string;
+  sentryKey?: string;
+  sentryIssueId?: string;
+  repo?: string;
+  pr?: string;
+  url?: string;
+  source?: string;
+  automationId?: string;
+  runId?: string;
+  agentName?: string;
+  agentRole?: string;
+  nextStep?: string;
+  updatedAt: string;
+  [key: string]: unknown;
+}
+
+export interface DashboardSnapshot {
+  workStatus: WorkStatus;
+  automations: Array<{
+    automationId: string;
+    latestRunId?: string;
+    latestStatus?: Status;
+    latestUpdateTime?: string;
+    activeBlockerCount: number;
+  }>;
+  recentEvents: Array<ReportEvent & { automationId: string; runId: string }>;
+  report: CurrentReport;
+}
+
 export interface ReportStore {
   version: number;
   automations: Record<string, AutomationRecord>;
   report?: CurrentReport;
+  workStatus?: WorkStatus;
 }
 
 export interface WsMessage {

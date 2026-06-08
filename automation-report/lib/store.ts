@@ -7,11 +7,13 @@ import {
   AutomationState,
   CurrentReport,
   CurrentReportIssue,
+  DashboardSnapshot,
   ReportEvent,
   ReportItem,
   ReportRun,
   ReportStore,
   Status,
+  WorkStatus,
   WsMessage
 } from './types';
 
@@ -36,6 +38,52 @@ function emptyReport(): CurrentReport {
     issueCount: 0,
     issues: []
   };
+}
+
+function emptyWorkStatus(): WorkStatus {
+  return {
+    status: 'pending',
+    title: 'Waiting for work status',
+    message: 'Send a workflow update over HTTP or WebSocket to show what you are working on.',
+    source: 'automation-report',
+    updatedAt: now()
+  };
+}
+
+function cleanText(value: unknown, maxLength = 240) {
+  if (value === null || value === undefined) {
+    return undefined;
+  }
+  const text = String(value).replace(/\s+/g, ' ').trim();
+  if (!text) {
+    return undefined;
+  }
+  return text.slice(0, maxLength);
+}
+
+function normalizeWorkStatus(input: Record<string, unknown>): WorkStatus {
+  const pre = cleanText(input.pre || input.preKey || input.jiraKey, 24);
+  const normalizedPre = pre && /^PRE-\d+$/i.test(pre) ? pre.toUpperCase() : pre;
+  return redactSecrets({
+    status: cleanText(input.status, 32) || 'info',
+    step: cleanText(input.step || input.stepNumber, 32),
+    phase: cleanText(input.phase || input.stage || input.currentPhase, 80),
+    title: cleanText(input.title || input.stepTitle, 160) || 'Work update',
+    message: cleanText(input.message || input.text || input.body, 600) || 'Status updated.',
+    pre: normalizedPre,
+    sentryKey: cleanText(input.sentryKey || input.sentry || input.issueKey, 80),
+    sentryIssueId: cleanText(input.sentryIssueId || input.issueId || input.groupId, 80),
+    repo: cleanText(input.repo || input.repository, 80),
+    pr: cleanText(input.pr || input.prNumber || input.pullRequest, 32),
+    url: cleanText(input.url || input.evidenceUrl, 600),
+    source: cleanText(input.source, 120) || 'automation-report',
+    automationId: cleanText(input.automationId, 120),
+    runId: cleanText(input.runId, 120),
+    agentName: cleanText(input.agentName, 120),
+    agentRole: cleanText(input.agentRole, 120),
+    nextStep: cleanText(input.nextStep, 80),
+    updatedAt: cleanText(input.updatedAt, 80) || now()
+  }) as WorkStatus;
 }
 
 function ensureDataDir() {
@@ -181,6 +229,54 @@ function normalizeIssues(input: unknown) {
 export function getReport() {
   const store = readStoreUnsafe();
   return store.report || emptyReport();
+}
+
+export function getWorkStatus() {
+  const store = readStoreUnsafe();
+  return store.workStatus || emptyWorkStatus();
+}
+
+export async function replaceWorkStatus(input: Record<string, unknown>) {
+  return withStore((store) => {
+    const workStatus = normalizeWorkStatus(input);
+    store.workStatus = workStatus;
+    const event = changed(store, {
+      type: 'work-status.updated',
+      automationId: workStatus.automationId,
+      runId: workStatus.runId,
+      status: workStatus.status,
+      payload: workStatus
+    });
+    return { workStatus, event };
+  });
+}
+
+export function getRecentEvents(limit = 20) {
+  const store = readStoreUnsafe();
+  const events: Array<ReportEvent & { automationId: string; runId: string }> = [];
+  for (const automation of Object.values(store.automations)) {
+    for (const run of Object.values(automation.runs)) {
+      for (const reportEvent of run.events) {
+        events.push({
+          ...reportEvent,
+          automationId: automation.automationId,
+          runId: run.runId
+        });
+      }
+    }
+  }
+  return events
+    .sort((left, right) => right.createdAt.localeCompare(left.createdAt))
+    .slice(0, limit);
+}
+
+export function getDashboardSnapshot(): DashboardSnapshot {
+  return {
+    workStatus: getWorkStatus(),
+    automations: listAutomations(),
+    recentEvents: getRecentEvents(),
+    report: getReport()
+  };
 }
 
 export async function replaceReport(input: Record<string, unknown>) {
