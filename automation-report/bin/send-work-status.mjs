@@ -5,8 +5,6 @@ import { spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import { createEmptyDashboardSnapshot } from '../scripts/empty-dashboard-snapshot.mjs';
 import { mergeWorkStatusIntoSnapshot } from '../scripts/merge-work-status-snapshot.mjs';
-import { publishWorkStatus } from './publish-automation-api.mjs';
-
 const options = {
   status: '',
   step: '',
@@ -29,7 +27,7 @@ const messageParts = [];
 
 for (let index = 2; index < process.argv.length; index += 1) {
   const argument = process.argv[index];
-  if (argument === '--inject' || argument === '--publish') {
+  if (argument === '--inject') {
     continue;
   }
   const assign = argument.match(/^--([^=]+)=(.*)$/);
@@ -59,7 +57,7 @@ if (!options.message && messageParts.length) {
 }
 
 if (!options.status || !options.message) {
-  console.error('Usage: node send-work-status.mjs --publish --status running --step 2.3 --phase cursor --title "Cursor fix" --pre PRE-4309 "Applying the bug fix"');
+  console.error('Usage: node send-work-status.mjs --status running --step 2.3 --phase cursor --title "Cursor fix" --pre PRE-4309 "Applying the bug fix"');
   console.error('Optional: --file snapshot.json --out snapshot.json --inject');
   process.exit(1);
 }
@@ -94,7 +92,6 @@ const snapshot = mergeWorkStatusIntoSnapshot(base, workStatus);
 const outFlagIndex = process.argv.indexOf('--out');
 const outPath = outFlagIndex >= 0 ? process.argv[outFlagIndex + 1] : '';
 const shouldInject = process.argv.includes('--inject');
-const shouldPublish = process.argv.includes('--publish');
 const serialized = `${JSON.stringify(snapshot, null, 2)}\n`;
 const targetPath = outPath ? path.resolve(outPath) : path.join(process.cwd(), 'automation-report-snapshot.json');
 
@@ -105,11 +102,6 @@ if (outPath || shouldInject) {
   }
 } else if (!process.stdin.isTTY || process.argv.includes('--file')) {
   process.stdout.write(serialized);
-}
-
-if (shouldPublish) {
-  await publishWorkStatus(workStatus);
-  console.error('Published work status to https://thiennp.github.io/api/automation/dashboard.json');
 }
 
 if (shouldInject) {

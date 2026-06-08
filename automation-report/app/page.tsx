@@ -5,6 +5,8 @@ import { MAX_RECENT_EVENTS } from '../lib/constants';
 import { clearDashboardEverywhere, pushDashboardSnapshot, syncDashboard } from '../lib/dashboardSync';
 import { installDashboardIngest } from '../lib/dashboardStorage';
 import { createEmptyStoredDashboard } from '../lib/emptyDashboard';
+import type { DashboardSnapshot } from '../lib/types';
+import AgentUpdatePanel from './AgentUpdatePanel';
 import UsageInstructions from './UsageInstructions';
 
 type Status = string;
@@ -74,13 +76,6 @@ type AutomationSummary = {
   activeBlockerCount: number;
 };
 
-type DashboardSnapshot = {
-  workStatus: WorkStatus;
-  automations: AutomationSummary[];
-  recentEvents: ReportEvent[];
-  report: CurrentReport;
-};
-
 type Health = {
   status?: string;
   storePath?: string;
@@ -91,13 +86,13 @@ type Health = {
 const emptyWorkStatus: WorkStatus = {
   status: 'pending',
   title: 'Waiting for work status',
-  message: 'Agents should POST work status to https://thiennp.github.io/api/automation/work-status',
+  message: 'Open this page and click Log work status to record agent activity.',
   source: 'automation-report',
   updatedAt: new Date().toISOString()
 };
 
 function createEmptyDashboard(): DashboardSnapshot {
-  return createEmptyStoredDashboard() as DashboardSnapshot;
+  return createEmptyStoredDashboard() as unknown as DashboardSnapshot;
 }
 
 function statusClass(status?: string) {
@@ -146,15 +141,15 @@ export default function Home() {
     setDataSource(source);
   };
 
-  const loadDashboard = async (force = false) => {
-    const result = await syncDashboard(force);
+  const loadDashboard = (force = false) => {
+    const result = syncDashboard(force);
     applyDashboard(result.snapshot, result.source);
     setHealth(result.health);
   };
 
   const clearDashboardView = async () => {
     const confirmed = window.confirm(
-      'Clear the dashboard? This removes current work, activities, automations, and issues from IndexedDB and localStorage in this browser.'
+      'Clear the dashboard? This removes current work, activities, automations, and issues from localStorage in this browser.'
     );
     if (!confirmed) {
       return;
@@ -173,33 +168,23 @@ export default function Home() {
   };
 
   useEffect(() => {
-    loadDashboard().catch(() => undefined);
+    loadDashboard();
 
     return installDashboardIngest((snapshot) => {
-      pushDashboardSnapshot(snapshot)
-        .then((result) => {
-          applyDashboard(result.snapshot, result.source);
-        })
-        .catch(() => undefined);
+      const result = pushDashboardSnapshot(snapshot);
+      applyDashboard(result.snapshot, result.source);
     });
   }, []);
 
   useEffect(() => {
     const onStorage = (event: StorageEvent) => {
       if (event.key === 'automation-report-dashboard-v1') {
-        loadDashboard().catch(() => undefined);
+        loadDashboard();
       }
     };
 
-    const pollTimer = setInterval(() => {
-      loadDashboard().catch(() => undefined);
-    }, 30000);
-
     window.addEventListener('storage', onStorage);
-    return () => {
-      clearInterval(pollTimer);
-      window.removeEventListener('storage', onStorage);
-    };
+    return () => window.removeEventListener('storage', onStorage);
   }, []);
 
   const work = dashboard.workStatus || emptyWorkStatus;
@@ -229,7 +214,7 @@ export default function Home() {
         </div>
         <div className="status-grid">
           <span className={`pill ${statusClass(work.status)}`}>{work.status || 'unknown'}</span>
-          <span className="pill neutral">browser cache</span>
+          <span className="pill neutral">localStorage</span>
           <span className={`pill ${statusClass(health.status)}`}>{health.status || 'health unknown'}</span>
         </div>
       </header>
@@ -281,12 +266,20 @@ export default function Home() {
         </div>
       </section>
 
+      <AgentUpdatePanel
+        dashboard={dashboard}
+        onUpdated={(snapshot, source) => {
+          applyDashboard(snapshot, source);
+          setHealth({ status: 'localStorage', storeVersion: 0 });
+        }}
+      />
+
       <section className="toolbar">
         <label>
           Filter Sentry issues
           <input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Project, title, culprit, status..." />
         </label>
-        <button onClick={() => loadDashboard(true).catch(() => undefined)}>Refresh</button>
+        <button onClick={() => loadDashboard(true)}>Refresh</button>
         <button
           className="button-danger"
           disabled={isClearing}
@@ -389,7 +382,7 @@ export default function Home() {
       <UsageInstructions />
 
       <footer>
-        <span>API https://thiennp.github.io/api/automation/dashboard.json · source {dataSource}</span>
+        <span>Storage localStorage · source {dataSource}</span>
         <span>Status {health.status || 'unknown'} · updated {formatDate(work.updatedAt)}</span>
       </footer>
     </main>

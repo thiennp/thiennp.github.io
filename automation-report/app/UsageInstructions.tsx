@@ -1,84 +1,100 @@
-import {
-  AUTOMATION_DASHBOARD_URL,
-  AUTOMATION_REPOSITORY_DISPATCH_URL,
-  AUTOMATION_WORK_STATUS_URL
-} from '../lib/publicApi';
-
 const REPORT_URL = 'https://thiennp.github.io/report/';
 
 const agentLoggingPrompt = `AUTOMATION REPORT — AGENT LOGGING PROMPT
 
-Dashboard UI: ${REPORT_URL}
-Read API: GET ${AUTOMATION_DASHBOARD_URL}
-Work status route: ${AUTOMATION_WORK_STATUS_URL}
-Write API: POST ${AUTOMATION_REPOSITORY_DISPATCH_URL}
+Dashboard: ${REPORT_URL}
+Storage: localStorage in the browser that has ${REPORT_URL} open
 
-You are an automation agent (Codex, Cursor, or similar). Log every meaningful workflow step with an HTTP request. The report UI polls ${AUTOMATION_DASHBOARD_URL} and mirrors it into browser storage.
+You are an automation agent (Codex, Cursor, or similar). Log every meaningful workflow step from the report page in the browser. No GitHub token, no server API, and no terminal console are required when you can use the page UI.
 
 WHEN TO LOG
-- At run start, each step transition, blocker, success, and terminal state.
-- After Jira/PR/Sentry actions that change current work.
-- When status changes: running, success, warning, blocked, pending.
+- Run start, each step transition, blocker, success, and terminal state
+- After Jira, PR, or Sentry actions that change current work
+- Whenever status changes: running, success, warning, blocked, pending, error, info
 
-PREFERRED — CLI PUBLISH
-node automation-report/bin/send-work-status.mjs \\
-  --publish \\
-  --status running \\
-  --step 2.1 \\
-  --phase cursor \\
-  --title "Short headline of current work" \\
-  --automationId my-automation-id \\
-  --runId 20260608T120000Z \\
-  --agentName Codex \\
-  "One-line message describing what you are doing right now."
+PREFERRED — LOG FROM THE UI
+1. Open ${REPORT_URL} in the browser.
+2. In the "Agent update" section, click "Log work status".
+3. Choose "Work status form".
+4. Fill the form:
+   - status: running | success | warning | blocked | pending | error | info
+   - step: current step id, e.g. 2.1
+   - phase: cursor | codex | sentry | jira | verify
+   - title: short headline of current work
+   - message: one-line description of what you are doing right now
+   - pre: Jira key when relevant, e.g. PRE-4401
+   - automationId: stable automation name
+   - runId: current run id or timestamp
+   - agent: Codex | Cursor | other agent name
+   - next step: upcoming step id
+5. Click "Save to report".
 
-Requires GITHUB_TOKEN or AUTOMATION_REPORT_GITHUB_TOKEN with repo scope.
+If you control the browser, perform those clicks and field fills directly instead of asking the user to paste console code.
 
-HTTP — POST WORK STATUS
-curl -X POST '${AUTOMATION_REPOSITORY_DISPATCH_URL}' \\
-  -H 'Accept: application/vnd.github+json' \\
-  -H 'Authorization: Bearer $GITHUB_TOKEN' \\
-  -H 'Content-Type: application/json' \\
-  -d '{
-    "event_type": "automation-work-status",
-    "client_payload": {
-      "status": "running",
-      "step": "2.1",
-      "phase": "cursor",
-      "title": "Short headline of current work",
-      "message": "One-line message describing what you are doing right now.",
-      "pre": "PRE-4401",
-      "automationId": "my-automation-id",
-      "runId": "20260608T120000Z",
-      "agentName": "Codex",
-      "nextStep": "2.2"
-    }
-  }'
+ALTERNATIVE — PASTE FULL SNAPSHOT IN THE UI
+1. Open ${REPORT_URL}.
+2. Click "Log work status".
+3. Choose "Paste full snapshot".
+4. Paste complete dashboard JSON.
+5. Click "Save snapshot".
 
-After ingest, the published snapshot is served from ${AUTOMATION_DASHBOARD_URL}.
+ALTERNATIVE — BROWSER HOOK
+With ${REPORT_URL} open, you may call:
+window.__AUTOMATION_REPORT__.pushDashboard({
+  workStatus: {
+    status: "running",
+    step: "2.1",
+    phase: "cursor",
+    title: "Short headline of current work",
+    message: "One-line message describing what you are doing right now.",
+    pre: "PRE-4401",
+    automationId: "my-automation-id",
+    runId: "20260608T120000Z",
+    agentName: "Codex",
+    nextStep: "2.2",
+    updatedAt: new Date().toISOString(),
+    source: "automation-report"
+  },
+  automations: [{
+    automationId: "my-automation-id",
+    latestRunId: "20260608T120000Z",
+    latestStatus: "running",
+    latestUpdateTime: new Date().toISOString(),
+    activeBlockerCount: 0
+  }],
+  recentEvents: [{
+    id: "evt-1",
+    title: "Step title",
+    status: "running",
+    message: "What happened in this step.",
+    stepNumber: "2.1",
+    nextStep: "2.2",
+    agentName: "Codex",
+    createdAt: new Date().toISOString(),
+    automationId: "my-automation-id",
+    runId: "20260608T120000Z"
+  }],
+  report: {
+    title: "Check24 Sentry Issues",
+    message: "Waiting for the first Sentry refresh.",
+    status: "pending",
+    updatedAt: new Date().toISOString(),
+    issueCount: 0,
+    issues: []
+  }
+});
 
-HTTP — REPLACE FULL DASHBOARD
-curl -X POST '${AUTOMATION_REPOSITORY_DISPATCH_URL}' \\
-  -H 'Accept: application/vnd.github+json' \\
-  -H 'Authorization: Bearer $GITHUB_TOKEN' \\
-  -H 'Content-Type: application/json' \\
-  -d '{
-    "event_type": "automation-dashboard",
-    "client_payload": {
-      "snapshot": {
-        "workStatus": { "status": "running", "title": "...", "message": "...", "updatedAt": "2026-06-08T12:00:00.000Z" },
-        "automations": [],
-        "recentEvents": [],
-        "report": { "title": "Check24 Sentry Issues", "message": "...", "status": "pending", "updatedAt": "2026-06-08T12:00:00.000Z", "issueCount": 0, "issues": [] }
-      }
-    }
-  }'
+SYNC RULES
+- Data is stored only in this browser profile's localStorage.
+- "Clear report" wipes localStorage for this browser only.
+- Activity history is capped at 200 events.
+- "Refresh" reloads from localStorage.
 
 RULES
 - Use real status values; mark blockers as blocked with an actionable message.
 - Include PRE-#### when tied to Jira.
-- Activity history is capped at 200 events.
-- Every full snapshot must include workStatus, automations, recentEvents, and report.`;
+- Every full snapshot must include workStatus, automations, recentEvents, and report.
+- Prefer the UI button flow over console hooks when browser automation is available.`;
 
 export default function UsageInstructions() {
   return (
@@ -90,8 +106,7 @@ export default function UsageInstructions() {
         </span>
       </div>
       <p className="muted instructions_lead">
-        Copy this prompt into Codex automations or Cursor rules. Agents publish work status with HTTP POST requests; the UI reads{' '}
-        {AUTOMATION_DASHBOARD_URL}.
+        Copy this prompt into Codex automations or Cursor rules. Agents should open {REPORT_URL}, click Log work status, and save updates to localStorage from the page UI.
       </p>
       <pre className="instructions_code instructions_prompt">
         <code>{agentLoggingPrompt}</code>

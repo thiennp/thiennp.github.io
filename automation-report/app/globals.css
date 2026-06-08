@@ -286,6 +286,58 @@ button.button-danger:disabled {
   opacity: 0.7;
 }
 
+button.button-primary {
+  background: var(--blue);
+  border-color: var(--blue);
+  color: #fff;
+}
+
+textarea,
+select {
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  color: var(--ink);
+  background: #fff;
+  font: inherit;
+  padding: 7px 10px;
+}
+
+.agent-update_lead {
+  margin: 0 0 12px;
+}
+
+.agent-update_body {
+  display: grid;
+  gap: 12px;
+}
+
+.agent-update_modes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.agent-update_form,
+.agent-update_json {
+  display: grid;
+  gap: 10px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.agent-update_full {
+  grid-column: 1 / -1;
+}
+
+.agent-update_submit {
+  grid-column: 1 / -1;
+  justify-self: start;
+}
+
+.agent-update_error {
+  color: var(--red);
+  margin: 0;
+}
+
 .panel {
   min-width: 0;
   padding: 16px;

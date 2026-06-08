@@ -1,6 +1,6 @@
 # Automation Report
 
-Browser-first work-status dashboard for Codex automations and Cursor agents. The public UI at `https://thiennp.github.io/report/` reads `https://thiennp.github.io/api/automation/dashboard.json`. Agents publish updates with HTTP requests to the automation API (`bin/send-work-status.mjs --publish` or repository dispatch).
+Browser-first work-status dashboard for Codex automations and Cursor agents. The public UI at `https://thiennp.github.io/report/` stores data in the browser's localStorage. Agents update the report from the page using the Log work status button or `window.__AUTOMATION_REPORT__.pushDashboard()`.
 
 ## Run
 
@@ -14,19 +14,24 @@ git commit -m "Publish automation report UI"
 git push origin master
 ```
 
-`deploy:pages` exports only the static Next.js UI into the repo-root `report/` folder. Dashboard data is published to `api/automation/dashboard.json` and mirrored into browser storage on `https://thiennp.github.io/report/`.
+`deploy:pages` exports only the static Next.js UI into the repo-root `report/` folder. Dashboard data lives in localStorage on `https://thiennp.github.io/report/`.
 
-Log work status from the CLI:
+Log work status from the open report page:
+
+1. Open `https://thiennp.github.io/report/`
+2. Click **Log work status**
+3. Submit the form
+
+Optional CLI helper to build a snapshot JSON file:
 
 ```sh
-export GITHUB_TOKEN=...
 node bin/send-work-status.mjs \
-  --publish \
   --status running \
   --step 6 \
   --phase cursor \
   --title "Cursor fix" \
   --pre PRE-4401 \
+  --out /tmp/automation-report-snapshot.json \
   "Cursor is applying /agent-fix-bug"
 ```
 

@@ -4,7 +4,7 @@ export function createEmptyStoredDashboard() {
     workStatus: {
       status: 'pending',
       title: 'Waiting for work status',
-      message: 'Agents should POST work status to https://thiennp.github.io/api/automation/work-status',
+      message: 'Open this page and click Log work status to record agent activity.',
       source: 'automation-report',
       updatedAt
     },
