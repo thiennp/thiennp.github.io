@@ -10,35 +10,13 @@ The public site navigation includes an `Automations` link to `codex-automations/
 
 Every automation should log meaningful workflow steps to the Automation Report dashboard at the start of a run or heartbeat, on step transitions, after Jira/PR/Sentry actions that change current work, when blocked, and at the final state.
 
-The public dashboard is <https://thiennp.github.io/report/> and the published snapshot is <https://thiennp.github.io/report/dashboard.json>. Automations do not write to GitHub Pages directly; they write through the local Automation Report API and publish the snapshot only when the public dashboard should change.
+Dashboard: <https://thiennp.github.io/report/>
 
-At the start of each automation, ensure the local report server is available:
+Storage: `localStorage` in the browser profile that has the dashboard open. No GitHub token or server API is required.
 
-```bash
-cd automation-report && ./scripts/ensure-automation-report-server.sh
-```
+Preferred logging flow: open the dashboard, scroll to the bottom `Log work status` field, paste a work-status JSON object or full dashboard snapshot, then click Submit or press Enter. When browser automation is available, type or paste directly into that bottom field. As an alternative with the dashboard open, call `window.__AUTOMATION_REPORT__.pushDashboard(...)` with the full snapshot object.
 
-Preferred current-work update:
-
-```bash
-node bin/send-work-status.mjs \
-  --status running \
-  --step "2.1" \
-  --phase cursor \
-  --title "Short headline of current work" \
-  --pre PRE-4401 \
-  --automationId "my-automation-id" \
-  --runId "20260608T120000Z" \
-  --agentName "Codex" \
-  --nextStep "2.2" \
-  "One-line message describing what you are doing right now."
-```
-
-Local endpoints:
-
-- HTTP work status: `http://127.0.0.1:3120/api/work-status`
-- WebSocket ingest: `ws://127.0.0.1:3120/ws`
-- Dashboard read/clear: `http://127.0.0.1:3120/api/dashboard`
+Use real status values: `running`, `success`, `warning`, `blocked`, `pending`, `error`, and `info`. Mark blockers as `blocked` with an actionable message, and include `PRE-####` when tied to Jira. `Clear report` wipes only this browser profile's localStorage, and activity history is capped at 200 events.
 
 ## Automations
 

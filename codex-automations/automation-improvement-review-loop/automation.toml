@@ -61,83 +61,43 @@ If there is no pending explicit automation-change request in this thread, do not
 
 AUTOMATION REPORT — AGENT LOGGING PROMPT
 
-Public dashboard: https://thiennp.github.io/report/
-Published snapshot: https://thiennp.github.io/report/dashboard.json
+Dashboard: https://thiennp.github.io/report/
+Storage: localStorage in the browser that has https://thiennp.github.io/report/ open
 
-You are an automation agent (Codex, Cursor, or similar). Log every meaningful workflow step so this dashboard shows what you are doing. Humans read https://thiennp.github.io/report/; you write through the local Automation Report API, then publish when the public snapshot should change.
-
-This Automation Report contract supersedes older Agent Report, agent-report, localhost:3100, and ws://localhost:3100/stream reporting instructions when they conflict. Keep existing domain workflow requirements unchanged.
+You are an automation agent (Codex, Cursor, or similar). Log workflow steps from the report page. No GitHub token or server API is required.
 
 WHEN TO LOG
-- At run start, each step transition, blocker, success, and terminal state.
-- After Jira/PR/Sentry actions that change current work.
-- When status changes: running, success, warning, blocked, pending.
+- Run start, each step transition, blocker, success, and terminal state
+- After Jira, PR, or Sentry actions that change current work
+- Whenever status changes: running, success, warning, blocked, pending, error, info
 
-BEFORE WRITING
-1. Ensure the local server is up:
-   cd automation-report && ./scripts/ensure-automation-report-server.sh
-2. Local write endpoints (not exposed on GitHub Pages):
-   - HTTP work status: http://127.0.0.1:3120/api/work-status
-   - WebSocket ingest: ws://127.0.0.1:3120/ws
-   - Dashboard read/clear: http://127.0.0.1:3120/api/dashboard
+PREFERRED — LOG WORK STATUS INPUT AT PAGE BOTTOM
+1. Open https://thiennp.github.io/report/ in the browser.
+2. Scroll to the bottom "Log work status" field (always visible).
+3. Paste JSON into the input.
+4. Click Submit or press Enter.
 
-PREFERRED — LOG CURRENT WORK (run each step)
-node bin/send-work-status.mjs \
-  --status running \
-  --step "2.1" \
-  --phase cursor \
-  --title "Short headline of current work" \
-  --pre PRE-4401 \
-  --automationId "my-automation-id" \
-  --runId "20260608T120000Z" \
-  --agentName "Codex" \
-  --nextStep "2.2" \
-  "One-line message describing what you are doing right now."
+Send either a work-status object:
+{"status":"running","step":"2.1","phase":"cursor","title":"Fix bug","message":"Applying patch","pre":"PRE-4401","automationId":"my-automation-id","runId":"20260608T120000Z","agentName":"Codex","nextStep":"2.2"}
 
-ALTERNATIVE — WEBSOCKET MESSAGE
-Send to ws://127.0.0.1:3120/ws after connect:
-{
-  "type": "work-status.update",
-  "payload": {
-    "status": "running",
-    "step": "2.1",
-    "phase": "cursor",
-    "title": "Short headline of current work",
-    "message": "One-line message describing what you are doing right now.",
-    "pre": "PRE-4401",
-    "automationId": "my-automation-id",
-    "runId": "20260608T120000Z",
-    "agentName": "Codex",
-    "nextStep": "2.2"
-  }
-}
+Or a full dashboard snapshot:
+{"workStatus":{"status":"running","title":"Fix bug","message":"Applying patch","updatedAt":"2026-06-08T12:00:00.000Z","source":"automation-report"},"automations":[{"automationId":"my-automation-id","latestRunId":"20260608T120000Z","latestStatus":"running","latestUpdateTime":"2026-06-08T12:00:00.000Z","activeBlockerCount":0}],"recentEvents":[{"id":"evt-1","title":"Fix bug","status":"running","message":"Applying patch","stepNumber":"2.1","agentName":"Codex","createdAt":"2026-06-08T12:00:00.000Z","automationId":"my-automation-id","runId":"20260608T120000Z"}],"report":{"title":"Check24 Sentry Issues","message":"Waiting for the first Sentry refresh.","status":"pending","updatedAt":"2026-06-08T12:00:00.000Z","issueCount":0,"issues":[]}}
 
-OPTIONAL — APPEND ACTIVITY EVENT
-curl -fsS -X POST http://127.0.0.1:3120/api/automations/{automationId}/runs/{runId}/events \
-  -H 'Content-Type: application/json' \
-  -d '{
-    "stepNumber": "2.1",
-    "title": "Step title",
-    "status": "running",
-    "message": "What happened in this step.",
-    "nextStep": "2.2",
-    "agentName": "Codex"
-  }'
+If you control the browser, type or paste the JSON into that bottom field directly.
 
-PUBLISH TO https://thiennp.github.io/report/
-After material updates, sync the public snapshot:
-cd automation-report && npm run deploy:pages
-git add report/ && git commit -m "Sync automation report snapshot" && git push origin master
+ALTERNATIVE — BROWSER HOOK
+With https://thiennp.github.io/report/ open:
+window.__AUTOMATION_REPORT__.pushDashboard({ /* same snapshot object as above */ });
 
-CLEAR DASHBOARD
-DELETE http://127.0.0.1:3120/api/dashboard
-Then redeploy if the public snapshot should reset.
+SYNC RULES
+- Data is stored only in this browser profile's localStorage.
+- "Clear report" wipes localStorage for this browser only.
+- Activity history is capped at 200 events.
 
 RULES
 - Use real status values; mark blockers as blocked with an actionable message.
 - Include PRE-#### when tied to Jira.
-- Activity history is capped at 200 events; older entries are trimmed automatically.
-- Do not treat https://thiennp.github.io/report/ as a write target; GitHub Pages is read-only except via deploy:pages."""
+- Prefer the bottom JSON input when browser automation is available."""
 status = "ACTIVE"
 rrule = "FREQ=HOURLY;INTERVAL=1"
 target_thread_id = "019e8c3a-961b-7350-99f8-67adec1955a9"
