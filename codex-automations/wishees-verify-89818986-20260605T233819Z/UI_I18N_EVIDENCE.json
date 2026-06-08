@@ -1,0 +1,274 @@
+{
+  "runId": "20260605235421",
+  "baseUrl": "https://www.wishees.com",
+  "generatedAt": "2026-06-05T23:54:51.986Z",
+  "failingCount": 0,
+  "results": [
+    {
+      "scenario": {
+        "name": "home-de-desktop",
+        "route": "/?lang=de",
+        "expectedLang": "de",
+        "viewport": {
+          "width": 1440,
+          "height": 900
+        }
+      },
+      "status": 200,
+      "gotoError": null,
+      "screenshot": "/Users/thien.nguyen/thiennp.github.io/codex-automations/wishees-verify-89818986-20260605T233819Z/logs/ui-i18n-20260605235421-home-de-desktop.png",
+      "detail": {
+        "title": "Wishees - One Wish Link",
+        "htmlLang": "de",
+        "htmlLangMismatch": false,
+        "documentScrollWidth": 1440,
+        "clientWidth": 1440,
+        "overflowPx": 0,
+        "badKeyMatches": [],
+        "templateTokens": [],
+        "englishTerms": [],
+        "unnamedControls": [],
+        "overflowingElements": [],
+        "clippedTextElements": [],
+        "bodySample": "Gönn Gönn mir mir Ändere, für wen du wünschst Erstellen Mit Konto speichern. Synchronisiere Wunschliste und Freunde. Keine Einladung nötig. Konto erstellen Einloggen © 2026 Wishees. Eine einfache Art, nützliche Wünsche zu teilen. Meine Wishees Gemeinschaft AGB Contact Hinweise Datenschutz ✦ W ıshees DE"
+      },
+      "consoleWarningsOrErrors": [],
+      "networkFailures": [
+        {
+          "method": "GET",
+          "url": "https://www.wishees.com/account/login?next=/my-wishees&lang=de&_rsc=5CB68i4pnAekjehf",
+          "failure": "net::ERR_ABORTED"
+        },
+        {
+          "method": "GET",
+          "url": "https://www.wishees.com/account/login?_rsc=5CB68i4pnAekjehf",
+          "failure": "net::ERR_ABORTED"
+        },
+        {
+          "method": "GET",
+          "url": "https://www.wishees.com/account/login?next=/my-wishees&lang=de&_rsc=tXyZJ52UQVBCVsD3",
+          "failure": "net::ERR_ABORTED"
+        }
+      ],
+      "badResponses": []
+    },
+    {
+      "scenario": {
+        "name": "home-en-mobile",
+        "route": "/?lang=en",
+        "expectedLang": "en",
+        "viewport": {
+          "width": 320,
+          "height": 680
+        }
+      },
+      "status": 200,
+      "gotoError": null,
+      "screenshot": "/Users/thien.nguyen/thiennp.github.io/codex-automations/wishees-verify-89818986-20260605T233819Z/logs/ui-i18n-20260605235421-home-en-mobile.png",
+      "detail": {
+        "title": "Wishees - One Wish Link",
+        "htmlLang": "en",
+        "htmlLangMismatch": false,
+        "documentScrollWidth": 320,
+        "clientWidth": 320,
+        "overflowPx": 0,
+        "badKeyMatches": [],
+        "templateTokens": [],
+        "englishTerms": [],
+        "unnamedControls": [],
+        "overflowingElements": [],
+        "clippedTextElements": [],
+        "bodySample": "I'd love you to get me me Change who you wish for Create Privacy · Terms ✦ W ıshees EN"
+      },
+      "consoleWarningsOrErrors": [],
+      "networkFailures": [],
+      "badResponses": []
+    },
+    {
+      "scenario": {
+        "name": "account-login-de-mobile",
+        "route": "/account/login?lang=de",
+        "expectedLang": "de",
+        "viewport": {
+          "width": 320,
+          "height": 680
+        }
+      },
+      "status": 200,
+      "gotoError": null,
+      "screenshot": "/Users/thien.nguyen/thiennp.github.io/codex-automations/wishees-verify-89818986-20260605T233819Z/logs/ui-i18n-20260605235421-account-login-de-mobile.png",
+      "detail": {
+        "title": "Wishees Account Login",
+        "htmlLang": "de",
+        "htmlLangMismatch": false,
+        "documentScrollWidth": 320,
+        "clientWidth": 320,
+        "overflowPx": 0,
+        "badKeyMatches": [],
+        "templateTokens": [],
+        "englishTerms": [],
+        "unnamedControls": [],
+        "overflowingElements": [],
+        "clippedTextElements": [],
+        "bodySample": "WISHEES-KONTO Anmelden oder registrieren Wähle, wie du fortfahren möchtest. Weiter mit Google Weiter mit Facebook Wishees nutzt deine bestätigte E-Mail-Adresse, um das Konto zu erstellen. Es werden keine Beiträge auf Social-Konten veröffentlicht und keine Kontakte importiert. ODER @ Weiter mit E-Mail Konto erstellen ✦ W ıshees DE"
+      },
+      "consoleWarningsOrErrors": [],
+      "networkFailures": [
+        {
+          "method": "GET",
+          "url": "https://www.wishees.com/account/login?mode=email&next=%2Fprofile%3Flang%3Dde&lang=de&_rsc=0I3fzFloluqCxv7K",
+          "failure": "net::ERR_ABORTED"
+        },
+        {
+          "method": "GET",
+          "url": "https://www.wishees.com/account/login?mode=signup&next=%2Fprofile%3Flang%3Dde&lang=de&_rsc=0I3fzFloluqCxv7K",
+          "failure": "net::ERR_ABORTED"
+        }
+      ],
+      "badResponses": []
+    },
+    {
+      "scenario": {
+        "name": "my-wishees-de-mobile-alex",
+        "route": "/my-wishees?lang=de",
+        "expectedLang": "de",
+        "viewport": {
+          "width": 320,
+          "height": 680
+        },
+        "user": "alex"
+      },
+      "status": 200,
+      "gotoError": null,
+      "screenshot": "/Users/thien.nguyen/thiennp.github.io/codex-automations/wishees-verify-89818986-20260605T233819Z/logs/ui-i18n-20260605235421-my-wishees-de-mobile-alex.png",
+      "detail": {
+        "title": "My Wishees Wishlist",
+        "htmlLang": "de",
+        "htmlLangMismatch": false,
+        "documentScrollWidth": 320,
+        "clientWidth": 320,
+        "overflowPx": 0,
+        "badKeyMatches": [],
+        "templateTokens": [],
+        "englishTerms": [],
+        "unnamedControls": [],
+        "overflowingElements": [],
+        "clippedTextElements": [],
+        "bodySample": "Deine Wunschliste Sichtbarkeit filtern Wunschliste teilen Laufend Compact burr coffee grinder Nur Freunde 89,00 € amazon.de Small burr grinder for morning coffee. Bearbeiten Drucken Teilen Wunsch-Privatsphäre Entfernen Noise-canceling headphones Nur Freunde 129,00 € amazon.de Prefer comfortable over flashy. Good for commute and focus work. Bearbeiten Drucken Teilen Wunsch-Privatsphäre Entfernen 2 W ıshees DE"
+      },
+      "consoleWarningsOrErrors": [],
+      "networkFailures": [],
+      "badResponses": []
+    },
+    {
+      "scenario": {
+        "name": "friends-de-desktop-maya",
+        "route": "/friends?lang=de",
+        "expectedLang": "de",
+        "viewport": {
+          "width": 1440,
+          "height": 900
+        },
+        "user": "maya"
+      },
+      "status": 200,
+      "gotoError": null,
+      "screenshot": "/Users/thien.nguyen/thiennp.github.io/codex-automations/wishees-verify-89818986-20260605T233819Z/logs/ui-i18n-20260605235421-friends-de-desktop-maya.png",
+      "detail": {
+        "title": "Wishees Friends",
+        "htmlLang": "de",
+        "htmlLangMismatch": false,
+        "documentScrollWidth": 1440,
+        "clientWidth": 1440,
+        "overflowPx": 0,
+        "badKeyMatches": [],
+        "templateTokens": [],
+        "englishTerms": [],
+        "unnamedControls": [],
+        "overflowingElements": [],
+        "clippedTextElements": [],
+        "bodySample": "Freunde Freund einladen Verbundene Freunde 2 W Wishees owner nguyenphongthien@gmail.com Wunschliste öffnen Um einen Gefallen bitten E E2E Alex e2e-alex@wishees.local Wunschliste öffnen Um einen Gefallen bitten ✦ W ıshees DE 9+"
+      },
+      "consoleWarningsOrErrors": [],
+      "networkFailures": [],
+      "badResponses": []
+    },
+    {
+      "scenario": {
+        "name": "friend-wishlist-de-mobile-maya",
+        "route": "/friends/wishlist?invite=user-12&lang=de",
+        "expectedLang": "de",
+        "viewport": {
+          "width": 320,
+          "height": 680
+        },
+        "user": "maya"
+      },
+      "status": 200,
+      "gotoError": null,
+      "screenshot": "/Users/thien.nguyen/thiennp.github.io/codex-automations/wishees-verify-89818986-20260605T233819Z/logs/ui-i18n-20260605235421-friend-wishlist-de-mobile-maya.png",
+      "detail": {
+        "title": "Friend Wishlist",
+        "htmlLang": "de",
+        "htmlLangMismatch": false,
+        "documentScrollWidth": 320,
+        "clientWidth": 320,
+        "overflowPx": 0,
+        "badKeyMatches": [],
+        "templateTokens": [],
+        "englishTerms": [],
+        "unnamedControls": [],
+        "overflowingElements": [],
+        "clippedTextElements": [],
+        "bodySample": "Geteilte Wunschlisten Sieh, was sich deine Freunde wünschen, finde Produktlinks oder biete an, dich an einem Geschenk zu beteiligen. Laufend Compact burr coffee grinder Small burr grinder for morning coffee. Preishinweis: 89,00 € Produkt ansehen Ganzen Wunsch übernehmen Beitragen Noise-canceling headphones Prefer comfortable over flashy. Good for commute and focus work. Preishinweis: 129,00 € Produkt ansehen Ganzen Wunsch übernehmen Beitragen Wishees hilft dir bei der Geschenkkoordination. Alle "
+      },
+      "consoleWarningsOrErrors": [],
+      "networkFailures": [],
+      "badResponses": []
+    },
+    {
+      "scenario": {
+        "name": "viewer-friend-wishlist-de-mobile-lina",
+        "route": "/friends/wishlist?invite=user-12&lang=de",
+        "expectedLang": "de",
+        "viewport": {
+          "width": 320,
+          "height": 680
+        },
+        "user": "lina"
+      },
+      "status": 200,
+      "gotoError": null,
+      "screenshot": "/Users/thien.nguyen/thiennp.github.io/codex-automations/wishees-verify-89818986-20260605T233819Z/logs/ui-i18n-20260605235421-viewer-friend-wishlist-de-mobile-lina.png",
+      "detail": {
+        "title": "Friend Wishlist",
+        "htmlLang": "de",
+        "htmlLangMismatch": false,
+        "documentScrollWidth": 320,
+        "clientWidth": 320,
+        "overflowPx": 0,
+        "badKeyMatches": [],
+        "templateTokens": [],
+        "englishTerms": [],
+        "unnamedControls": [],
+        "overflowingElements": [],
+        "clippedTextElements": [],
+        "bodySample": "Diese Einladung ist noch nicht verknüpft. Nimm diese Einladung zuerst an. Danach kann Wishees die mit diesem Konto geteilte Wunschliste anzeigen. Einladung annehmen Alle Freunde anzeigen ✦ W ıshees DE"
+      },
+      "consoleWarningsOrErrors": [],
+      "networkFailures": [
+        {
+          "method": "GET",
+          "url": "https://www.wishees.com/friends/invite?code=12&lang=de&_rsc=bSLtvY-ZQYZvBBKY",
+          "failure": "net::ERR_ABORTED"
+        },
+        {
+          "method": "GET",
+          "url": "https://www.wishees.com/friends?lang=de&_rsc=bSLtvY-ZQYZvBBKY",
+          "failure": "net::ERR_ABORTED"
+        }
+      ],
+      "badResponses": []
+    }
+  ]
+}

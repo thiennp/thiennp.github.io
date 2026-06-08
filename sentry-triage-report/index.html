@@ -188,6 +188,35 @@
       cursor: wait;
     }
 
+    .kill-scanner-button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 32px;
+      border: 1px solid #b42318;
+      border-radius: 999px;
+      background: var(--danger);
+      color: #ffffff;
+      cursor: pointer;
+      font: inherit;
+      font-size: 12px;
+      font-weight: 800;
+      line-height: 1.35;
+      padding: 6px 11px;
+      white-space: normal;
+    }
+
+    .kill-scanner-button:hover {
+      background: #b42318;
+    }
+
+    .kill-scanner-button:disabled {
+      border-color: var(--line);
+      background: #eee8df;
+      color: var(--muted);
+      cursor: wait;
+    }
+
     .update-status {
       flex: 1 1 260px;
       margin-left: auto;
@@ -1930,6 +1959,7 @@
       </div>
       <div class="header-actions">
         <button class="update-button" id="manualUpdateButton" type="button">Update Report</button>
+        <button class="kill-scanner-button" id="killScannerButton" type="button">Kill Scanner</button>
         <span class="live-indicator" id="liveStatus" data-state="waiting">Connecting</span>
         <span class="update-status" id="manualUpdateStatus">Manual update ready</span>
       </div>
@@ -2104,6 +2134,9 @@
       if (status.includes('block') || status.includes('fail') || status.includes('error')) {
         return 'status-blocked';
       }
+      if (status.includes('stop')) {
+        return 'status-blocked';
+      }
       if (status.includes('success') || status.includes('done') || status.includes('complete')) {
         return 'status-done';
       }
@@ -2111,7 +2144,7 @@
     };
     const workflowIsCompleted = () => {
       const status = normalize(workflowState.status);
-      return status.includes('success') || status.includes('done') || status.includes('complete');
+      return status.includes('success') || status.includes('done') || status.includes('complete') || status.includes('stop');
     };
     const workflowIsActiveTarget = () => workflowIsVisible() && !workflowIsCompleted();
     const normalizedWorkflowUrl = () => normalize(workflowState.url || '');
@@ -4482,7 +4515,50 @@
       }
     };
 
+    const setKillScannerState = (running, message = '') => {
+      killScannerButton.disabled = Boolean(running);
+      killScannerButton.textContent = running ? 'Killing...' : 'Kill Scanner';
+      if (message) {
+        manualUpdateStatus.className = `update-status ${running ? 'status-active' : 'status-blocked'}`;
+        manualUpdateStatus.textContent = message;
+        manualUpdateStatus.title = message;
+      }
+    };
+
+    const killScanner = async () => {
+      if (!['http:', 'https:'].includes(window.location.protocol)) {
+        setKillScannerState(false, 'Open the live report server to kill the scanner.');
+        killScannerButton.disabled = true;
+        return;
+      }
+      setKillScannerState(true, 'Stopping Sentry scanner...');
+      try {
+        const response = await fetch('/api/kill-scanner', {
+          method: 'POST',
+          cache: 'no-store'
+        });
+        const body = await response.json();
+        if (!response.ok || body.ok === false) {
+          throw new Error(body.error || `HTTP ${response.status}`);
+        }
+        if (body.workflow) {
+          setWorkflowState(body.workflow);
+        }
+        if (body.scannerStatus) {
+          const checked = body.scannerStatus.checkedIssueCount || 0;
+          const planned = body.scannerStatus.plannedIssueCount || 0;
+          setKillScannerState(false, `Scanner stopped at ${checked}/${planned || '?'} issue checks.`);
+        } else {
+          setKillScannerState(false, 'Scanner stopped.');
+        }
+        await loadData();
+      } catch (error) {
+        setKillScannerState(false, `Scanner stop failed: ${error.message}`);
+      }
+    };
+
     manualUpdateButton.addEventListener('click', () => startManualUpdate());
+    killScannerButton.addEventListener('click', () => killScanner());
     fetchManualUpdateStatus();
 
     const connectLiveReport = () => {

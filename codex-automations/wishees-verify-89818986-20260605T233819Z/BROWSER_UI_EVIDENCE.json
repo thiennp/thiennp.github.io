@@ -1,0 +1,65 @@
+{
+  "target": "https://www.wishees.com",
+  "freshStartFolder": "wishees-verify-89818986-20260605T233819Z",
+  "browserUserFlows": {
+    "mobileOverflowRepeat": {
+      "session": "Maya",
+      "url": "https://www.wishees.com/friends/wishlist?invite=user-12&lang=de",
+      "viewport": "320x680",
+      "title": "Friend Wishlist",
+      "documentScrollWidth": 320,
+      "bodyScrollWidth": 320,
+      "clientWidth": 320,
+      "overflowPx": 0,
+      "hasWishlistItem": true,
+      "affiliateLinksObserved": [
+        "https://www.amazon.com/s?k=burr+coffee+grinder&tag=wishees-20",
+        "https://www.amazon.com/s?k=noise+canceling+headphones&tag=wishees-20"
+      ],
+      "overflowingElements": [],
+      "consoleWarningsOrErrors": [],
+      "networkFailures": []
+    },
+    "mayaUiPartialOfferRepeat": {
+      "session": "Maya browser context",
+      "url": "https://www.wishees.com/friends/wishlist?invite=user-12&lang=de",
+      "item": "Compact burr coffee grinder",
+      "responseStatus": 200,
+      "responseOk": true,
+      "responseBodyKind": "json",
+      "responseBody": {
+        "ok": true,
+        "outcome": {
+          "confirmedAt": "",
+          "contributionPercent": 15,
+          "helperMessage": "Codex browser repeat partial offer 20260605235507",
+          "helperUserId": 13,
+          "id": "458",
+          "itemId": "wish_e2e_coffee_grinder",
+          "itemTitle": "Compact burr coffee grinder",
+          "ownerReply": "",
+          "ownerUserId": 12,
+          "productUrl": "https://www.amazon.de/s?k=burr+coffee+grinder&tag=wishees-20",
+          "promisedAt": "2026-06-05T23:55:14.709Z",
+          "status": "promised"
+        },
+        "status": "contribution-promised"
+      },
+      "hasSupportPhrase": true,
+      "bodySnippet": "Geteilte Wunschlisten\n\nSieh, was sich deine Freunde wünschen, finde Produktlinks oder biete an, dich an einem Geschenk zu beteiligen.\n\nLaufend\nCompact burr coffee grinder\n\nSmall burr grinder for morning coffee.\n\nPreishinweis: 89,00 €\n\nProdukt ansehen\nGanzen Wunsch übernehmen\nBeitragen\nNoise-canceling headphones\n\nPrefer comfortable over flashy. Good for commute and focus work.\n\nPreishinweis: 129,00 €\n\nProdukt ansehen\nGanzen Wunsch übernehmen\nBeitragen\n\nWishees hilft dir bei der Geschenkkoordinati",
+      "consoleWarningsOrErrors": [],
+      "networkFailures": []
+    },
+    "alexNotificationsRepeat": {
+      "session": "Alex",
+      "url": "https://www.wishees.com/notifications?lang=de",
+      "title": "Wishees Notifications",
+      "bodySnippet": "Benachrichtigungen\nE2E Maya bot Unterstützung am Compact burr coffee grinder\nAls gelesen markieren\nLöschen\n2\nW\nıshees\nDE\n1",
+      "hasNotificationsUi": true,
+      "buttonCount": 8,
+      "consoleWarningsOrErrors": [],
+      "networkFailures": []
+    }
+  },
+  "lastUpdatedAt": "2026-06-05T23:55:18.280Z"
+}

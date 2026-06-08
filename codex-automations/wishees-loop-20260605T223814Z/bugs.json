@@ -1,0 +1,469 @@
+[
+  {
+    "occurrences": 70,
+    "id": "BUG-001",
+    "firstSeenAt": "2026-06-05T22:40:13.261Z",
+    "severity": "MAJOR",
+    "title": "Concurrent owner wishlist saves lose one newly created item",
+    "stepsToReproduce": [
+      "Open two authenticated Alex sessions",
+      "Read the same wishlist baseline in both sessions",
+      "Submit two PUT /api/account/wishlist requests at the same time, each adding a different item",
+      "Fetch /api/account/wishlist"
+    ],
+    "actualBehavior": "Final wishlist had race item A=true, race item B=false; one save appears to have overwritten the other.",
+    "evidence": {
+      "ts": "2026-06-05T22:40:13.259Z",
+      "runId": "20260605224001",
+      "session": "alex-race-a",
+      "feature": "race",
+      "action": "race final read",
+      "request": {
+        "method": "GET",
+        "route": "/api/account/wishlist"
+      },
+      "response": {
+        "status": 200,
+        "ok": true,
+        "contentType": "application/json",
+        "body": "{\"items\":[{\"allowedViewers\":[],\"createdAt\":\"2026-06-05T10:40:00.172Z\",\"currency\":\"EUR\",\"id\":\"wish_e2e_coffee_grinder\",\"note\":\"Small burr grinder for morning coffee.\",\"price\":\"89.00\",\"recipientName\":\"\",\"title\":\"Compact burr coffee grinder\",\"updatedAt\":\"2026-06-05T10:40:00.172Z\",\"url\":\"https://www.amazon.de/s?k=burr+coffee+grinder&tag=wishees-20\",\"visibility\":\"friends\",\"giftPaymentOptions\":[],\"giftPaymentAccount\":\"\",\"giftPaymentMethod\":\"\",\"giftPaymentOtherLabel\":\"\"},{\"allowedViewers\":[],\"createdAt\":\"2026-06-05T10:40:00.172Z\",\"currency\":\"EUR\",\"id\":\"wish_e2e_noise_headphones\",\"note\":\"Prefer comfortable over flashy. Good for commute and focus work.\",\"price\":\"129.00\",\"recipientName\":\"\",\"title\":\"Noise-canceling headphones\",\"updatedAt\":\"2026-06-05T10:40:00.172Z\",\"url\":\"https://www.amazon.com/s?k=noise+canceling+headphones&tag=wishees-20\",\"visibility\":\"friends\",\"giftPaymentOptions\":[],\"giftPaymentAccount\":\"\",\"giftPaymentMethod\":\"\",\"giftPaymentOtherLabel\":\"\"},{\"allowedViewers\":[],\"createdAt\":\"2026-06-05T22:40:12.764Z\",\"currency\":\"EUR\",\"id\":\"wish_codex_matrix_20260605224001_race1_a\",\"note\":\"Automated multi-user QA artifact 20260605224001. Safe to delete.\",\"price\":\"19.99\",\"recipientName\":\"Codex QA\",\"title\":\"Codex matrix race A 20260605224001\",\"updatedAt\":\"2026-06-05T22:40:12.764Z\",\"url\":\"https://www.amazon.de/dp/B08N5WRWNW?tag=wishees-qa-21&psc=1\",\"visibility\":\"friends\",\"giftPaymentOptions\":[{\"account\":\"qa-paypal@example.test\",\"accountName\":\"\",\"bankName\":\"\",\"method\":\"paypal\",\"otherLabel\":\"\",\"swift\":\"\"}],\"giftPaymentAccount\":\"qa-paypal@example.test\",\"giftPaymentMethod\":\"paypal\",\"giftPaymentOtherLabel\":\"\"}],\"ok\":true,\"visibility\":\"friends\"}"
+      },
+      "durationMs": 179,
+      "error": null
+    },
+    "lastSeenAt": "2026-06-05T22:54:51.214Z",
+    "lastActualBehavior": "Final wishlist had race item A=true, race item B=false; one save appears to have overwritten the other.",
+    "lastEvidence": {
+      "ts": "2026-06-05T22:54:51.212Z",
+      "runId": "20260605224001",
+      "session": "alex-race-a",
+      "feature": "race",
+      "action": "race final read",
+      "request": {
+        "method": "GET",
+        "route": "/api/account/wishlist"
+      },
+      "response": {
+        "status": 200,
+        "ok": true,
+        "contentType": "application/json",
+        "body": "{\"items\":[{\"allowedViewers\":[],\"createdAt\":\"2026-06-05T10:40:00.172Z\",\"currency\":\"EUR\",\"id\":\"wish_e2e_coffee_grinder\",\"note\":\"Small burr grinder for morning coffee.\",\"price\":\"89.00\",\"recipientName\":\"\",\"title\":\"Compact burr coffee grinder\",\"updatedAt\":\"2026-06-05T10:40:00.172Z\",\"url\":\"https://www.amazon.de/s?k=burr+coffee+grinder&tag=wishees-20\",\"visibility\":\"friends\",\"giftPaymentOptions\":[],\"giftPaymentAccount\":\"\",\"giftPaymentMethod\":\"\",\"giftPaymentOtherLabel\":\"\"},{\"allowedViewers\":[],\"createdAt\":\"2026-06-05T10:40:00.172Z\",\"currency\":\"EUR\",\"id\":\"wish_e2e_noise_headphones\",\"note\":\"Prefer comfortable over flashy. Good for commute and focus work.\",\"price\":\"129.00\",\"recipientName\":\"\",\"title\":\"Noise-canceling headphones\",\"updatedAt\":\"2026-06-05T10:40:00.172Z\",\"url\":\"https://www.amazon.com/s?k=noise+canceling+headphones&tag=wishees-20\",\"visibility\":\"friends\",\"giftPaymentOptions\":[],\"giftPaymentAccount\":\"\",\"giftPaymentMethod\":\"\",\"giftPaymentOtherLabel\":\"\"},{\"allowedViewers\":[],\"createdAt\":\"2026-06-05T22:54:50.850Z\",\"currency\":\"EUR\",\"id\":\"wish_codex_matrix_20260605224001_race91_a\",\"note\":\"Automated multi-user QA artifact 20260605224001. Safe to delete.\",\"price\":\"19.99\",\"recipientName\":\"Codex QA\",\"title\":\"Codex matrix race A 20260605224001\",\"updatedAt\":\"2026-06-05T22:54:50.850Z\",\"url\":\"https://www.amazon.de/dp/B08N5WRWNW?tag=wishees-qa-21&psc=1\",\"visibility\":\"friends\",\"giftPaymentOptions\":[{\"account\":\"qa-paypal@example.test\",\"accountName\":\"\",\"bankName\":\"\",\"method\":\"paypal\",\"otherLabel\":\"\",\"swift\":\"\"}],\"giftPaymentAccount\":\"qa-paypal@example.test\",\"giftPaymentMethod\":\"paypal\",\"giftPaymentOtherLabel\":\"\"}],\"ok\":true,\"visibility\":\"friends\"}"
+      },
+      "durationMs": 167,
+      "error": null
+    }
+  },
+  {
+    "occurrences": 2,
+    "id": "BUG-002",
+    "firstSeenAt": "2026-06-05T22:57:09.863Z",
+    "severity": "MINOR",
+    "title": "UI and translation smoke found visual, accessibility, or localization issues",
+    "stepsToReproduce": [
+      "Run node ui-i18n-smoke.mjs",
+      "Open the listed routes in German and English across mobile and desktop viewports",
+      "Inspect overflow, control labels, html lang, translation keys, and German copy"
+    ],
+    "actualBehavior": "3 scenario(s) showed UI/i18n instability. See UI_I18N_EVIDENCE.json and screenshots in logs/.",
+    "evidence": {
+      "runId": "20260605225641",
+      "failingScenarios": [
+        {
+          "name": "home-de-desktop",
+          "route": "/?lang=de",
+          "status": 200,
+          "screenshot": "/Users/thien.nguyen/thiennp.github.io/codex-automations/wishees-loop-20260605T223814Z/logs/ui-i18n-20260605225641-home-de-desktop.png",
+          "detail": {
+            "title": "Wishees - One Wish Link",
+            "htmlLang": "de",
+            "htmlLangMismatch": false,
+            "documentScrollWidth": 1440,
+            "clientWidth": 1440,
+            "overflowPx": 0,
+            "badKeyMatches": [],
+            "templateTokens": [],
+            "englishTerms": [],
+            "unnamedControls": [],
+            "overflowingElements": [],
+            "clippedTextElements": [],
+            "bodySample": "Gönn Gönn mir mir Erstellen Mit Konto speichern. Synchronisiere Wunschliste und Freunde. Keine Einladung nötig. Konto erstellen Einloggen © 2026 Wishees. Eine einfache Art, nützliche Wünsche zu teilen. Meine Wishees Gemeinschaft AGB Contact Hinweise Datenschutz ✦ W ıshees DE"
+          },
+          "consoleWarningsOrErrors": [],
+          "networkFailures": [
+            {
+              "method": "GET",
+              "url": "https://www.wishees.com/account/login?_rsc=5CB68i4pnAekjehf",
+              "failure": "net::ERR_ABORTED"
+            },
+            {
+              "method": "GET",
+              "url": "https://www.wishees.com/account/login?next=/my-wishees&lang=de&_rsc=tXyZJ52UQVBCVsD3",
+              "failure": "net::ERR_ABORTED"
+            },
+            {
+              "method": "GET",
+              "url": "https://www.wishees.com/account/login?mode=signup&next=/my-wishees&lang=de&_rsc=tXyZJ52UQVBCVsD3",
+              "failure": "net::ERR_ABORTED"
+            }
+          ],
+          "badResponses": []
+        },
+        {
+          "name": "home-en-mobile",
+          "route": "/?lang=en",
+          "status": 200,
+          "screenshot": "/Users/thien.nguyen/thiennp.github.io/codex-automations/wishees-loop-20260605T223814Z/logs/ui-i18n-20260605225641-home-en-mobile.png",
+          "detail": {
+            "title": "Wishees - One Wish Link",
+            "htmlLang": "en",
+            "htmlLangMismatch": false,
+            "documentScrollWidth": 320,
+            "clientWidth": 320,
+            "overflowPx": 0,
+            "badKeyMatches": [],
+            "templateTokens": [],
+            "englishTerms": [],
+            "unnamedControls": [],
+            "overflowingElements": [],
+            "clippedTextElements": [],
+            "bodySample": "I'd love you to get me me Create Save your wish with an account Sync your wishlist and connect with friends instantly. No invite required. Create account Log in Privacy · Terms ✦ W ıshees EN"
+          },
+          "consoleWarningsOrErrors": [],
+          "networkFailures": [
+            {
+              "method": "GET",
+              "url": "https://www.wishees.com/account/login?_rsc=5CB68i4pnAekjehf",
+              "failure": "net::ERR_ABORTED"
+            }
+          ],
+          "badResponses": []
+        },
+        {
+          "name": "login-de-mobile",
+          "route": "/login?lang=de",
+          "status": 404,
+          "screenshot": "/Users/thien.nguyen/thiennp.github.io/codex-automations/wishees-loop-20260605T223814Z/logs/ui-i18n-20260605225641-login-de-mobile.png",
+          "detail": {
+            "title": "Wishees - One Wish Link",
+            "htmlLang": "de",
+            "htmlLangMismatch": false,
+            "documentScrollWidth": 320,
+            "clientWidth": 320,
+            "overflowPx": 0,
+            "badKeyMatches": [],
+            "templateTokens": [],
+            "englishTerms": [],
+            "unnamedControls": [],
+            "overflowingElements": [],
+            "clippedTextElements": [],
+            "bodySample": "404 This page could not be found. ✦ W ıshees DE"
+          },
+          "consoleWarningsOrErrors": [
+            {
+              "type": "error",
+              "text": "Failed to load resource: the server responded with a status of 404 ()"
+            }
+          ],
+          "networkFailures": [],
+          "badResponses": [
+            {
+              "status": 404,
+              "url": "https://www.wishees.com/login?lang=de"
+            }
+          ]
+        },
+        {
+          "name": "my-wishees-de-mobile-alex",
+          "route": "/my-wishees?lang=de",
+          "status": 200,
+          "screenshot": "/Users/thien.nguyen/thiennp.github.io/codex-automations/wishees-loop-20260605T223814Z/logs/ui-i18n-20260605225641-my-wishees-de-mobile-alex.png",
+          "detail": {
+            "title": "My Wishees Wishlist",
+            "htmlLang": "en",
+            "htmlLangMismatch": true,
+            "documentScrollWidth": 320,
+            "clientWidth": 320,
+            "overflowPx": 0,
+            "badKeyMatches": [],
+            "templateTokens": [],
+            "englishTerms": [],
+            "unnamedControls": [],
+            "overflowingElements": [
+              {
+                "tag": "SPAN",
+                "text": "Das sind informelle Angebote. Sag deinen Freunden Bescheid, wenn du das Geschenk erhalten hast, oder",
+                "left": 107,
+                "right": 387,
+                "width": 280
+              },
+              {
+                "tag": "SPAN",
+                "text": "Das sind informelle Angebote. Sag deinen Freunden Bescheid, wenn du das Geschenk erhalten hast, oder",
+                "left": 107,
+                "right": 387,
+                "width": 280
+              }
+            ],
+            "clippedTextElements": [
+              {
+                "tag": "BUTTON",
+                "text": "E2E Maya E2E Maya",
+                "scrollWidth": 43,
+                "clientWidth": 37
+              }
+            ],
+            "bodySample": "Deine Wunschliste Sichtbarkeit filtern Wunschliste teilen Laufend Compact burr coffee grinder Nur Freunde 89,00 € amazon.de Small burr grinder for morning coffee. Beiträge von Freunden Das sind informelle Angebote. Sag deinen Freunden Bescheid, wenn du das Geschenk erhalten hast, oder lehne freundlich ab, wenn es nicht mehr gebraucht wird. 15% bereits unterstützt · 13,35 € abgedeckt · 75,65 € übrig E E2E Maya hat angeboten, 13,35 € beizutragen (15 % des Ziels) Sie können es auch dann schaffen, w"
+          },
+          "consoleWarningsOrErrors": [],
+          "networkFailures": [],
+          "badResponses": []
+        },
+        {
+          "name": "friends-de-desktop-maya",
+          "route": "/friends?lang=de",
+          "status": 200,
+          "screenshot": "/Users/thien.nguyen/thiennp.github.io/codex-automations/wishees-loop-20260605T223814Z/logs/ui-i18n-20260605225641-friends-de-desktop-maya.png",
+          "detail": {
+            "title": "Wishees Friends",
+            "htmlLang": "en",
+            "htmlLangMismatch": true,
+            "documentScrollWidth": 1440,
+            "clientWidth": 1440,
+            "overflowPx": 0,
+            "badKeyMatches": [
+              "wishees.local"
+            ],
+            "templateTokens": [],
+            "englishTerms": [],
+            "unnamedControls": [],
+            "overflowingElements": [],
+            "clippedTextElements": [],
+            "bodySample": "Freunde Freund einladen Verbundene Freunde 2 W Wishees owner nguyenphongthien@gmail.com Wunschliste öffnen Um einen Gefallen bitten E E2E Alex e2e-alex@wishees.local Wunschliste öffnen Um einen Gefallen bitten ✦ W ıshees DE 9+"
+          },
+          "consoleWarningsOrErrors": [],
+          "networkFailures": [],
+          "badResponses": []
+        },
+        {
+          "name": "friend-wishlist-de-mobile-maya",
+          "route": "/friends/wishlist?invite=user-12&lang=de",
+          "status": 200,
+          "screenshot": "/Users/thien.nguyen/thiennp.github.io/codex-automations/wishees-loop-20260605T223814Z/logs/ui-i18n-20260605225641-friend-wishlist-de-mobile-maya.png",
+          "detail": {
+            "title": "Friend Wishlist",
+            "htmlLang": "en",
+            "htmlLangMismatch": true,
+            "documentScrollWidth": 344,
+            "clientWidth": 320,
+            "overflowPx": 24,
+            "badKeyMatches": [],
+            "templateTokens": [],
+            "englishTerms": [],
+            "unnamedControls": [],
+            "overflowingElements": [
+              {
+                "tag": "A",
+                "text": "Ähnliches Produkt bei Amazon finden",
+                "left": 44,
+                "right": 344,
+                "width": 300
+              }
+            ],
+            "clippedTextElements": [],
+            "bodySample": "Geteilte Wunschlisten Sieh, was sich deine Freunde wünschen, finde Produktlinks oder biete an, dich an einem Geschenk zu beteiligen. Laufend Compact burr coffee grinder 15 % bereits unterstützt · 13,35 € gedeckt · 75,65 € offen Small burr grinder for morning coffee. Preishinweis: 89,00 € Du hast einen Beitrag von 15 % angeboten. Kläre Details direkt mit deinem Freund. Jetzt kaufen Ähnliches Produkt bei Amazon finden Ähnliches Produkt bei eBay finden Ganzen Wunsch übernehmen Beitrag aktualisieren"
+          },
+          "consoleWarningsOrErrors": [],
+          "networkFailures": [],
+          "badResponses": []
+        }
+      ]
+    },
+    "lastSeenAt": "2026-06-05T22:58:13.303Z",
+    "lastActualBehavior": "3 scenario(s) showed UI/i18n instability. See UI_I18N_EVIDENCE.json and screenshots in logs/.",
+    "lastEvidence": {
+      "runId": "20260605225748",
+      "failingScenarios": [
+        {
+          "name": "my-wishees-de-mobile-alex",
+          "route": "/my-wishees?lang=de",
+          "status": 200,
+          "screenshot": "/Users/thien.nguyen/thiennp.github.io/codex-automations/wishees-loop-20260605T223814Z/logs/ui-i18n-20260605225748-my-wishees-de-mobile-alex.png",
+          "detail": {
+            "title": "My Wishees Wishlist",
+            "htmlLang": "en",
+            "htmlLangMismatch": true,
+            "documentScrollWidth": 320,
+            "clientWidth": 320,
+            "overflowPx": 0,
+            "badKeyMatches": [],
+            "templateTokens": [],
+            "englishTerms": [],
+            "unnamedControls": [],
+            "overflowingElements": [
+              {
+                "tag": "SPAN",
+                "text": "Das sind informelle Angebote. Sag deinen Freunden Bescheid, wenn du das Geschenk erhalten hast, oder",
+                "left": 107,
+                "right": 387,
+                "width": 280
+              },
+              {
+                "tag": "SPAN",
+                "text": "Das sind informelle Angebote. Sag deinen Freunden Bescheid, wenn du das Geschenk erhalten hast, oder",
+                "left": 107,
+                "right": 387,
+                "width": 280
+              }
+            ],
+            "clippedTextElements": [
+              {
+                "tag": "BUTTON",
+                "text": "E2E Maya E2E Maya",
+                "scrollWidth": 43,
+                "clientWidth": 37
+              }
+            ],
+            "bodySample": "Deine Wunschliste Sichtbarkeit filtern Wunschliste teilen Laufend Compact burr coffee grinder Nur Freunde 89,00 € amazon.de Small burr grinder for morning coffee. Beiträge von Freunden Das sind informelle Angebote. Sag deinen Freunden Bescheid, wenn du das Geschenk erhalten hast, oder lehne freundlich ab, wenn es nicht mehr gebraucht wird. 15% bereits unterstützt · 13,35 € abgedeckt · 75,65 € übrig E E2E Maya hat angeboten, 13,35 € beizutragen (15 % des Ziels) Sie können es auch dann schaffen, w"
+          },
+          "consoleWarningsOrErrors": [],
+          "networkFailures": [],
+          "badResponses": []
+        },
+        {
+          "name": "friends-de-desktop-maya",
+          "route": "/friends?lang=de",
+          "status": 200,
+          "screenshot": "/Users/thien.nguyen/thiennp.github.io/codex-automations/wishees-loop-20260605T223814Z/logs/ui-i18n-20260605225748-friends-de-desktop-maya.png",
+          "detail": {
+            "title": "Wishees Friends",
+            "htmlLang": "en",
+            "htmlLangMismatch": true,
+            "documentScrollWidth": 1440,
+            "clientWidth": 1440,
+            "overflowPx": 0,
+            "badKeyMatches": [],
+            "templateTokens": [],
+            "englishTerms": [],
+            "unnamedControls": [],
+            "overflowingElements": [],
+            "clippedTextElements": [],
+            "bodySample": "Freunde Freund einladen Verbundene Freunde 2 W Wishees owner nguyenphongthien@gmail.com Wunschliste öffnen Um einen Gefallen bitten E E2E Alex e2e-alex@wishees.local Wunschliste öffnen Um einen Gefallen bitten ✦ W ıshees DE 9+"
+          },
+          "consoleWarningsOrErrors": [],
+          "networkFailures": [],
+          "badResponses": []
+        },
+        {
+          "name": "friend-wishlist-de-mobile-maya",
+          "route": "/friends/wishlist?invite=user-12&lang=de",
+          "status": 200,
+          "screenshot": "/Users/thien.nguyen/thiennp.github.io/codex-automations/wishees-loop-20260605T223814Z/logs/ui-i18n-20260605225748-friend-wishlist-de-mobile-maya.png",
+          "detail": {
+            "title": "Friend Wishlist",
+            "htmlLang": "en",
+            "htmlLangMismatch": true,
+            "documentScrollWidth": 344,
+            "clientWidth": 320,
+            "overflowPx": 24,
+            "badKeyMatches": [],
+            "templateTokens": [],
+            "englishTerms": [],
+            "unnamedControls": [],
+            "overflowingElements": [
+              {
+                "tag": "A",
+                "text": "Ähnliches Produkt bei Amazon finden",
+                "left": 44,
+                "right": 344,
+                "width": 300
+              }
+            ],
+            "clippedTextElements": [],
+            "bodySample": "Geteilte Wunschlisten Sieh, was sich deine Freunde wünschen, finde Produktlinks oder biete an, dich an einem Geschenk zu beteiligen. Laufend Compact burr coffee grinder 15 % bereits unterstützt · 13,35 € gedeckt · 75,65 € offen Small burr grinder for morning coffee. Preishinweis: 89,00 € Du hast einen Beitrag von 15 % angeboten. Kläre Details direkt mit deinem Freund. Jetzt kaufen Ähnliches Produkt bei Amazon finden Ähnliches Produkt bei eBay finden Ganzen Wunsch übernehmen Beitrag aktualisieren"
+          },
+          "consoleWarningsOrErrors": [],
+          "networkFailures": [],
+          "badResponses": []
+        }
+      ]
+    }
+  },
+  {
+    "occurrences": 1,
+    "id": "BUG-003",
+    "firstSeenAt": "2026-06-05T23:01:29.672Z",
+    "lastSeenAt": "2026-06-05T23:01:29.672Z",
+    "lastActualBehavior": "The read-only viewer page visit created a Lina -> Alex friend connection. Before the page visit, Lina connected friends was []; after the page visit, Lina connected friends contained Alex user 12.",
+    "lastEvidence": {
+      "runId": "20260605230129",
+      "before": {
+        "status": 200,
+        "body": {
+          "friends": [],
+          "ok": true,
+          "ownerUserId": 15
+        }
+      },
+      "page": {
+        "method": "GET",
+        "route": "/friends/wishlist?invite=user-12&lang=de",
+        "status": 200,
+        "contentType": "text/html"
+      },
+      "after": {
+        "status": 200,
+        "body": {
+          "friends": [
+            {
+              "email": "e2e-alex@wishees.local",
+              "friendUserId": 12,
+              "label": "E2E Alex"
+            }
+          ],
+          "ok": true,
+          "ownerUserId": 15
+        }
+      }
+    },
+    "severity": "CRITICAL",
+    "title": "Viewer shared wishlist page creates a friend connection",
+    "stepsToReproduce": [
+      "Ensure e2e-lina@wishees.local has no connected friends",
+      "Log in as e2e-lina@wishees.local",
+      "GET /friends/wishlist?invite=user-12&lang=de",
+      "Read /api/friends/connected for Lina"
+    ],
+    "actualBehavior": "The read-only viewer page visit created a Lina -> Alex friend connection. Before the page visit, Lina connected friends was []; after the page visit, Lina connected friends contained Alex user 12.",
+    "evidence": {
+      "runId": "20260605230129",
+      "before": {
+        "status": 200,
+        "body": {
+          "friends": [],
+          "ok": true,
+          "ownerUserId": 15
+        }
+      },
+      "page": {
+        "method": "GET",
+        "route": "/friends/wishlist?invite=user-12&lang=de",
+        "status": 200,
+        "contentType": "text/html"
+      },
+      "after": {
+        "status": 200,
+        "body": {
+          "friends": [
+            {
+              "email": "e2e-alex@wishees.local",
+              "friendUserId": 12,
+              "label": "E2E Alex"
+            }
+          ],
+          "ok": true,
+          "ownerUserId": 15
+        }
+      }
+    }
+  }
+]

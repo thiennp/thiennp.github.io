@@ -1,0 +1,56 @@
+[
+  {
+    "occurrences": 2,
+    "id": "BUG-001",
+    "firstSeenAt": "2026-06-06T11:55:52.185Z",
+    "severity": "MAJOR",
+    "title": "Concurrent owner wishlist saves lose one newly created item",
+    "stepsToReproduce": [
+      "Open two authenticated Alex sessions",
+      "Read the same wishlist baseline in both sessions",
+      "Submit two PUT /api/account/wishlist requests at the same time, each adding a different item",
+      "Fetch /api/account/wishlist"
+    ],
+    "actualBehavior": "Final wishlist had race item A=true, race item B=false; one save appears to have overwritten the other.",
+    "evidence": {
+      "ts": "2026-06-06T11:55:52.184Z",
+      "runId": "20260606115459",
+      "session": "alex-race-a",
+      "feature": "race",
+      "action": "race final read",
+      "request": {
+        "method": "GET",
+        "route": "/api/account/wishlist"
+      },
+      "response": {
+        "status": 200,
+        "ok": true,
+        "contentType": "application/json",
+        "body": "{\"items\":[{\"allowedViewers\":[],\"createdAt\":\"2026-06-06T11:14:40.670Z\",\"currency\":\"EUR\",\"id\":\"wish_e2e_coffee_grinder\",\"note\":\"Small burr grinder for morning coffee.\",\"price\":\"89.00\",\"recipientName\":\"\",\"title\":\"Compact burr coffee grinder\",\"updatedAt\":\"2026-06-06T11:14:40.670Z\",\"url\":\"https://www.amazon.de/s?k=burr+coffee+grinder&tag=wishees-20\",\"visibility\":\"friends\",\"giftPaymentOptions\":[],\"giftPaymentAccount\":\"\",\"giftPaymentMethod\":\"\",\"giftPaymentOtherLabel\":\"\"},{\"allowedViewers\":[],\"createdAt\":\"2026-06-06T11:14:40.670Z\",\"currency\":\"EUR\",\"id\":\"wish_e2e_noise_headphones\",\"note\":\"Prefer comfortable over flashy. Good for commute and focus work.\",\"price\":\"129.00\",\"recipientName\":\"\",\"title\":\"Noise-canceling headphones\",\"updatedAt\":\"2026-06-06T11:14:40.670Z\",\"url\":\"https://www.amazon.com/s?k=noise+canceling+headphones&tag=wishees-20\",\"visibility\":\"friends\",\"giftPaymentOptions\":[],\"giftPaymentAccount\":\"\",\"giftPaymentMethod\":\"\",\"giftPaymentOtherLabel\":\"\"},{\"allowedViewers\":[],\"createdAt\":\"2026-06-06T11:55:51.710Z\",\"currency\":\"EUR\",\"id\":\"wish_codex_matrix_20260606115459_race4_a\",\"note\":\"Automated multi-user QA artifact 20260606115459. Safe to delete.\",\"price\":\"19.99\",\"recipientName\":\"Codex QA\",\"title\":\"Codex matrix race A 20260606115459\",\"updatedAt\":\"2026-06-06T11:55:51.710Z\",\"url\":\"https://www.amazon.de/dp/B08N5WRWNW?tag=wishees-qa-21&psc=1\",\"visibility\":\"friends\",\"giftPaymentOptions\":[{\"account\":\"qa-paypal@example.test\",\"accountName\":\"\",\"bankName\":\"\",\"method\":\"paypal\",\"otherLabel\":\"\",\"swift\":\"\"}],\"giftPaymentAccount\":\"qa-paypal@example.test\",\"giftPaymentMethod\":\"paypal\",\"giftPaymentOtherLabel\":\"\"}],\"ok\":true,\"visibility\":\"friends\"}"
+      },
+      "durationMs": 170,
+      "error": null
+    },
+    "lastSeenAt": "2026-06-06T11:56:03.986Z",
+    "lastActualBehavior": "Final wishlist had race item A=true, race item B=false; one save appears to have overwritten the other.",
+    "lastEvidence": {
+      "ts": "2026-06-06T11:56:03.985Z",
+      "runId": "20260606115459",
+      "session": "alex-race-a",
+      "feature": "race",
+      "action": "race final read",
+      "request": {
+        "method": "GET",
+        "route": "/api/account/wishlist"
+      },
+      "response": {
+        "status": 200,
+        "ok": true,
+        "contentType": "application/json",
+        "body": "{\"items\":[{\"allowedViewers\":[],\"createdAt\":\"2026-06-06T11:14:40.670Z\",\"currency\":\"EUR\",\"id\":\"wish_e2e_coffee_grinder\",\"note\":\"Small burr grinder for morning coffee.\",\"price\":\"89.00\",\"recipientName\":\"\",\"title\":\"Compact burr coffee grinder\",\"updatedAt\":\"2026-06-06T11:14:40.670Z\",\"url\":\"https://www.amazon.de/s?k=burr+coffee+grinder&tag=wishees-20\",\"visibility\":\"friends\",\"giftPaymentOptions\":[],\"giftPaymentAccount\":\"\",\"giftPaymentMethod\":\"\",\"giftPaymentOtherLabel\":\"\"},{\"allowedViewers\":[],\"createdAt\":\"2026-06-06T11:14:40.670Z\",\"currency\":\"EUR\",\"id\":\"wish_e2e_noise_headphones\",\"note\":\"Prefer comfortable over flashy. Good for commute and focus work.\",\"price\":\"129.00\",\"recipientName\":\"\",\"title\":\"Noise-canceling headphones\",\"updatedAt\":\"2026-06-06T11:14:40.670Z\",\"url\":\"https://www.amazon.com/s?k=noise+canceling+headphones&tag=wishees-20\",\"visibility\":\"friends\",\"giftPaymentOptions\":[],\"giftPaymentAccount\":\"\",\"giftPaymentMethod\":\"\",\"giftPaymentOtherLabel\":\"\"},{\"allowedViewers\":[],\"createdAt\":\"2026-06-06T11:56:03.569Z\",\"currency\":\"EUR\",\"id\":\"wish_codex_matrix_20260606115459_race5_a\",\"note\":\"Automated multi-user QA artifact 20260606115459. Safe to delete.\",\"price\":\"19.99\",\"recipientName\":\"Codex QA\",\"title\":\"Codex matrix race A 20260606115459\",\"updatedAt\":\"2026-06-06T11:56:03.569Z\",\"url\":\"https://www.amazon.de/dp/B08N5WRWNW?tag=wishees-qa-21&psc=1\",\"visibility\":\"friends\",\"giftPaymentOptions\":[{\"account\":\"qa-paypal@example.test\",\"accountName\":\"\",\"bankName\":\"\",\"method\":\"paypal\",\"otherLabel\":\"\",\"swift\":\"\"}],\"giftPaymentAccount\":\"qa-paypal@example.test\",\"giftPaymentMethod\":\"paypal\",\"giftPaymentOtherLabel\":\"\"}],\"ok\":true,\"visibility\":\"friends\"}"
+      },
+      "durationMs": 171,
+      "error": null
+    }
+  }
+]

@@ -1,0 +1,973 @@
+{
+  "runId": "20260605235601",
+  "requestedTarget": "https://wishees/",
+  "actualTarget": "https://www.wishees.com",
+  "startedAt": "2026-06-05T23:38:47.895Z",
+  "updatedAt": "2026-06-05T23:56:03.011Z",
+  "coverage": {
+    "target.host-resolution": {
+      "count": 1,
+      "lastAt": "2026-06-05T23:38:47.975Z",
+      "lastDetail": {
+        "requestedTarget": "https://wishees/",
+        "actualTarget": "https://www.wishees.com",
+        "error": "TypeError: fetch failed"
+      }
+    },
+    "auth.member-login.alex": {
+      "count": 96,
+      "lastAt": "2026-06-05T23:56:01.656Z",
+      "lastDetail": {
+        "ok": true,
+        "cleanupOnly": true
+      }
+    },
+    "auth.member-login.maya": {
+      "count": 96,
+      "lastAt": "2026-06-05T23:56:01.858Z",
+      "lastDetail": {
+        "ok": true,
+        "cleanupOnly": true
+      }
+    },
+    "auth.member-login.jordan": {
+      "count": 96,
+      "lastAt": "2026-06-05T23:56:02.049Z",
+      "lastDetail": {
+        "ok": true,
+        "cleanupOnly": true
+      }
+    },
+    "auth.viewer-login.lina": {
+      "count": 96,
+      "lastAt": "2026-06-05T23:56:02.208Z",
+      "lastDetail": {
+        "ok": true,
+        "cleanupOnly": true
+      }
+    },
+    "auth.disabled-rejected": {
+      "count": 93,
+      "lastAt": "2026-06-05T23:53:47.964Z",
+      "lastDetail": {
+        "code": "account-disabled"
+      }
+    },
+    "auth.wrong-password-rejected": {
+      "count": 93,
+      "lastAt": "2026-06-05T23:53:48.117Z",
+      "lastDetail": {
+        "code": "invalid-code",
+        "ok": false
+      }
+    },
+    "boundary.unauthenticated-account-api": {
+      "count": 93,
+      "lastAt": "2026-06-05T23:53:48.289Z",
+      "lastDetail": {
+        "status": 401,
+        "body": {
+          "ok": false,
+          "reason": "not-authenticated"
+        }
+      }
+    },
+    "boundary.unauthenticated-shared-api-denied": {
+      "count": 93,
+      "lastAt": "2026-06-05T23:53:48.450Z",
+      "lastDetail": {
+        "status": 404,
+        "body": {
+          "ok": false,
+          "reason": "not-found"
+        }
+      }
+    },
+    "boundary.viewer-wishlist-write-denied": {
+      "count": 93,
+      "lastAt": "2026-06-05T23:53:48.613Z",
+      "lastDetail": {
+        "status": 403,
+        "body": {
+          "ok": false,
+          "reason": "invalid-action"
+        }
+      }
+    },
+    "boundary.viewer-wishlist-update-denied": {
+      "count": 1,
+      "lastAt": "2026-06-05T23:55:02.205Z",
+      "lastDetail": {
+        "status": 403,
+        "body": {
+          "ok": false,
+          "reason": "invalid-action"
+        },
+        "baselineStatus": 200,
+        "repeated": true
+      }
+    },
+    "boundary.viewer-wishlist-delete-denied": {
+      "count": 1,
+      "lastAt": "2026-06-05T23:55:02.207Z",
+      "lastDetail": {
+        "status": 403,
+        "body": {
+          "ok": false,
+          "reason": "invalid-action"
+        },
+        "baselineStatus": 200,
+        "repeated": true
+      }
+    },
+    "boundary.viewer-support-denied": {
+      "count": 93,
+      "lastAt": "2026-06-05T23:53:49.523Z",
+      "lastDetail": {
+        "status": 400,
+        "body": {
+          "ok": false,
+          "status": "invalid-action"
+        }
+      }
+    },
+    "boundary.disabled-direct-account-api-denied": {
+      "count": 94,
+      "lastAt": "2026-06-05T23:55:03.107Z",
+      "lastDetail": {
+        "status": 401,
+        "body": {
+          "ok": false,
+          "reason": "not-authenticated"
+        },
+        "repeated": true
+      }
+    },
+    "boundary.disabled-shared-api-denied": {
+      "count": 94,
+      "lastAt": "2026-06-05T23:55:03.109Z",
+      "lastDetail": {
+        "status": 404,
+        "body": {
+          "ok": false,
+          "reason": "not-found"
+        },
+        "repeated": true
+      }
+    },
+    "boundary.disabled-friend-wishlist-page-denied": {
+      "count": 93,
+      "lastAt": "2026-06-05T23:53:49.361Z",
+      "lastDetail": {
+        "status": 200,
+        "includesWishlistText": false
+      }
+    },
+    "boundary.disabled-direct-shared-wish-page-denied": {
+      "count": 1,
+      "lastAt": "2026-06-05T23:55:03.111Z",
+      "lastDetail": {
+        "status": 200,
+        "includesTitle": false,
+        "repeated": true
+      }
+    },
+    "boundary.unauthenticated-direct-shared-wish-page-observed": {
+      "count": 0
+    },
+    "boundary.disabled-support-denied": {
+      "count": 93,
+      "lastAt": "2026-06-05T23:53:49.707Z",
+      "lastDetail": {
+        "status": 401,
+        "body": {
+          "loginPath": "/account/login?next=%2Ffriends%2Fwishlist%3Finvite%3D12%26lang%3Dde",
+          "ok": false,
+          "status": "login-required"
+        }
+      }
+    },
+    "boundary.non-owner-outcome-decision-denied": {
+      "count": 0
+    },
+    "boundary.viewer-outcome-decision-denied": {
+      "count": 0
+    },
+    "boundary.disabled-outcome-decision-denied": {
+      "count": 0
+    },
+    "boundary.unauthenticated-outcome-decision-denied": {
+      "count": 0
+    },
+    "boundary.non-helper-outcome-cancel-denied": {
+      "count": 0
+    },
+    "boundary.viewer-outcome-cancel-denied": {
+      "count": 0
+    },
+    "boundary.disabled-outcome-cancel-denied": {
+      "count": 0
+    },
+    "boundary.unauthenticated-outcome-cancel-denied": {
+      "count": 0
+    },
+    "wishlist.owner-read": {
+      "count": 93,
+      "lastAt": "2026-06-05T23:53:49.875Z",
+      "lastDetail": {}
+    },
+    "wishlist.owner-create": {
+      "count": 93,
+      "lastAt": "2026-06-05T23:53:50.079Z",
+      "lastDetail": {
+        "itemId": "wish_codex_matrix_20260605233847_cycle93_affiliate"
+      }
+    },
+    "wishlist.owner-update": {
+      "count": 93,
+      "lastAt": "2026-06-05T23:53:50.472Z",
+      "lastDetail": {
+        "from": "wish_codex_matrix_20260605233847_cycle93_affiliate",
+        "to": "wish_codex_matrix_20260605233847_cycle93_edited"
+      }
+    },
+    "wishlist.owner-delete-cleanup": {
+      "count": 93,
+      "lastAt": "2026-06-05T23:53:51.749Z",
+      "lastDetail": {}
+    },
+    "wishlist.affiliate-url-persists": {
+      "count": 93,
+      "lastAt": "2026-06-05T23:53:50.246Z",
+      "lastDetail": {
+        "itemId": "wish_codex_matrix_20260605233847_cycle93_affiliate",
+        "url": "https://www.amazon.de/dp/B08N5WRWNW?tag=wishees-qa-21&psc=1"
+      }
+    },
+    "wishlist.unsafe-url-sanitized": {
+      "count": 93,
+      "lastAt": "2026-06-05T23:53:52.496Z",
+      "lastDetail": {
+        "apiUrl": "",
+        "htmlContainsJavascriptHref": false,
+        "htmlContainsUnsafeUrlText": false
+      }
+    },
+    "wishlist.html-title-escaped": {
+      "count": 93,
+      "lastAt": "2026-06-05T23:53:52.497Z",
+      "lastDetail": {
+        "htmlContainsRawImgTag": false,
+        "htmlContainsEscapedTitle": true
+      }
+    },
+    "gift-intent.helper-message-html-escaped-owner-outcomes": {
+      "count": 0
+    },
+    "notifications.helper-message-html-escaped-owner-feed": {
+      "count": 0
+    },
+    "gift-intent.owner-reply-html-escaped-helper-view": {
+      "count": 0
+    },
+    "gift-intent.message-security-cleanup": {
+      "count": 0
+    },
+    "wishlist.visibility.private-hidden-from-share-api": {
+      "count": 0
+    },
+    "wishlist.visibility.private-hidden-from-direct-page": {
+      "count": 0
+    },
+    "wishlist.visibility.private-direct-page-matrix": {
+      "count": 0
+    },
+    "wishlist.visibility.selected-people-allowed-visible": {
+      "count": 0
+    },
+    "wishlist.visibility.selected-people-unlisted-hidden": {
+      "count": 0
+    },
+    "wishlist.visibility.selected-people-direct-allowed-visible": {
+      "count": 0
+    },
+    "wishlist.visibility.selected-people-direct-unlisted-hidden": {
+      "count": 0
+    },
+    "wishlist.visibility.public-visible-anonymous": {
+      "count": 0
+    },
+    "wishlist.visibility.public-direct-page-anonymous": {
+      "count": 0
+    },
+    "wishlist.visibility.direct-page-payment-metadata-contained": {
+      "count": 0
+    },
+    "wishlist.payment-metadata.share-api-contained": {
+      "count": 0
+    },
+    "wishlist.payment-metadata.direct-private-contained": {
+      "count": 0
+    },
+    "wishlist.payment-metadata.direct-selected-contained": {
+      "count": 0
+    },
+    "wishlist.payment-metadata.cleanup": {
+      "count": 0
+    },
+    "wishlist.visibility.cleanup": {
+      "count": 0
+    },
+    "affiliate.external-links-rendered": {
+      "count": 0
+    },
+    "affiliate.amazon-link-has-tag": {
+      "count": 0
+    },
+    "affiliate.ebay-link-has-campaign": {
+      "count": 0
+    },
+    "affiliate.external-links-safe-rel": {
+      "count": 0
+    },
+    "affiliate.ebay-temporary-link-rendered": {
+      "count": 0
+    },
+    "affiliate.ebay-temporary-link-has-campaign": {
+      "count": 0
+    },
+    "affiliate.ebay-temporary-link-safe-rel": {
+      "count": 0
+    },
+    "wishlist.share-list-member-friend": {
+      "count": 93,
+      "lastAt": "2026-06-05T23:53:50.850Z",
+      "lastDetail": {
+        "ownerUserId": 12,
+        "mayaStatus": 200,
+        "jordanStatus": 200
+      }
+    },
+    "wishlist.share-list-viewer": {
+      "count": 93,
+      "lastAt": "2026-06-05T23:53:50.851Z",
+      "lastDetail": {
+        "ownerUserId": 12,
+        "status": 404,
+        "reason": "not-found"
+      }
+    },
+    "wishlist.shared-wish-public-render": {
+      "count": 93,
+      "lastAt": "2026-06-05T23:53:51.029Z",
+      "lastDetail": {
+        "status": 200,
+        "includesTitle": true
+      }
+    },
+    "outcomes.owner-read": {
+      "count": 93,
+      "lastAt": "2026-06-05T23:53:51.201Z",
+      "lastDetail": {
+        "count": 0
+      }
+    },
+    "gift-intent.maya-ui-partial-offer": {
+      "count": 1,
+      "lastAt": "2026-06-05T23:55:15.549Z",
+      "lastDetail": {
+        "repeatedViaBrowser": true,
+        "responseStatus": 200,
+        "outcomeId": "458",
+        "consoleIssues": 0,
+        "networkFailures": 0
+      }
+    },
+    "gift-intent.owner-outcome-visible": {
+      "count": 1,
+      "lastAt": "2026-06-05T23:55:25.771Z",
+      "lastDetail": {
+        "count": 1,
+        "outcomeIds": [
+          "458"
+        ]
+      }
+    },
+    "gift-intent.owner-decline-cleanup": {
+      "count": 1,
+      "lastAt": "2026-06-05T23:55:25.961Z",
+      "lastDetail": {
+        "outcomeId": "458"
+      }
+    },
+    "gift-intent.concurrent-helpers-same-item": {
+      "count": 0
+    },
+    "gift-intent.concurrent-helpers-cleanup": {
+      "count": 0
+    },
+    "gift-intent.same-helper-concurrent-submit": {
+      "count": 0
+    },
+    "gift-intent.same-helper-concurrent-cleanup": {
+      "count": 0
+    },
+    "gift-intent.helper-cancel-own-outcome": {
+      "count": 0
+    },
+    "gift-intent.owner-confirm-decision": {
+      "count": 0
+    },
+    "gift-intent.owner-decision-race-same-outcome": {
+      "count": 0
+    },
+    "gift-intent.owner-decision-race-cleanup": {
+      "count": 0
+    },
+    "gift-intent.contribution-boundary-zero": {
+      "count": 0
+    },
+    "gift-intent.contribution-boundary-negative": {
+      "count": 0
+    },
+    "gift-intent.contribution-boundary-over-100": {
+      "count": 0
+    },
+    "gift-intent.contribution-boundary-huge": {
+      "count": 0
+    },
+    "gift-intent.contribution-boundary-nonnumeric": {
+      "count": 0
+    },
+    "gift-intent.contribution-boundary-decimal": {
+      "count": 0
+    },
+    "notifications.member-feed": {
+      "count": 93,
+      "lastAt": "2026-06-05T23:53:51.375Z",
+      "lastDetail": {
+        "unreadCount": 0,
+        "count": 0
+      }
+    },
+    "notifications.qa-artifacts-cleanup": {
+      "count": 95,
+      "lastAt": "2026-06-05T23:55:26.511Z",
+      "lastDetail": {
+        "deleted": [
+          "user_notification:542"
+        ]
+      }
+    },
+    "notifications.owner-mark-read": {
+      "count": 0
+    },
+    "notifications.owner-delete": {
+      "count": 0
+    },
+    "notifications.helper-reply-after-owner-confirm": {
+      "count": 0
+    },
+    "notifications.helper-reply-after-owner-decline": {
+      "count": 0
+    },
+    "boundary.non-owner-notification-read-denied": {
+      "count": 0
+    },
+    "boundary.viewer-notification-read-denied": {
+      "count": 0
+    },
+    "boundary.disabled-notification-read-denied": {
+      "count": 0
+    },
+    "boundary.unauthenticated-notification-read-denied": {
+      "count": 0
+    },
+    "boundary.non-owner-notification-delete-denied": {
+      "count": 0
+    },
+    "boundary.viewer-notification-delete-denied": {
+      "count": 0
+    },
+    "boundary.disabled-notification-delete-denied": {
+      "count": 0
+    },
+    "boundary.unauthenticated-notification-delete-denied": {
+      "count": 0
+    },
+    "race.same-owner-parallel-save": {
+      "count": 93,
+      "lastAt": "2026-06-05T23:53:53.707Z",
+      "lastDetail": {
+        "hasA": true,
+        "hasB": true
+      }
+    },
+    "friends.requests-read": {
+      "count": 93,
+      "lastAt": "2026-06-05T23:53:54.264Z",
+      "lastDetail": {
+        "linaIncoming": 0,
+        "alexOutgoing": 0
+      }
+    },
+    "friends.connected-read": {
+      "count": 93,
+      "lastAt": "2026-06-05T23:53:54.439Z",
+      "lastDetail": {
+        "count": 2
+      }
+    },
+    "friends.connected-read.all-users": {
+      "count": 1,
+      "lastAt": "2026-06-05T23:56:03.011Z",
+      "lastDetail": {
+        "alex": [
+          14,
+          13
+        ],
+        "maya": [
+          1,
+          12
+        ],
+        "jordan": [
+          12
+        ],
+        "lina": []
+      }
+    },
+    "friends.invite-api.member": {
+      "count": 0
+    },
+    "friends.invite-api.viewer": {
+      "count": 0
+    },
+    "friends.invite-api.disabled": {
+      "count": 0
+    },
+    "friends.invite-api.anonymous": {
+      "count": 0
+    },
+    "friends.invite-page.anonymous": {
+      "count": 0
+    },
+    "friends.invite-page.disabled": {
+      "count": 0
+    },
+    "friends.invite-page.viewer": {
+      "count": 0
+    },
+    "friends.viewer-remove-connection-denied": {
+      "count": 0
+    },
+    "friends.disabled-remove-connection-denied": {
+      "count": 0
+    },
+    "friends.unauthenticated-remove-connection-denied": {
+      "count": 0
+    },
+    "friends.request-actions-invalid-id-denied": {
+      "count": 0
+    },
+    "friends.mutation-permission-cleanup": {
+      "count": 0
+    },
+    "external.same-origin-guard": {
+      "count": 93,
+      "lastAt": "2026-06-05T23:53:54.586Z",
+      "lastDetail": {
+        "status": 403,
+        "body": {
+          "ok": false,
+          "reason": "same-origin-required"
+        }
+      }
+    },
+    "external.same-origin-account-wishlist-guard": {
+      "count": 93,
+      "lastAt": "2026-06-05T23:53:54.911Z",
+      "lastDetail": {
+        "status": 403,
+        "body": {
+          "ok": false,
+          "reason": "same-origin-required"
+        }
+      }
+    },
+    "external.same-origin-fulfill-guard": {
+      "count": 93,
+      "lastAt": "2026-06-05T23:53:55.101Z",
+      "lastDetail": {
+        "status": 400,
+        "body": {
+          "ok": false,
+          "status": "invalid-action"
+        },
+        "note": "Mutation was rejected, but not with the same-origin-required response used by other guarded endpoints."
+      }
+    },
+    "external.same-origin-owner-outcome-guard": {
+      "count": 0
+    },
+    "external.same-origin-helper-cancel-guard": {
+      "count": 0
+    },
+    "external.same-origin-notification-read-guard": {
+      "count": 0
+    },
+    "external.same-origin-notification-delete-guard": {
+      "count": 0
+    },
+    "external.same-origin-friend-invite-guard": {
+      "count": 0
+    },
+    "realtime.browser-smoke": {
+      "count": 1,
+      "lastAt": "2026-06-05T23:55:11.467Z",
+      "lastDetail": {
+        "mobileOverflowRepeat": true,
+        "overflowPx": 0,
+        "consoleIssues": 0,
+        "networkFailures": 0
+      }
+    },
+    "realtime.maya-viewport-updates-after-support": {
+      "count": 0
+    },
+    "cleanup.run-prefix-removed": {
+      "count": 188,
+      "lastAt": "2026-06-05T23:55:27.183Z",
+      "lastDetail": {
+        "prefix": "wish_codex_matrix_"
+      }
+    },
+    "ui-i18n.home-de-desktop": {
+      "count": 1,
+      "lastAt": "2026-06-05T23:54:27.094Z",
+      "lastDetail": {
+        "status": 200,
+        "route": "/?lang=de",
+        "viewport": {
+          "width": 1440,
+          "height": 900
+        },
+        "overflowPx": 0,
+        "htmlLang": "de",
+        "htmlLangMismatch": false,
+        "badKeyMatches": [],
+        "templateTokens": [],
+        "englishTerms": [],
+        "unnamedControlCount": 0,
+        "clippedTextCount": 0,
+        "screenshot": "/Users/thien.nguyen/thiennp.github.io/codex-automations/wishees-verify-89818986-20260605T233819Z/logs/ui-i18n-20260605235421-home-de-desktop.png"
+      }
+    },
+    "ui-i18n.home-en-mobile": {
+      "count": 1,
+      "lastAt": "2026-06-05T23:54:30.028Z",
+      "lastDetail": {
+        "status": 200,
+        "route": "/?lang=en",
+        "viewport": {
+          "width": 320,
+          "height": 680
+        },
+        "overflowPx": 0,
+        "htmlLang": "en",
+        "htmlLangMismatch": false,
+        "badKeyMatches": [],
+        "templateTokens": [],
+        "englishTerms": [],
+        "unnamedControlCount": 0,
+        "clippedTextCount": 0,
+        "screenshot": "/Users/thien.nguyen/thiennp.github.io/codex-automations/wishees-verify-89818986-20260605T233819Z/logs/ui-i18n-20260605235421-home-en-mobile.png"
+      }
+    },
+    "ui-i18n.account-login-de-mobile": {
+      "count": 1,
+      "lastAt": "2026-06-05T23:54:33.080Z",
+      "lastDetail": {
+        "status": 200,
+        "route": "/account/login?lang=de",
+        "viewport": {
+          "width": 320,
+          "height": 680
+        },
+        "overflowPx": 0,
+        "htmlLang": "de",
+        "htmlLangMismatch": false,
+        "badKeyMatches": [],
+        "templateTokens": [],
+        "englishTerms": [],
+        "unnamedControlCount": 0,
+        "clippedTextCount": 0,
+        "screenshot": "/Users/thien.nguyen/thiennp.github.io/codex-automations/wishees-verify-89818986-20260605T233819Z/logs/ui-i18n-20260605235421-account-login-de-mobile.png"
+      }
+    },
+    "ui-i18n.my-wishees-de-mobile-alex": {
+      "count": 1,
+      "lastAt": "2026-06-05T23:54:39.116Z",
+      "lastDetail": {
+        "status": 200,
+        "route": "/my-wishees?lang=de",
+        "viewport": {
+          "width": 320,
+          "height": 680
+        },
+        "overflowPx": 0,
+        "htmlLang": "de",
+        "htmlLangMismatch": false,
+        "badKeyMatches": [],
+        "templateTokens": [],
+        "englishTerms": [],
+        "unnamedControlCount": 0,
+        "clippedTextCount": 0,
+        "screenshot": "/Users/thien.nguyen/thiennp.github.io/codex-automations/wishees-verify-89818986-20260605T233819Z/logs/ui-i18n-20260605235421-my-wishees-de-mobile-alex.png"
+      }
+    },
+    "ui-i18n.friends-de-desktop-maya": {
+      "count": 1,
+      "lastAt": "2026-06-05T23:54:43.620Z",
+      "lastDetail": {
+        "status": 200,
+        "route": "/friends?lang=de",
+        "viewport": {
+          "width": 1440,
+          "height": 900
+        },
+        "overflowPx": 0,
+        "htmlLang": "de",
+        "htmlLangMismatch": false,
+        "badKeyMatches": [],
+        "templateTokens": [],
+        "englishTerms": [],
+        "unnamedControlCount": 0,
+        "clippedTextCount": 0,
+        "screenshot": "/Users/thien.nguyen/thiennp.github.io/codex-automations/wishees-verify-89818986-20260605T233819Z/logs/ui-i18n-20260605235421-friends-de-desktop-maya.png"
+      }
+    },
+    "ui-i18n.friend-wishlist-de-mobile-maya": {
+      "count": 1,
+      "lastAt": "2026-06-05T23:54:48.365Z",
+      "lastDetail": {
+        "status": 200,
+        "route": "/friends/wishlist?invite=user-12&lang=de",
+        "viewport": {
+          "width": 320,
+          "height": 680
+        },
+        "overflowPx": 0,
+        "htmlLang": "de",
+        "htmlLangMismatch": false,
+        "badKeyMatches": [],
+        "templateTokens": [],
+        "englishTerms": [],
+        "unnamedControlCount": 0,
+        "clippedTextCount": 0,
+        "screenshot": "/Users/thien.nguyen/thiennp.github.io/codex-automations/wishees-verify-89818986-20260605T233819Z/logs/ui-i18n-20260605235421-friend-wishlist-de-mobile-maya.png"
+      }
+    },
+    "ui-i18n.viewer-friend-wishlist-de-mobile-lina": {
+      "count": 1,
+      "lastAt": "2026-06-05T23:54:51.932Z",
+      "lastDetail": {
+        "status": 200,
+        "route": "/friends/wishlist?invite=user-12&lang=de",
+        "viewport": {
+          "width": 320,
+          "height": 680
+        },
+        "overflowPx": 0,
+        "htmlLang": "de",
+        "htmlLangMismatch": false,
+        "badKeyMatches": [],
+        "templateTokens": [],
+        "englishTerms": [],
+        "unnamedControlCount": 0,
+        "clippedTextCount": 0,
+        "screenshot": "/Users/thien.nguyen/thiennp.github.io/codex-automations/wishees-verify-89818986-20260605T233819Z/logs/ui-i18n-20260605235421-viewer-friend-wishlist-de-mobile-lina.png"
+      }
+    },
+    "boundary.viewer-wishlist-put-shapes-fix-verified": {
+      "count": 1,
+      "lastAt": "2026-06-05T23:55:02.208Z",
+      "lastDetail": {
+        "beforeStatus": 200,
+        "updateStatus": 403,
+        "updateBody": {
+          "ok": false,
+          "reason": "invalid-action"
+        },
+        "deleteStatus": 403,
+        "deleteBody": {
+          "ok": false,
+          "reason": "invalid-action"
+        },
+        "afterStatus": 200,
+        "repeated": true
+      }
+    },
+    "browser.mobile-overflow-repeat": {
+      "count": 1,
+      "lastAt": "2026-06-05T23:55:11.467Z",
+      "lastDetail": {
+        "session": "Maya",
+        "url": "https://www.wishees.com/friends/wishlist?invite=user-12&lang=de",
+        "viewport": "320x680",
+        "title": "Friend Wishlist",
+        "documentScrollWidth": 320,
+        "bodyScrollWidth": 320,
+        "clientWidth": 320,
+        "overflowPx": 0,
+        "hasWishlistItem": true,
+        "affiliateLinksObserved": [
+          "https://www.amazon.com/s?k=burr+coffee+grinder&tag=wishees-20",
+          "https://www.amazon.com/s?k=noise+canceling+headphones&tag=wishees-20"
+        ],
+        "overflowingElements": [],
+        "consoleWarningsOrErrors": [],
+        "networkFailures": []
+      }
+    },
+    "browser.maya-partial-offer-repeat": {
+      "count": 1,
+      "lastAt": "2026-06-05T23:55:15.549Z",
+      "lastDetail": {
+        "session": "Maya browser context",
+        "url": "https://www.wishees.com/friends/wishlist?invite=user-12&lang=de",
+        "item": "Compact burr coffee grinder",
+        "responseStatus": 200,
+        "responseOk": true,
+        "responseBodyKind": "json",
+        "responseBody": {
+          "ok": true,
+          "outcome": {
+            "confirmedAt": "",
+            "contributionPercent": 15,
+            "helperMessage": "Codex browser repeat partial offer 20260605235507",
+            "helperUserId": 13,
+            "id": "458",
+            "itemId": "wish_e2e_coffee_grinder",
+            "itemTitle": "Compact burr coffee grinder",
+            "ownerReply": "",
+            "ownerUserId": 12,
+            "productUrl": "https://www.amazon.de/s?k=burr+coffee+grinder&tag=wishees-20",
+            "promisedAt": "2026-06-05T23:55:14.709Z",
+            "status": "promised"
+          },
+          "status": "contribution-promised"
+        },
+        "hasSupportPhrase": true,
+        "bodySnippet": "Geteilte Wunschlisten\n\nSieh, was sich deine Freunde wünschen, finde Produktlinks oder biete an, dich an einem Geschenk zu beteiligen.\n\nLaufend\nCompact burr coffee grinder\n\nSmall burr grinder for morning coffee.\n\nPreishinweis: 89,00 €\n\nProdukt ansehen\nGanzen Wunsch übernehmen\nBeitragen\nNoise-canceling headphones\n\nPrefer comfortable over flashy. Good for commute and focus work.\n\nPreishinweis: 129,00 €\n\nProdukt ansehen\nGanzen Wunsch übernehmen\nBeitragen\n\nWishees hilft dir bei der Geschenkkoordinati",
+        "consoleWarningsOrErrors": [],
+        "networkFailures": []
+      }
+    },
+    "browser.owner-decline-existing-outcome": {
+      "count": 2,
+      "lastAt": "2026-06-05T23:55:50.079Z",
+      "lastDetail": {
+        "outcomeId": "458",
+        "status": 400,
+        "body": {
+          "ok": false,
+          "reason": "invalid-action"
+        }
+      }
+    },
+    "browser.alex-notifications-repeat": {
+      "count": 1,
+      "lastAt": "2026-06-05T23:55:18.271Z",
+      "lastDetail": {
+        "session": "Alex",
+        "url": "https://www.wishees.com/notifications?lang=de",
+        "title": "Wishees Notifications",
+        "bodySnippet": "Benachrichtigungen\nE2E Maya bot Unterstützung am Compact burr coffee grinder\nAls gelesen markieren\nLöschen\n2\nW\nıshees\nDE\n1",
+        "hasNotificationsUi": true,
+        "buttonCount": 8,
+        "consoleWarningsOrErrors": [],
+        "networkFailures": []
+      }
+    },
+    "browser.owner-list-outcomes": {
+      "count": 1,
+      "lastAt": "2026-06-05T23:55:50.663Z",
+      "lastDetail": {
+        "status": 200,
+        "count": 0
+      }
+    }
+  },
+  "bugs": [
+    {
+      "occurrences": 9,
+      "id": "BUG-001",
+      "firstSeenAt": "2026-06-05T23:39:58.176Z",
+      "severity": "MAJOR",
+      "title": "Concurrent owner wishlist saves lose one newly created item",
+      "stepsToReproduce": [
+        "Open two authenticated Alex sessions",
+        "Read the same wishlist baseline in both sessions",
+        "Submit two PUT /api/account/wishlist requests at the same time, each adding a different item",
+        "Fetch /api/account/wishlist"
+      ],
+      "actualBehavior": "Final wishlist had race item A=false, race item B=true; one save appears to have overwritten the other.",
+      "evidence": {
+        "ts": "2026-06-05T23:39:58.173Z",
+        "runId": "20260605233847",
+        "session": "alex-race-a",
+        "feature": "race",
+        "action": "race final read",
+        "request": {
+          "method": "GET",
+          "route": "/api/account/wishlist"
+        },
+        "response": {
+          "status": 200,
+          "ok": true,
+          "contentType": "application/json",
+          "body": "{\"items\":[{\"allowedViewers\":[],\"createdAt\":\"2026-06-05T23:28:05.333Z\",\"currency\":\"EUR\",\"id\":\"wish_e2e_coffee_grinder\",\"note\":\"Small burr grinder for morning coffee.\",\"price\":\"89.00\",\"recipientName\":\"\",\"title\":\"Compact burr coffee grinder\",\"updatedAt\":\"2026-06-05T23:28:05.333Z\",\"url\":\"https://www.amazon.de/s?k=burr+coffee+grinder&tag=wishees-20\",\"visibility\":\"friends\",\"giftPaymentOptions\":[],\"giftPaymentAccount\":\"\",\"giftPaymentMethod\":\"\",\"giftPaymentOtherLabel\":\"\"},{\"allowedViewers\":[],\"createdAt\":\"2026-06-05T23:28:05.334Z\",\"currency\":\"EUR\",\"id\":\"wish_e2e_noise_headphones\",\"note\":\"Prefer comfortable over flashy. Good for commute and focus work.\",\"price\":\"129.00\",\"recipientName\":\"\",\"title\":\"Noise-canceling headphones\",\"updatedAt\":\"2026-06-05T23:28:05.334Z\",\"url\":\"https://www.amazon.com/s?k=noise+canceling+headphones&tag=wishees-20\",\"visibility\":\"friends\",\"giftPaymentOptions\":[],\"giftPaymentAccount\":\"\",\"giftPaymentMethod\":\"\",\"giftPaymentOtherLabel\":\"\"},{\"allowedViewers\":[],\"createdAt\":\"2026-06-05T23:39:57.699Z\",\"currency\":\"EUR\",\"id\":\"wish_codex_matrix_20260605233847_race6_b\",\"note\":\"Automated multi-user QA artifact 20260605233847. Safe to delete.\",\"price\":\"19.99\",\"recipientName\":\"Codex QA\",\"title\":\"Codex matrix race B 20260605233847\",\"updatedAt\":\"2026-06-05T23:39:57.699Z\",\"url\":\"https://www.amazon.de/dp/B08N5WRWNW?tag=wishees-qa-21&psc=1\",\"visibility\":\"friends\",\"giftPaymentOptions\":[{\"account\":\"qa-paypal@example.test\",\"accountName\":\"\",\"bankName\":\"\",\"method\":\"paypal\",\"otherLabel\":\"\",\"swift\":\"\"}],\"giftPaymentAccount\":\"qa-paypal@example.test\",\"giftPaymentMethod\":\"paypal\",\"giftPaymentOtherLabel\":\"\"}],\"ok\":true,\"visibility\":\"friends\"}"
+        },
+        "durationMs": 186,
+        "error": null
+      },
+      "lastSeenAt": "2026-06-05T23:51:35.781Z",
+      "lastActualBehavior": "Final wishlist had race item A=true, race item B=false; one save appears to have overwritten the other.",
+      "lastEvidence": {
+        "ts": "2026-06-05T23:51:35.777Z",
+        "runId": "20260605233847",
+        "session": "alex-race-a",
+        "feature": "race",
+        "action": "race final read",
+        "request": {
+          "method": "GET",
+          "route": "/api/account/wishlist"
+        },
+        "response": {
+          "status": 200,
+          "ok": true,
+          "contentType": "application/json",
+          "body": "{\"items\":[{\"allowedViewers\":[],\"createdAt\":\"2026-06-05T23:28:05.333Z\",\"currency\":\"EUR\",\"id\":\"wish_e2e_coffee_grinder\",\"note\":\"Small burr grinder for morning coffee.\",\"price\":\"89.00\",\"recipientName\":\"\",\"title\":\"Compact burr coffee grinder\",\"updatedAt\":\"2026-06-05T23:28:05.333Z\",\"url\":\"https://www.amazon.de/s?k=burr+coffee+grinder&tag=wishees-20\",\"visibility\":\"friends\",\"giftPaymentOptions\":[],\"giftPaymentAccount\":\"\",\"giftPaymentMethod\":\"\",\"giftPaymentOtherLabel\":\"\"},{\"allowedViewers\":[],\"createdAt\":\"2026-06-05T23:28:05.334Z\",\"currency\":\"EUR\",\"id\":\"wish_e2e_noise_headphones\",\"note\":\"Prefer comfortable over flashy. Good for commute and focus work.\",\"price\":\"129.00\",\"recipientName\":\"\",\"title\":\"Noise-canceling headphones\",\"updatedAt\":\"2026-06-05T23:28:05.334Z\",\"url\":\"https://www.amazon.com/s?k=noise+canceling+headphones&tag=wishees-20\",\"visibility\":\"friends\",\"giftPaymentOptions\":[],\"giftPaymentAccount\":\"\",\"giftPaymentMethod\":\"\",\"giftPaymentOtherLabel\":\"\"},{\"allowedViewers\":[],\"createdAt\":\"2026-06-05T23:51:35.391Z\",\"currency\":\"EUR\",\"id\":\"wish_codex_matrix_20260605233847_race78_a\",\"note\":\"Automated multi-user QA artifact 20260605233847. Safe to delete.\",\"price\":\"19.99\",\"recipientName\":\"Codex QA\",\"title\":\"Codex matrix race A 20260605233847\",\"updatedAt\":\"2026-06-05T23:51:35.391Z\",\"url\":\"https://www.amazon.de/dp/B08N5WRWNW?tag=wishees-qa-21&psc=1\",\"visibility\":\"friends\",\"giftPaymentOptions\":[{\"account\":\"qa-paypal@example.test\",\"accountName\":\"\",\"bankName\":\"\",\"method\":\"paypal\",\"otherLabel\":\"\",\"swift\":\"\"}],\"giftPaymentAccount\":\"qa-paypal@example.test\",\"giftPaymentMethod\":\"paypal\",\"giftPaymentOtherLabel\":\"\"}],\"ok\":true,\"visibility\":\"friends\"}"
+        },
+        "durationMs": 163,
+        "error": null
+      }
+    }
+  ],
+  "notes": [
+    {
+      "ts": "2026-06-05T23:38:47.974Z",
+      "type": "network-or-transport",
+      "session": "target-probe",
+      "action": "requested target host probe",
+      "route": "https://wishees/",
+      "error": "TypeError: fetch failed"
+    },
+    {
+      "ts": "2026-06-05T23:38:47.974Z",
+      "type": "target-host",
+      "message": "https://wishees/ was not reachable from this runner; using https://www.wishees.com.",
+      "error": "TypeError: fetch failed"
+    }
+  ]
+}

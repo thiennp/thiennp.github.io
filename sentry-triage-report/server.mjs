@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-import { spawn } from 'node:child_process';
+import { spawn, spawnSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
 import { existsSync, readFileSync, renameSync, statSync, watch, writeFileSync } from 'node:fs';
 import { createServer } from 'node:http';
@@ -14,11 +14,17 @@ const REPORT_DATA_PATH = join(ROOT, 'report-data.json');
 const EVIDENCE_DIR = join(ROOT, 'evidence');
 const UPDATE_STATUS_PATH = join(ROOT, 'manual-update-status.json');
 const WORKFLOW_STATUS_PATH = join(ROOT, 'workflow-status.json');
+const SCANNER_STATUS_PATH = process.env.SENTRY_TRIAGE_SCANNER_STATUS_PATH || '/Users/thien.nguyen/thiennp.github.io/codex-automations/sentry-chrome-tab-snapshot/issue-jira-scan-status.json';
 const DEFAULT_UPDATE_SCRIPT = join(ROOT, 'manual_update_report.sh');
 const WS_GUID = '258EAFA5-E914-47DA-95CA-C5AB0DC85B11';
 const MAX_REQUEST_BYTES = Number(process.env.SENTRY_TRIAGE_REPORT_MAX_REQUEST_BYTES || 2 * 1024 * 1024);
 const CLAUDE_COMMAND = process.env.SENTRY_TRIAGE_CLAUDE_COMMAND || '/opt/homebrew/bin/claude';
 const CLAUDE_TIMEOUT_MS = Number(process.env.SENTRY_TRIAGE_CLAUDE_TIMEOUT_MS || 45000);
+const SCANNER_PROCESS_PATTERNS = [
+  '/Users/thien.nguyen/thiennp.github.io/codex-automations/sentry-chrome-tab-snapshot/snapshot.sh',
+  '/Users/thien.nguyen/thiennp.github.io/codex-automations/sentry-chrome-tab-snapshot/scan-issue-jira-links.mjs',
+  'sentry-chrome-tab-snapshot-detail-scan',
+];
 
 const clients = new Set();
 let broadcastTimer = null;
@@ -357,6 +363,209 @@ function setWorkflowState(nextState) {
   saveWorkflowState();
   broadcastWorkflowState();
   return workflowState;
+}
+
+function waitMs(ms) {
+  Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, ms);
+}
+
+function processExists(pid) {
+  try {
+    process.kill(pid, 0);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+function commandForPid(pid) {
+  const result = spawnSync('/bin/ps', ['-p', String(pid), '-o', 'command='], {
+    encoding: 'utf8',
+    stdio: ['ignore', 'pipe', 'ignore'],
+  });
+  return String(result.stdout || '').trim();
+}
+
+function isScannerCommand(command) {
+  return command.includes('/Users/thien.nguyen/thiennp.github.io/codex-automations/sentry-chrome-tab-snapshot/snapshot.sh') ||
+    command.includes('/Users/thien.nguyen/thiennp.github.io/codex-automations/sentry-chrome-tab-snapshot/scan-issue-jira-links.mjs');
+}
+
+function scannerProcessIds() {
+  const ids = new Set();
+  for (const pattern of SCANNER_PROCESS_PATTERNS) {
+    const result = spawnSync('/usr/bin/pgrep', ['-f', pattern], {
+      encoding: 'utf8',
+      stdio: ['ignore', 'pipe', 'ignore'],
+    });
+    for (const line of String(result.stdout || '').split(/\n+/)) {
+      const pid = Number(line.trim());
+      if (Number.isInteger(pid) && pid > 0 && pid !== process.pid && isScannerCommand(commandForPid(pid))) {
+        ids.add(pid);
+      }
+    }
+  }
+  return [...ids].sort((a, b) => a - b);
+}
+
+function readScannerStatus() {
+  if (!existsSync(SCANNER_STATUS_PATH)) {
+    return {};
+  }
+  try {
+    return JSON.parse(readFileSync(SCANNER_STATUS_PATH, 'utf8'));
+  } catch {
+    return {};
+  }
+}
+
+function killScannerProcesses() {
+  const matchedPids = scannerProcessIds();
+  const terminatedPids = [];
+  const killedPids = [];
+
+  for (const pid of matchedPids) {
+    try {
+      process.kill(pid, 'SIGTERM');
+      terminatedPids.push(pid);
+    } catch {
+      // Process may have already exited between pgrep and kill.
+    }
+  }
+
+  waitMs(800);
+
+  for (const pid of matchedPids) {
+    if (!processExists(pid)) {
+      continue;
+    }
+    try {
+      process.kill(pid, 'SIGKILL');
+      killedPids.push(pid);
+    } catch {
+      // Process may have exited after the liveness check.
+    }
+  }
+
+  waitMs(200);
+
+  return {
+    matchedPids,
+    terminatedPids,
+    killedPids,
+    remainingPids: matchedPids.filter(processExists),
+  };
+}
+
+function scannerActionCounts(results) {
+  return {
+    checkedIssueCount: results.length,
+    foundIssueCount: results.filter((item) => Array.isArray(item.jiraTicketKeys) && item.jiraTicketKeys.length).length,
+    createdJiraIssueCount: results.flatMap((item) => item.jiraActions || []).filter((action) => action.type === 'create' && action.status === 'created').length,
+    assignedJiraIssueCount: results.flatMap((item) => item.jiraActions || []).filter((action) => action.type === 'assign' && action.status === 'assigned').length,
+  };
+}
+
+function markScannerStopped(killResult) {
+  const stoppedAt = new Date().toISOString();
+  const previousStatus = readScannerStatus();
+  let reportData = null;
+  let reportUpdated = false;
+  try {
+    reportData = readReportData();
+  } catch {
+    reportData = null;
+  }
+
+  const scan = reportData && isObject(reportData.lastChromeProfileSentryJiraScan)
+    ? reportData.lastChromeProfileSentryJiraScan
+    : {};
+  const results = Array.isArray(scan.results) && scan.results.length
+    ? scan.results
+    : (Array.isArray(previousStatus.results) ? previousStatus.results : []);
+  const counts = scannerActionCounts(results);
+  const plannedIssueCount = Number(scan.totalIssueCount || previousStatus.plannedIssueCount || 0);
+  const blocker = {
+    type: 'USER_STOPPED_SCAN',
+    message: `Scanner stopped from the report UI after ${counts.checkedIssueCount} completed issue check(s).`,
+  };
+  const scannerStatus = {
+    ok: false,
+    status: 'stopped-by-user',
+    startedAt: previousStatus.startedAt || null,
+    stoppedAt,
+    checkedAt: scan.checkedAt || previousStatus.checkedAt || null,
+    plannedIssueCount,
+    ...counts,
+    blocker,
+    killResult,
+    results,
+  };
+
+  try {
+    atomicWriteJson(SCANNER_STATUS_PATH, scannerStatus);
+  } catch {
+    // The UI can still report the kill result even if the sidecar status path is unavailable.
+  }
+
+  if (reportData) {
+    replaceReportData({
+      ...reportData,
+      lastUpdated: stoppedAt,
+      lastChromeProfileSentryJiraScan: {
+        ...scan,
+        status: 'stopped-by-user',
+        stoppedAt,
+        plannedIssueCount,
+        ...counts,
+        currentIssueId: null,
+        currentIssueUrl: null,
+        blocker,
+        killResult,
+        results,
+      },
+    });
+    reportUpdated = true;
+  }
+
+  const workflow = setWorkflowState({
+    status: 'stopped',
+    step: plannedIssueCount ? `${counts.checkedIssueCount}/${plannedIssueCount}` : String(counts.checkedIssueCount),
+    title: 'Sentry Jira link scan stopped',
+    message: `${blocker.message} Found/deduped Jira tickets: ${counts.foundIssueCount}; created: ${counts.createdJiraIssueCount}; assigned: ${counts.assignedJiraIssueCount}.`,
+    phase: 'jira-link-scan',
+    source: 'report-kill-scanner-button',
+    updatedAt: stoppedAt,
+  });
+
+  setUiState({
+    status: 'stopped',
+    activeIssueId: null,
+    activeSentryKey: null,
+    activeUrl: null,
+    activeJiraKeys: [],
+    scanRequestId: null,
+    previousIssueId: null,
+    previousSentryKey: null,
+    previousUrl: null,
+    nextIssueId: null,
+    nextSentryKey: null,
+    nextUrl: null,
+    focusedIssueId: null,
+    activeCardVisible: false,
+    activeCardFocused: false,
+    workflowUpdatedAt: stoppedAt,
+    highlightedCount: 0,
+    previousHighlightedCount: 0,
+    nextHighlightedCount: 0,
+    renderedAt: stoppedAt,
+  });
+
+  return {
+    scannerStatus,
+    workflow,
+    reportUpdated,
+  };
 }
 
 function setUpdateState(patch) {
@@ -1229,6 +1438,33 @@ const server = createServer((req, res) => {
       ok: true,
       update: publicUpdateState(),
     });
+    return;
+  }
+
+  if (url.pathname === '/api/kill-scanner') {
+    if (req.method !== 'POST') {
+      writeJson(res, 405, {
+        ok: false,
+        error: 'Use POST to stop the scanner.',
+      });
+      return;
+    }
+
+    try {
+      const killResult = killScannerProcesses();
+      const stopped = markScannerStopped(killResult);
+      writeJson(res, 200, {
+        ok: killResult.remainingPids.length === 0,
+        killResult,
+        ...stopped,
+        report: reportMetadata(),
+      });
+    } catch (error) {
+      writeJson(res, 500, {
+        ok: false,
+        error: `Could not stop scanner: ${error.message}`,
+      });
+    }
     return;
   }
 

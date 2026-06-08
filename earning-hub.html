@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Remote Earning Hub - Thien Nguyen</title>
+    <meta name="description" content="A practical remote earning hub for Germany and EU-based workers: user testing, AI evaluation, research interviews, digital products, and affiliate assets.">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            line-height: 1.6;
+            color: #18212f;
+            background: #ffffff;
+            min-height: 100vh;
+            font-size: 16px;
+        }
+
+        .navigation {
+            background: #ffffff;
+            border-bottom: 1px solid #dfe5ec;
+            padding: 1rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .nav-container,
+        .container {
+            max-width: 1180px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        .nav-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .nav-logo {
+            font-size: 1.4rem;
+            font-weight: 800;
+            color: #18212f;
+            text-decoration: none;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 1.5rem;
+            list-style: none;
+            flex-wrap: wrap;
+        }
+
+        .nav-links a {
+            color: #5b6675;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .nav-links a:hover,
+        .nav-links a.active {
+            color: #18212f;
+        }
+
+        .hero {
+            background: #eef3f7;
+            border-bottom: 1px solid #dfe5ec;
+            padding: 4rem 0 3rem;
+        }
+
+        .hero-grid {
+            display: grid;
+            grid-template-columns: minmax(0, 1.5fr) minmax(280px, 0.8fr);
+            gap: 3rem;
+            align-items: center;
+        }
+
+        .eyebrow {
+            color: #176b6b;
+            font-weight: 800;
+            text-transform: uppercase;
+            font-size: 0.78rem;
+            letter-spacing: 0.06em;
+            margin-bottom: 1rem;
+        }
+
+        h1 {
+            font-size: 3rem;
+            line-height: 1.12;
+            margin-bottom: 1rem;
+            letter-spacing: 0;
+        }
+
+        .hero p {
+            color: #4c5968;
+            font-size: 1.14rem;
+            max-width: 720px;
+        }
+
+        .hero-panel {
+            background: #ffffff;
+            border: 1px solid #cfd9e3;
+            border-radius: 8px;
+            padding: 1.5rem;
+        }
+
+        .hero-panel strong {
+            display: block;
+            margin-bottom: 0.7rem;
+            color: #18212f;
+        }
+
+        .hero-panel ul {
+            list-style: none;
+        }
+
+        .hero-panel li {
+            border-top: 1px solid #e8edf2;
+            padding: 0.7rem 0;
+            color: #4c5968;
+        }
+
+        .hero-panel li:first-child {
+            border-top: 0;
+            padding-top: 0;
+        }
+
+        .actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.8rem;
+            margin-top: 1.6rem;
+        }
+
+        .button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 44px;
+            padding: 0.72rem 1rem;
+            border-radius: 8px;
+            border: 1px solid #18212f;
+            background: #18212f;
+            color: #ffffff;
+            text-decoration: none;
+            font-weight: 700;
+        }
+
+        .button.secondary {
+            background: #ffffff;
+            color: #18212f;
+            border-color: #cfd9e3;
+        }
+
+        .section {
+            padding: 3.5rem 0;
+            border-bottom: 1px solid #edf1f5;
+        }
+
+        .section h2 {
+            font-size: 2rem;
+            margin-bottom: 0.8rem;
+        }
+
+        .section-lede {
+            color: #5b6675;
+            max-width: 850px;
+            margin-bottom: 2rem;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 1rem;
+        }
+
+        .card {
+            border: 1px solid #dfe5ec;
+            border-radius: 8px;
+            padding: 1.2rem;
+            background: #ffffff;
+            min-height: 100%;
+        }
+
+        .card h3 {
+            font-size: 1.15rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .card p {
+            color: #566372;
+            margin-bottom: 1rem;
+        }
+
+        .meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.45rem;
+            margin-bottom: 1rem;
+        }
+
+        .tag {
+            border: 1px solid #d4dde7;
+            background: #f5f8fb;
+            color: #344255;
+            border-radius: 999px;
+            padding: 0.25rem 0.55rem;
+            font-size: 0.78rem;
+            font-weight: 700;
+        }
+
+        .card a {
+            color: #0d5f6c;
+            font-weight: 800;
+            text-decoration: none;
+        }
+
+        .card a:hover {
+            text-decoration: underline;
+        }
+
+        .ranked-list {
+            display: grid;
+            gap: 0.75rem;
+        }
+
+        .ranked-item {
+            display: grid;
+            grid-template-columns: 52px 1fr auto;
+            gap: 1rem;
+            align-items: center;
+            border: 1px solid #dfe5ec;
+            border-radius: 8px;
+            padding: 1rem;
+            background: #ffffff;
+        }
+
+        .rank {
+            width: 40px;
+            height: 40px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: #176b6b;
+            color: #ffffff;
+            border-radius: 50%;
+            font-weight: 900;
+        }
+
+        .ranked-item h3 {
+            font-size: 1.05rem;
+            margin-bottom: 0.2rem;
+        }
+
+        .ranked-item p {
+            color: #5b6675;
+        }
+
+        .warning {
+            background: #fff8ec;
+            border: 1px solid #f0d19b;
+            border-radius: 8px;
+            padding: 1.1rem;
+            color: #59410f;
+        }
+
+        .checklist {
+            list-style: none;
+            display: grid;
+            gap: 0.75rem;
+        }
+
+        .checklist li {
+            padding: 0.85rem 1rem;
+            border-left: 4px solid #176b6b;
+            background: #f7faf9;
+            color: #344255;
+        }
+
+        footer {
+            padding: 2rem;
+            text-align: center;
+            color: #6a7583;
+        }
+
+        @media (max-width: 900px) {
+            .hero-grid,
+            .grid,
+            .ranked-item {
+                grid-template-columns: 1fr;
+            }
+
+            h1 {
+                font-size: 2.3rem;
+            }
+
+            .nav-container {
+                align-items: flex-start;
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .ranked-item {
+                gap: 0.7rem;
+            }
+        }
+
+        @media (max-width: 560px) {
+            .nav-container,
+            .container {
+                padding: 0 1rem;
+            }
+
+            .hero {
+                padding: 2.5rem 0;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+
+            .actions {
+                flex-direction: column;
+            }
+
+            .button {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navigation">
+        <div class="nav-container">
+            <a href="index.html" class="nav-logo">Thien Nguyen</a>
+            <ul class="nav-links">
+                <li><a href="resume.html">Resume</a></li>
+                <li><a href="blog.html">Blog</a></li>
+                <li><a href="index.html">Projects</a></li>
+                <li><a href="earning-hub.html" class="active">Earning Hub</a></li>
+                <li><a href="contact.html">Contact</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <header class="hero">
+        <div class="container hero-grid">
+            <div>
+                <div class="eyebrow">Remote earning systems</div>
+                <h1>Practical ways to earn online without inventory or upfront card spend.</h1>
+                <p>
+                    A working hub for low-cost earning experiments: user research, AI evaluation, crowdtesting,
+                    digital products, and affiliate content. The goal is simple: build assets first, then connect
+                    payout accounts only where the platform is worth the effort.
+                </p>
+                <div class="actions">
+                    <a class="button" href="assets/downloads/earning-opportunity-tracker.csv">Download tracker CSV</a>
+                    <a class="button secondary" href="#queue">View application queue</a>
+                    <a class="button secondary" href="earning-operating-plan.html">Open 30-day plan</a>
+                </div>
+            </div>
+            <aside class="hero-panel" aria-label="Operating rules">
+                <strong>Operating rules</strong>
+                <ul>
+                    <li>No prepayment, deposits, crypto, or card entry to unlock work.</li>
+                    <li>Use PayPal where possible before sharing bank details.</li>
+                    <li>Assessments, identity checks, and onboarding answers must be completed personally.</li>
+                    <li>Affiliate links and sponsored placements must be clearly disclosed.</li>
+                </ul>
+            </aside>
+        </div>
+    </header>
+
+    <main>
+        <section class="section" id="systems">
+            <div class="container">
+                <h2>Best Systems To Build</h2>
+                <p class="section-lede">
+                    These are ranked by how much work can be prepared in advance, how little money is needed to start,
+                    and how manageable the legal/customer-support burden is for a Germany or EU-based person.
+                </p>
+                <div class="grid">
+                    <article class="card">
+                        <h3>Viral serverless web app</h3>
+                        <div class="meta">
+                            <span class="tag">Zero hosting fee</span>
+                            <span class="tag">Viral sharing</span>
+                            <span class="tag">Ad & Affiliate ready</span>
+                        </div>
+                        <p>Deploy highly interactive, zero-overhead client-side applications (like Wishees.com) that encode user data in shareable URLs, bypassing database hosting costs completely.</p>
+                        <a href="wishees.html">Launch Wishees.com</a>
+                    </article>
+                    <article class="card">
+                        <h3>Affiliate content asset</h3>
+                        <div class="meta">
+                            <span class="tag">Low cost</span>
+                            <span class="tag">Slow burn</span>
+                            <span class="tag">Scalable</span>
+                        </div>
+                        <p>Create useful comparison pages for remote work tools, AI tools, testing platforms, and creator software. Revenue comes later through approved affiliate programs.</p>
+                        <a href="#content-plan">See content plan</a>
+                    </article>
+                    <article class="card">
+                        <h3>Digital product shelf</h3>
+                        <div class="meta">
+                            <span class="tag">No inventory</span>
+                            <span class="tag">Reusable</span>
+                            <span class="tag">Fast to launch</span>
+                        </div>
+                        <p>Sell downloadable trackers, CV templates, QA bug report templates, and AI-work application kits through a marketplace after payout setup.</p>
+                        <a href="#products">See product ideas</a>
+                    </article>
+                    <article class="card">
+                        <h3>Remote task pipeline</h3>
+                        <div class="meta">
+                            <span class="tag">Cashflow first</span>
+                            <span class="tag">Manual approval</span>
+                            <span class="tag">No card</span>
+                        </div>
+                        <p>Apply to user testing, research interview, AI evaluation, and crowdtesting platforms. Track every assessment, accepted test, and payout.</p>
+                        <a href="#queue">See queue</a>
+                    </article>
+                    <article class="card">
+                        <h3>30-day operating plan</h3>
+                        <div class="meta">
+                            <span class="tag">Execution</span>
+                            <span class="tag">Weekly</span>
+                            <span class="tag">No card</span>
+                        </div>
+                        <p>A concrete weekly plan for cashflow setup, AI evaluator applications, downloadable assets, and future affiliate pages.</p>
+                        <a href="earning-operating-plan.html">Open plan</a>
+                    </article>
+                </div>
+            </div>
+        </section>
+
+        <section class="section" id="queue">
+            <div class="container">
+                <h2>Application Queue</h2>
+                <p class="section-lede">
+                    Start with platforms where the value is highest and no upfront payment is required. Complete all assessments yourself so accounts remain in good standing.
+                </p>
+                <div class="ranked-list">
+                    <article class="ranked-item">
+                        <span class="rank">1</span>
+                        <div>
+                            <h3>UserTesting</h3>
+                            <p>Practice test, short website/app reviews, and paid live interviews. Good first cashflow target after profile approval.</p>
+                        </div>
+                        <a href="https://www.usertesting.com/get-paid-to-test" target="_blank" rel="noopener noreferrer">Open</a>
+                    </article>
+                    <article class="ranked-item">
+                        <span class="rank">2</span>
+                        <div>
+                            <h3>TestingTime</h3>
+                            <p>Research interviews and product studies. Less constant task grinding, but availability depends on profile match.</p>
+                        </div>
+                        <a href="https://www.testingtime.com/en/become-a-paid-test-user/" target="_blank" rel="noopener noreferrer">Open</a>
+                    </article>
+                    <article class="ranked-item">
+                        <span class="rank">3</span>
+                        <div>
+                            <h3>DataAnnotation</h3>
+                            <p>AI response evaluation and writing tasks after acceptance. Assessment quality matters more than speed.</p>
+                        </div>
+                        <a href="https://www.dataannotation.tech/" target="_blank" rel="noopener noreferrer">Open</a>
+                    </article>
+                    <article class="ranked-item">
+                        <span class="rank">4</span>
+                        <div>
+                            <h3>TELUS Digital AI Community</h3>
+                            <p>Search, maps, ads, and AI evaluator projects. More formal onboarding, often with exams.</p>
+                        </div>
+                        <a href="https://www.telusdigital.com/careers/ai-community" target="_blank" rel="noopener noreferrer">Open</a>
+                    </article>
+                    <article class="ranked-item">
+                        <span class="rank">5</span>
+                        <div>
+                            <h3>Testbirds, Test IO, and uTest</h3>
+                            <p>Crowdtesting marketplaces where clear bug reports and device coverage improve earning chances.</p>
+                        </div>
+                        <a href="https://www.utest.com/tester-signup" target="_blank" rel="noopener noreferrer">Open</a>
+                    </article>
+                </div>
+            </div>
+        </section>
+
+        <section class="section" id="content-plan">
+            <div class="container">
+                <h2>Affiliate Content Plan</h2>
+                <p class="section-lede">
+                    Build trust first. Pages should compare tools honestly, mark paid links clearly, and avoid fake claims about income.
+                </p>
+                <ul class="checklist">
+                    <li>Publish a transparent disclosure block on any page that contains affiliate links.</li>
+                    <li>Prioritize software and remote-work tools over physical products to avoid returns and product-safety issues.</li>
+                    <li>Create comparison pages: <a href="paid-user-testing-platforms.html">paid user testing platforms</a>, <a href="ai-evaluator-platforms.html">AI evaluator platforms</a>, best payout trackers, best tools for remote testers.</li>
+                    <li>Add one useful downloadable asset per article so the page has value even before affiliate approvals.</li>
+                    <li>Track clicks and signups only with privacy-respecting analytics and cookie consent where required.</li>
+                </ul>
+            </div>
+        </section>
+
+        <section class="section" id="products">
+            <div class="container">
+                <h2>Digital Product Ideas</h2>
+                <p class="section-lede">
+                    These can be created once and sold repeatedly on Gumroad, Payhip, Ko-fi, Lemon Squeezy, Etsy digital, or a self-hosted page after payout setup.
+                </p>
+                <div class="grid">
+                    <article class="card">
+                        <h3>Wishees.com Web Platform</h3>
+                        <p>An interactive wishing wall and ecard generator using serverless URL encoding. Ready for display ads and affiliate revenue.</p>
+                        <a href="wishees.html">Open Wishees.com</a>
+                    </article>
+                    <article class="card">
+                        <h3>Remote earning tracker</h3>
+                        <p>Spreadsheet for platform status, application dates, payout method, tax notes, task time, and hourly rate.</p>
+                        <a href="assets/downloads/earning-opportunity-tracker.csv">Download tracker</a>
+                    </article>
+                    <article class="card">
+                        <h3>User testing practice kit</h3>
+                        <p>Checklist, sample note-taking sheet, microphone test script, and feedback-quality rubric.</p>
+                        <a href="user-testing-practice-kit.html">Open kit</a>
+                    </article>
+                    <article class="card">
+                        <h3>Bug report template pack</h3>
+                        <p>Reusable reports for web, mobile, accessibility, payment-flow, and localization bugs.</p>
+                        <a href="bug-report-template-pack.html">Open pack</a>
+                    </article>
+                    <article class="card">
+                        <h3>AI evaluator application kit</h3>
+                        <p>Self-study guide for rubrics, factuality checks, concise explanations, and assessment practice prompts.</p>
+                        <a href="ai-evaluator-kit.html">Open kit</a>
+                    </article>
+                    <article class="card">
+                        <h3>Freelance microservice landing page</h3>
+                        <p>A one-page offer for QA testing, website feedback, or technical review services.</p>
+                        <a href="qa-review-service.html">Open service page</a>
+                    </article>
+                    <article class="card">
+                        <h3>EU side-income bookkeeping sheet</h3>
+                        <p>Simple ledger for income sources, payout dates, platform fees, and annual totals for later tax review.</p>
+                        <a href="assets/downloads/side-income-ledger.csv">Download ledger</a>
+                    </article>
+                </div>
+            </div>
+        </section>
+
+        <section class="section">
+            <div class="container">
+                <h2>Hard Avoid List</h2>
+                <div class="warning">
+                    Avoid any platform that asks for an upfront deposit, crypto transfer, card verification charge, paid training package,
+                    fake product purchase, fake review, bank login, or "unlock tasks" payment. Also avoid EU dropshipping until VAT,
+                    returns, product safety, packaging, guarantee, and customer-support obligations are deliberately handled.
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        This page is an earning experiment hub, not financial, tax, or legal advice.
+    </footer>
+</body>
+</html>

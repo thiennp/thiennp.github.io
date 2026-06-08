@@ -1,0 +1,309 @@
+{
+  "runId": "20260605225748",
+  "baseUrl": "https://www.wishees.com",
+  "generatedAt": "2026-06-05T22:58:13.302Z",
+  "failingCount": 3,
+  "results": [
+    {
+      "scenario": {
+        "name": "home-de-desktop",
+        "route": "/?lang=de",
+        "expectedLang": "de",
+        "viewport": {
+          "width": 1440,
+          "height": 900
+        }
+      },
+      "status": 200,
+      "gotoError": null,
+      "screenshot": "/Users/thien.nguyen/thiennp.github.io/codex-automations/wishees-loop-20260605T223814Z/logs/ui-i18n-20260605225748-home-de-desktop.png",
+      "detail": {
+        "title": "Wishees - One Wish Link",
+        "htmlLang": "de",
+        "htmlLangMismatch": false,
+        "documentScrollWidth": 1440,
+        "clientWidth": 1440,
+        "overflowPx": 0,
+        "badKeyMatches": [],
+        "templateTokens": [],
+        "englishTerms": [],
+        "unnamedControls": [],
+        "overflowingElements": [],
+        "clippedTextElements": [],
+        "bodySample": "Gönn Gönn mir mir Erstellen Mit Konto speichern. Synchronisiere Wunschliste und Freunde. Keine Einladung nötig. Konto erstellen Einloggen © 2026 Wishees. Eine einfache Art, nützliche Wünsche zu teilen. Meine Wishees Gemeinschaft AGB Contact Hinweise Datenschutz ✦ W ıshees DE"
+      },
+      "consoleWarningsOrErrors": [],
+      "networkFailures": [
+        {
+          "method": "GET",
+          "url": "https://www.wishees.com/account/login?next=/my-wishees&lang=de&_rsc=tXyZJ52UQVBCVsD3",
+          "failure": "net::ERR_ABORTED"
+        },
+        {
+          "method": "GET",
+          "url": "https://www.wishees.com/account/login?mode=signup&next=/my-wishees&lang=de&_rsc=tXyZJ52UQVBCVsD3",
+          "failure": "net::ERR_ABORTED"
+        }
+      ],
+      "badResponses": []
+    },
+    {
+      "scenario": {
+        "name": "home-en-mobile",
+        "route": "/?lang=en",
+        "expectedLang": "en",
+        "viewport": {
+          "width": 320,
+          "height": 680
+        }
+      },
+      "status": 200,
+      "gotoError": null,
+      "screenshot": "/Users/thien.nguyen/thiennp.github.io/codex-automations/wishees-loop-20260605T223814Z/logs/ui-i18n-20260605225748-home-en-mobile.png",
+      "detail": {
+        "title": "Wishees - One Wish Link",
+        "htmlLang": "en",
+        "htmlLangMismatch": false,
+        "documentScrollWidth": 320,
+        "clientWidth": 320,
+        "overflowPx": 0,
+        "badKeyMatches": [],
+        "templateTokens": [],
+        "englishTerms": [],
+        "unnamedControls": [],
+        "overflowingElements": [],
+        "clippedTextElements": [],
+        "bodySample": "I'd love you to get me me Create Save your wish with an account Sync your wishlist and connect with friends instantly. No invite required. Create account Log in Privacy · Terms ✦ W ıshees EN"
+      },
+      "consoleWarningsOrErrors": [],
+      "networkFailures": [
+        {
+          "method": "GET",
+          "url": "https://www.wishees.com/account/login?next=/my-wishees&_rsc=5CB68i4pnAekjehf",
+          "failure": "net::ERR_ABORTED"
+        },
+        {
+          "method": "GET",
+          "url": "https://www.wishees.com/account/login?mode=signup&next=/my-wishees&_rsc=5CB68i4pnAekjehf",
+          "failure": "net::ERR_ABORTED"
+        },
+        {
+          "method": "GET",
+          "url": "https://www.wishees.com/account/login?mode=signup&next=/my-wishees&_rsc=tXyZJ52UQVBCVsD3",
+          "failure": "net::ERR_ABORTED"
+        }
+      ],
+      "badResponses": []
+    },
+    {
+      "scenario": {
+        "name": "account-login-de-mobile",
+        "route": "/account/login?lang=de",
+        "expectedLang": "de",
+        "viewport": {
+          "width": 320,
+          "height": 680
+        }
+      },
+      "status": 200,
+      "gotoError": null,
+      "screenshot": "/Users/thien.nguyen/thiennp.github.io/codex-automations/wishees-loop-20260605T223814Z/logs/ui-i18n-20260605225748-account-login-de-mobile.png",
+      "detail": {
+        "title": "Wishees Account Login",
+        "htmlLang": "de",
+        "htmlLangMismatch": false,
+        "documentScrollWidth": 320,
+        "clientWidth": 320,
+        "overflowPx": 0,
+        "badKeyMatches": [],
+        "templateTokens": [],
+        "englishTerms": [],
+        "unnamedControls": [],
+        "overflowingElements": [],
+        "clippedTextElements": [],
+        "bodySample": "WISHEES-KONTO Anmelden oder registrieren Wähle, wie du fortfahren möchtest. Weiter mit Google Weiter mit Facebook Wishees nutzt deine bestätigte E-Mail-Adresse, um das Konto zu erstellen. Es werden keine Beiträge auf Social-Konten veröffentlicht und keine Kontakte importiert. ODER @ Weiter mit E-Mail Konto erstellen ✦ W ıshees DE"
+      },
+      "consoleWarningsOrErrors": [],
+      "networkFailures": [
+        {
+          "method": "GET",
+          "url": "https://www.wishees.com/account/login?_rsc=mUDaO8zaa8DGNpxf",
+          "failure": "net::ERR_ABORTED"
+        },
+        {
+          "method": "GET",
+          "url": "https://www.wishees.com/account/login?mode=signup&next=%2Fprofile%3Flang%3Dde&lang=de&_rsc=0I3fzFloluqCxv7K",
+          "failure": "net::ERR_ABORTED"
+        },
+        {
+          "method": "GET",
+          "url": "https://www.wishees.com/account/login?mode=email&next=%2Fprofile%3Flang%3Dde&lang=de&_rsc=0I3fzFloluqCxv7K",
+          "failure": "net::ERR_ABORTED"
+        }
+      ],
+      "badResponses": []
+    },
+    {
+      "scenario": {
+        "name": "my-wishees-de-mobile-alex",
+        "route": "/my-wishees?lang=de",
+        "expectedLang": "de",
+        "viewport": {
+          "width": 320,
+          "height": 680
+        },
+        "user": "alex"
+      },
+      "status": 200,
+      "gotoError": null,
+      "screenshot": "/Users/thien.nguyen/thiennp.github.io/codex-automations/wishees-loop-20260605T223814Z/logs/ui-i18n-20260605225748-my-wishees-de-mobile-alex.png",
+      "detail": {
+        "title": "My Wishees Wishlist",
+        "htmlLang": "en",
+        "htmlLangMismatch": true,
+        "documentScrollWidth": 320,
+        "clientWidth": 320,
+        "overflowPx": 0,
+        "badKeyMatches": [],
+        "templateTokens": [],
+        "englishTerms": [],
+        "unnamedControls": [],
+        "overflowingElements": [
+          {
+            "tag": "SPAN",
+            "text": "Das sind informelle Angebote. Sag deinen Freunden Bescheid, wenn du das Geschenk erhalten hast, oder",
+            "left": 107,
+            "right": 387,
+            "width": 280
+          },
+          {
+            "tag": "SPAN",
+            "text": "Das sind informelle Angebote. Sag deinen Freunden Bescheid, wenn du das Geschenk erhalten hast, oder",
+            "left": 107,
+            "right": 387,
+            "width": 280
+          }
+        ],
+        "clippedTextElements": [
+          {
+            "tag": "BUTTON",
+            "text": "E2E Maya E2E Maya",
+            "scrollWidth": 43,
+            "clientWidth": 37
+          }
+        ],
+        "bodySample": "Deine Wunschliste Sichtbarkeit filtern Wunschliste teilen Laufend Compact burr coffee grinder Nur Freunde 89,00 € amazon.de Small burr grinder for morning coffee. Beiträge von Freunden Das sind informelle Angebote. Sag deinen Freunden Bescheid, wenn du das Geschenk erhalten hast, oder lehne freundlich ab, wenn es nicht mehr gebraucht wird. 15% bereits unterstützt · 13,35 € abgedeckt · 75,65 € übrig E E2E Maya hat angeboten, 13,35 € beizutragen (15 % des Ziels) Sie können es auch dann schaffen, w"
+      },
+      "consoleWarningsOrErrors": [],
+      "networkFailures": [],
+      "badResponses": []
+    },
+    {
+      "scenario": {
+        "name": "friends-de-desktop-maya",
+        "route": "/friends?lang=de",
+        "expectedLang": "de",
+        "viewport": {
+          "width": 1440,
+          "height": 900
+        },
+        "user": "maya"
+      },
+      "status": 200,
+      "gotoError": null,
+      "screenshot": "/Users/thien.nguyen/thiennp.github.io/codex-automations/wishees-loop-20260605T223814Z/logs/ui-i18n-20260605225748-friends-de-desktop-maya.png",
+      "detail": {
+        "title": "Wishees Friends",
+        "htmlLang": "en",
+        "htmlLangMismatch": true,
+        "documentScrollWidth": 1440,
+        "clientWidth": 1440,
+        "overflowPx": 0,
+        "badKeyMatches": [],
+        "templateTokens": [],
+        "englishTerms": [],
+        "unnamedControls": [],
+        "overflowingElements": [],
+        "clippedTextElements": [],
+        "bodySample": "Freunde Freund einladen Verbundene Freunde 2 W Wishees owner nguyenphongthien@gmail.com Wunschliste öffnen Um einen Gefallen bitten E E2E Alex e2e-alex@wishees.local Wunschliste öffnen Um einen Gefallen bitten ✦ W ıshees DE 9+"
+      },
+      "consoleWarningsOrErrors": [],
+      "networkFailures": [],
+      "badResponses": []
+    },
+    {
+      "scenario": {
+        "name": "friend-wishlist-de-mobile-maya",
+        "route": "/friends/wishlist?invite=user-12&lang=de",
+        "expectedLang": "de",
+        "viewport": {
+          "width": 320,
+          "height": 680
+        },
+        "user": "maya"
+      },
+      "status": 200,
+      "gotoError": null,
+      "screenshot": "/Users/thien.nguyen/thiennp.github.io/codex-automations/wishees-loop-20260605T223814Z/logs/ui-i18n-20260605225748-friend-wishlist-de-mobile-maya.png",
+      "detail": {
+        "title": "Friend Wishlist",
+        "htmlLang": "en",
+        "htmlLangMismatch": true,
+        "documentScrollWidth": 344,
+        "clientWidth": 320,
+        "overflowPx": 24,
+        "badKeyMatches": [],
+        "templateTokens": [],
+        "englishTerms": [],
+        "unnamedControls": [],
+        "overflowingElements": [
+          {
+            "tag": "A",
+            "text": "Ähnliches Produkt bei Amazon finden",
+            "left": 44,
+            "right": 344,
+            "width": 300
+          }
+        ],
+        "clippedTextElements": [],
+        "bodySample": "Geteilte Wunschlisten Sieh, was sich deine Freunde wünschen, finde Produktlinks oder biete an, dich an einem Geschenk zu beteiligen. Laufend Compact burr coffee grinder 15 % bereits unterstützt · 13,35 € gedeckt · 75,65 € offen Small burr grinder for morning coffee. Preishinweis: 89,00 € Du hast einen Beitrag von 15 % angeboten. Kläre Details direkt mit deinem Freund. Jetzt kaufen Ähnliches Produkt bei Amazon finden Ähnliches Produkt bei eBay finden Ganzen Wunsch übernehmen Beitrag aktualisieren"
+      },
+      "consoleWarningsOrErrors": [],
+      "networkFailures": [],
+      "badResponses": []
+    },
+    {
+      "scenario": {
+        "name": "viewer-friend-wishlist-de-mobile-lina",
+        "route": "/friends/wishlist?invite=user-12&lang=de",
+        "expectedLang": "de",
+        "viewport": {
+          "width": 320,
+          "height": 680
+        },
+        "user": "lina"
+      },
+      "status": 200,
+      "gotoError": null,
+      "screenshot": "/Users/thien.nguyen/thiennp.github.io/codex-automations/wishees-loop-20260605T223814Z/logs/ui-i18n-20260605225748-viewer-friend-wishlist-de-mobile-lina.png",
+      "detail": {
+        "title": "Friend Wishlist",
+        "htmlLang": "de",
+        "htmlLangMismatch": false,
+        "documentScrollWidth": 320,
+        "clientWidth": 320,
+        "overflowPx": 0,
+        "badKeyMatches": [],
+        "templateTokens": [],
+        "englishTerms": [],
+        "unnamedControls": [],
+        "overflowingElements": [],
+        "clippedTextElements": [],
+        "bodySample": "Geteilte Wunschlisten Sieh, was sich deine Freunde wünschen, finde Produktlinks oder biete an, dich an einem Geschenk zu beteiligen. Laufend Compact burr coffee grinder 15 % bereits unterstützt · 13,35 € gedeckt · 75,65 € offen Small burr grinder for morning coffee. Preishinweis: 89,00 € Produkt ansehen Rest übernehmen Beitragen Noise-canceling headphones Prefer comfortable over flashy. Good for commute and focus work. Preishinweis: 129,00 € Produkt ansehen Ganzen Wunsch übernehmen Beitragen Wis"
+      },
+      "consoleWarningsOrErrors": [],
+      "networkFailures": [],
+      "badResponses": []
+    }
+  ]
+}

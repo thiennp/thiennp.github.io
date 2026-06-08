@@ -1,13 +1,13 @@
 {
-  "runId": "20260605103804",
+  "runId": "20260605112652",
   "requestedTarget": "https://wishees/",
   "actualTarget": "https://www.wishees.com",
   "startedAt": "2026-06-05T10:29:39.246Z",
-  "updatedAt": "2026-06-05T10:39:38.321Z",
+  "updatedAt": "2026-06-05T11:26:53.906Z",
   "coverage": {
     "target.host-resolution": {
-      "count": 1,
-      "lastAt": "2026-06-05T10:29:39.304Z",
+      "count": 10,
+      "lastAt": "2026-06-05T11:24:18.870Z",
       "lastDetail": {
         "requestedTarget": "https://wishees/",
         "actualTarget": "https://www.wishees.com",
@@ -15,56 +15,55 @@
       }
     },
     "auth.member-login.alex": {
-      "count": 20,
-      "lastAt": "2026-06-05T10:38:05.052Z",
+      "count": 148,
+      "lastAt": "2026-06-05T11:26:52.671Z",
       "lastDetail": {
         "ok": true,
         "cleanupOnly": true
       }
     },
     "auth.member-login.maya": {
-      "count": 20,
-      "lastAt": "2026-06-05T10:38:05.206Z",
+      "count": 148,
+      "lastAt": "2026-06-05T11:26:52.829Z",
       "lastDetail": {
         "ok": true,
         "cleanupOnly": true
       }
     },
     "auth.member-login.jordan": {
-      "count": 20,
-      "lastAt": "2026-06-05T10:38:05.412Z",
+      "count": 148,
+      "lastAt": "2026-06-05T11:26:52.974Z",
       "lastDetail": {
         "ok": true,
         "cleanupOnly": true
       }
     },
     "auth.viewer-login.lina": {
-      "count": 20,
-      "lastAt": "2026-06-05T10:38:05.585Z",
+      "count": 148,
+      "lastAt": "2026-06-05T11:26:53.123Z",
       "lastDetail": {
         "ok": true,
         "cleanupOnly": true
       }
     },
     "auth.disabled-rejected": {
-      "count": 8,
-      "lastAt": "2026-06-05T10:32:09.002Z",
+      "count": 108,
+      "lastAt": "2026-06-05T11:26:16.938Z",
       "lastDetail": {
-        "code": "account-disabled",
-        "paymentMetadataProbe": true
+        "code": "account-disabled"
       }
     },
     "auth.wrong-password-rejected": {
-      "count": 1,
-      "lastAt": "2026-06-05T10:29:40.363Z",
+      "count": 94,
+      "lastAt": "2026-06-05T11:26:17.097Z",
       "lastDetail": {
         "code": "invalid-code",
         "ok": false
       }
     },
     "boundary.unauthenticated-account-api": {
-      "count": 1,
-      "lastAt": "2026-06-05T10:29:40.521Z",
+      "count": 94,
+      "lastAt": "2026-06-05T11:26:17.245Z",
       "lastDetail": {
         "status": 401,
         "body": {
@@ -74,8 +73,8 @@
       }
     },
     "boundary.unauthenticated-shared-api-denied": {
-      "count": 1,
-      "lastAt": "2026-06-05T10:29:40.699Z",
+      "count": 94,
+      "lastAt": "2026-06-05T11:26:17.391Z",
       "lastDetail": {
         "status": 404,
         "body": {
@@ -85,8 +84,8 @@
       }
     },
     "boundary.viewer-wishlist-write-denied": {
-      "count": 1,
-      "lastAt": "2026-06-05T10:29:40.864Z",
+      "count": 94,
+      "lastAt": "2026-06-05T11:26:18.064Z",
       "lastDetail": {
         "status": 403,
         "body": {
@@ -96,32 +95,34 @@
       }
     },
     "boundary.viewer-wishlist-update-denied": {
-      "count": 1,
-      "lastAt": "2026-06-05T10:39:37.816Z",
+      "count": 2,
+      "lastAt": "2026-06-05T11:23:58.982Z",
       "lastDetail": {
         "status": 403,
         "body": {
           "ok": false,
           "reason": "invalid-action"
         },
-        "baselineStatus": 200
+        "baselineStatus": 200,
+        "repeated": true
       }
     },
     "boundary.viewer-wishlist-delete-denied": {
-      "count": 1,
-      "lastAt": "2026-06-05T10:39:38.154Z",
+      "count": 2,
+      "lastAt": "2026-06-05T11:23:58.983Z",
       "lastDetail": {
         "status": 403,
         "body": {
           "ok": false,
           "reason": "invalid-action"
         },
-        "baselineStatus": 200
+        "baselineStatus": 200,
+        "repeated": true
       }
     },
     "boundary.viewer-support-denied": {
-      "count": 1,
-      "lastAt": "2026-06-05T10:29:41.877Z",
+      "count": 94,
+      "lastAt": "2026-06-05T11:26:19.075Z",
       "lastDetail": {
         "status": 400,
         "body": {
@@ -131,8 +132,8 @@
       }
     },
     "boundary.disabled-direct-account-api-denied": {
-      "count": 1,
-      "lastAt": "2026-06-05T10:29:41.014Z",
+      "count": 95,
+      "lastAt": "2026-06-05T11:26:18.220Z",
       "lastDetail": {
         "status": 401,
         "body": {
@@ -142,8 +143,8 @@
       }
     },
     "boundary.disabled-shared-api-denied": {
-      "count": 1,
-      "lastAt": "2026-06-05T10:29:41.181Z",
+      "count": 95,
+      "lastAt": "2026-06-05T11:26:18.382Z",
       "lastDetail": {
         "status": 404,
         "body": {
@@ -153,24 +154,25 @@
       }
     },
     "boundary.disabled-friend-wishlist-page-denied": {
-      "count": 1,
-      "lastAt": "2026-06-05T10:29:41.659Z",
+      "count": 94,
+      "lastAt": "2026-06-05T11:26:18.876Z",
       "lastDetail": {
         "status": 200,
         "includesWishlistText": false
       }
     },
     "boundary.disabled-direct-shared-wish-page-denied": {
-      "count": 1,
-      "lastAt": "2026-06-05T10:30:09.895Z",
+      "count": 3,
+      "lastAt": "2026-06-05T11:24:00.368Z",
       "lastDetail": {
         "status": 200,
-        "includesTitle": false
+        "includesTitle": false,
+        "repeated": true
       }
     },
     "boundary.unauthenticated-direct-shared-wish-page-observed": {
-      "count": 1,
-      "lastAt": "2026-06-05T10:30:10.062Z",
+      "count": 2,
+      "lastAt": "2026-06-05T10:50:16.222Z",
       "lastDetail": {
         "status": 200,
         "includesTitle": true,
@@ -178,8 +180,8 @@
       }
     },
     "boundary.disabled-support-denied": {
-      "count": 1,
-      "lastAt": "2026-06-05T10:29:42.044Z",
+      "count": 94,
+      "lastAt": "2026-06-05T11:26:19.232Z",
       "lastDetail": {
         "status": 401,
         "body": {
@@ -190,82 +192,82 @@
       }
     },
     "boundary.non-owner-outcome-decision-denied": {
-      "count": 1,
-      "lastAt": "2026-06-05T10:31:29.881Z",
+      "count": 2,
+      "lastAt": "2026-06-05T10:50:21.852Z",
       "lastDetail": {
         "status": 400,
         "body": {
           "ok": false,
           "reason": "invalid-action"
         },
-        "outcomeId": "397"
+        "outcomeId": "419"
       }
     },
     "boundary.viewer-outcome-decision-denied": {
-      "count": 1,
-      "lastAt": "2026-06-05T10:31:31.768Z",
+      "count": 2,
+      "lastAt": "2026-06-05T10:50:23.732Z",
       "lastDetail": {
         "status": 400,
         "body": {
           "ok": false,
           "reason": "invalid-action"
         },
-        "outcomeId": "398"
+        "outcomeId": "420"
       }
     },
     "boundary.disabled-outcome-decision-denied": {
-      "count": 1,
-      "lastAt": "2026-06-05T10:31:33.513Z",
+      "count": 2,
+      "lastAt": "2026-06-05T10:50:25.518Z",
       "lastDetail": {
         "status": 401,
         "body": {
           "ok": false,
           "reason": "not-authenticated"
         },
-        "outcomeId": "399"
+        "outcomeId": "421"
       }
     },
     "boundary.unauthenticated-outcome-decision-denied": {
-      "count": 1,
-      "lastAt": "2026-06-05T10:31:35.337Z",
+      "count": 2,
+      "lastAt": "2026-06-05T10:50:27.426Z",
       "lastDetail": {
         "status": 401,
         "body": {
           "ok": false,
           "reason": "not-authenticated"
         },
-        "outcomeId": "400"
+        "outcomeId": "422"
       }
     },
     "boundary.non-helper-outcome-cancel-denied": {
-      "count": 1,
-      "lastAt": "2026-06-05T10:31:38.858Z",
+      "count": 2,
+      "lastAt": "2026-06-05T10:50:29.654Z",
       "lastDetail": {
         "status": 400,
         "body": {
           "ok": false,
           "status": "invalid-action"
         },
-        "outcomeId": "401",
+        "outcomeId": "423",
         "remainingActiveMarkedOutcomes": 1
       }
     },
     "boundary.viewer-outcome-cancel-denied": {
-      "count": 1,
-      "lastAt": "2026-06-05T10:31:42.238Z",
+      "count": 2,
+      "lastAt": "2026-06-05T10:50:32.313Z",
       "lastDetail": {
         "status": 400,
         "body": {
           "ok": false,
           "status": "invalid-action"
         },
-        "outcomeId": "402",
+        "outcomeId": "424",
         "remainingActiveMarkedOutcomes": 1
       }
     },
     "boundary.disabled-outcome-cancel-denied": {
-      "count": 1,
-      "lastAt": "2026-06-05T10:31:44.383Z",
+      "count": 2,
+      "lastAt": "2026-06-05T10:50:34.825Z",
       "lastDetail": {
         "status": 401,
         "body": {
@@ -273,13 +275,13 @@
           "ok": false,
           "status": "login-required"
         },
-        "outcomeId": "403",
+        "outcomeId": "425",
         "remainingActiveMarkedOutcomes": 1
       }
     },
     "boundary.unauthenticated-outcome-cancel-denied": {
-      "count": 1,
-      "lastAt": "2026-06-05T10:31:46.906Z",
+      "count": 2,
+      "lastAt": "2026-06-05T10:50:36.798Z",
       "lastDetail": {
         "status": 401,
         "body": {
@@ -287,46 +289,46 @@
           "ok": false,
           "status": "login-required"
         },
-        "outcomeId": "404",
+        "outcomeId": "426",
         "remainingActiveMarkedOutcomes": 1
       }
     },
     "wishlist.owner-read": {
-      "count": 1,
-      "lastAt": "2026-06-05T10:29:42.214Z",
+      "count": 94,
+      "lastAt": "2026-06-05T11:26:19.383Z",
       "lastDetail": {}
     },
     "wishlist.owner-create": {
-      "count": 1,
-      "lastAt": "2026-06-05T10:29:42.420Z",
+      "count": 94,
+      "lastAt": "2026-06-05T11:26:19.627Z",
       "lastDetail": {
-        "itemId": "wish_codex_matrix_20260605102939_cycle1_affiliate"
+        "itemId": "wish_codex_matrix_20260605112418_cycle11_affiliate"
       }
     },
     "wishlist.owner-update": {
-      "count": 1,
-      "lastAt": "2026-06-05T10:29:42.783Z",
+      "count": 94,
+      "lastAt": "2026-06-05T11:26:20.025Z",
       "lastDetail": {
-        "from": "wish_codex_matrix_20260605102939_cycle1_affiliate",
-        "to": "wish_codex_matrix_20260605102939_cycle1_edited"
+        "from": "wish_codex_matrix_20260605112418_cycle11_affiliate",
+        "to": "wish_codex_matrix_20260605112418_cycle11_edited"
       }
     },
     "wishlist.owner-delete-cleanup": {
-      "count": 1,
-      "lastAt": "2026-06-05T10:29:44.263Z",
+      "count": 94,
+      "lastAt": "2026-06-05T11:26:21.496Z",
       "lastDetail": {}
     },
     "wishlist.affiliate-url-persists": {
-      "count": 1,
-      "lastAt": "2026-06-05T10:29:42.584Z",
+      "count": 94,
+      "lastAt": "2026-06-05T11:26:19.790Z",
       "lastDetail": {
-        "itemId": "wish_codex_matrix_20260605102939_cycle1_affiliate",
+        "itemId": "wish_codex_matrix_20260605112418_cycle11_affiliate",
         "url": "https://www.amazon.de/dp/B08N5WRWNW?tag=wishees-qa-21&psc=1"
       }
     },
     "wishlist.unsafe-url-sanitized": {
-      "count": 1,
-      "lastAt": "2026-06-05T10:29:45.274Z",
+      "count": 94,
+      "lastAt": "2026-06-05T11:26:22.305Z",
       "lastDetail": {
         "apiUrl": "",
         "htmlContainsJavascriptHref": false,
@@ -334,34 +336,34 @@
       }
     },
     "wishlist.html-title-escaped": {
-      "count": 1,
-      "lastAt": "2026-06-05T10:29:45.276Z",
+      "count": 94,
+      "lastAt": "2026-06-05T11:26:22.307Z",
       "lastDetail": {
         "htmlContainsRawImgTag": false,
         "htmlContainsEscapedTitle": true
       }
     },
     "gift-intent.helper-message-html-escaped-owner-outcomes": {
-      "count": 1,
-      "lastAt": "2026-06-05T10:32:20.091Z",
+      "count": 2,
+      "lastAt": "2026-06-05T10:51:31.163Z",
       "lastDetail": {
-        "itemId": "wish_codex_matrix_20260605103214_message_security",
-        "outcomeId": "410",
+        "itemId": "wish_codex_matrix_20260605105126_message_security",
+        "outcomeId": "441",
         "createStatus": 200,
         "createBody": {
           "ok": true,
           "outcome": {
             "confirmedAt": "",
             "contributionPercent": 20,
-            "helperMessage": "<img src=x onerror=alert(\"codex-helper-20260605103214\")> Codex helper message security 20260605103214",
+            "helperMessage": "<img src=x onerror=alert(\"codex-helper-20260605105126\")> Codex helper message security 20260605105126",
             "helperUserId": 13,
-            "id": "410",
-            "itemId": "wish_codex_matrix_20260605103214_message_security",
-            "itemTitle": "Codex message security 20260605103214",
+            "id": "441",
+            "itemId": "wish_codex_matrix_20260605105126_message_security",
+            "itemTitle": "Codex message security 20260605105126",
             "ownerReply": "",
             "ownerUserId": 12,
             "productUrl": "https://www.amazon.de/dp/B08N5WRWNW?tag=wishees-qa-21&psc=1",
-            "promisedAt": "2026-06-05T10:32:16.640Z",
+            "promisedAt": "2026-06-05T10:51:28.466Z",
             "status": "promised"
           },
           "status": "contribution-promised"
@@ -371,10 +373,10 @@
       }
     },
     "notifications.helper-message-html-escaped-owner-feed": {
-      "count": 1,
-      "lastAt": "2026-06-05T10:32:20.091Z",
+      "count": 2,
+      "lastAt": "2026-06-05T10:51:31.163Z",
       "lastDetail": {
-        "itemId": "wish_codex_matrix_20260605103214_message_security",
+        "itemId": "wish_codex_matrix_20260605105126_message_security",
         "notificationMatchCount": 0,
         "rawHelperInNotificationApi": false,
         "rawHelperOnNotificationPage": false,
@@ -384,26 +386,26 @@
       }
     },
     "gift-intent.owner-reply-html-escaped-helper-view": {
-      "count": 1,
-      "lastAt": "2026-06-05T10:32:22.772Z",
+      "count": 2,
+      "lastAt": "2026-06-05T10:51:33.422Z",
       "lastDetail": {
-        "itemId": "wish_codex_matrix_20260605103214_message_security",
-        "outcomeId": "410",
+        "itemId": "wish_codex_matrix_20260605105126_message_security",
+        "outcomeId": "441",
         "decisionStatus": 200,
         "decisionBody": {
           "ok": true,
           "outcome": {
-            "confirmedAt": "2026-06-05T10:32:20.230Z",
+            "confirmedAt": "2026-06-05T10:51:31.301Z",
             "contributionPercent": 20,
-            "helperMessage": "<img src=x onerror=alert(\"codex-helper-20260605103214\")> Codex helper message security 20260605103214",
+            "helperMessage": "<img src=x onerror=alert(\"codex-helper-20260605105126\")> Codex helper message security 20260605105126",
             "helperUserId": 13,
-            "id": "410",
-            "itemId": "wish_codex_matrix_20260605103214_message_security",
-            "itemTitle": "Codex message security 20260605103214",
-            "ownerReply": "<svg onload=alert(\"codex-owner-20260605103214\")>Codex owner reply security 20260605103214</svg>",
+            "id": "441",
+            "itemId": "wish_codex_matrix_20260605105126_message_security",
+            "itemTitle": "Codex message security 20260605105126",
+            "ownerReply": "<svg onload=alert(\"codex-owner-20260605105126\")>Codex owner reply security 20260605105126</svg>",
             "ownerUserId": 12,
             "productUrl": "https://www.amazon.de/dp/B08N5WRWNW?tag=wishees-qa-21&psc=1",
-            "promisedAt": "2026-06-05T10:32:16.640Z",
+            "promisedAt": "2026-06-05T10:51:28.466Z",
             "status": "received_confirmed"
           }
         },
@@ -413,15 +415,15 @@
         "rawOwnerReplyOnFriendPage": false,
         "friendPageSnippets": [
           {
-            "needle": "Codex owner reply security 20260605103214",
-            "snippet": "wishees-highlight\">20 %</span>  wurde bestätigt. Danke für deine Hilfe.</p><div class=\"friend-wishlist-owner-reply grid gap-1 rounded-xl border border-wishees-border-accent bg-wishees-glass-tint-strong p-3\"><p class=\"m-0 layout-wishees-section-label text-wishees-caption\">Antwort vom Wunschbesitzer</p><p class=\"m-0 text-wishees-compact leading-wishees-body text-wishees-emphasis-body\">&lt;svg onload=alert(&quot;codex-owner-20260605103214&quot;)&gt;Codex owner reply security 20260605103214&lt;/svg&gt;</p></div></div><hr class=\"m-0 w-full border-0 border-t border-wishees-border-accent\"/><div class=\"layout-wishees-friend-wishlist-actions friend-wishlist-card-actions\"><a class=\"btn inline-flex min-h-0 w-fit cursor-pointer items-center gap-2 border-0 bg-transparent p-0 text-left font-[var(--font-display)] text-[0.95rem] font-semibold leading-snug whitespace-nowrap text-wishees-link shadow-none "
+            "needle": "Codex owner reply security 20260605105126",
+            "snippet": "wishees-highlight\">20 %</span>  wurde bestätigt. Danke für deine Hilfe.</p><div class=\"friend-wishlist-owner-reply grid gap-1 rounded-xl border border-wishees-border-accent bg-wishees-glass-tint-strong p-3\"><p class=\"m-0 layout-wishees-section-label text-wishees-caption\">Antwort vom Wunschbesitzer</p><p class=\"m-0 text-wishees-compact leading-wishees-body text-wishees-emphasis-body\">&lt;svg onload=alert(&quot;codex-owner-20260605105126&quot;)&gt;Codex owner reply security 20260605105126&lt;/svg&gt;</p></div></div><hr class=\"m-0 w-full border-0 border-t border-wishees-border-accent\"/><div class=\"layout-wishees-friend-wishlist-actions friend-wishlist-card-actions\"><a class=\"btn inline-flex min-h-0 w-fit cursor-pointer items-center gap-2 border-0 bg-transparent p-0 text-left font-[var(--font-display)] text-[0.95rem] font-semibold leading-snug whitespace-nowrap text-wishees-link shadow-none "
           }
         ]
       }
     },
     "gift-intent.message-security-cleanup": {
-      "count": 1,
-      "lastAt": "2026-06-05T10:32:24.603Z",
+      "count": 2,
+      "lastAt": "2026-06-05T10:51:35.204Z",
       "lastDetail": {
         "remainingItemIds": [],
         "remainingOutcomeIds": [],
@@ -429,26 +431,26 @@
       }
     },
     "wishlist.visibility.private-hidden-from-share-api": {
-      "count": 1,
-      "lastAt": "2026-06-05T10:30:07.120Z",
+      "count": 2,
+      "lastAt": "2026-06-05T10:50:12.533Z",
       "lastDetail": {
-        "privateId": "wish_codex_matrix_20260605103003_visibility_private",
+        "privateId": "wish_codex_matrix_20260605105009_visibility_private",
         "leakedTo": []
       }
     },
     "wishlist.visibility.private-hidden-from-direct-page": {
-      "count": 1,
-      "lastAt": "2026-06-05T10:30:07.325Z",
+      "count": 2,
+      "lastAt": "2026-06-05T10:50:13.303Z",
       "lastDetail": {
         "status": 200,
         "privateTitleRendered": false
       }
     },
     "wishlist.visibility.private-direct-page-matrix": {
-      "count": 1,
-      "lastAt": "2026-06-05T10:30:12.939Z",
+      "count": 2,
+      "lastAt": "2026-06-05T10:50:18.943Z",
       "lastDetail": {
-        "privateId": "wish_codex_matrix_20260605103007_direct_private",
+        "privateId": "wish_codex_matrix_20260605105013_direct_private",
         "leakedTo": [],
         "statuses": {
           "maya": 200,
@@ -460,73 +462,73 @@
       }
     },
     "wishlist.visibility.selected-people-allowed-visible": {
-      "count": 1,
-      "lastAt": "2026-06-05T10:30:07.122Z",
+      "count": 2,
+      "lastAt": "2026-06-05T10:50:12.534Z",
       "lastDetail": {
-        "selectedId": "wish_codex_matrix_20260605103003_visibility_selected",
+        "selectedId": "wish_codex_matrix_20260605105009_visibility_selected",
         "allowedUser": "e2e-maya@wishees.local",
         "visibleToMaya": true
       }
     },
     "wishlist.visibility.selected-people-unlisted-hidden": {
-      "count": 1,
-      "lastAt": "2026-06-05T10:30:07.126Z",
+      "count": 2,
+      "lastAt": "2026-06-05T10:50:12.535Z",
       "lastDetail": {
-        "selectedId": "wish_codex_matrix_20260605103003_visibility_selected",
+        "selectedId": "wish_codex_matrix_20260605105009_visibility_selected",
         "leakedTo": []
       }
     },
     "wishlist.visibility.selected-people-direct-allowed-visible": {
-      "count": 1,
-      "lastAt": "2026-06-05T10:30:12.940Z",
+      "count": 2,
+      "lastAt": "2026-06-05T10:50:18.944Z",
       "lastDetail": {
-        "selectedId": "wish_codex_matrix_20260605103007_direct_selected",
+        "selectedId": "wish_codex_matrix_20260605105013_direct_selected",
         "allowedUser": "e2e-maya@wishees.local",
         "visibleToMaya": true,
         "status": 200
       }
     },
     "wishlist.visibility.selected-people-direct-unlisted-hidden": {
-      "count": 1,
-      "lastAt": "2026-06-05T10:30:12.941Z",
+      "count": 2,
+      "lastAt": "2026-06-05T10:50:18.944Z",
       "lastDetail": {
-        "selectedId": "wish_codex_matrix_20260605103007_direct_selected",
+        "selectedId": "wish_codex_matrix_20260605105013_direct_selected",
         "leakedTo": []
       }
     },
     "wishlist.visibility.public-visible-anonymous": {
-      "count": 1,
-      "lastAt": "2026-06-05T10:30:07.326Z",
+      "count": 2,
+      "lastAt": "2026-06-05T10:50:13.304Z",
       "lastDetail": {
-        "publicId": "wish_codex_matrix_20260605103003_visibility_public",
+        "publicId": "wish_codex_matrix_20260605105009_visibility_public",
         "visibleToAnonymous": true,
         "anonymousStatus": 200
       }
     },
     "wishlist.visibility.public-direct-page-anonymous": {
-      "count": 1,
-      "lastAt": "2026-06-05T10:30:12.942Z",
+      "count": 2,
+      "lastAt": "2026-06-05T10:50:18.945Z",
       "lastDetail": {
-        "publicId": "wish_codex_matrix_20260605103007_direct_public",
+        "publicId": "wish_codex_matrix_20260605105013_direct_public",
         "visibleToAnonymous": true,
         "status": 200
       }
     },
     "wishlist.visibility.direct-page-payment-metadata-contained": {
-      "count": 1,
-      "lastAt": "2026-06-05T10:30:12.944Z",
+      "count": 2,
+      "lastAt": "2026-06-05T10:50:18.945Z",
       "lastDetail": {
         "leakedTo": []
       }
     },
     "wishlist.payment-metadata.share-api-contained": {
-      "count": 1,
-      "lastAt": "2026-06-05T10:32:11.370Z",
+      "count": 2,
+      "lastAt": "2026-06-05T11:10:56.611Z",
       "lastDetail": {
-        "marker": "qa-payment-20260605103208@example.test",
-        "privateId": "wish_codex_matrix_20260605103208_payment_private",
-        "selectedId": "wish_codex_matrix_20260605103208_payment_selected",
-        "publicId": "wish_codex_matrix_20260605103208_payment_public",
+        "marker": "qa-payment-20260605111053@example.test",
+        "privateId": "wish_codex_matrix_20260605111053_payment_private",
+        "selectedId": "wish_codex_matrix_20260605111053_payment_selected",
+        "publicId": "wish_codex_matrix_20260605111053_payment_public",
         "markerVisibleTo": [],
         "selectedVisibleTo": [
           "maya"
@@ -541,21 +543,21 @@
       }
     },
     "wishlist.payment-metadata.direct-private-contained": {
-      "count": 1,
-      "lastAt": "2026-06-05T10:32:13.872Z",
+      "count": 2,
+      "lastAt": "2026-06-05T11:10:59.116Z",
       "lastDetail": {
-        "marker": "qa-payment-20260605103208@example.test",
-        "privateId": "wish_codex_matrix_20260605103208_payment_private",
+        "marker": "qa-payment-20260605111053@example.test",
+        "privateId": "wish_codex_matrix_20260605111053_payment_private",
         "markerVisibleTo": [],
         "titleVisibleTo": []
       }
     },
     "wishlist.payment-metadata.direct-selected-contained": {
-      "count": 1,
-      "lastAt": "2026-06-05T10:32:13.872Z",
+      "count": 2,
+      "lastAt": "2026-06-05T11:10:59.116Z",
       "lastDetail": {
-        "marker": "qa-payment-20260605103208@example.test",
-        "selectedId": "wish_codex_matrix_20260605103208_payment_selected",
+        "marker": "qa-payment-20260605111053@example.test",
+        "selectedId": "wish_codex_matrix_20260605111053_payment_selected",
         "markerVisibleTo": [],
         "titleVisibleTo": [
           "maya"
@@ -564,24 +566,24 @@
       }
     },
     "wishlist.payment-metadata.cleanup": {
-      "count": 1,
-      "lastAt": "2026-06-05T10:32:14.335Z",
+      "count": 2,
+      "lastAt": "2026-06-05T11:10:59.499Z",
       "lastDetail": {
         "cleaned": true,
-        "marker": "qa-payment-20260605103208@example.test"
+        "marker": "qa-payment-20260605111053@example.test"
       }
     },
     "wishlist.visibility.cleanup": {
-      "count": 2,
-      "lastAt": "2026-06-05T10:30:13.329Z",
+      "count": 4,
+      "lastAt": "2026-06-05T10:50:19.288Z",
       "lastDetail": {
         "cleaned": true,
         "directWishProbe": true
       }
     },
     "affiliate.external-links-rendered": {
-      "count": 1,
-      "lastAt": "2026-06-05T10:32:25.939Z",
+      "count": 2,
+      "lastAt": "2026-06-05T11:11:04.843Z",
       "lastDetail": {
         "count": 4,
         "hrefs": [
@@ -593,8 +595,8 @@
       }
     },
     "affiliate.amazon-link-has-tag": {
-      "count": 1,
-      "lastAt": "2026-06-05T10:32:25.940Z",
+      "count": 2,
+      "lastAt": "2026-06-05T11:11:04.843Z",
       "lastDetail": {
         "amazonLinkCount": 4,
         "amazonWithTagCount": 4,
@@ -607,8 +609,8 @@
       }
     },
     "affiliate.ebay-link-has-campaign": {
-      "count": 1,
-      "lastAt": "2026-06-05T10:32:25.940Z",
+      "count": 2,
+      "lastAt": "2026-06-05T11:11:04.844Z",
       "lastDetail": {
         "ebayLinkCount": 0,
         "ebayWithCampaignCount": 0,
@@ -616,8 +618,8 @@
       }
     },
     "affiliate.external-links-safe-rel": {
-      "count": 1,
-      "lastAt": "2026-06-05T10:32:25.941Z",
+      "count": 2,
+      "lastAt": "2026-06-05T11:11:04.844Z",
       "lastDetail": {
         "externalLinkCount": 4,
         "unsafeBlankLinkCount": 0,
@@ -625,10 +627,10 @@
       }
     },
     "affiliate.ebay-temporary-link-rendered": {
-      "count": 1,
-      "lastAt": "2026-06-05T10:32:28.433Z",
+      "count": 2,
+      "lastAt": "2026-06-05T11:11:12.615Z",
       "lastDetail": {
-        "itemId": "wish_codex_matrix_20260605103226_affiliate_ebay",
+        "itemId": "wish_codex_matrix_20260605111110_affiliate_ebay",
         "titleRendered": true,
         "ebayLinkCount": 2,
         "hrefs": [
@@ -638,8 +640,8 @@
       }
     },
     "affiliate.ebay-temporary-link-has-campaign": {
-      "count": 1,
-      "lastAt": "2026-06-05T10:32:28.434Z",
+      "count": 2,
+      "lastAt": "2026-06-05T11:11:12.617Z",
       "lastDetail": {
         "ebayLinkCount": 2,
         "ebayWithCampaignCount": 2,
@@ -650,8 +652,8 @@
       }
     },
     "affiliate.ebay-temporary-link-safe-rel": {
-      "count": 1,
-      "lastAt": "2026-06-05T10:32:28.434Z",
+      "count": 2,
+      "lastAt": "2026-06-05T11:11:12.618Z",
       "lastDetail": {
         "ebayLinkCount": 2,
         "unsafeBlankLinkCount": 0,
@@ -659,8 +661,8 @@
       }
     },
     "wishlist.share-list-member-friend": {
-      "count": 1,
-      "lastAt": "2026-06-05T10:29:43.164Z",
+      "count": 94,
+      "lastAt": "2026-06-05T11:26:20.417Z",
       "lastDetail": {
         "ownerUserId": 12,
         "mayaStatus": 200,
@@ -668,8 +670,8 @@
       }
     },
     "wishlist.share-list-viewer": {
-      "count": 1,
-      "lastAt": "2026-06-05T10:29:43.165Z",
+      "count": 94,
+      "lastAt": "2026-06-05T11:26:20.418Z",
       "lastDetail": {
         "ownerUserId": 12,
         "status": 404,
@@ -677,85 +679,93 @@
       }
     },
     "wishlist.shared-wish-public-render": {
-      "count": 1,
-      "lastAt": "2026-06-05T10:29:43.440Z",
+      "count": 94,
+      "lastAt": "2026-06-05T11:26:20.643Z",
       "lastDetail": {
         "status": 200,
         "includesTitle": true
       }
     },
     "outcomes.owner-read": {
-      "count": 1,
-      "lastAt": "2026-06-05T10:29:43.627Z",
+      "count": 94,
+      "lastAt": "2026-06-05T11:26:20.817Z",
       "lastDetail": {
         "count": 0
       }
     },
     "gift-intent.maya-ui-partial-offer": {
-      "count": 0
+      "count": 3,
+      "lastAt": "2026-06-05T11:16:58.772Z",
+      "lastDetail": {
+        "repeatedViaBrowser": true,
+        "responseStatus": 200,
+        "outcomeId": "",
+        "consoleIssues": 0,
+        "networkFailures": 0
+      }
     },
     "gift-intent.owner-outcome-visible": {
-      "count": 29,
-      "lastAt": "2026-06-05T10:38:17.080Z",
+      "count": 60,
+      "lastAt": "2026-06-05T11:17:08.768Z",
       "lastDetail": {
         "count": 1,
         "outcomeIds": [
-          "416"
+          "450"
         ]
       }
     },
     "gift-intent.owner-decline-cleanup": {
-      "count": 25,
-      "lastAt": "2026-06-05T10:38:17.253Z",
+      "count": 52,
+      "lastAt": "2026-06-05T11:17:08.974Z",
       "lastDetail": {
-        "outcomeId": "416"
+        "outcomeId": "450"
       }
     },
     "gift-intent.concurrent-helpers-same-item": {
-      "count": 1,
-      "lastAt": "2026-06-05T10:30:02.098Z",
+      "count": 2,
+      "lastAt": "2026-06-05T10:49:43.229Z",
       "lastDetail": {
-        "mayaOk": false,
-        "jordanOk": true,
+        "mayaOk": true,
+        "jordanOk": false,
         "activeOutcomeCount": 1,
         "totalPercent": 60,
         "outcomeIds": [
-          "384"
+          "418"
         ]
       }
     },
     "gift-intent.concurrent-helpers-cleanup": {
-      "count": 1,
-      "lastAt": "2026-06-05T10:30:03.685Z",
+      "count": 2,
+      "lastAt": "2026-06-05T10:49:44.715Z",
       "lastDetail": {
-        "marker": "Codex concurrent helper race 20260605102959",
+        "marker": "Codex concurrent helper race 20260605104940",
         "cleaned": true
       }
     },
     "gift-intent.same-helper-concurrent-submit": {
-      "count": 1,
-      "lastAt": "2026-06-05T10:32:06.370Z",
+      "count": 2,
+      "lastAt": "2026-06-05T11:11:20.081Z",
       "lastDetail": {
         "firstOk": true,
         "secondOk": true,
         "activeOutcomeCount": 1,
         "totalPercent": 55,
         "outcomeIds": [
-          "408"
+          "443"
         ]
       }
     },
     "gift-intent.same-helper-concurrent-cleanup": {
-      "count": 1,
-      "lastAt": "2026-06-05T10:32:08.003Z",
+      "count": 2,
+      "lastAt": "2026-06-05T11:11:22.033Z",
       "lastDetail": {
-        "marker": "Codex same-helper concurrent support 20260605103203",
+        "marker": "Codex same-helper concurrent support 20260605111116",
         "cleaned": true
       }
     },
     "gift-intent.helper-cancel-own-outcome": {
-      "count": 1,
-      "lastAt": "2026-06-05T10:31:49.012Z",
+      "count": 2,
+      "lastAt": "2026-06-05T10:50:39.002Z",
       "lastDetail": {
         "status": 200,
         "body": {
@@ -766,51 +776,51 @@
       }
     },
     "gift-intent.owner-confirm-decision": {
-      "count": 1,
-      "lastAt": "2026-06-05T10:31:56.164Z",
+      "count": 2,
+      "lastAt": "2026-06-05T11:11:28.884Z",
       "lastDetail": {
         "positiveDecision": "confirm",
         "positiveStatus": 200,
         "positiveBody": {
           "ok": true,
           "outcome": {
-            "confirmedAt": "2026-06-05T10:31:56.127Z",
+            "confirmedAt": "2026-06-05T11:11:28.813Z",
             "contributionPercent": 20,
-            "helperMessage": "Codex owner confirm verb 20260605103150",
+            "helperMessage": "Codex owner confirm verb 20260605111126",
             "helperUserId": 13,
-            "id": "406",
-            "itemId": "wish_codex_matrix_20260605103150_owner_decision_verb",
-            "itemTitle": "Codex owner decision verb 20260605103150",
-            "ownerReply": "Codex owner confirm verb 20260605103150 confirm",
+            "id": "445",
+            "itemId": "wish_codex_matrix_20260605111126_owner_decision_verb",
+            "itemTitle": "Codex owner decision verb 20260605111126",
+            "ownerReply": "Codex owner confirm verb 20260605111126 confirm",
             "ownerUserId": 12,
             "productUrl": "https://www.amazon.de/dp/B08N5WRWNW?tag=wishees-qa-21&psc=1",
-            "promisedAt": "2026-06-05T10:31:55.803Z",
+            "promisedAt": "2026-06-05T11:11:28.443Z",
             "status": "received_confirmed"
           }
         }
       }
     },
     "gift-intent.owner-decision-race-same-outcome": {
-      "count": 1,
-      "lastAt": "2026-06-05T10:32:00.585Z",
+      "count": 2,
+      "lastAt": "2026-06-05T11:11:32.221Z",
       "lastDetail": {
-        "outcomeId": "407",
+        "outcomeId": "446",
         "positiveDecision": "confirm",
         "confirmStatus": 200,
         "confirmBody": {
           "ok": true,
           "outcome": {
-            "confirmedAt": "2026-06-05T10:32:00.053Z",
+            "confirmedAt": "2026-06-05T11:11:31.752Z",
             "contributionPercent": 20,
-            "helperMessage": "Codex owner decision race 20260605103150",
+            "helperMessage": "Codex owner decision race 20260605111126",
             "helperUserId": 13,
-            "id": "407",
-            "itemId": "wish_codex_matrix_20260605103150_owner_decision_race",
-            "itemTitle": "Codex owner decision race 20260605103150",
-            "ownerReply": "Codex owner decision race 20260605103150 confirmed",
+            "id": "446",
+            "itemId": "wish_codex_matrix_20260605111126_owner_decision_race",
+            "itemTitle": "Codex owner decision race 20260605111126",
+            "ownerReply": "Codex owner decision race 20260605111126 confirmed",
             "ownerUserId": 12,
             "productUrl": "https://www.amazon.de/dp/B08N5WRWNW?tag=wishees-qa-21&psc=1",
-            "promisedAt": "2026-06-05T10:31:59.338Z",
+            "promisedAt": "2026-06-05T11:11:31.060Z",
             "status": "received_confirmed"
           }
         },
@@ -821,34 +831,34 @@
         },
         "finalOutcomes": [
           {
-            "confirmedAt": "2026-06-05T10:32:00.053Z",
+            "confirmedAt": "2026-06-05T11:11:31.752Z",
             "contributionPercent": 20,
-            "helperMessage": "Codex owner decision race 20260605103150",
+            "helperMessage": "Codex owner decision race 20260605111126",
             "helperUserId": 13,
-            "id": "407",
-            "itemId": "wish_codex_matrix_20260605103150_owner_decision_race",
-            "itemTitle": "Codex owner decision race 20260605103150",
-            "ownerReply": "Codex owner decision race 20260605103150 confirmed",
+            "id": "446",
+            "itemId": "wish_codex_matrix_20260605111126_owner_decision_race",
+            "itemTitle": "Codex owner decision race 20260605111126",
+            "ownerReply": "Codex owner decision race 20260605111126 confirmed",
             "ownerUserId": 12,
             "productUrl": "https://www.amazon.de/dp/B08N5WRWNW?tag=wishees-qa-21&psc=1",
-            "promisedAt": "2026-06-05T10:31:59.338Z",
+            "promisedAt": "2026-06-05T11:11:31.060Z",
             "status": "received_confirmed"
           }
         ],
-        "helperNotificationCount": 3
+        "helperNotificationCount": 2
       }
     },
     "gift-intent.owner-decision-race-cleanup": {
-      "count": 1,
-      "lastAt": "2026-06-05T10:32:02.972Z",
+      "count": 2,
+      "lastAt": "2026-06-05T11:11:34.072Z",
       "lastDetail": {
-        "marker": "Codex owner decision race 20260605103150",
+        "marker": "Codex owner decision race 20260605111126",
         "remaining": 0
       }
     },
     "gift-intent.contribution-boundary-zero": {
-      "count": 1,
-      "lastAt": "2026-06-05T10:31:04.545Z",
+      "count": 2,
+      "lastAt": "2026-06-05T10:51:37.872Z",
       "lastDetail": {
         "submittedValue": 0,
         "expected": "reject",
@@ -863,8 +873,8 @@
       }
     },
     "gift-intent.contribution-boundary-negative": {
-      "count": 1,
-      "lastAt": "2026-06-05T10:31:06.522Z",
+      "count": 2,
+      "lastAt": "2026-06-05T10:51:40.001Z",
       "lastDetail": {
         "submittedValue": -10,
         "expected": "reject",
@@ -879,8 +889,8 @@
       }
     },
     "gift-intent.contribution-boundary-over-100": {
-      "count": 1,
-      "lastAt": "2026-06-05T10:31:08.549Z",
+      "count": 2,
+      "lastAt": "2026-06-05T10:51:41.907Z",
       "lastDetail": {
         "submittedValue": 101,
         "expected": "reject",
@@ -895,8 +905,8 @@
       }
     },
     "gift-intent.contribution-boundary-huge": {
-      "count": 1,
-      "lastAt": "2026-06-05T10:31:10.602Z",
+      "count": 2,
+      "lastAt": "2026-06-05T10:51:44.071Z",
       "lastDetail": {
         "submittedValue": 1000,
         "expected": "reject",
@@ -911,8 +921,8 @@
       }
     },
     "gift-intent.contribution-boundary-nonnumeric": {
-      "count": 1,
-      "lastAt": "2026-06-05T10:31:12.623Z",
+      "count": 2,
+      "lastAt": "2026-06-05T10:51:45.977Z",
       "lastDetail": {
         "submittedValue": "not-a-number",
         "expected": "reject",
@@ -927,8 +937,8 @@
       }
     },
     "gift-intent.contribution-boundary-decimal": {
-      "count": 1,
-      "lastAt": "2026-06-05T10:31:14.679Z",
+      "count": 2,
+      "lastAt": "2026-06-05T10:51:47.918Z",
       "lastDetail": {
         "submittedValue": "33.7",
         "expected": "reject-or-normalize",
@@ -938,15 +948,15 @@
           "outcome": {
             "confirmedAt": "",
             "contributionPercent": 34,
-            "helperMessage": "Codex contribution boundary decimal 20260605103101",
+            "helperMessage": "Codex contribution boundary decimal 20260605105135",
             "helperUserId": 13,
-            "id": "396",
-            "itemId": "wish_codex_matrix_20260605103101_contribution_decimal",
-            "itemTitle": "Codex contribution decimal 20260605103101",
+            "id": "442",
+            "itemId": "wish_codex_matrix_20260605105135_contribution_decimal",
+            "itemTitle": "Codex contribution decimal 20260605105135",
             "ownerReply": "",
             "ownerUserId": 12,
             "productUrl": "https://www.amazon.de/dp/B08N5WRWNW?tag=wishees-qa-21&psc=1",
-            "promisedAt": "2026-06-05T10:31:14.483Z",
+            "promisedAt": "2026-06-05T10:51:47.683Z",
             "status": "promised"
           },
           "status": "contribution-promised"
@@ -959,64 +969,64 @@
       }
     },
     "notifications.member-feed": {
-      "count": 1,
-      "lastAt": "2026-06-05T10:29:43.811Z",
+      "count": 94,
+      "lastAt": "2026-06-05T11:26:20.995Z",
       "lastDetail": {
         "unreadCount": 0,
         "count": 0
       }
     },
     "notifications.qa-artifacts-cleanup": {
-      "count": 65,
-      "lastAt": "2026-06-05T10:38:18.891Z",
+      "count": 232,
+      "lastAt": "2026-06-05T11:26:46.060Z",
       "lastDetail": {
         "deleted": []
       }
     },
     "notifications.owner-mark-read": {
-      "count": 1,
-      "lastAt": "2026-06-05T10:30:21.862Z",
+      "count": 2,
+      "lastAt": "2026-06-05T10:50:43.975Z",
       "lastDetail": {
         "status": 200,
         "body": {
           "ok": true
         },
-        "notificationId": "user_notification:405"
+        "notificationId": "user_notification:488"
       }
     },
     "notifications.owner-delete": {
-      "count": 1,
-      "lastAt": "2026-06-05T10:30:22.036Z",
+      "count": 2,
+      "lastAt": "2026-06-05T10:50:44.141Z",
       "lastDetail": {
         "status": 200,
         "body": {
           "ok": true
         },
-        "notificationId": "user_notification:405"
+        "notificationId": "user_notification:488"
       }
     },
     "notifications.helper-reply-after-owner-confirm": {
-      "count": 1,
-      "lastAt": "2026-06-05T10:30:54.697Z",
+      "count": 2,
+      "lastAt": "2026-06-05T11:11:43.273Z",
       "lastDetail": {
-        "itemId": "wish_codex_matrix_20260605103050_helper_reply_confirm",
-        "itemTitle": "Codex helper reply confirm 20260605103050",
-        "outcomeId": "394",
+        "itemId": "wish_codex_matrix_20260605111138_helper_reply_confirm",
+        "itemTitle": "Codex helper reply confirm 20260605111138",
+        "outcomeId": "447",
         "decisionStatus": 200,
         "decisionBody": {
           "ok": true,
           "outcome": {
-            "confirmedAt": "2026-06-05T10:30:52.987Z",
+            "confirmedAt": "2026-06-05T11:11:41.538Z",
             "contributionPercent": 20,
-            "helperMessage": "Codex helper reply confirm support 20260605103050",
+            "helperMessage": "Codex helper reply confirm support 20260605111138",
             "helperUserId": 13,
-            "id": "394",
-            "itemId": "wish_codex_matrix_20260605103050_helper_reply_confirm",
-            "itemTitle": "Codex helper reply confirm 20260605103050",
-            "ownerReply": "Codex helper reply confirm support 20260605103050 owner confirm",
+            "id": "447",
+            "itemId": "wish_codex_matrix_20260605111138_helper_reply_confirm",
+            "itemTitle": "Codex helper reply confirm 20260605111138",
+            "ownerReply": "Codex helper reply confirm support 20260605111138 owner confirm",
             "ownerUserId": 12,
             "productUrl": "https://www.amazon.de/dp/B08N5WRWNW?tag=wishees-qa-21&psc=1",
-            "promisedAt": "2026-06-05T10:30:52.663Z",
+            "promisedAt": "2026-06-05T11:11:41.180Z",
             "status": "received_confirmed"
           }
         },
@@ -1027,23 +1037,23 @@
             "actorDisplayName": "E2E Alex",
             "actorEmail": "e2e-alex@wishees.local",
             "canDelete": true,
-            "createdAt": "Fri Jun 05 2026 10:30:52 GMT+0000 (Coordinated Universal Time)",
+            "createdAt": "Fri Jun 05 2026 11:11:41 GMT+0000 (Coordinated Universal Time)",
             "href": "/friends/wishlist?invite=user-12",
-            "id": "user_notification:424",
+            "id": "user_notification:526",
             "readAt": null,
             "type": "wish.support.confirmed",
-            "wishTitle": "Codex helper reply confirm 20260605103050"
+            "wishTitle": "Codex helper reply confirm 20260605111138"
           }
         ]
       }
     },
     "notifications.helper-reply-after-owner-decline": {
-      "count": 1,
-      "lastAt": "2026-06-05T10:30:59.197Z",
+      "count": 2,
+      "lastAt": "2026-06-05T11:11:47.679Z",
       "lastDetail": {
-        "itemId": "wish_codex_matrix_20260605103050_helper_reply_decline",
-        "itemTitle": "Codex helper reply decline 20260605103050",
-        "outcomeId": "395",
+        "itemId": "wish_codex_matrix_20260605111138_helper_reply_decline",
+        "itemTitle": "Codex helper reply decline 20260605111138",
+        "outcomeId": "448",
         "decisionStatus": 200,
         "decisionBody": {
           "ok": true
@@ -1055,144 +1065,144 @@
             "actorDisplayName": "E2E Alex",
             "actorEmail": "e2e-alex@wishees.local",
             "canDelete": true,
-            "createdAt": "Fri Jun 05 2026 10:30:57 GMT+0000 (Coordinated Universal Time)",
+            "createdAt": "Fri Jun 05 2026 11:11:45 GMT+0000 (Coordinated Universal Time)",
             "href": "/friends/wishlist?invite=user-12",
-            "id": "user_notification:426",
+            "id": "user_notification:528",
             "readAt": null,
             "type": "wish.support.declined",
-            "wishTitle": "Codex helper reply decline 20260605103050"
+            "wishTitle": "Codex helper reply decline 20260605111138"
           }
         ]
       }
     },
     "boundary.non-owner-notification-read-denied": {
-      "count": 1,
-      "lastAt": "2026-06-05T10:30:25.169Z",
+      "count": 2,
+      "lastAt": "2026-06-05T10:50:47.132Z",
       "lastDetail": {
         "status": 400,
         "body": {
           "ok": false
         },
-        "notificationId": "user_notification:407",
+        "notificationId": "user_notification:490",
         "changedOwnerReadState": false
       }
     },
     "boundary.viewer-notification-read-denied": {
-      "count": 1,
-      "lastAt": "2026-06-05T10:30:28.480Z",
+      "count": 2,
+      "lastAt": "2026-06-05T10:50:50.215Z",
       "lastDetail": {
         "status": 403,
         "body": {
           "ok": false,
           "reason": "invalid-action"
         },
-        "notificationId": "user_notification:409",
+        "notificationId": "user_notification:492",
         "changedOwnerReadState": false
       }
     },
     "boundary.disabled-notification-read-denied": {
-      "count": 1,
-      "lastAt": "2026-06-05T10:30:31.583Z",
+      "count": 2,
+      "lastAt": "2026-06-05T10:50:53.279Z",
       "lastDetail": {
         "status": 401,
         "body": {
           "ok": false,
           "reason": "not-authenticated"
         },
-        "notificationId": "user_notification:411",
+        "notificationId": "user_notification:494",
         "changedOwnerReadState": false
       }
     },
     "boundary.unauthenticated-notification-read-denied": {
-      "count": 1,
-      "lastAt": "2026-06-05T10:30:34.811Z",
+      "count": 2,
+      "lastAt": "2026-06-05T10:50:56.355Z",
       "lastDetail": {
         "status": 401,
         "body": {
           "ok": false,
           "reason": "not-authenticated"
         },
-        "notificationId": "user_notification:413",
+        "notificationId": "user_notification:496",
         "changedOwnerReadState": false
       }
     },
     "boundary.non-owner-notification-delete-denied": {
-      "count": 1,
-      "lastAt": "2026-06-05T10:30:38.179Z",
+      "count": 2,
+      "lastAt": "2026-06-05T10:50:59.669Z",
       "lastDetail": {
         "status": 400,
         "body": {
           "ok": false
         },
-        "notificationId": "user_notification:415",
+        "notificationId": "user_notification:498",
         "stillPresent": true
       }
     },
     "boundary.viewer-notification-delete-denied": {
-      "count": 1,
-      "lastAt": "2026-06-05T10:30:41.513Z",
+      "count": 2,
+      "lastAt": "2026-06-05T10:51:02.929Z",
       "lastDetail": {
         "status": 403,
         "body": {
           "ok": false,
           "reason": "invalid-action"
         },
-        "notificationId": "user_notification:417",
+        "notificationId": "user_notification:500",
         "stillPresent": true
       }
     },
     "boundary.disabled-notification-delete-denied": {
-      "count": 1,
-      "lastAt": "2026-06-05T10:30:44.716Z",
+      "count": 2,
+      "lastAt": "2026-06-05T10:51:06.186Z",
       "lastDetail": {
         "status": 401,
         "body": {
           "ok": false,
           "reason": "not-authenticated"
         },
-        "notificationId": "user_notification:419",
+        "notificationId": "user_notification:502",
         "stillPresent": true
       }
     },
     "boundary.unauthenticated-notification-delete-denied": {
-      "count": 1,
-      "lastAt": "2026-06-05T10:30:47.963Z",
+      "count": 2,
+      "lastAt": "2026-06-05T10:51:09.226Z",
       "lastDetail": {
         "status": 401,
         "body": {
           "ok": false,
           "reason": "not-authenticated"
         },
-        "notificationId": "user_notification:421",
+        "notificationId": "user_notification:504",
         "stillPresent": true
       }
     },
     "race.same-owner-parallel-save": {
-      "count": 1,
-      "lastAt": "2026-06-05T10:29:46.639Z",
+      "count": 94,
+      "lastAt": "2026-06-05T11:26:23.690Z",
       "lastDetail": {
         "hasA": true,
         "hasB": true
       }
     },
     "friends.requests-read": {
-      "count": 1,
-      "lastAt": "2026-06-05T10:29:47.182Z",
+      "count": 94,
+      "lastAt": "2026-06-05T11:26:24.369Z",
       "lastDetail": {
         "linaIncoming": 0,
         "alexOutgoing": 0
       }
     },
     "friends.connected-read": {
-      "count": 1,
-      "lastAt": "2026-06-05T10:29:47.354Z",
+      "count": 94,
+      "lastAt": "2026-06-05T11:26:24.545Z",
       "lastDetail": {
         "count": 2
       }
     },
     "friends.connected-read.all-users": {
-      "count": 10,
-      "lastAt": "2026-06-05T10:31:27.101Z",
+      "count": 28,
+      "lastAt": "2026-06-05T11:26:53.906Z",
       "lastDetail": {
         "alex": [
           14,
@@ -1209,8 +1219,8 @@
       }
     },
     "friends.invite-api.member": {
-      "count": 1,
-      "lastAt": "2026-06-05T10:30:15.428Z",
+      "count": 2,
+      "lastAt": "2026-06-05T11:11:57.656Z",
       "lastDetail": {
         "status": 200,
         "body": {
@@ -1221,8 +1231,8 @@
       }
     },
     "friends.invite-api.viewer": {
-      "count": 1,
-      "lastAt": "2026-06-05T10:30:15.885Z",
+      "count": 2,
+      "lastAt": "2026-06-05T11:11:58.114Z",
       "lastDetail": {
         "status": 403,
         "body": {
@@ -1232,8 +1242,8 @@
       }
     },
     "friends.invite-api.disabled": {
-      "count": 1,
-      "lastAt": "2026-06-05T10:30:15.731Z",
+      "count": 2,
+      "lastAt": "2026-06-05T11:11:57.956Z",
       "lastDetail": {
         "status": 401,
         "body": {
@@ -1243,8 +1253,8 @@
       }
     },
     "friends.invite-api.anonymous": {
-      "count": 1,
-      "lastAt": "2026-06-05T10:30:15.579Z",
+      "count": 2,
+      "lastAt": "2026-06-05T11:11:57.807Z",
       "lastDetail": {
         "status": 401,
         "body": {
@@ -1254,8 +1264,8 @@
       }
     },
     "friends.invite-page.anonymous": {
-      "count": 1,
-      "lastAt": "2026-06-05T10:30:16.428Z",
+      "count": 2,
+      "lastAt": "2026-06-05T11:11:59.132Z",
       "lastDetail": {
         "status": 200,
         "includesAlex": false,
@@ -1263,8 +1273,8 @@
       }
     },
     "friends.invite-page.disabled": {
-      "count": 1,
-      "lastAt": "2026-06-05T10:30:16.920Z",
+      "count": 2,
+      "lastAt": "2026-06-05T11:11:59.572Z",
       "lastDetail": {
         "status": 200,
         "includesAlex": false,
@@ -1272,8 +1282,8 @@
       }
     },
     "friends.invite-page.viewer": {
-      "count": 1,
-      "lastAt": "2026-06-05T10:30:18.117Z",
+      "count": 2,
+      "lastAt": "2026-06-05T11:12:00.849Z",
       "lastDetail": {
         "status": 200,
         "includesAlex": false,
@@ -1282,8 +1292,8 @@
       }
     },
     "friends.viewer-remove-connection-denied": {
-      "count": 1,
-      "lastAt": "2026-06-05T10:31:22.182Z",
+      "count": 2,
+      "lastAt": "2026-06-05T10:51:56.002Z",
       "lastDetail": {
         "setupInviteStatus": 200,
         "viewerConnectedToAlex": false,
@@ -1296,8 +1306,8 @@
       }
     },
     "friends.disabled-remove-connection-denied": {
-      "count": 1,
-      "lastAt": "2026-06-05T10:31:23.077Z",
+      "count": 2,
+      "lastAt": "2026-06-05T10:51:56.877Z",
       "lastDetail": {
         "status": 401,
         "body": {
@@ -1308,8 +1318,8 @@
       }
     },
     "friends.unauthenticated-remove-connection-denied": {
-      "count": 1,
-      "lastAt": "2026-06-05T10:31:23.903Z",
+      "count": 2,
+      "lastAt": "2026-06-05T10:51:57.822Z",
       "lastDetail": {
         "status": 401,
         "body": {
@@ -1320,10 +1330,10 @@
       }
     },
     "friends.request-actions-invalid-id-denied": {
-      "count": 1,
-      "lastAt": "2026-06-05T10:31:26.411Z",
+      "count": 2,
+      "lastAt": "2026-06-05T10:52:01.178Z",
       "lastDetail": {
-        "invalidRequestId": "codex-20260605103117-missing-request",
+        "invalidRequestId": "codex-20260605105150-missing-request",
         "requestResults": [
           {
             "actor": "jordan",
@@ -1438,8 +1448,8 @@
       }
     },
     "friends.mutation-permission-cleanup": {
-      "count": 1,
-      "lastAt": "2026-06-05T10:31:27.103Z",
+      "count": 2,
+      "lastAt": "2026-06-05T10:52:01.872Z",
       "lastDetail": {
         "baselineLinaConnected": [],
         "finalLinaConnected": [],
@@ -1447,8 +1457,8 @@
       }
     },
     "external.same-origin-guard": {
-      "count": 1,
-      "lastAt": "2026-06-05T10:29:47.513Z",
+      "count": 94,
+      "lastAt": "2026-06-05T11:26:24.681Z",
       "lastDetail": {
         "status": 403,
         "body": {
@@ -1458,8 +1468,8 @@
       }
     },
     "external.same-origin-account-wishlist-guard": {
-      "count": 1,
-      "lastAt": "2026-06-05T10:29:47.820Z",
+      "count": 94,
+      "lastAt": "2026-06-05T11:26:24.975Z",
       "lastDetail": {
         "status": 403,
         "body": {
@@ -1469,8 +1479,8 @@
       }
     },
     "external.same-origin-fulfill-guard": {
-      "count": 1,
-      "lastAt": "2026-06-05T10:29:47.961Z",
+      "count": 94,
+      "lastAt": "2026-06-05T11:26:25.131Z",
       "lastDetail": {
         "status": 400,
         "body": {
@@ -1481,8 +1491,8 @@
       }
     },
     "external.same-origin-owner-outcome-guard": {
-      "count": 1,
-      "lastAt": "2026-06-05T10:38:07.713Z",
+      "count": 2,
+      "lastAt": "2026-06-05T10:51:14.496Z",
       "lastDetail": {
         "status": 403,
         "body": {
@@ -1493,8 +1503,8 @@
       }
     },
     "external.same-origin-helper-cancel-guard": {
-      "count": 1,
-      "lastAt": "2026-06-05T10:38:10.257Z",
+      "count": 2,
+      "lastAt": "2026-06-05T10:51:17.013Z",
       "lastDetail": {
         "status": 400,
         "body": {
@@ -1505,8 +1515,8 @@
       }
     },
     "external.same-origin-notification-read-guard": {
-      "count": 1,
-      "lastAt": "2026-06-05T10:38:13.805Z",
+      "count": 2,
+      "lastAt": "2026-06-05T10:51:20.298Z",
       "lastDetail": {
         "status": 403,
         "body": {
@@ -1517,8 +1527,8 @@
       }
     },
     "external.same-origin-notification-delete-guard": {
-      "count": 1,
-      "lastAt": "2026-06-05T10:38:16.920Z",
+      "count": 2,
+      "lastAt": "2026-06-05T10:51:23.603Z",
       "lastDetail": {
         "status": 403,
         "body": {
@@ -1529,8 +1539,8 @@
       }
     },
     "external.same-origin-friend-invite-guard": {
-      "count": 1,
-      "lastAt": "2026-06-05T10:38:18.566Z",
+      "count": 2,
+      "lastAt": "2026-06-05T10:51:25.260Z",
       "lastDetail": {
         "status": 403,
         "body": {
@@ -1540,7 +1550,14 @@
       }
     },
     "realtime.browser-smoke": {
-      "count": 0
+      "count": 3,
+      "lastAt": "2026-06-05T11:16:55.791Z",
+      "lastDetail": {
+        "mobileOverflowRepeat": true,
+        "overflowPx": 0,
+        "consoleIssues": 0,
+        "networkFailures": 0
+      }
     },
     "realtime.maya-viewport-updates-after-support": {
       "count": 2,
@@ -1555,34 +1572,32 @@
       }
     },
     "cleanup.run-prefix-removed": {
-      "count": 70,
-      "lastAt": "2026-06-05T10:38:19.547Z",
+      "count": 334,
+      "lastAt": "2026-06-05T11:26:46.788Z",
       "lastDetail": {
         "prefix": "wish_codex_matrix_"
       }
     },
     "browser.owner-decline-existing-outcome": {
-      "count": 1,
-      "lastAt": "2026-06-05T10:34:49.235Z",
+      "count": 3,
+      "lastAt": "2026-06-05T11:17:00.405Z",
       "lastDetail": {
-        "outcomeId": "411",
-        "status": 200,
-        "body": {
-          "ok": true
-        }
+        "notificationPageRepeat": true,
+        "consoleIssues": 0,
+        "networkFailures": 0
       }
     },
     "browser.owner-list-outcomes": {
-      "count": 1,
-      "lastAt": "2026-06-05T10:36:12.151Z",
+      "count": 6,
+      "lastAt": "2026-06-05T11:01:25.437Z",
       "lastDetail": {
         "status": 200,
         "count": 0
       }
     },
     "boundary.viewer-wishlist-put-shapes-fix-verified": {
-      "count": 1,
-      "lastAt": "2026-06-05T10:39:38.321Z",
+      "count": 2,
+      "lastAt": "2026-06-05T11:23:58.984Z",
       "lastDetail": {
         "beforeStatus": 200,
         "updateStatus": 403,
@@ -1595,11 +1610,120 @@
           "ok": false,
           "reason": "invalid-action"
         },
-        "afterStatus": 200
+        "afterStatus": 200,
+        "repeated": true
+      }
+    },
+    "browser.mobile-overflow-repeat": {
+      "count": 2,
+      "lastAt": "2026-06-05T11:16:55.793Z",
+      "lastDetail": {
+        "session": "Maya",
+        "url": "https://www.wishees.com/friends/wishlist?invite=user-12&lang=de",
+        "viewport": "320x680",
+        "title": "Friend Wishlist",
+        "documentScrollWidth": 320,
+        "bodyScrollWidth": 320,
+        "clientWidth": 320,
+        "overflowPx": 0,
+        "hasWishlistItem": true,
+        "affiliateLinksObserved": [
+          "https://www.amazon.com/s?k=burr+coffee+grinder&tag=wishees-20",
+          "https://www.amazon.com/s?k=noise+canceling+headphones&tag=wishees-20"
+        ],
+        "overflowingElements": [],
+        "consoleWarningsOrErrors": [],
+        "networkFailures": []
+      }
+    },
+    "browser.maya-partial-offer-repeat": {
+      "count": 2,
+      "lastAt": "2026-06-05T11:16:58.773Z",
+      "lastDetail": {
+        "session": "Maya browser context",
+        "url": "https://www.wishees.com/friends/wishlist?invite=user-12&lang=de",
+        "item": "Compact burr coffee grinder",
+        "responseStatus": 200,
+        "responseOk": true,
+        "responseBodyKind": "text",
+        "responseBody": "<!DOCTYPE html><html data-dpl-id=\"dpl_AbnBYFbEkS7ATPjyuPjLmC1YLG58\" lang=\"de\"><head><meta charSet=\"utf-8\"/><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"/><link rel=\"stylesheet\" href=\"/_next/static/chunks/0dilo0lv1u692.css?dpl=dpl_AbnBYFbEkS7ATPjyuPjLmC1YLG58\" data-precedence=\"next\"/><link rel=\"stylesheet\" href=\"/_next/static/chunks/11xp-rnb48jv5.css?dpl=dpl_AbnBYFbEkS7ATPjyuPjLmC1YLG58\" data-precedence=\"next\"/><link rel=\"preload\" as=\"script\" fetchPriority=\"low\" href=\"/_next/static/chunks/185~ognu0gd02.js?dpl=dpl_AbnBYFbEkS7ATPjyuPjLmC1YLG58\"/><script src=\"/_next/static/chunks/0j53g7yvtrixa.js?dpl=dpl_AbnBYFbEkS7ATPjyuPjLmC1YLG58\" async=\"\"></script><script src=\"/_next/static/chunks/0zc_yy4_zy~7i.js?dpl=dpl_AbnBYFbEkS7ATPjyuPjLmC1YLG58\" async=\"\"></script><script src=\"/_next/static/chunks/09ppo7l23v~0v.js?dpl=dpl_AbnBYFbEkS7ATPjyuPjLmC1YLG58\" async=\"\"></script><script src=\"/_next/static/chunks/0kei582m8boi2.js?dpl=dpl_AbnBYFbEkS7ATPjyuPjLmC1YLG58\" async=\"\"></script><script src=\"/_next/static/chunks/turbopack-0ahbr54p.3pz5.js?dpl=dpl_AbnBYFbEkS7ATPjyuPjLmC1YLG58\" async=\"\"></script><script src=\"/_next/static/chunks/04e_ykyosvl4x.js?dpl=dpl_AbnBYFbEkS7ATPjyuPjLmC1YLG58\" async=\"\"></script><script src=\"/_next/static/chunks/0vq6cyik_lsrs.js?dpl=dpl_AbnBYFbEkS7ATPjyuPjLmC1YLG58\" async=\"\"></script><script src=\"/_next/static/chunks/0vsf2330de-5p.js?dpl=dpl_AbnBYFbEkS7ATPjyuPjLmC1YLG58\" async=\"\"></script><script src=\"/_next/static/chunks/0qn-4y_6cfh4t.js?dpl=dpl_AbnBYFbEkS7ATPjyuPjLmC1YLG58\" async=\"\"></script><script src=\"/_next/static/chunks/0dlfnckqn0qdg.js?dpl=d",
+        "hasSupportPhrase": true,
+        "bodySnippet": "Geteilte Wunschlisten\n\nSieh, was sich deine Freunde wünschen, finde Produktlinks oder biete an, dich an einem Geschenk zu beteiligen.\n\nLaufend\nCompact burr coffee grinder\n\nSmall burr grinder for morning coffee.\n\nPreishinweis: 89,00 €\n\nProdukt ansehen\nGanzen Wunsch übernehmen\nBeitragen\nNoise-canceling headphones\n\nPrefer comfortable over flashy. Good for commute and focus work.\n\nPreishinweis: 129,00 €\n\nProdukt ansehen\nGanzen Wunsch übernehmen\nBeitragen\n\nWishees hilft dir bei der Geschenkkoordinati",
+        "consoleWarningsOrErrors": [],
+        "networkFailures": []
+      }
+    },
+    "browser.alex-notifications-repeat": {
+      "count": 2,
+      "lastAt": "2026-06-05T11:17:00.406Z",
+      "lastDetail": {
+        "session": "Alex",
+        "url": "https://www.wishees.com/notifications?lang=de",
+        "title": "Wishees Notifications",
+        "bodySnippet": "Benachrichtigungen\nE2E Maya bot Unterstützung am Compact burr coffee grinder\nAls gelesen markieren\nLöschen\n2\nW\nıshees\nDE\n1",
+        "hasNotificationsUi": true,
+        "buttonCount": 8,
+        "consoleWarningsOrErrors": [],
+        "networkFailures": []
       }
     }
   },
-  "bugs": [],
+  "bugs": [
+    {
+      "occurrences": 62,
+      "id": "BUG-001",
+      "firstSeenAt": "2026-06-05T10:49:23.417Z",
+      "severity": "MAJOR",
+      "title": "Concurrent owner wishlist saves lose one newly created item",
+      "stepsToReproduce": [
+        "Open two authenticated Alex sessions",
+        "Read the same wishlist baseline in both sessions",
+        "Submit two PUT /api/account/wishlist requests at the same time, each adding a different item",
+        "Fetch /api/account/wishlist"
+      ],
+      "actualBehavior": "Final wishlist had race item A=false, race item B=true; one save appears to have overwritten the other.",
+      "evidence": {
+        "ts": "2026-06-05T10:49:23.415Z",
+        "runId": "20260605104906",
+        "session": "alex-race-a",
+        "feature": "race",
+        "action": "race final read",
+        "request": {
+          "method": "GET",
+          "route": "/api/account/wishlist"
+        },
+        "response": {
+          "status": 200,
+          "ok": true,
+          "contentType": "application/json",
+          "body": "{\"items\":[{\"allowedViewers\":[],\"createdAt\":\"2026-06-05T10:40:00.172Z\",\"currency\":\"EUR\",\"id\":\"wish_e2e_coffee_grinder\",\"note\":\"Small burr grinder for morning coffee.\",\"price\":\"89.00\",\"recipientName\":\"\",\"title\":\"Compact burr coffee grinder\",\"updatedAt\":\"2026-06-05T10:40:00.172Z\",\"url\":\"https://www.amazon.de/s?k=burr+coffee+grinder&tag=wishees-20\",\"visibility\":\"friends\",\"giftPaymentOptions\":[],\"giftPaymentAccount\":\"\",\"giftPaymentMethod\":\"\",\"giftPaymentOtherLabel\":\"\"},{\"allowedViewers\":[],\"createdAt\":\"2026-06-05T10:40:00.172Z\",\"currency\":\"EUR\",\"id\":\"wish_e2e_noise_headphones\",\"note\":\"Prefer comfortable over flashy. Good for commute and focus work.\",\"price\":\"129.00\",\"recipientName\":\"\",\"title\":\"Noise-canceling headphones\",\"updatedAt\":\"2026-06-05T10:40:00.172Z\",\"url\":\"https://www.amazon.com/s?k=noise+canceling+headphones&tag=wishees-20\",\"visibility\":\"friends\",\"giftPaymentOptions\":[],\"giftPaymentAccount\":\"\",\"giftPaymentMethod\":\"\",\"giftPaymentOtherLabel\":\"\"},{\"allowedViewers\":[],\"createdAt\":\"2026-06-05T10:49:23.068Z\",\"currency\":\"EUR\",\"id\":\"wish_codex_matrix_20260605104906_race2_b\",\"note\":\"Automated multi-user QA artifact 20260605104906. Safe to delete.\",\"price\":\"19.99\",\"recipientName\":\"Codex QA\",\"title\":\"Codex matrix race B 20260605104906\",\"updatedAt\":\"2026-06-05T10:49:23.068Z\",\"url\":\"https://www.amazon.de/dp/B08N5WRWNW?tag=wishees-qa-21&psc=1\",\"visibility\":\"friends\",\"giftPaymentOptions\":[{\"account\":\"qa-paypal@example.test\",\"accountName\":\"\",\"bankName\":\"\",\"method\":\"paypal\",\"otherLabel\":\"\",\"swift\":\"\"}],\"giftPaymentAccount\":\"qa-paypal@example.test\",\"giftPaymentMethod\":\"paypal\",\"giftPaymentOtherLabel\":\"\"}],\"ok\":true,\"visibility\":\"friends\"}"
+        },
+        "durationMs": 154,
+        "error": null
+      },
+      "lastSeenAt": "2026-06-05T11:26:13.543Z",
+      "lastActualBehavior": "Final wishlist had race item A=true, race item B=false; one save appears to have overwritten the other.",
+      "lastEvidence": {
+        "ts": "2026-06-05T11:26:13.541Z",
+        "runId": "20260605112418",
+        "session": "alex-race-a",
+        "feature": "race",
+        "action": "race final read",
+        "request": {
+          "method": "GET",
+          "route": "/api/account/wishlist"
+        },
+        "response": {
+          "status": 200,
+          "ok": true,
+          "contentType": "application/json",
+          "body": "{\"items\":[{\"allowedViewers\":[],\"createdAt\":\"2026-06-05T10:40:00.172Z\",\"currency\":\"EUR\",\"id\":\"wish_e2e_coffee_grinder\",\"note\":\"Small burr grinder for morning coffee.\",\"price\":\"89.00\",\"recipientName\":\"\",\"title\":\"Compact burr coffee grinder\",\"updatedAt\":\"2026-06-05T10:40:00.172Z\",\"url\":\"https://www.amazon.de/s?k=burr+coffee+grinder&tag=wishees-20\",\"visibility\":\"friends\",\"giftPaymentOptions\":[],\"giftPaymentAccount\":\"\",\"giftPaymentMethod\":\"\",\"giftPaymentOtherLabel\":\"\"},{\"allowedViewers\":[],\"createdAt\":\"2026-06-05T10:40:00.172Z\",\"currency\":\"EUR\",\"id\":\"wish_e2e_noise_headphones\",\"note\":\"Prefer comfortable over flashy. Good for commute and focus work.\",\"price\":\"129.00\",\"recipientName\":\"\",\"title\":\"Noise-canceling headphones\",\"updatedAt\":\"2026-06-05T10:40:00.172Z\",\"url\":\"https://www.amazon.com/s?k=noise+canceling+headphones&tag=wishees-20\",\"visibility\":\"friends\",\"giftPaymentOptions\":[],\"giftPaymentAccount\":\"\",\"giftPaymentMethod\":\"\",\"giftPaymentOtherLabel\":\"\"},{\"allowedViewers\":[],\"createdAt\":\"2026-06-05T11:26:12.987Z\",\"currency\":\"EUR\",\"id\":\"wish_codex_matrix_20260605112418_race10_a\",\"note\":\"Automated multi-user QA artifact 20260605112418. Safe to delete.\",\"price\":\"19.99\",\"recipientName\":\"Codex QA\",\"title\":\"Codex matrix race A 20260605112418\",\"updatedAt\":\"2026-06-05T11:26:12.987Z\",\"url\":\"https://www.amazon.de/dp/B08N5WRWNW?tag=wishees-qa-21&psc=1\",\"visibility\":\"friends\",\"giftPaymentOptions\":[{\"account\":\"qa-paypal@example.test\",\"accountName\":\"\",\"bankName\":\"\",\"method\":\"paypal\",\"otherLabel\":\"\",\"swift\":\"\"}],\"giftPaymentAccount\":\"qa-paypal@example.test\",\"giftPaymentMethod\":\"paypal\",\"giftPaymentOtherLabel\":\"\"}],\"ok\":true,\"visibility\":\"friends\"}"
+        },
+        "durationMs": 212,
+        "error": null
+      }
+    }
+  ],
   "notes": [
     {
       "ts": "2026-06-05T10:29:39.303Z",
@@ -1611,6 +1735,132 @@
     },
     {
       "ts": "2026-06-05T10:29:39.303Z",
+      "type": "target-host",
+      "message": "https://wishees/ was not reachable from this runner; using https://www.wishees.com.",
+      "error": "TypeError: fetch failed"
+    },
+    {
+      "ts": "2026-06-05T10:46:26.772Z",
+      "type": "network-or-transport",
+      "session": "target-probe",
+      "action": "requested target host probe",
+      "route": "https://wishees/",
+      "error": "TypeError: fetch failed"
+    },
+    {
+      "ts": "2026-06-05T10:46:26.772Z",
+      "type": "target-host",
+      "message": "https://wishees/ was not reachable from this runner; using https://www.wishees.com.",
+      "error": "TypeError: fetch failed"
+    },
+    {
+      "ts": "2026-06-05T10:49:07.039Z",
+      "type": "network-or-transport",
+      "session": "target-probe",
+      "action": "requested target host probe",
+      "route": "https://wishees/",
+      "error": "TypeError: fetch failed"
+    },
+    {
+      "ts": "2026-06-05T10:49:07.039Z",
+      "type": "target-host",
+      "message": "https://wishees/ was not reachable from this runner; using https://www.wishees.com.",
+      "error": "TypeError: fetch failed"
+    },
+    {
+      "ts": "2026-06-05T10:49:54.703Z",
+      "type": "network-or-transport",
+      "session": "target-probe",
+      "action": "requested target host probe",
+      "route": "https://wishees/",
+      "error": "TypeError: fetch failed"
+    },
+    {
+      "ts": "2026-06-05T10:49:54.703Z",
+      "type": "target-host",
+      "message": "https://wishees/ was not reachable from this runner; using https://www.wishees.com.",
+      "error": "TypeError: fetch failed"
+    },
+    {
+      "ts": "2026-06-05T10:54:01.202Z",
+      "type": "network-or-transport",
+      "session": "target-probe",
+      "action": "requested target host probe",
+      "route": "https://wishees/",
+      "error": "TypeError: fetch failed"
+    },
+    {
+      "ts": "2026-06-05T10:54:01.202Z",
+      "type": "target-host",
+      "message": "https://wishees/ was not reachable from this runner; using https://www.wishees.com.",
+      "error": "TypeError: fetch failed"
+    },
+    {
+      "ts": "2026-06-05T10:57:54.606Z",
+      "type": "network-or-transport",
+      "session": "target-probe",
+      "action": "requested target host probe",
+      "route": "https://wishees/",
+      "error": "TypeError: fetch failed"
+    },
+    {
+      "ts": "2026-06-05T10:57:54.606Z",
+      "type": "target-host",
+      "message": "https://wishees/ was not reachable from this runner; using https://www.wishees.com.",
+      "error": "TypeError: fetch failed"
+    },
+    {
+      "ts": "2026-06-05T11:03:29.272Z",
+      "type": "network-or-transport",
+      "session": "target-probe",
+      "action": "requested target host probe",
+      "route": "https://wishees/",
+      "error": "TypeError: fetch failed"
+    },
+    {
+      "ts": "2026-06-05T11:03:29.272Z",
+      "type": "target-host",
+      "message": "https://wishees/ was not reachable from this runner; using https://www.wishees.com.",
+      "error": "TypeError: fetch failed"
+    },
+    {
+      "ts": "2026-06-05T11:10:22.259Z",
+      "type": "network-or-transport",
+      "session": "target-probe",
+      "action": "requested target host probe",
+      "route": "https://wishees/",
+      "error": "TypeError: fetch failed"
+    },
+    {
+      "ts": "2026-06-05T11:10:22.260Z",
+      "type": "target-host",
+      "message": "https://wishees/ was not reachable from this runner; using https://www.wishees.com.",
+      "error": "TypeError: fetch failed"
+    },
+    {
+      "ts": "2026-06-05T11:17:19.949Z",
+      "type": "network-or-transport",
+      "session": "target-probe",
+      "action": "requested target host probe",
+      "route": "https://wishees/",
+      "error": "TypeError: fetch failed"
+    },
+    {
+      "ts": "2026-06-05T11:17:19.949Z",
+      "type": "target-host",
+      "message": "https://wishees/ was not reachable from this runner; using https://www.wishees.com.",
+      "error": "TypeError: fetch failed"
+    },
+    {
+      "ts": "2026-06-05T11:24:18.869Z",
+      "type": "network-or-transport",
+      "session": "target-probe",
+      "action": "requested target host probe",
+      "route": "https://wishees/",
+      "error": "TypeError: fetch failed"
+    },
+    {
+      "ts": "2026-06-05T11:24:18.869Z",
       "type": "target-host",
       "message": "https://wishees/ was not reachable from this runner; using https://www.wishees.com.",
       "error": "TypeError: fetch failed"

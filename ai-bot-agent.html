@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🤖 AI Bot Agent - Thien Nguyen</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            line-height: 1.6;
+            color: #1a1a1a;
+            background: #ffffff;
+            min-height: 100vh;
+            font-size: 16px;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+        
+        .navigation {
+            background: #ffffff;
+            border-bottom: 1px solid #e9ecef;
+            padding: 1rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .nav-logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #1a1a1a;
+            text-decoration: none;
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+        }
+        
+        .nav-links a {
+            text-decoration: none;
+            color: #6c757d;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+        
+        .nav-links a:hover {
+            color: #1a1a1a;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 4rem;
+            padding: 4rem 0;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        }
+        
+        .header h1 {
+            font-size: 4rem;
+            margin-bottom: 1.5rem;
+            font-weight: 800;
+            color: #1a1a1a;
+            letter-spacing: -0.02em;
+        }
+        
+        .header p {
+            font-size: 1.4rem;
+            color: #6c757d;
+            max-width: 600px;
+            margin: 0 auto 2rem;
+            font-weight: 400;
+        }
+        
+        .hero-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 2rem;
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 1rem 2rem;
+            background: #1a1a1a;
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            border: 2px solid #1a1a1a;
+        }
+        
+        .btn:hover {
+            background: transparent;
+            color: #1a1a1a;
+            transform: translateY(-2px);
+        }
+        
+        .btn-secondary {
+            background: transparent;
+            color: #1a1a1a;
+            border: 2px solid #1a1a1a;
+        }
+        
+        .btn-secondary:hover {
+            background: #1a1a1a;
+            color: white;
+        }
+        
+        .content {
+            background: transparent;
+            padding: 0;
+            margin-bottom: 4rem;
+        }
+        
+        .section {
+            margin-bottom: 4rem;
+        }
+        
+        .section h2 {
+            color: #1a1a1a;
+            font-size: 2.5rem;
+            margin-bottom: 2rem;
+            font-weight: 700;
+            letter-spacing: -0.01em;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 0.5rem;
+        }
+        
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+        
+        .feature-card {
+            background: #ffffff;
+            border: 1px solid #e9ecef;
+            border-radius: 12px;
+            padding: 2rem;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.08);
+            border-color: #667eea;
+        }
+        
+        .feature-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .feature-title {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #1a1a1a;
+            margin-bottom: 1rem;
+        }
+        
+        .feature-description {
+            color: #6c757d;
+            line-height: 1.7;
+        }
+        
+        .model-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+        
+        .model-card {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            padding: 1.5rem;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+        
+        .model-card:hover {
+            border-color: #667eea;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        }
+        
+        .model-name {
+            font-weight: 600;
+            color: #1a1a1a;
+            margin-bottom: 0.5rem;
+        }
+        
+        .model-description {
+            color: #6c757d;
+            font-size: 0.9rem;
+        }
+        
+        .command-list {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .command-list h3 {
+            color: #1a1a1a;
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+        
+        .command-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+        
+        .command-item {
+            background: white;
+            border: 1px solid #e9ecef;
+            border-radius: 6px;
+            padding: 1rem;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            color: #495057;
+        }
+        
+        .installation-section {
+            background: #f8f9fa;
+            border-radius: 16px;
+            padding: 3rem;
+            margin: 4rem 0;
+            border: 1px solid #e9ecef;
+        }
+        
+        .installation-section h2 {
+            color: #1a1a1a;
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            font-weight: 700;
+        }
+        
+        .installation-section p {
+            color: #6c757d;
+            font-size: 1.1rem;
+            margin-bottom: 2rem;
+        }
+        
+        .code-block {
+            background: #1a1a1a;
+            color: #ffffff;
+            padding: 1.5rem;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            overflow-x: auto;
+            margin: 1rem 0;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+            
+            .nav-container {
+                padding: 0 1rem;
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            .nav-links {
+                gap: 1rem;
+            }
+            
+            .header {
+                padding: 2rem 0;
+            }
+            
+            .header h1 {
+                font-size: 2.5rem;
+            }
+            
+            .header p {
+                font-size: 1.1rem;
+            }
+            
+            .section h2 {
+                font-size: 2rem;
+            }
+            
+            .feature-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .model-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .command-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .installation-section {
+                padding: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navigation">
+        <div class="nav-container">
+            <a href="index.html" class="nav-logo">Thien Nguyen</a>
+            <ul class="nav-links">
+                <li><a href="resume.html">Resume</a></li>
+                <li><a href="blog.html">Blog</a></li>
+                <li><a href="index.html">Projects</a></li>
+                <li><a href="codex-automations/">Automations</a></li>
+                <li><a href="contact.html">Contact</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="header">
+            <h1>🤖 AI Bot Agent</h1>
+            <p>Intelligent CLI Assistant with 7 Local Models and 30+ Commands</p>
+            <div class="hero-buttons">
+                <a href="https://pypi.org/project/ai-bot-agent/" class="btn" target="_blank">Install from PyPI</a>
+                <a href="https://github.com/thiennp/ai-bot-agent" class="btn btn-secondary" target="_blank">View on GitHub</a>
+            </div>
+        </div>
+        
+        <div class="content">
+            <div class="section">
+                <h2>Key Features</h2>
+                <div class="feature-grid">
+                    <div class="feature-card">
+                        <div class="feature-icon">🧠</div>
+                        <div class="feature-title">7 Local AI Models</div>
+                        <div class="feature-description">
+                            CodeLlama, Mistral, Llama2, Phi3, Gemma, and more. Run AI locally without internet dependency.
+                        </div>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <div class="feature-icon">⚡</div>
+                        <div class="feature-title">30+ Commands</div>
+                        <div class="feature-description">
+                            File operations, code debugging, optimization, and development assistance with AI-powered automation.
+                        </div>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <div class="feature-icon">🖥️</div>
+                        <div class="feature-title">Three Interfaces</div>
+                        <div class="feature-description">
+                            Desktop GUI, Web Interface, and CLI. Choose your preferred way to interact with AI.
+                        </div>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <div class="feature-icon">🔧</div>
+                        <div class="feature-title">Smart Automation</div>
+                        <div class="feature-description">
+                            AI-powered file creation, editing, and code review with automatic backups and version control.
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="section">
+                <h2>Available Models</h2>
+                <div class="model-grid">
+                    <div class="model-card">
+                        <div class="model-name">CodeLlama</div>
+                        <div class="model-description">Specialized in code generation and analysis</div>
+                    </div>
+                    <div class="model-card">
+                        <div class="model-name">Mistral</div>
+                        <div class="model-description">Fast and efficient general-purpose model</div>
+                    </div>
+                    <div class="model-card">
+                        <div class="model-name">Llama2</div>
+                        <div class="model-description">Meta's powerful language model</div>
+                    </div>
+                    <div class="model-card">
+                        <div class="model-name">Phi3</div>
+                        <div class="model-description">Microsoft's lightweight model</div>
+                    </div>
+                    <div class="model-card">
+                        <div class="model-name">Gemma</div>
+                        <div class="model-description">Google's open model</div>
+                    </div>
+                    <div class="model-card">
+                        <div class="model-name">Custom Models</div>
+                        <div class="model-description">Support for additional local models</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="section">
+                <h2>Command Categories</h2>
+                <div class="command-list">
+                    <h3>File Operations</h3>
+                    <div class="command-grid">
+                        <div class="command-item">create file</div>
+                        <div class="command-item">edit file</div>
+                        <div class="command-item">delete file</div>
+                        <div class="command-item">move file</div>
+                        <div class="command-item">copy file</div>
+                    </div>
+                </div>
+                
+                <div class="command-list">
+                    <h3>Code Development</h3>
+                    <div class="command-grid">
+                        <div class="command-item">debug code</div>
+                        <div class="command-item">optimize code</div>
+                        <div class="command-item">review code</div>
+                        <div class="command-item">generate code</div>
+                        <div class="command-item">test code</div>
+                    </div>
+                </div>
+                
+                <div class="command-list">
+                    <h3>System Tools</h3>
+                    <div class="command-grid">
+                        <div class="command-item">docker commands</div>
+                        <div class="command-item">git operations</div>
+                        <div class="command-item">ssh management</div>
+                        <div class="command-item">system info</div>
+                        <div class="command-item">process management</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="installation-section">
+                <h2>Quick Installation</h2>
+                <p>Install AI Bot Agent with pip and start using it immediately:</p>
+                <div class="code-block">
+pip install ai-bot-agent
+ai-bot-agent --help
+                </div>
+                <div class="hero-buttons">
+                    <a href="https://pypi.org/project/ai-bot-agent/" class="btn" target="_blank">Install Now</a>
+                    <a href="https://github.com/thiennp/ai-bot-agent" class="btn btn-secondary" target="_blank">Documentation</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html> 

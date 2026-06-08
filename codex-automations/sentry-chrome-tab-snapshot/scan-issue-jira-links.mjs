@@ -30,6 +30,13 @@ const jiraReporterAccountId = process.env.SENTRY_TRIAGE_JIRA_REPORTER_ACCOUNT_ID
 const jiraAssignUnassigned = !/^(0|false|no)$/i.test(String(process.env.SENTRY_TRIAGE_JIRA_ASSIGN_UNASSIGNED || '1'));
 const jiraCreateMissing = !/^(0|false|no)$/i.test(String(process.env.SENTRY_TRIAGE_JIRA_CREATE_MISSING || '1'));
 const jiraDryRun = /^(1|true|yes)$/i.test(String(process.env.SENTRY_TRIAGE_JIRA_DRY_RUN || '0'));
+const jiraAssignViaChrome = !/^(0|false|no)$/i.test(String(process.env.SENTRY_TRIAGE_JIRA_ASSIGN_VIA_CHROME || '1'));
+const sentryAttachJiraTickets = !/^(0|false|no)$/i.test(String(process.env.SENTRY_TRIAGE_ATTACH_JIRA_TO_SENTRY || '1'));
+const jiraUiSettleMs = Number(process.env.SENTRY_TRIAGE_JIRA_UI_SETTLE_MS || 1200);
+const sentryIssueTrackingSettleMs = Number(process.env.SENTRY_TRIAGE_SENTRY_ISSUE_TRACKING_SETTLE_MS || 1500);
+const jiraUiActionTimeoutMs = Number(process.env.SENTRY_TRIAGE_JIRA_UI_ACTION_TIMEOUT_MS || 60000);
+const sentryIssueTrackingActionTimeoutMs = Number(process.env.SENTRY_TRIAGE_SENTRY_ISSUE_TRACKING_ACTION_TIMEOUT_MS || 60000);
+const uiActionPollMs = Number(process.env.SENTRY_TRIAGE_UI_ACTION_POLL_MS || 1000);
 const source = 'sentry-chrome-tab-snapshot-detail-scan';
 const EXIT = {
   SUCCESS: 0,
@@ -79,6 +86,36 @@ function sleep(ms) {
   Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, ms);
 }
 
+function waitForUiAction(label, action, {timeoutMs, pollMs = uiActionPollMs, accept = (result) => result?.ok === true} = {}) {
+  const startedAtMs = Date.now();
+  const budgetMs = Math.max(0, Number.isFinite(timeoutMs) ? timeoutMs : 60000);
+  let attempts = 0;
+  let lastResult = null;
+  while (Date.now() - startedAtMs <= budgetMs) {
+    attempts += 1;
+    try {
+      lastResult = action();
+    } catch (error) {
+      lastResult = {ok: false, reason: error.message};
+    }
+    if (accept(lastResult)) {
+      return {
+        ...lastResult,
+        attempts,
+        waitedMs: Math.max(0, Date.now() - startedAtMs),
+      };
+    }
+    sleep(Math.max(100, pollMs));
+  }
+  return {
+    ...(lastResult || {}),
+    ok: false,
+    reason: `${label} timed out after ${budgetMs}ms${lastResult?.reason ? `: ${lastResult.reason}` : ''}`,
+    attempts,
+    waitedMs: Math.max(0, Date.now() - startedAtMs),
+  };
+}
+
 function summarizeChromeDwell(row, startedAtMs, label) {
   const id = issueIdFrom(row.issueId || row.issueUrl);
   const processingMs = Math.max(0, Date.now() - startedAtMs);
@@ -122,6 +159,10 @@ function readJson(file) {
 function cleanText(value, maxLength = 600) {
   if (value === null || value === undefined) return '';
   return String(value).replace(/\s+/g, ' ').trim().slice(0, maxLength);
+}
+
+function escapeRegExp(value) {
+  return cleanText(value, 200).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
 
 function firstPresent(...values) {
@@ -221,23 +262,18 @@ async function assignJiraTicketIfUnassigned(ticket) {
     return {type: 'assign', key: normalized?.key || '', status: 'skipped'};
   }
   if (jiraDryRun) {
-    return {type: 'assign', key: normalized.key, status: 'dry-run', message: 'Would assign if currently unassigned.'};
+    return {type: 'assign', key: normalized.key, status: 'dry-run', message: 'Would assign through the Jira page UI if currently unassigned.'};
   }
-  const issue = await jiraRequest(`/rest/api/3/issue/${encodeURIComponent(normalized.key)}?fields=assignee`);
-  const assignee = issue?.fields?.assignee || null;
-  if (assignee?.accountId) {
+  if (!jiraAssignViaChrome) {
     return {
       type: 'assign',
       key: normalized.key,
-      status: 'already-assigned',
-      assignee: cleanText(assignee.displayName || assignee.accountId, 160),
+      status: 'disabled',
+      via: 'chrome-ui',
+      message: 'Jira assignment is UI-only; REST assignment is disabled by policy.',
     };
   }
-  await jiraRequest(`/rest/api/3/issue/${encodeURIComponent(normalized.key)}/assignee`, {
-    method: 'PUT',
-    body: {accountId: jiraAssigneeAccountId},
-  });
-  return {type: 'assign', key: normalized.key, status: 'assigned', assignee: 'Thien Nguyen'};
+  return assignJiraTicketIfUnassignedViaChrome(normalized);
 }
 
 async function createJiraTicketForSentry(row, detailState) {
@@ -366,23 +402,26 @@ async function preflightJiraWrites() {
 async function ensureJiraTicketActions(row, detailState, tickets) {
   const actions = [];
   const currentTickets = mergeTickets(tickets);
-  if (!jiraAuthConfigured()) {
-    actions.push({
-      type: currentTickets.length ? 'assign' : 'create',
-      status: 'blocked',
-      message: 'Jira REST credentials are not configured.',
-      projectKey: jiraProjectKey,
-    });
-    return {tickets: currentTickets, actions};
-  }
   if (currentTickets.length) {
     for (const ticket of currentTickets) {
       actions.push(await assignJiraTicketIfUnassigned(ticket));
     }
     return {tickets: currentTickets, actions};
   }
+  if (!jiraAuthConfigured()) {
+    actions.push({
+      type: 'create',
+      status: 'blocked',
+      message: 'No known Jira ticket was found and Jira REST credentials are not configured for dedupe/create.',
+      projectKey: jiraProjectKey,
+    });
+    return {tickets: currentTickets, actions};
+  }
   const created = await createJiraTicketForSentry(row, detailState);
   actions.push(created.action);
+  if (created.ticket) {
+    actions.push(await assignJiraTicketIfUnassigned(created.ticket));
+  }
   return {
     tickets: mergeTickets(currentTickets, created.ticket ? [created.ticket] : []),
     actions,
@@ -503,28 +542,229 @@ function waitForPage(issueId) {
   return state;
 }
 
+function waitForUrlFragment(fragment, timeoutMs = pageTimeoutMs) {
+  const expected = cleanText(fragment, 240);
+  const start = Date.now();
+  let state = activeTabState();
+  while (Date.now() - start < timeoutMs) {
+    state = activeTabState();
+    if (!state.loading && (!expected || String(state.url || '').includes(expected))) {
+      sleep(settleMs);
+      return state;
+    }
+    sleep(500);
+  }
+  return state;
+}
+
+function extractJiraAssigneeState(ticketKey) {
+  const js = `(() => {
+    const clean = value => String(value || '').replace(/\\s+/g, ' ').trim();
+    const assigneeField =
+      document.querySelector('[data-testid="issue.issue-view-layout.issue-view-assignee-field.assignee"], [data-test-id="issue.issue-view-layout.issue-view-assignee-field.assignee"]') ||
+      [...document.querySelectorAll('[data-testid], [data-test-id], section, div')]
+        .find(node => /assignee/i.test((node.getAttribute('data-testid') || node.getAttribute('data-test-id') || '') + ' ' + clean(node.innerText).slice(0, 300)));
+    const assigneeText = clean(assigneeField ? assigneeField.innerText : '');
+    const body = clean(document.body ? document.body.innerText : '');
+    const loginish = /log in|login|sign in|atlassian account/i.test(document.title + ' ' + body.slice(0, 1000));
+    const key = ${JSON.stringify(ticketKey)};
+    return JSON.stringify({
+      title: document.title,
+      url: location.href,
+      readyState: document.readyState,
+      authState: loginish ? 'login_or_auth_required' : 'jira_issue_loaded',
+      ticketKey: key,
+      issueKeyVisible: !key || body.includes(key),
+      assigneeText,
+      bodySample: assigneeText ? '' : body.slice(0, 500)
+    });
+  })()`;
+  return JSON.parse(executeActiveTabJavascript(js));
+}
+
+function jiraAssigneeIsUnassigned(assigneeText) {
+  const text = cleanText(assigneeText, 240).toLowerCase();
+  return !text || /unassigned|none|select|assign to me|no assignee/.test(text);
+}
+
+function jiraAssigneeIsThien(assigneeText) {
+  return /thien nguyen/i.test(cleanText(assigneeText, 240));
+}
+
+function jiraAssigneeNameFromText(assigneeText) {
+  const text = cleanText(assigneeText, 240)
+    .replace(/^Assignee\b/i, '')
+    .replace(/\bUnassigned\b/i, '')
+    .replace(/\bAssign to me\b/i, '')
+    .trim();
+  return cleanText(text, 160);
+}
+
+function clickJiraAssignToMeControl() {
+  const js = `(() => {
+    const clean = value => String(value || '').replace(/\\s+/g, ' ').trim();
+    const visible = element => {
+      if (!element) return false;
+      const rect = element.getBoundingClientRect();
+      return Boolean((rect.width || rect.height || element.getClientRects().length) && getComputedStyle(element).visibility !== 'hidden');
+    };
+    const click = element => {
+      element.scrollIntoView({block: 'center', inline: 'nearest'});
+      element.dispatchEvent(new MouseEvent('mouseover', {bubbles: true, cancelable: true, view: window}));
+      element.click();
+    };
+    const textFor = element => clean([
+      element.innerText,
+      element.textContent,
+      element.getAttribute('aria-label'),
+      element.getAttribute('title'),
+      element.getAttribute('data-testid'),
+      element.getAttribute('data-test-id')
+    ].filter(Boolean).join(' '));
+    const controls = [...document.querySelectorAll('button, [role="button"], [role="option"], [role="menuitem"], [data-testid], [data-test-id], span, div')]
+      .filter(visible);
+    const direct = controls.find(element => /assign to me/i.test(textFor(element)));
+    if (direct) {
+      click(direct);
+      return JSON.stringify({ok: true, clicked: 'assign-to-me', text: textFor(direct).slice(0, 200)});
+    }
+    const thienOption = controls.find(element => /^Thien Nguyen$/i.test(textFor(element)) || /Thien Nguyen.*assign/i.test(textFor(element)));
+    if (thienOption) {
+      click(thienOption);
+      return JSON.stringify({ok: true, clicked: 'thien-nguyen-option', text: textFor(thienOption).slice(0, 200)});
+    }
+    const assigneeField =
+      document.querySelector('[data-testid="issue.issue-view-layout.issue-view-assignee-field.assignee"], [data-test-id="issue.issue-view-layout.issue-view-assignee-field.assignee"]') ||
+      controls.find(element => /assignee/i.test(textFor(element)));
+    if (assigneeField) {
+      click(assigneeField);
+      return JSON.stringify({ok: true, clicked: 'assignee-field', text: textFor(assigneeField).slice(0, 200)});
+    }
+    return JSON.stringify({ok: false, reason: 'assignee control not found'});
+  })()`;
+  return JSON.parse(executeActiveTabJavascript(js));
+}
+
+async function assignJiraTicketIfUnassignedViaChrome(ticket) {
+  const normalized = normalizeTicket(ticket);
+  const targetUrl = normalized.url || jiraUrl(normalized.key);
+  navigateActiveTab(targetUrl);
+  const pageState = waitForUrlFragment(normalized.key, jiraUiActionTimeoutMs);
+  if (!String(pageState.url || '').includes(normalized.key)) {
+    return {
+      type: 'assign',
+      key: normalized.key,
+      status: 'blocked',
+      via: 'chrome-ui',
+      message: `Chrome did not load Jira issue ${normalized.key}; active URL was ${cleanText(pageState.url, 240)}.`,
+    };
+  }
+  sleep(jiraUiSettleMs);
+  let state = extractJiraAssigneeState(normalized.key);
+  if (state.authState === 'login_or_auth_required') {
+    return {
+      type: 'assign',
+      key: normalized.key,
+      status: 'blocked',
+      via: 'chrome-ui',
+      message: `Jira issue ${normalized.key} requires login/authentication in Chrome.`,
+    };
+  }
+  if (!state.issueKeyVisible) {
+    return {
+      type: 'assign',
+      key: normalized.key,
+      status: 'blocked',
+      via: 'chrome-ui',
+      message: `Jira issue ${normalized.key} was not visible in the loaded Chrome page.`,
+    };
+  }
+  if (jiraAssigneeIsThien(state.assigneeText)) {
+    return {type: 'assign', key: normalized.key, status: 'already-assigned', via: 'chrome-ui', assignee: 'Thien Nguyen'};
+  }
+  if (!jiraAssigneeIsUnassigned(state.assigneeText)) {
+    return {
+      type: 'assign',
+      key: normalized.key,
+      status: 'already-assigned',
+      via: 'chrome-ui',
+      assignee: jiraAssigneeNameFromText(state.assigneeText),
+    };
+  }
+  const attempts = [];
+  const startedAtMs = Date.now();
+  while (Date.now() - startedAtMs <= jiraUiActionTimeoutMs) {
+    attempts.push(clickJiraAssignToMeControl());
+    sleep(jiraUiSettleMs);
+    state = extractJiraAssigneeState(normalized.key);
+    if (jiraAssigneeIsThien(state.assigneeText)) {
+      return {
+        type: 'assign',
+        key: normalized.key,
+        status: 'assigned',
+        via: 'chrome-ui',
+        assignee: 'Thien Nguyen',
+        attempts,
+      };
+    }
+    if (!jiraAssigneeIsUnassigned(state.assigneeText)) {
+      return {
+        type: 'assign',
+        key: normalized.key,
+        status: 'already-assigned',
+        via: 'chrome-ui',
+        assignee: jiraAssigneeNameFromText(state.assigneeText),
+        attempts,
+      };
+    }
+  }
+  return {
+    type: 'assign',
+    key: normalized.key,
+    status: 'blocked',
+    via: 'chrome-ui',
+    message: `Jira issue ${normalized.key} still appears unassigned after ${jiraUiActionTimeoutMs}ms of Chrome UI assignment attempts.`,
+    attempts,
+    waitedMs: Math.max(0, Date.now() - startedAtMs),
+  };
+}
+
 function extractDetailJiraTickets() {
   const js = `(() => {
     const clean = value => (value || '').replace(/\\s+/g, ' ').trim();
     const absolute = value => { try { return new URL(value, location.href).href; } catch { return value || ''; } };
     const tickets = [];
-    const add = (key, url, text, source) => {
+    const issueTrackingTickets = [];
+    const addTo = (list, key, url, text, source) => {
       const normalized = clean(key).toUpperCase();
       if (!/^[A-Z][A-Z0-9]+-\\d+$/.test(normalized)) return;
-      if (!tickets.some(ticket => ticket.key === normalized)) {
-        tickets.push({key: normalized, url: url || '', text: clean(text) || normalized, source});
+      if (!list.some(ticket => ticket.key === normalized)) {
+        list.push({key: normalized, url: url || '', text: clean(text) || normalized, source});
       }
     };
+    const add = (key, url, text, source, issueTrackingVisible = false) => {
+      addTo(tickets, key, url, text, source);
+      if (issueTrackingVisible) addTo(issueTrackingTickets, key, url, text, source);
+    };
+    const linkedIssuesSection =
+      document.querySelector('[data-test-id="linked-issues"], [data-testid="linked-issues"]') ||
+      [...document.querySelectorAll('aside section, section')]
+        .find(node => /issue tracking|jira/i.test(clean(node.innerText).slice(0, 300)));
     for (const link of [...document.querySelectorAll('a[href]')]) {
       const href = absolute(link.getAttribute('href'));
       const match = href.match(/atlassian\\.net\\/browse\\/([A-Z][A-Z0-9]+-\\d+)/i);
-      if (match) add(match[1], href, link.textContent, 'atlassian-link');
+      if (match) add(match[1], href, link.textContent, 'atlassian-link', Boolean(linkedIssuesSection && linkedIssuesSection.contains(link)));
+    }
+    if (linkedIssuesSection) {
+      for (const match of clean(linkedIssuesSection.innerText).matchAll(/\\b(?:PRE|OPS)-\\d+\\b/g)) {
+        add(match[0], '', match[0], 'sentry-issue-tracking-section', true);
+      }
     }
     const likelySections = [...document.querySelectorAll('aside, section, [role="complementary"], [data-test-id*="issue"], [data-test-id*="sidebar"]')]
       .filter(node => /jira|linked|external|ticket|issue/i.test(clean(node.innerText).slice(0, 1200)));
     for (const section of likelySections) {
       for (const match of clean(section.innerText).matchAll(/\\b(?:PRE|OPS)-\\d+\\b/g)) {
-        add(match[0], '', match[0], 'jira-section-text');
+        add(match[0], '', match[0], linkedIssuesSection && linkedIssuesSection.contains(section) ? 'sentry-issue-tracking-section' : 'jira-section-text', Boolean(linkedIssuesSection && linkedIssuesSection.contains(section)));
       }
     }
     const body = clean(document.body ? document.body.innerText : '');
@@ -540,10 +780,884 @@ function extractDetailJiraTickets() {
       readyState: document.readyState,
       authState: loginish ? 'login_or_auth_required' : 'issue_detail_loaded',
       tickets,
+      issueTrackingTickets,
+      issueTrackingText: linkedIssuesSection ? clean(linkedIssuesSection.innerText).slice(0, 800) : '',
       bodySample: tickets.length ? '' : body.slice(0, 500)
     });
   })()`;
   return JSON.parse(executeActiveTabJavascript(js));
+}
+
+function issueTrackingTicketKeys(detailState) {
+  const keys = new Set(mergeTickets(detailState?.issueTrackingTickets).map((ticket) => ticket.key));
+  const text = cleanText(detailState?.issueTrackingText, 1200);
+  for (const match of text.matchAll(/\b[A-Z][A-Z0-9]+-\d+\b/g)) {
+    keys.add(match[0].toUpperCase());
+  }
+  return keys;
+}
+
+function textHasJiraKey(text, ticketKey) {
+  const key = cleanText(ticketKey, 80).toUpperCase();
+  if (!key) return false;
+  return new RegExp(`\\b${escapeRegExp(key)}\\b`, 'i').test(cleanText(text, 1200));
+}
+
+function detailStateWithIssueTrackingTicket(detailState, ticket) {
+  const normalized = normalizeTicket(ticket);
+  if (!normalized || !detailState) return detailState;
+  if (!issueTrackingTicketKeys(detailState).has(normalized.key)) return detailState;
+  const issueTrackingTickets = mergeTickets(detailState.issueTrackingTickets, {
+    ...normalized,
+    text: normalized.text || normalized.key,
+    source: normalized.source ? `${normalized.source}, sentry-issue-tracking-text` : 'sentry-issue-tracking-text',
+  });
+  return {...detailState, issueTrackingTickets};
+}
+
+function issueTrackingTicketsFromState(detailState, candidateTickets = []) {
+  const keys = issueTrackingTicketKeys(detailState);
+  const tickets = mergeTickets(detailState?.issueTrackingTickets);
+  for (const ticket of mergeTickets(candidateTickets)) {
+    if (keys.has(ticket.key)) tickets.push({...ticket, source: `${ticket.source || 'candidate'}, sentry-issue-tracking-text`});
+  }
+  for (const key of keys) {
+    tickets.push({key, url: jiraUrl(key), text: key, source: 'sentry-issue-tracking-text'});
+  }
+  return mergeTickets(tickets);
+}
+
+function openSentryJiraLinkDialog() {
+  const js = `(() => {
+    const clean = value => String(value || '').replace(/\\s+/g, ' ').trim();
+    const visible = element => {
+      if (!element) return false;
+      const rect = element.getBoundingClientRect();
+      return Boolean((rect.width || rect.height || element.getClientRects().length) && getComputedStyle(element).visibility !== 'hidden');
+    };
+    const section =
+      document.querySelector('[data-test-id="linked-issues"], [data-testid="linked-issues"]') ||
+      [...document.querySelectorAll('aside section, section')].find(node => /issue tracking|jira/i.test(clean(node.innerText).slice(0, 300)));
+    if (!section) return JSON.stringify({ok: false, reason: 'linked-issues section not found'});
+    const jiraButton = [...section.querySelectorAll('button, [role="button"], a')]
+      .filter(visible)
+      .find(element => /jira/i.test(clean(element.innerText || element.textContent || element.getAttribute('aria-label'))));
+    if (!jiraButton) return JSON.stringify({ok: false, reason: 'Jira button not found in Issue Tracking section', sectionText: clean(section.innerText).slice(0, 500)});
+    jiraButton.scrollIntoView({block: 'center', inline: 'nearest'});
+    jiraButton.click();
+    return JSON.stringify({ok: true, clicked: clean(jiraButton.innerText || jiraButton.textContent || jiraButton.getAttribute('aria-label')).slice(0, 120)});
+  })()`;
+  return JSON.parse(executeActiveTabJavascript(js));
+}
+
+function prepareSentryLinkForm(ticketKey) {
+  const js = `(() => {
+    const key = ${JSON.stringify(ticketKey)};
+    const searchText = key;
+    const clean = value => String(value || '').replace(/\\s+/g, ' ').trim();
+    const visible = element => {
+      if (!element) return false;
+      const rect = element.getBoundingClientRect();
+      return Boolean((rect.width || rect.height || element.getClientRects().length) && getComputedStyle(element).visibility !== 'hidden');
+    };
+    const visibleTextFor = element => clean(element.innerText || element.textContent || element.getAttribute('aria-label') || '');
+    const metadataFor = element => clean([
+      element.innerText,
+      element.textContent,
+      element.value,
+      element.getAttribute('aria-label'),
+      element.getAttribute('placeholder'),
+      element.getAttribute('name'),
+      element.getAttribute('role'),
+      element.id
+    ].filter(Boolean).join(' '));
+    const usableControl = element => {
+      if (!element || !visible(element)) return false;
+      if (element.disabled || element.getAttribute('aria-disabled') === 'true') return false;
+      if (element.matches?.('input[type="hidden"]')) return false;
+      return element.matches?.('input:not([type="hidden"]), textarea, [contenteditable="true"], [role="combobox"], [role="textbox"]');
+    };
+    const controlsIn = root => [...root.querySelectorAll('input:not([type="hidden"]), textarea, [contenteditable="true"], [role="combobox"], [role="textbox"]')]
+      .filter(usableControl)
+      .filter(element => !/issue\\s*type|jira\\s*project|assignee|reporter|priority|sprint|epic/i.test(metadataFor(element)));
+    const interactiveInputFor = control => {
+      if (!control) return null;
+      if (control.matches?.('input:not([type="hidden"]), textarea, [contenteditable="true"], [role="textbox"]')) return control;
+      const nested = [...control.querySelectorAll('input:not([type="hidden"]), textarea, [contenteditable="true"], [role="textbox"]')].find(usableControl);
+      return nested || null;
+    };
+    const findIssueField = dialog => {
+      const labels = [...dialog.querySelectorAll('label, div, span, p')]
+        .filter(visible)
+        .filter(element => /^Issue\\s*(?:\\*)?$/i.test(visibleTextFor(element)));
+      for (const label of labels) {
+        let node = label;
+        for (let depth = 0; node && depth < 6 && node !== dialog.parentElement; depth += 1, node = node.parentElement) {
+          const controls = controlsIn(node);
+          if (controls.length) {
+            const control = controls.find(element => element.getAttribute('role') === 'combobox') || controls[0];
+            return {control, input: interactiveInputFor(control), label: visibleTextFor(label)};
+          }
+        }
+        const block = label.parentElement?.nextElementSibling || label.nextElementSibling;
+        if (block) {
+          const controls = controlsIn(block);
+          if (controls.length) {
+            const control = controls.find(element => element.getAttribute('role') === 'combobox') || controls[0];
+            return {control, input: interactiveInputFor(control), label: visibleTextFor(label)};
+          }
+        }
+      }
+      const fallback = controlsIn(dialog)
+        .find(element => /issue|external|jira/i.test(metadataFor(element)) && !/issue\\s*type/i.test(metadataFor(element))) ||
+        controlsIn(dialog)[0];
+      return fallback ? {control: fallback, input: interactiveInputFor(fallback), label: ''} : null;
+    };
+    const setNativeValue = (element, value) => {
+      if (!element) return;
+      if (element.isContentEditable) {
+        element.textContent = value;
+        return;
+      }
+      const setter = Object.getOwnPropertyDescriptor(Object.getPrototypeOf(element), 'value')?.set;
+      if (setter) setter.call(element, value);
+      else element.value = value;
+    };
+    const currentText = element => element?.isContentEditable ? clean(element.textContent) : String(element?.value || '');
+    const typeIntoIssueField = field => {
+      const control = field.control;
+      control.scrollIntoView({block: 'center', inline: 'nearest'});
+      control.click();
+      let input = field.input || interactiveInputFor(control);
+      if (!input && usableControl(document.activeElement)) input = document.activeElement;
+      if (!input) return {ok: false, reason: 'Issue combobox input did not focus after click', controlText: metadataFor(control).slice(0, 240)};
+      input.focus();
+      input.click();
+      if (input.select) input.select();
+      if (currentText(input) !== searchText) {
+        setNativeValue(input, '');
+        input.dispatchEvent(new InputEvent('input', {bubbles: true, inputType: 'deleteContentBackward', data: ''}));
+        input.dispatchEvent(new Event('change', {bubbles: true}));
+        if (document.execCommand) document.execCommand('insertText', false, searchText);
+        if (currentText(input) !== searchText) setNativeValue(input, searchText);
+        input.dispatchEvent(new InputEvent('input', {bubbles: true, inputType: 'insertText', data: searchText}));
+        input.dispatchEvent(new Event('change', {bubbles: true}));
+      }
+      input.dispatchEvent(new KeyboardEvent('keydown', {key: 'ArrowDown', code: 'ArrowDown', bubbles: true, cancelable: true}));
+      input.dispatchEvent(new KeyboardEvent('keyup', {key: 'ArrowDown', code: 'ArrowDown', bubbles: true, cancelable: true}));
+      const finalInputValue = currentText(input).slice(0, 120);
+      const finalControlText = metadataFor(control).slice(0, 240);
+      if (!finalInputValue.toUpperCase().includes(searchText.toUpperCase()) && !finalControlText.toUpperCase().includes(searchText.toUpperCase())) {
+        return {
+          ok: false,
+          reason: 'Issue dropdown typed-state was not confirmed after click/type',
+          typed: searchText,
+          inputValue: finalInputValue,
+          inputId: input.id || '',
+          controlRole: control.getAttribute('role') || '',
+          controlText: finalControlText
+        };
+      }
+      return {
+        ok: true,
+        typed: searchText,
+        inputValue: finalInputValue,
+        inputId: input.id || '',
+        controlRole: control.getAttribute('role') || '',
+        controlText: finalControlText
+      };
+    };
+    const dialog = document.querySelector('[role="dialog"]');
+    if (!dialog) return JSON.stringify({ok: false, reason: 'Jira modal dialog not open'});
+    const linkTab = [...dialog.querySelectorAll('[role="tab"], button, [role="button"], li, span')]
+      .filter(visible)
+      .find(element => /^Link$/i.test(visibleTextFor(element)) || /tab-link\\b/i.test(element.id || ''));
+    if (!linkTab) return JSON.stringify({ok: false, reason: 'Link tab not found', dialogText: clean(dialog.innerText).slice(0, 500)});
+    linkTab.click();
+    const field = findIssueField(dialog);
+    if (!field) return JSON.stringify({ok: false, reason: 'Issue dropdown/combobox not found after Link tab', dialogText: clean(dialog.innerText).slice(0, 500)});
+    const typed = typeIntoIssueField(field);
+    if (!typed.ok) return JSON.stringify({...typed, dialogText: clean(dialog.innerText).slice(0, 500)});
+    return JSON.stringify({ok: true, key, clickedTab: visibleTextFor(linkTab) || linkTab.id || '', fieldLabel: field.label, ...typed, dialogText: clean(dialog.innerText).slice(0, 500)});
+  })()`;
+  return JSON.parse(executeActiveTabJavascript(js));
+}
+
+function selectSentryLinkOption(ticketKey) {
+  const js = `(() => {
+    const key = ${JSON.stringify(ticketKey)};
+    const searchText = key;
+    const clean = value => String(value || '').replace(/\\s+/g, ' ').trim();
+    const visible = element => {
+      if (!element) return false;
+      const rect = element.getBoundingClientRect();
+      return Boolean((rect.width || rect.height || element.getClientRects().length) && getComputedStyle(element).visibility !== 'hidden');
+    };
+    const textFor = element => clean([
+      element.innerText,
+      element.textContent,
+      element.value,
+      element.getAttribute('aria-label'),
+      element.getAttribute('title')
+    ].filter(Boolean).join(' '));
+    const dropdownRoots = [...document.querySelectorAll('[role="listbox"], [role="menu"], [data-testid*="select"], [data-test-id*="select"], [class*="menu"], [id*="react-select"]')]
+      .filter(visible);
+    const optionRoots = dropdownRoots.length ? dropdownRoots : [document];
+    const optionSelector = dropdownRoots.length
+      ? '[role="option"], [role="menuitem"], button, [role="button"], [data-testid], [data-test-id]'
+      : '[role="option"], [role="menuitem"]';
+    const optionCandidates = optionRoots.flatMap(root => [...root.querySelectorAll(optionSelector)]);
+    const option = optionCandidates
+      .filter(visible)
+      .find(element => textFor(element).toUpperCase().includes(key) && !/^Link Issue$/i.test(textFor(element)));
+    if (option) {
+      option.scrollIntoView({block: 'center', inline: 'nearest'});
+      option.click();
+      return JSON.stringify({ok: true, selected: textFor(option).slice(0, 240)});
+    }
+    const visibleOptionTexts = optionCandidates
+      .filter(visible)
+      .map(element => textFor(element))
+      .filter(text => text && !/^Link Issue$/i.test(text))
+      .slice(0, 10);
+    const dialog = document.querySelector('[role="dialog"]');
+    if (dialog) {
+      const metadataFor = element => clean([
+        element.innerText,
+        element.textContent,
+        element.value,
+        element.getAttribute('aria-label'),
+        element.getAttribute('placeholder'),
+        element.getAttribute('name'),
+        element.getAttribute('role'),
+        element.id
+      ].filter(Boolean).join(' '));
+      const usableControl = element => {
+        if (!element || !visible(element)) return false;
+        if (element.disabled || element.getAttribute('aria-disabled') === 'true') return false;
+        if (element.matches?.('input[type="hidden"]')) return false;
+        return element.matches?.('input:not([type="hidden"]), textarea, [contenteditable="true"], [role="combobox"], [role="textbox"]');
+      };
+      const controlsIn = root => [...root.querySelectorAll('input:not([type="hidden"]), textarea, [contenteditable="true"], [role="combobox"], [role="textbox"]')]
+        .filter(usableControl)
+        .filter(element => !/issue\\s*type|jira\\s*project|assignee|reporter|priority|sprint|epic/i.test(metadataFor(element)));
+      const interactiveInputFor = control => {
+        if (!control) return null;
+        if (control.matches?.('input:not([type="hidden"]), textarea, [contenteditable="true"], [role="textbox"]')) return control;
+        return [...control.querySelectorAll('input:not([type="hidden"]), textarea, [contenteditable="true"], [role="textbox"]')].find(usableControl) || null;
+      };
+      const labels = [...dialog.querySelectorAll('label, div, span, p')]
+        .filter(visible)
+        .filter(element => /^Issue\\s*(?:\\*)?$/i.test(clean(element.innerText || element.textContent || element.getAttribute('aria-label') || '')));
+      let control = null;
+      for (const label of labels) {
+        let node = label;
+        for (let depth = 0; node && depth < 6 && node !== dialog.parentElement; depth += 1, node = node.parentElement) {
+          const controls = controlsIn(node);
+          if (controls.length) {
+            control = controls.find(element => element.getAttribute('role') === 'combobox') || controls[0];
+            break;
+          }
+        }
+        if (control) break;
+      }
+      control ||= controlsIn(dialog).find(element => /issue|external|jira/i.test(metadataFor(element)) && !/issue\\s*type/i.test(metadataFor(element)));
+      if (control) {
+        control.scrollIntoView({block: 'center', inline: 'nearest'});
+        control.click();
+        const input = interactiveInputFor(control) || (usableControl(document.activeElement) ? document.activeElement : null);
+        if (input) {
+          input.focus();
+          input.click();
+          if (input.select) input.select();
+          const current = input.isContentEditable ? clean(input.textContent) : String(input.value || '');
+          if (current !== searchText) {
+            const setter = Object.getOwnPropertyDescriptor(Object.getPrototypeOf(input), 'value')?.set;
+            if (input.isContentEditable) input.textContent = '';
+            else if (setter) setter.call(input, '');
+            else input.value = '';
+            input.dispatchEvent(new InputEvent('input', {bubbles: true, inputType: 'deleteContentBackward', data: ''}));
+            if (document.execCommand) document.execCommand('insertText', false, searchText);
+            const after = input.isContentEditable ? clean(input.textContent) : String(input.value || '');
+            if (after !== searchText) {
+              if (input.isContentEditable) input.textContent = searchText;
+              else if (setter) setter.call(input, searchText);
+              else input.value = searchText;
+            }
+            input.dispatchEvent(new InputEvent('input', {bubbles: true, inputType: 'insertText', data: searchText}));
+            input.dispatchEvent(new Event('change', {bubbles: true}));
+          }
+          input.dispatchEvent(new KeyboardEvent('keydown', {key: 'ArrowDown', code: 'ArrowDown', bubbles: true, cancelable: true}));
+          return JSON.stringify({ok: false, reason: 'No matching Jira issue option found after typing Issue dropdown search text', typed: searchText, inputId: input.id || '', inputValue: (input.isContentEditable ? clean(input.textContent) : String(input.value || '')).slice(0, 120), visibleOptions: visibleOptionTexts});
+        }
+      }
+    }
+    return JSON.stringify({ok: false, reason: 'No matching Jira issue option found and Issue dropdown input could not be typed', visibleOptions: visibleOptionTexts});
+  })()`;
+  return JSON.parse(executeActiveTabJavascript(js));
+}
+
+function verifySentryLinkIssueSelected(ticketKey) {
+  const js = `(() => {
+    const key = ${JSON.stringify(ticketKey)};
+    const clean = value => String(value || '').replace(/\\s+/g, ' ').trim();
+    const visible = element => {
+      if (!element) return false;
+      const rect = element.getBoundingClientRect();
+      return Boolean((rect.width || rect.height || element.getClientRects().length) && getComputedStyle(element).visibility !== 'hidden');
+    };
+    const textFor = element => clean([
+      element.innerText,
+      element.textContent,
+      element.value,
+      element.getAttribute('aria-label'),
+      element.getAttribute('title'),
+      element.getAttribute('placeholder'),
+      element.getAttribute('name'),
+      element.getAttribute('role'),
+      element.id
+    ].filter(Boolean).join(' '));
+    const dialog = document.querySelector('[role="dialog"]');
+    if (!dialog) return JSON.stringify({ok: false, reason: 'Jira modal dialog not found during Issue selection verification'});
+    const listLike = element => element.closest?.('[role="listbox"], [role="menu"], [role="option"], [role="menuitem"]');
+    const controlsIn = root => [...root.querySelectorAll('input:not([type="hidden"]), textarea, [contenteditable="true"], [role="combobox"], [role="textbox"], [data-testid], [data-test-id], [class*="singleValue"], [class*="multiValue"], [class*="value-container"], [class*="ValueContainer"], div, span')]
+      .filter(visible)
+      .filter(element => !/issue\\s*type|jira\\s*project|assignee|reporter|priority|sprint|epic/i.test(textFor(element)))
+      .filter(element => !listLike(element));
+    const isTypedInputOnly = element => element.matches?.('input:not([type="hidden"]), textarea, [contenteditable="true"], [role="textbox"]');
+    const labels = [...dialog.querySelectorAll('label, div, span, p')]
+      .filter(visible)
+      .filter(element => /^Issue\\s*(?:\\*)?$/i.test(clean(element.innerText || element.textContent || element.getAttribute('aria-label') || '')));
+    const evidence = [];
+    for (const label of labels) {
+      let node = label;
+      for (let depth = 0; node && depth < 6 && node !== dialog.parentElement; depth += 1, node = node.parentElement) {
+        for (const control of controlsIn(node)) {
+          const text = textFor(control);
+          if (text.toUpperCase().includes(key) && !isTypedInputOnly(control)) evidence.push(text.slice(0, 300));
+        }
+      }
+      const block = label.parentElement?.nextElementSibling || label.nextElementSibling;
+      if (block) {
+        for (const control of controlsIn(block)) {
+          const text = textFor(control);
+          if (text.toUpperCase().includes(key) && !isTypedInputOnly(control)) evidence.push(text.slice(0, 300));
+        }
+      }
+    }
+    const typedEvidence = controlsIn(dialog)
+      .filter(isTypedInputOnly)
+      .map(element => textFor(element))
+      .filter(text => text.toUpperCase().includes(key))
+      .slice(0, 3);
+    const uniqueEvidence = [...new Set(evidence)].filter(Boolean).slice(0, 5);
+    const visibleOptions = [...document.querySelectorAll('[role="listbox"] [role="option"], [role="menu"] [role="menuitem"], [role="option"], [role="menuitem"]')]
+      .filter(visible)
+      .map(element => textFor(element))
+      .filter(text => text && text.toUpperCase().includes(key))
+      .slice(0, 5);
+    const submit = [...dialog.querySelectorAll('button, [role="button"], input[type="submit"]')]
+      .filter(visible)
+      .find(element => /link issue/i.test(clean(element.innerText || element.value || element.getAttribute('aria-label'))));
+    const submitEnabled = Boolean(submit && !submit.disabled && submit.getAttribute('aria-disabled') !== 'true');
+    if (uniqueEvidence.length && submitEnabled && visibleOptions.length === 0) {
+      return JSON.stringify({ok: true, key, selectedEvidence: uniqueEvidence, submitEnabled});
+    }
+    return JSON.stringify({
+      ok: false,
+      reason: uniqueEvidence.length && visibleOptions.length
+        ? 'Issue option text is still visible in the dropdown; selected-state is not confirmed yet'
+        : uniqueEvidence.length
+        ? 'Issue key found in a selected-value area but the Link Issue button is not enabled yet'
+        : 'Issue key is not confirmed as a selected value in the Issue field',
+      key,
+      selectedEvidence: uniqueEvidence,
+      typedEvidence,
+      visibleOptions,
+      submitEnabled,
+      dialogText: clean(dialog.innerText).slice(0, 500)
+    });
+  })()`;
+  return JSON.parse(executeActiveTabJavascript(js));
+}
+
+function submitSentryLinkForm(ticketKey) {
+  const selected = verifySentryLinkIssueSelected(ticketKey);
+  if (!selected.ok) {
+    return {
+      ok: false,
+      reason: 'Refusing to submit: Issue key is not confirmed as a selected value or Link Issue is not enabled',
+      selection: selected,
+    };
+  }
+  const js = `(() => {
+    const key = ${JSON.stringify(ticketKey)};
+    const clean = value => String(value || '').replace(/\\s+/g, ' ').trim();
+    const visible = element => {
+      if (!element) return false;
+      const rect = element.getBoundingClientRect();
+      return Boolean((rect.width || rect.height || element.getClientRects().length) && getComputedStyle(element).visibility !== 'hidden');
+    };
+    const dialog = document.querySelector('[role="dialog"]');
+    if (!dialog) return JSON.stringify({ok: false, reason: 'Jira modal dialog not open before submit'});
+    const submit = [...dialog.querySelectorAll('button, [role="button"], input[type="submit"]')]
+      .filter(visible)
+      .find(element => /link issue/i.test(clean(element.innerText || element.value || element.getAttribute('aria-label'))));
+    if (!submit) return JSON.stringify({ok: false, reason: 'Link Issue submit button not found', dialogText: clean(dialog.innerText).slice(0, 500)});
+    if (submit.disabled || submit.getAttribute('aria-disabled') === 'true') {
+      return JSON.stringify({ok: false, reason: 'Link Issue submit button is disabled', key});
+    }
+    submit.scrollIntoView({block: 'center', inline: 'nearest'});
+    submit.click();
+    return JSON.stringify({ok: true, submitted: key});
+  })()`;
+  return JSON.parse(executeActiveTabJavascript(js));
+}
+
+function waitForSentryIssueTrackingTicket(ticketKey) {
+  const startedAtMs = Date.now();
+  let attempts = 0;
+  let lastDetailState = null;
+  while (Date.now() - startedAtMs <= sentryIssueTrackingActionTimeoutMs) {
+    attempts += 1;
+    lastDetailState = extractDetailJiraTickets();
+    if (issueTrackingTicketKeys(lastDetailState).has(ticketKey)) {
+      const detailState = detailStateWithIssueTrackingTicket(lastDetailState, {key: ticketKey});
+      return {
+        ok: true,
+        attempts,
+        waitedMs: Math.max(0, Date.now() - startedAtMs),
+        detailState,
+      };
+    }
+    sleep(uiActionPollMs);
+  }
+  return {
+    ok: false,
+    reason: `Sentry Issue Tracking did not show ${ticketKey} within ${sentryIssueTrackingActionTimeoutMs}ms.`,
+    attempts,
+    waitedMs: Math.max(0, Date.now() - startedAtMs),
+    detailState: lastDetailState,
+  };
+}
+
+function linkJiraTicketInSentryIssueTracking(ticket) {
+  const normalized = normalizeTicket(ticket);
+  if (!normalized) return {action: {type: 'sentry-issue-tracking-link', status: 'skipped'}, detailState: null};
+  const preflightState = extractDetailJiraTickets();
+  if (issueTrackingTicketKeys(preflightState).has(normalized.key)) {
+    const detailState = detailStateWithIssueTrackingTicket(preflightState, normalized);
+    return {
+      action: {
+        type: 'sentry-issue-tracking-link',
+        key: normalized.key,
+        status: 'already-visible',
+        via: 'chrome-ui',
+        evidence: cleanText(preflightState.issueTrackingText, 500),
+      },
+      detailState,
+    };
+  }
+  if (!sentryAttachJiraTickets) {
+    return {
+      action: {type: 'sentry-issue-tracking-link', key: normalized.key, status: 'disabled'},
+      detailState: null,
+    };
+  }
+  if (jiraDryRun) {
+    return {
+      action: {type: 'sentry-issue-tracking-link', key: normalized.key, status: 'dry-run', message: 'Would link the known Jira ticket through Sentry Issue Tracking.'},
+      detailState: null,
+    };
+  }
+  const steps = [];
+  steps.push({
+    step: 'open-dialog',
+    result: waitForUiAction('open Sentry Jira modal', openSentryJiraLinkDialog, {timeoutMs: sentryIssueTrackingActionTimeoutMs}),
+  });
+  if (!steps.at(-1).result.ok) {
+    if (textHasJiraKey(steps.at(-1).result.sectionText, normalized.key)) {
+      const detailState = detailStateWithIssueTrackingTicket(extractDetailJiraTickets(), normalized);
+      return {
+        action: {
+          type: 'sentry-issue-tracking-link',
+          key: normalized.key,
+          status: 'already-visible',
+          via: 'chrome-ui',
+          message: 'Skipped Jira modal because the key was already visible in Sentry Issue Tracking text.',
+          evidence: cleanText(steps.at(-1).result.sectionText, 500),
+          steps,
+        },
+        detailState,
+      };
+    }
+    return {action: {type: 'sentry-issue-tracking-link', key: normalized.key, status: 'blocked', via: 'chrome-ui', message: steps.at(-1).result.reason, steps}, detailState: null};
+  }
+  sleep(sentryIssueTrackingSettleMs);
+  steps.push({
+    step: 'prepare-link-form',
+    result: waitForUiAction('prepare Sentry Jira Link tab form', () => prepareSentryLinkForm(normalized.key), {timeoutMs: sentryIssueTrackingActionTimeoutMs}),
+  });
+  if (!steps.at(-1).result.ok) {
+    return {action: {type: 'sentry-issue-tracking-link', key: normalized.key, status: 'blocked', via: 'chrome-ui', message: steps.at(-1).result.reason, steps}, detailState: null};
+  }
+  sleep(sentryIssueTrackingSettleMs);
+  steps.push({
+    step: 'select-option',
+    result: waitForUiAction('select Jira issue option in Sentry Link form', () => selectSentryLinkOption(normalized.key), {timeoutMs: sentryIssueTrackingActionTimeoutMs}),
+  });
+  if (!steps.at(-1).result.ok) {
+    return {action: {type: 'sentry-issue-tracking-link', key: normalized.key, status: 'blocked', via: 'chrome-ui', message: steps.at(-1).result.reason, steps}, detailState: null};
+  }
+  sleep(sentryIssueTrackingSettleMs);
+  steps.push({
+    step: 'confirm-selected-issue',
+    result: waitForUiAction('confirm selected Jira issue in Sentry Link form', () => verifySentryLinkIssueSelected(normalized.key), {timeoutMs: sentryIssueTrackingActionTimeoutMs}),
+  });
+  if (!steps.at(-1).result.ok) {
+    return {action: {type: 'sentry-issue-tracking-link', key: normalized.key, status: 'blocked', via: 'chrome-ui', message: steps.at(-1).result.reason, steps}, detailState: null};
+  }
+  sleep(sentryIssueTrackingSettleMs);
+  steps.push({
+    step: 'submit',
+    result: waitForUiAction('submit Sentry Jira Link form', () => submitSentryLinkForm(normalized.key), {timeoutMs: sentryIssueTrackingActionTimeoutMs}),
+  });
+  if (!steps.at(-1).result.ok) {
+    return {action: {type: 'sentry-issue-tracking-link', key: normalized.key, status: 'blocked', via: 'chrome-ui', message: steps.at(-1).result.reason, steps}, detailState: null};
+  }
+  const confirmation = waitForSentryIssueTrackingTicket(normalized.key);
+  steps.push({step: 'confirm-visible-in-issue-tracking', result: {...confirmation, detailState: undefined}});
+  if (confirmation.ok) {
+    return {
+      action: {type: 'sentry-issue-tracking-link', key: normalized.key, status: 'attached', via: 'chrome-ui', steps},
+      detailState: confirmation.detailState,
+    };
+  }
+  return {
+    action: {
+      type: 'sentry-issue-tracking-link',
+      key: normalized.key,
+      status: 'blocked',
+      via: 'chrome-ui',
+      message: confirmation.reason || `Sentry Issue Tracking did not show ${normalized.key} after the link attempt.`,
+      steps,
+    },
+    detailState: confirmation.detailState,
+  };
+}
+
+function ensureSentryIssueTrackingLinks(detailState, tickets) {
+  const actions = [];
+  let currentDetailState = detailState;
+  const visibleKeys = issueTrackingTicketKeys(currentDetailState);
+  for (const ticket of mergeTickets(tickets)) {
+    if (visibleKeys.has(ticket.key)) {
+      actions.push({type: 'sentry-issue-tracking-link', key: ticket.key, status: 'already-visible', via: 'chrome-ui'});
+      continue;
+    }
+    const result = linkJiraTicketInSentryIssueTracking(ticket);
+    actions.push(result.action);
+    if (result.detailState) {
+      currentDetailState = result.detailState;
+      for (const visibleKey of issueTrackingTicketKeys(currentDetailState)) visibleKeys.add(visibleKey);
+    }
+    if (result.action.status === 'blocked') break;
+  }
+  return {detailState: currentDetailState, actions};
+}
+
+function jiraOwnerNameFromActions(ticket, actions = []) {
+  const normalized = normalizeTicket(ticket);
+  if (!normalized) return '';
+  const matching = actions
+    .filter((action) => action && cleanText(action.key, 80).toUpperCase() === normalized.key)
+    .filter((action) => ['assign', 'create'].includes(action.type))
+    .reverse();
+  for (const action of matching) {
+    const assignee = jiraAssigneeNameFromText(action.assignee || action.owner || '');
+    if (assignee && !jiraAssigneeIsUnassigned(assignee)) return assignee;
+  }
+  return '';
+}
+
+function resolveJiraOwnerViaChrome(ticket, actions = []) {
+  const normalized = normalizeTicket(ticket);
+  if (!normalized) {
+    return {ok: false, status: 'blocked', message: 'Cannot resolve Jira owner for an invalid Jira ticket.'};
+  }
+  const ownerHint = jiraOwnerNameFromActions(normalized, actions);
+  navigateActiveTab(normalized.url || jiraUrl(normalized.key));
+  const pageState = waitForUrlFragment(normalized.key, jiraUiActionTimeoutMs);
+  if (!String(pageState.url || '').includes(normalized.key)) {
+    return {
+      ok: false,
+      key: normalized.key,
+      status: 'blocked',
+      message: `Chrome did not load Jira issue ${normalized.key} to resolve owner; active URL was ${cleanText(pageState.url, 240)}.`,
+    };
+  }
+  sleep(jiraUiSettleMs);
+  const state = extractJiraAssigneeState(normalized.key);
+  if (state.authState === 'login_or_auth_required') {
+    return {ok: false, key: normalized.key, status: 'blocked', message: `Jira issue ${normalized.key} requires login/authentication in Chrome while resolving owner.`};
+  }
+  if (!state.issueKeyVisible) {
+    return {ok: false, key: normalized.key, status: 'blocked', message: `Jira issue ${normalized.key} was not visible while resolving owner.`};
+  }
+  if (jiraAssigneeIsUnassigned(state.assigneeText)) {
+    return {ok: false, key: normalized.key, status: 'blocked', message: `Jira issue ${normalized.key} has no owner/assignee to mirror into Sentry.`};
+  }
+  const ownerName = jiraAssigneeNameFromText(state.assigneeText);
+  return ownerName
+    ? {ok: true, key: normalized.key, ownerName, ownerHint, source: 'jira-chrome-ui'}
+    : {ok: false, key: normalized.key, status: 'blocked', message: `Jira issue ${normalized.key} owner/assignee text could not be parsed.`};
+}
+
+function extractSentryAssigneeState(ownerName = '') {
+  const js = `(() => {
+    const expected = ${JSON.stringify(ownerName)};
+    const clean = value => String(value || '').replace(/\\s+/g, ' ').trim();
+    const visible = element => {
+      if (!element) return false;
+      const rect = element.getBoundingClientRect();
+      return Boolean((rect.width || rect.height || element.getClientRects().length) && getComputedStyle(element).visibility !== 'hidden');
+    };
+    const textFor = element => clean([
+      element.innerText,
+      element.textContent,
+      element.getAttribute('aria-label'),
+      element.getAttribute('title'),
+      element.getAttribute('data-testid'),
+      element.getAttribute('data-test-id')
+    ].filter(Boolean).join(' '));
+    const body = clean(document.body ? document.body.innerText : '');
+    const loginish = /sign in|log in|login|authenticate/i.test(document.title + ' ' + body.slice(0, 800));
+    const candidates = [...document.querySelectorAll('[data-test-id*="assign"], [data-testid*="assign"], aside section, aside div, section, button, [role="button"]')]
+      .filter(visible)
+      .filter(element => !element.closest('[role="dialog"]'))
+      .map(element => ({text: textFor(element), testId: element.getAttribute('data-testid') || element.getAttribute('data-test-id') || ''}))
+      .filter(item => /assignee|assigned|owner|unassigned/i.test(item.text + ' ' + item.testId));
+    const best = candidates
+      .sort((a, b) => a.text.length - b.text.length)
+      .find(item => /assignee|unassigned/i.test(item.text + ' ' + item.testId)) ||
+      candidates[0] ||
+      null;
+    return JSON.stringify({
+      title: document.title,
+      url: location.href,
+      authState: loginish ? 'login_or_auth_required' : 'sentry_issue_loaded',
+      expectedOwner: expected,
+      assigneeText: best ? best.text.slice(0, 400) : '',
+      assigneeCandidates: candidates.slice(0, 8),
+    });
+  })()`;
+  return JSON.parse(executeActiveTabJavascript(js));
+}
+
+function sentryAssigneeMatches(assigneeText, ownerName) {
+  const haystack = cleanText(assigneeText, 500).toLowerCase();
+  const owner = cleanText(ownerName, 160).toLowerCase();
+  if (!owner || !haystack || /unassigned/i.test(haystack)) return false;
+  const ownerPattern = owner.replace(/[.*+?^${}()|[\]\\]/g, '\\$&').replace(/\s+/g, '\\s+');
+  return new RegExp(`(^|\\b)${ownerPattern}(\\b|$)`, 'i').test(haystack);
+}
+
+function openSentryAssigneeDropdown(ownerName) {
+  const js = `(() => {
+    const owner = ${JSON.stringify(ownerName)};
+    const clean = value => String(value || '').replace(/\\s+/g, ' ').trim();
+    const visible = element => {
+      if (!element) return false;
+      const rect = element.getBoundingClientRect();
+      return Boolean((rect.width || rect.height || element.getClientRects().length) && getComputedStyle(element).visibility !== 'hidden');
+    };
+    const textFor = element => clean([
+      element.innerText,
+      element.textContent,
+      element.value,
+      element.getAttribute('aria-label'),
+      element.getAttribute('placeholder'),
+      element.getAttribute('title'),
+      element.getAttribute('data-testid'),
+      element.getAttribute('data-test-id')
+    ].filter(Boolean).join(' '));
+    const click = element => {
+      element.scrollIntoView({block: 'center', inline: 'nearest'});
+      element.dispatchEvent(new MouseEvent('mouseover', {bubbles: true, cancelable: true, view: window}));
+      element.click();
+    };
+    const controls = [...document.querySelectorAll('[data-test-id*="assign"], [data-testid*="assign"], button, [role="button"], aside div, aside section')]
+      .filter(visible)
+      .filter(element => !element.closest('[role="dialog"]'));
+    const assigneeControl = controls
+      .find(element => /assignee|unassigned/i.test(textFor(element))) ||
+      controls.find(element => /owner|assigned/i.test(textFor(element)));
+    if (!assigneeControl) return JSON.stringify({ok: false, reason: 'Sentry assignee control not found'});
+    click(assigneeControl);
+    const input = [...document.querySelectorAll('input:not([type="hidden"]), textarea, [contenteditable="true"], [role="textbox"], [role="combobox"]')]
+      .filter(visible)
+      .find(element => /assignee|owner|member|search|user|team|select/i.test(textFor(element))) ||
+      (visible(document.activeElement) ? document.activeElement : null);
+    if (!input || !input.matches?.('input:not([type="hidden"]), textarea, [contenteditable="true"], [role="textbox"], [role="combobox"]')) {
+      return JSON.stringify({ok: true, clicked: textFor(assigneeControl).slice(0, 240), typed: false, message: 'Assignee dropdown opened; no search input was visible yet'});
+    }
+    input.focus();
+    input.click();
+    if (input.select) input.select();
+    const current = input.isContentEditable ? clean(input.textContent) : String(input.value || '');
+    if (current !== owner) {
+      const setter = Object.getOwnPropertyDescriptor(Object.getPrototypeOf(input), 'value')?.set;
+      if (input.isContentEditable) input.textContent = '';
+      else if (setter) setter.call(input, '');
+      else input.value = '';
+      input.dispatchEvent(new InputEvent('input', {bubbles: true, inputType: 'deleteContentBackward', data: ''}));
+      if (document.execCommand) document.execCommand('insertText', false, owner);
+      const after = input.isContentEditable ? clean(input.textContent) : String(input.value || '');
+      if (after !== owner) {
+        if (input.isContentEditable) input.textContent = owner;
+        else if (setter) setter.call(input, owner);
+        else input.value = owner;
+      }
+      input.dispatchEvent(new InputEvent('input', {bubbles: true, inputType: 'insertText', data: owner}));
+      input.dispatchEvent(new Event('change', {bubbles: true}));
+    }
+    input.dispatchEvent(new KeyboardEvent('keydown', {key: 'ArrowDown', code: 'ArrowDown', bubbles: true, cancelable: true}));
+    input.dispatchEvent(new KeyboardEvent('keyup', {key: 'ArrowDown', code: 'ArrowDown', bubbles: true, cancelable: true}));
+    return JSON.stringify({ok: true, clicked: textFor(assigneeControl).slice(0, 240), typed: true, owner, inputValue: (input.isContentEditable ? clean(input.textContent) : String(input.value || '')).slice(0, 160)});
+  })()`;
+  return JSON.parse(executeActiveTabJavascript(js));
+}
+
+function selectSentryAssigneeOption(ownerName) {
+  const js = `(() => {
+    const owner = ${JSON.stringify(ownerName)};
+    const clean = value => String(value || '').replace(/\\s+/g, ' ').trim();
+    const visible = element => {
+      if (!element) return false;
+      const rect = element.getBoundingClientRect();
+      return Boolean((rect.width || rect.height || element.getClientRects().length) && getComputedStyle(element).visibility !== 'hidden');
+    };
+    const textFor = element => clean([
+      element.innerText,
+      element.textContent,
+      element.value,
+      element.getAttribute('aria-label'),
+      element.getAttribute('title'),
+      element.getAttribute('data-testid'),
+      element.getAttribute('data-test-id')
+    ].filter(Boolean).join(' '));
+    const roots = [...document.querySelectorAll('[role="listbox"], [role="menu"], [role="dialog"], [data-test-id*="assignee"], [data-testid*="assignee"], [class*="menu"], [id*="react-select"]')]
+      .filter(visible);
+    const rawCandidates = (roots.length ? roots : [document])
+      .flatMap(root => [...root.querySelectorAll('[role="option"], [role="menuitem"], button, [role="button"], [data-testid], [data-test-id], div, span')])
+      .filter(visible)
+      .filter(element => !element.closest('aside section'))
+      .map(element => ({element, text: textFor(element)}))
+      .filter(item => item.text.toLowerCase().includes(owner.toLowerCase()));
+    const optionMap = new Map();
+    for (const item of rawCandidates) {
+      const option = item.element.closest('[role="option"], [role="menuitem"], button, [role="button"], [data-testid], [data-test-id]') || item.element;
+      if (!visible(option)) continue;
+      if (!optionMap.has(option)) optionMap.set(option, {element: option, text: textFor(option) || item.text});
+    }
+    const candidates = [...optionMap.values()].filter(item => item.text.toLowerCase().includes(owner.toLowerCase()));
+    if (!candidates.length) {
+      return JSON.stringify({ok: false, reason: 'No matching Sentry assignee option found', owner, visibleOptions: rawCandidates.map(item => item.text).slice(0, 10)});
+    }
+    if (candidates.length > 1) {
+      return JSON.stringify({ok: false, reason: 'Multiple matching Sentry assignee options found', owner, visibleOptions: candidates.map(item => item.text).slice(0, 10), matchCount: candidates.length});
+    }
+    const option = candidates[0];
+    option.element.scrollIntoView({block: 'center', inline: 'nearest'});
+    option.element.click();
+    return JSON.stringify({ok: true, owner, selected: option.text.slice(0, 240)});
+  })()`;
+  return JSON.parse(executeActiveTabJavascript(js));
+}
+
+function verifySentryAssignee(ownerName) {
+  const state = extractSentryAssigneeState(ownerName);
+  return sentryAssigneeMatches(state.assigneeText, ownerName)
+    ? {ok: true, ownerName, assigneeText: state.assigneeText, state}
+    : {ok: false, reason: `Sentry assignee is not ${ownerName}`, ownerName, state};
+}
+
+function assignSentryIssueToOwnerViaChrome(ownerName, ticketKey) {
+  const owner = cleanText(ownerName, 160);
+  const key = cleanText(ticketKey, 80).toUpperCase();
+  if (!owner) {
+    return {type: 'sentry-assignee-sync', key, status: 'blocked', message: `No Jira owner/assignee was available for ${key}.`};
+  }
+  if (jiraDryRun) {
+    return {type: 'sentry-assignee-sync', key, ownerName: owner, status: 'dry-run', message: `Would assign Sentry issue to Jira owner ${owner}.`};
+  }
+  let state = extractSentryAssigneeState(owner);
+  if (state.authState === 'login_or_auth_required') {
+    return {type: 'sentry-assignee-sync', key, ownerName: owner, status: 'blocked', message: 'Sentry requires login/authentication while syncing assignee.'};
+  }
+  if (sentryAssigneeMatches(state.assigneeText, owner)) {
+    return {type: 'sentry-assignee-sync', key, ownerName: owner, status: 'already-assigned', via: 'chrome-ui', assigneeText: state.assigneeText};
+  }
+  const steps = [];
+  steps.push({
+    step: 'open-assignee-dropdown',
+    result: waitForUiAction(`open Sentry assignee dropdown for ${owner}`, () => openSentryAssigneeDropdown(owner), {timeoutMs: sentryIssueTrackingActionTimeoutMs}),
+  });
+  if (!steps.at(-1).result.ok) {
+    return {type: 'sentry-assignee-sync', key, ownerName: owner, status: 'blocked', via: 'chrome-ui', message: steps.at(-1).result.reason, steps};
+  }
+  sleep(sentryIssueTrackingSettleMs);
+  steps.push({
+    step: 'select-assignee-option',
+    result: waitForUiAction(`select Sentry assignee ${owner}`, () => selectSentryAssigneeOption(owner), {timeoutMs: sentryIssueTrackingActionTimeoutMs}),
+  });
+  if (!steps.at(-1).result.ok) {
+    return {type: 'sentry-assignee-sync', key, ownerName: owner, status: 'blocked', via: 'chrome-ui', message: steps.at(-1).result.reason, steps};
+  }
+  sleep(sentryIssueTrackingSettleMs);
+  steps.push({
+    step: 'confirm-sentry-assignee',
+    result: waitForUiAction(`confirm Sentry assignee ${owner}`, () => verifySentryAssignee(owner), {timeoutMs: sentryIssueTrackingActionTimeoutMs}),
+  });
+  if (!steps.at(-1).result.ok) {
+    return {type: 'sentry-assignee-sync', key, ownerName: owner, status: 'blocked', via: 'chrome-ui', message: steps.at(-1).result.reason, steps};
+  }
+  return {type: 'sentry-assignee-sync', key, ownerName: owner, status: 'assigned', via: 'chrome-ui', steps};
+}
+
+function ensureSentryAssigneeForJiraOwner(tickets, jiraActions = [], sentryIssueUrl = '') {
+  const linkedTickets = mergeTickets(tickets);
+  if (linkedTickets.length > 1) {
+    return {
+      actions: [{
+        type: 'sentry-assignee-sync',
+        status: 'blocked',
+        keys: linkedTickets.map((ticket) => ticket.key),
+        message: 'Multiple linked Jira tickets are visible; refusing to guess which Jira owner should own the Sentry issue.',
+      }],
+    };
+  }
+  const primaryTicket = linkedTickets[0];
+  if (!primaryTicket) {
+    return {actions: []};
+  }
+  const owner = resolveJiraOwnerViaChrome(primaryTicket, jiraActions);
+  if (!owner.ok) {
+    return {
+      actions: [{
+        type: 'sentry-assignee-sync',
+        key: primaryTicket.key,
+        status: owner.status === 'dry-run' ? 'dry-run' : 'blocked',
+        message: owner.message || `Could not resolve Jira owner for ${primaryTicket.key}.`,
+      }],
+    };
+  }
+  if (sentryIssueUrl) {
+    navigateActiveTab(sentryIssueUrl);
+    waitForPage(issueIdFrom(sentryIssueUrl));
+  }
+  const action = assignSentryIssueToOwnerViaChrome(owner.ownerName, primaryTicket.key);
+  return {actions: [{...action, jiraOwnerSource: owner.source}]};
 }
 
 async function postJson(url, body) {
@@ -765,7 +1879,11 @@ async function updateReport(row, detailState, checkedAt, results, index, total, 
       foundIssueCount: nextResults.filter((item) => item.jiraTicketKeys.length).length,
       createdJiraIssueCount: nextResults.flatMap((item) => item.jiraActions || []).filter((action) => action.type === 'create' && action.status === 'created').length,
       assignedJiraIssueCount: nextResults.flatMap((item) => item.jiraActions || []).filter((action) => action.type === 'assign' && action.status === 'assigned').length,
+      sentryIssueTrackingLinkedCount: nextResults.flatMap((item) => item.jiraActions || []).filter((action) => action.type === 'sentry-issue-tracking-link' && action.status === 'attached').length,
+      sentryAssigneeSyncedCount: nextResults.flatMap((item) => item.jiraActions || []).filter((action) => action.type === 'sentry-assignee-sync' && ['assigned', 'already-assigned'].includes(action.status)).length,
       jiraDryRun,
+      jiraAssignViaChrome,
+      sentryAttachJiraTickets,
       currentIssueId: index + 1 >= total ? null : id,
       currentIssueUrl: index + 1 >= total ? null : canonicalIssueUrl(row.issueUrl, id),
       results: nextResults,
@@ -778,23 +1896,42 @@ async function updateReport(row, detailState, checkedAt, results, index, total, 
 
 const startedAt = new Date().toISOString();
 const snapshot = readJson(snapshotPath);
-const rows = (Array.isArray(snapshot.sentryIssueList?.rows) ? snapshot.sentryIssueList.rows : [])
+const snapshotRows = Array.isArray(snapshot.sentryIssueList?.rows) ? snapshot.sentryIssueList.rows : [];
+const rows = snapshotRows
   .filter((row) => issueIdFrom(row.issueId || row.issueUrl) && row.issueUrl)
   .slice(0, Math.max(0, scanLimit));
 
 if (!rows.length) {
+  const snapshotRowCount = Number(snapshot.sentryIssueList?.rowCount || snapshotRows.length || 0);
+  const hasUnextractableRows = snapshotRowCount > 0 || snapshotRows.length > 0;
+  const status = hasUnextractableRows ? 'blocked' : 'skipped';
+  const message = hasUnextractableRows
+    ? `Snapshot has ${snapshotRowCount} Sentry row(s), but none contain an issue URL/id safe enough for Jira-link scanning.`
+    : 'No issue rows were available for Jira-link scanning.';
   writeStatus({
-    ok: true,
-    status: 'skipped',
+    ok: !hasUnextractableRows,
+    status,
     startedAt,
     finishedAt: new Date().toISOString(),
-    message: 'No issue rows were available for Jira-link scanning.',
+    message,
     checkedIssueCount: 0,
+    plannedIssueCount: snapshotRowCount,
     foundIssueCount: 0,
+    blocker: hasUnextractableRows ? {
+      type: 'NO_EXTRACTABLE_ISSUE_ROWS',
+      message,
+    } : null,
     results: [],
   });
-  console.log(JSON.stringify({ok: true, status: 'skipped', checkedIssueCount: 0, foundIssueCount: 0}, null, 2));
-  process.exit(0);
+  console.log(JSON.stringify({
+    ok: !hasUnextractableRows,
+    status,
+    checkedIssueCount: 0,
+    plannedIssueCount: snapshotRowCount,
+    foundIssueCount: 0,
+    blocker: hasUnextractableRows ? 'NO_EXTRACTABLE_ISSUE_ROWS' : null,
+  }, null, 2));
+  process.exit(hasUnextractableRows ? EXIT.PRECONDITION : 0);
 }
 
 const results = [];
@@ -804,58 +1941,11 @@ const chromeDwellRecords = [];
 let errors = 0;
 let authAbort = null;
 let uiAckAbort = null;
+let jiraActionAbort = null;
 const jiraPreflight = await preflightJiraWrites();
 
 if (!jiraPreflight.ok) {
-  const finishedAt = new Date().toISOString();
-  writeStatus({
-    ok: false,
-    status: 'blocked',
-    startedAt,
-    finishedAt,
-    checkedIssueCount: 0,
-    plannedIssueCount: rows.length,
-    foundIssueCount: 0,
-    createdJiraIssueCount: 0,
-    assignedJiraIssueCount: 0,
-    blockedJiraActionCount: 1,
-    jiraDryRun,
-    jiraProjectKey,
-    jiraIssueTypeName,
-    jiraAssignee: 'Thien Nguyen',
-    minChromeDwellMs,
-    chromeDwellRecords,
-    blocker: {
-      type: 'JIRA_PREFLIGHT_FAILURE',
-      code: jiraPreflight.code || 'jira_preflight_failed',
-      message: jiraPreflight.message,
-    },
-    workflowSignals,
-    uiAcknowledgements,
-    focusedUiAcknowledgements: uiAcknowledgements,
-    reportApi,
-    workflowApi,
-    uiStateApi,
-    results,
-  });
-  console.log(JSON.stringify({
-    ok: false,
-    status: 'blocked',
-    checkedIssueCount: 0,
-    plannedIssueCount: rows.length,
-    foundIssueCount: 0,
-    createdJiraIssueCount: 0,
-    assignedJiraIssueCount: 0,
-    blockedJiraActionCount: 1,
-    jiraDryRun,
-    minChromeDwellMs,
-    errorCount: 0,
-    blocker: 'JIRA_PREFLIGHT_FAILURE',
-    workflowSignals,
-    uiAcknowledgements,
-    focusedUiAcknowledgements: uiAcknowledgements,
-  }, null, 2));
-  process.exit(EXIT.PRECONDITION);
+  log(`JIRA_PREFLIGHT_WARNING: ${jiraPreflight.message || jiraPreflight.code || 'Jira REST preflight failed'}. Known-ticket Sentry linking and Jira UI assignment may continue; no-ticket dedupe/create will be blocked.`);
 }
 
 try {
@@ -878,16 +1968,36 @@ try {
       }
       navigateActiveTab(url);
       waitForPage(id);
-      chromeDwellStartedAt = Date.now();
       detailState = extractDetailJiraTickets();
       if (detailState.authState === 'login_or_auth_required') {
         throw new AuthAbort(`Sentry detail page for ${id} requires login/authentication.`, row, detailState);
       }
       const initialTickets = mergeTickets(rowTickets(row), detailState.tickets);
       const jiraEnsure = await ensureJiraTicketActions(row, detailState, initialTickets);
-      results.splice(0, results.length, ...(await updateReport(row, detailState, new Date().toISOString(), results, index, rows.length, jiraEnsure.tickets, jiraEnsure.actions)));
+      navigateActiveTab(url);
+      waitForPage(id);
+      detailState = extractDetailJiraTickets();
+      if (detailState.authState === 'login_or_auth_required') {
+        throw new AuthAbort(`Sentry detail page for ${id} requires login/authentication after Jira actions.`, row, detailState);
+      }
+      const sentryLinkEnsure = ensureSentryIssueTrackingLinks(detailState, jiraEnsure.tickets);
+      detailState = sentryLinkEnsure.detailState;
+      const linkActions = [...jiraEnsure.actions, ...sentryLinkEnsure.actions];
+      const visibleIssueTrackingTickets = issueTrackingTicketsFromState(detailState, jiraEnsure.tickets);
+      const sentryAssigneeEnsure = linkActions.some((action) => action.status === 'blocked')
+        ? {actions: []}
+        : ensureSentryAssigneeForJiraOwner(visibleIssueTrackingTickets, linkActions, url);
+      navigateActiveTab(url);
+      waitForPage(id);
+      chromeDwellStartedAt = Date.now();
+      detailState = extractDetailJiraTickets();
+      if (detailState.authState === 'login_or_auth_required') {
+        throw new AuthAbort(`Sentry detail page for ${id} requires login/authentication after Jira owner sync.`, row, detailState);
+      }
+      const jiraActions = [...linkActions, ...sentryAssigneeEnsure.actions];
+      results.splice(0, results.length, ...(await updateReport(row, detailState, new Date().toISOString(), results, index, rows.length, jiraEnsure.tickets, jiraActions)));
       const found = jiraEnsure.tickets.map((ticket) => ticket.key).join(', ') || 'no Jira ticket';
-      const actionSummary = jiraEnsure.actions
+      const actionSummary = jiraActions
         .map((action) => [action.type, action.status, action.key].filter(Boolean).join(':'))
         .join(', ');
       const resultWorkflow = await signalWorkflow(row, index, rows.length, `${key}: ${found}${actionSummary ? ` (${actionSummary})` : ''}. Moving to the next issue.`, 'active', randomUUID(), workflowContext);
@@ -896,6 +2006,16 @@ try {
         const expectedKeys = jiraEnsure.tickets.map((ticket) => ticket.key);
         await waitForUiAck(row, resultWorkflow, expectedKeys, 'Jira scan result');
         uiAcknowledgements += 1;
+      }
+      const blockedAction = jiraActions.find((action) => action.status === 'blocked');
+      if (blockedAction) {
+        jiraActionAbort = {
+          row,
+          action: blockedAction,
+          message: `${key}: Jira/Sentry UI action blocked (${[blockedAction.type, blockedAction.key].filter(Boolean).join(' ')}). The scan stopped before opening the next issue.`,
+        };
+        log(`JIRA_ACTION_BLOCKED: ${jiraActionAbort.message}`);
+        break;
       }
     } catch (error) {
       if (error instanceof AuthAbort) {
@@ -940,31 +2060,37 @@ const finishedAt = new Date().toISOString();
 const foundIssueCount = results.filter((item) => item.jiraTicketKeys.length).length;
 const createdJiraIssueCount = results.flatMap((item) => item.jiraActions || []).filter((action) => action.type === 'create' && action.status === 'created').length;
 const assignedJiraIssueCount = results.flatMap((item) => item.jiraActions || []).filter((action) => action.type === 'assign' && action.status === 'assigned').length;
+const sentryIssueTrackingLinkedCount = results.flatMap((item) => item.jiraActions || []).filter((action) => action.type === 'sentry-issue-tracking-link' && action.status === 'attached').length;
+const sentryAssigneeSyncedCount = results.flatMap((item) => item.jiraActions || []).filter((action) => action.type === 'sentry-assignee-sync' && ['assigned', 'already-assigned'].includes(action.status)).length;
 const blockedJiraActionCount = results.flatMap((item) => item.jiraActions || []).filter((action) => action.status === 'blocked').length;
 await postJson(workflowApi, {
-  status: authAbort || uiAckAbort || errors ? 'blocked' : 'success',
+  status: authAbort || uiAckAbort || jiraActionAbort || errors ? 'blocked' : 'success',
   step: `${results.length}/${rows.length}`,
   title: authAbort
     ? 'Sentry Jira link scan auth blocked'
     : uiAckAbort
       ? 'Sentry Jira link scan UI sync blocked'
-      : 'Sentry Jira link scan complete',
+      : jiraActionAbort
+        ? 'Sentry Jira link scan action blocked'
+        : 'Sentry Jira link scan complete',
   message: authAbort
     ? `${authAbort.message} The scan stopped before writing a false no-ticket result.`
     : uiAckAbort
       ? `${uiAckAbort.message} The scan stopped so the next issue is not opened before the app reflects the current action.`
-    : `Checked ${rows.length} visible Sentry issue(s); found Jira tickets for ${foundIssueCount}; created Jira tickets: ${createdJiraIssueCount}; assigned Jira tickets: ${assignedJiraIssueCount}; scan errors: ${errors}.`,
+      : jiraActionAbort
+        ? jiraActionAbort.message
+        : `Checked ${rows.length} visible Sentry issue(s); found Jira tickets for ${foundIssueCount}; created Jira tickets: ${createdJiraIssueCount}; assigned Jira tickets: ${assignedJiraIssueCount}; linked Jira tickets in Sentry Issue Tracking: ${sentryIssueTrackingLinkedCount}; synced Sentry assignees to Jira owners: ${sentryAssigneeSyncedCount}; scan errors: ${errors}.`,
   phase: 'jira-link-scan',
-  sentryIssueId: authAbort || uiAckAbort ? issueIdFrom((authAbort || uiAckAbort).row?.issueId || (authAbort || uiAckAbort).row?.issueUrl) : undefined,
-  sentryKey: authAbort || uiAckAbort ? firstShortId((authAbort || uiAckAbort).row, issueIdFrom((authAbort || uiAckAbort).row?.issueId || (authAbort || uiAckAbort).row?.issueUrl)) : undefined,
-  url: authAbort ? authAbort.detailState?.url || canonicalIssueUrl(authAbort.row?.issueUrl) : (uiAckAbort ? canonicalIssueUrl(uiAckAbort.row?.issueUrl) : undefined),
+  sentryIssueId: authAbort || uiAckAbort || jiraActionAbort ? issueIdFrom((authAbort || uiAckAbort || jiraActionAbort).row?.issueId || (authAbort || uiAckAbort || jiraActionAbort).row?.issueUrl) : undefined,
+  sentryKey: authAbort || uiAckAbort || jiraActionAbort ? firstShortId((authAbort || uiAckAbort || jiraActionAbort).row, issueIdFrom((authAbort || uiAckAbort || jiraActionAbort).row?.issueId || (authAbort || uiAckAbort || jiraActionAbort).row?.issueUrl)) : undefined,
+  url: authAbort ? authAbort.detailState?.url || canonicalIssueUrl(authAbort.row?.issueUrl) : (uiAckAbort || jiraActionAbort ? canonicalIssueUrl((uiAckAbort || jiraActionAbort).row?.issueUrl) : undefined),
   source,
   updatedAt: finishedAt,
 }).catch((error) => log(`WORKFLOW_COMPLETE_WARNING: ${error.message}`));
 
 writeStatus({
-  ok: !authAbort && !uiAckAbort && errors === 0,
-  status: authAbort || uiAckAbort ? 'blocked' : (errors ? 'completed-with-warnings' : 'complete'),
+  ok: !authAbort && !uiAckAbort && !jiraActionAbort && errors === 0,
+  status: authAbort || uiAckAbort || jiraActionAbort ? 'blocked' : (errors ? 'completed-with-warnings' : 'complete'),
   startedAt,
   finishedAt,
   checkedIssueCount: results.length,
@@ -972,8 +2098,14 @@ writeStatus({
   foundIssueCount,
   createdJiraIssueCount,
   assignedJiraIssueCount,
+  sentryIssueTrackingLinkedCount,
+  sentryAssigneeSyncedCount,
   blockedJiraActionCount,
   jiraDryRun,
+  jiraAssignViaChrome,
+  sentryAttachJiraTickets,
+  jiraUiActionTimeoutMs,
+  sentryIssueTrackingActionTimeoutMs,
   jiraProjectKey,
   jiraIssueTypeName,
   jiraAssignee: 'Thien Nguyen',
@@ -995,7 +2127,13 @@ writeStatus({
     issueId: issueIdFrom(uiAckAbort.row?.issueId || uiAckAbort.row?.issueUrl),
     url: canonicalIssueUrl(uiAckAbort.row?.issueUrl),
     lastUiState: uiAckAbort.lastUiState,
-  } : null),
+  } : (jiraActionAbort ? {
+    type: 'JIRA_ACTION_FAILURE',
+    message: jiraActionAbort.message,
+    issueId: issueIdFrom(jiraActionAbort.row?.issueId || jiraActionAbort.row?.issueUrl),
+    url: canonicalIssueUrl(jiraActionAbort.row?.issueUrl),
+    action: jiraActionAbort.action,
+  } : null)),
   workflowSignals,
   uiAcknowledgements,
   focusedUiAcknowledgements: uiAcknowledgements,
@@ -1006,27 +2144,33 @@ writeStatus({
 });
 
 console.log(JSON.stringify({
-  ok: !authAbort && !uiAckAbort && errors === 0,
-  status: authAbort || uiAckAbort ? 'blocked' : (errors ? 'completed-with-warnings' : 'complete'),
+  ok: !authAbort && !uiAckAbort && !jiraActionAbort && errors === 0,
+  status: authAbort || uiAckAbort || jiraActionAbort ? 'blocked' : (errors ? 'completed-with-warnings' : 'complete'),
   checkedIssueCount: results.length,
   plannedIssueCount: rows.length,
   foundIssueCount,
   createdJiraIssueCount,
   assignedJiraIssueCount,
+  sentryIssueTrackingLinkedCount,
+  sentryAssigneeSyncedCount,
   blockedJiraActionCount,
   jiraDryRun,
+  jiraAssignViaChrome,
+  sentryAttachJiraTickets,
+  jiraUiActionTimeoutMs,
+  sentryIssueTrackingActionTimeoutMs,
   jiraPreflight,
   uiAckConsecutiveMatches,
   minChromeDwellMs,
   chromeDwellWaitCount: chromeDwellRecords.filter((record) => record.enforcedSleepMs > 0).length,
   chromeDwellWaitMs: chromeDwellRecords.reduce((total, record) => total + record.enforcedSleepMs, 0),
   errorCount: errors,
-  blocker: authAbort ? 'AUTH_FAILURE' : (uiAckAbort ? 'UI_ACK_FAILURE' : null),
+  blocker: authAbort ? 'AUTH_FAILURE' : (uiAckAbort ? 'UI_ACK_FAILURE' : (jiraActionAbort ? 'JIRA_ACTION_FAILURE' : null)),
   workflowSignals,
   uiAcknowledgements,
   focusedUiAcknowledgements: uiAcknowledgements,
 }, null, 2));
 
-if (authAbort || uiAckAbort) {
+if (authAbort || uiAckAbort || jiraActionAbort) {
   process.exit(authAbort ? EXIT.AUTH : EXIT.PRECONDITION);
 }

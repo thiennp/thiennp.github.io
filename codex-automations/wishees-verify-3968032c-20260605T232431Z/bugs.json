@@ -1,0 +1,301 @@
+[
+  {
+    "occurrences": 6,
+    "id": "BUG-001",
+    "firstSeenAt": "2026-06-05T23:26:17.284Z",
+    "severity": "MAJOR",
+    "title": "Concurrent owner wishlist saves lose one newly created item",
+    "stepsToReproduce": [
+      "Open two authenticated Alex sessions",
+      "Read the same wishlist baseline in both sessions",
+      "Submit two PUT /api/account/wishlist requests at the same time, each adding a different item",
+      "Fetch /api/account/wishlist"
+    ],
+    "actualBehavior": "Final wishlist had race item A=false, race item B=true; one save appears to have overwritten the other.",
+    "evidence": {
+      "ts": "2026-06-05T23:26:17.283Z",
+      "runId": "20260605232539",
+      "session": "alex-race-a",
+      "feature": "race",
+      "action": "race final read",
+      "request": {
+        "method": "GET",
+        "route": "/api/account/wishlist"
+      },
+      "response": {
+        "status": 200,
+        "ok": true,
+        "contentType": "application/json",
+        "body": "{\"items\":[{\"allowedViewers\":[],\"createdAt\":\"2026-06-05T22:58:01.370Z\",\"currency\":\"EUR\",\"id\":\"wish_e2e_coffee_grinder\",\"note\":\"Small burr grinder for morning coffee.\",\"price\":\"89.00\",\"recipientName\":\"\",\"title\":\"Compact burr coffee grinder\",\"updatedAt\":\"2026-06-05T22:58:01.370Z\",\"url\":\"https://www.amazon.de/s?k=burr+coffee+grinder&tag=wishees-20\",\"visibility\":\"friends\",\"giftPaymentOptions\":[],\"giftPaymentAccount\":\"\",\"giftPaymentMethod\":\"\",\"giftPaymentOtherLabel\":\"\"},{\"allowedViewers\":[],\"createdAt\":\"2026-06-05T22:58:01.370Z\",\"currency\":\"EUR\",\"id\":\"wish_e2e_noise_headphones\",\"note\":\"Prefer comfortable over flashy. Good for commute and focus work.\",\"price\":\"129.00\",\"recipientName\":\"\",\"title\":\"Noise-canceling headphones\",\"updatedAt\":\"2026-06-05T22:58:01.370Z\",\"url\":\"https://www.amazon.com/s?k=noise+canceling+headphones&tag=wishees-20\",\"visibility\":\"friends\",\"giftPaymentOptions\":[],\"giftPaymentAccount\":\"\",\"giftPaymentMethod\":\"\",\"giftPaymentOtherLabel\":\"\"},{\"allowedViewers\":[],\"createdAt\":\"2026-06-05T23:26:16.845Z\",\"currency\":\"EUR\",\"id\":\"wish_codex_matrix_20260605232539_race3_b\",\"note\":\"Automated multi-user QA artifact 20260605232539. Safe to delete.\",\"price\":\"19.99\",\"recipientName\":\"Codex QA\",\"title\":\"Codex matrix race B 20260605232539\",\"updatedAt\":\"2026-06-05T23:26:16.845Z\",\"url\":\"https://www.amazon.de/dp/B08N5WRWNW?tag=wishees-qa-21&psc=1\",\"visibility\":\"friends\",\"giftPaymentOptions\":[{\"account\":\"qa-paypal@example.test\",\"accountName\":\"\",\"bankName\":\"\",\"method\":\"paypal\",\"otherLabel\":\"\",\"swift\":\"\"}],\"giftPaymentAccount\":\"qa-paypal@example.test\",\"giftPaymentMethod\":\"paypal\",\"giftPaymentOtherLabel\":\"\"}],\"ok\":true,\"visibility\":\"friends\"}"
+      },
+      "durationMs": 172,
+      "error": null
+    },
+    "lastSeenAt": "2026-06-05T23:27:15.158Z",
+    "lastActualBehavior": "Final wishlist had race item A=true, race item B=false; one save appears to have overwritten the other.",
+    "lastEvidence": {
+      "ts": "2026-06-05T23:27:15.155Z",
+      "runId": "20260605232539",
+      "session": "alex-race-a",
+      "feature": "race",
+      "action": "race final read",
+      "request": {
+        "method": "GET",
+        "route": "/api/account/wishlist"
+      },
+      "response": {
+        "status": 200,
+        "ok": true,
+        "contentType": "application/json",
+        "body": "{\"items\":[{\"allowedViewers\":[],\"createdAt\":\"2026-06-05T22:58:01.370Z\",\"currency\":\"EUR\",\"id\":\"wish_e2e_coffee_grinder\",\"note\":\"Small burr grinder for morning coffee.\",\"price\":\"89.00\",\"recipientName\":\"\",\"title\":\"Compact burr coffee grinder\",\"updatedAt\":\"2026-06-05T22:58:01.370Z\",\"url\":\"https://www.amazon.de/s?k=burr+coffee+grinder&tag=wishees-20\",\"visibility\":\"friends\",\"giftPaymentOptions\":[],\"giftPaymentAccount\":\"\",\"giftPaymentMethod\":\"\",\"giftPaymentOtherLabel\":\"\"},{\"allowedViewers\":[],\"createdAt\":\"2026-06-05T22:58:01.370Z\",\"currency\":\"EUR\",\"id\":\"wish_e2e_noise_headphones\",\"note\":\"Prefer comfortable over flashy. Good for commute and focus work.\",\"price\":\"129.00\",\"recipientName\":\"\",\"title\":\"Noise-canceling headphones\",\"updatedAt\":\"2026-06-05T22:58:01.370Z\",\"url\":\"https://www.amazon.com/s?k=noise+canceling+headphones&tag=wishees-20\",\"visibility\":\"friends\",\"giftPaymentOptions\":[],\"giftPaymentAccount\":\"\",\"giftPaymentMethod\":\"\",\"giftPaymentOtherLabel\":\"\"},{\"allowedViewers\":[],\"createdAt\":\"2026-06-05T23:27:14.767Z\",\"currency\":\"EUR\",\"id\":\"wish_codex_matrix_20260605232539_race9_a\",\"note\":\"Automated multi-user QA artifact 20260605232539. Safe to delete.\",\"price\":\"19.99\",\"recipientName\":\"Codex QA\",\"title\":\"Codex matrix race A 20260605232539\",\"updatedAt\":\"2026-06-05T23:27:14.767Z\",\"url\":\"https://www.amazon.de/dp/B08N5WRWNW?tag=wishees-qa-21&psc=1\",\"visibility\":\"friends\",\"giftPaymentOptions\":[{\"account\":\"qa-paypal@example.test\",\"accountName\":\"\",\"bankName\":\"\",\"method\":\"paypal\",\"otherLabel\":\"\",\"swift\":\"\"}],\"giftPaymentAccount\":\"qa-paypal@example.test\",\"giftPaymentMethod\":\"paypal\",\"giftPaymentOtherLabel\":\"\"}],\"ok\":true,\"visibility\":\"friends\"}"
+      },
+      "durationMs": 165,
+      "error": null
+    }
+  },
+  {
+    "occurrences": 1,
+    "id": "BUG-002",
+    "firstSeenAt": "2026-06-05T23:28:20.788Z",
+    "severity": "MINOR",
+    "title": "UI and translation smoke found visual, accessibility, or localization issues",
+    "stepsToReproduce": [
+      "Run node ui-i18n-smoke.mjs",
+      "Open the listed routes in German and English across mobile and desktop viewports",
+      "Inspect overflow, control labels, html lang, translation keys, and German copy"
+    ],
+    "actualBehavior": "1 scenario(s) showed UI/i18n instability. See UI_I18N_EVIDENCE.json and screenshots in logs/.",
+    "evidence": {
+      "runId": "20260605232747",
+      "failingScenarios": [
+        {
+          "name": "viewer-friend-wishlist-de-mobile-lina",
+          "route": "/friends/wishlist?invite=user-12&lang=de",
+          "status": 200,
+          "screenshot": "/Users/thien.nguyen/thiennp.github.io/codex-automations/wishees-verify-3968032c-20260605T232431Z/logs/ui-i18n-20260605232747-viewer-friend-wishlist-de-mobile-lina.png",
+          "detail": {
+            "title": "Friend Wishlist",
+            "htmlLang": "de",
+            "htmlLangMismatch": false,
+            "documentScrollWidth": 320,
+            "clientWidth": 320,
+            "overflowPx": 0,
+            "badKeyMatches": [],
+            "templateTokens": [],
+            "englishTerms": [],
+            "unnamedControls": [],
+            "overflowingElements": [],
+            "clippedTextElements": [],
+            "bodySample": "Diese Einladung ist noch nicht verknüpft. Nimm diese Einladung zuerst an. Danach kann Wishees die mit diesem Konto geteilte Wunschliste anzeigen. Einladung annehmen Alle Freunde anzeigen ✦ W ıshees DE"
+          },
+          "consoleWarningsOrErrors": [
+            {
+              "type": "error",
+              "text": "Failed to load resource: the server responded with a status of 401 ()"
+            }
+          ],
+          "networkFailures": [
+            {
+              "method": "GET",
+              "url": "https://www.wishees.com/friends/invite?_rsc=Y_z1toQ8V5ovsS5O",
+              "failure": "net::ERR_ABORTED"
+            },
+            {
+              "method": "GET",
+              "url": "https://www.wishees.com/friends/invite?code=12&lang=de&_rsc=bSLtvY-ZQYZvBBKY",
+              "failure": "net::ERR_ABORTED"
+            },
+            {
+              "method": "GET",
+              "url": "https://www.wishees.com/friends?lang=de&_rsc=bSLtvY-ZQYZvBBKY",
+              "failure": "net::ERR_ABORTED"
+            }
+          ],
+          "badResponses": [
+            {
+              "status": 401,
+              "url": "https://www.wishees.com/api/notifications"
+            }
+          ]
+        }
+      ]
+    },
+    "lastSeenAt": "2026-06-05T23:28:20.788Z",
+    "lastActualBehavior": "1 scenario(s) showed UI/i18n instability. See UI_I18N_EVIDENCE.json and screenshots in logs/.",
+    "lastEvidence": {
+      "runId": "20260605232747",
+      "failingScenarios": [
+        {
+          "name": "viewer-friend-wishlist-de-mobile-lina",
+          "route": "/friends/wishlist?invite=user-12&lang=de",
+          "status": 200,
+          "screenshot": "/Users/thien.nguyen/thiennp.github.io/codex-automations/wishees-verify-3968032c-20260605T232431Z/logs/ui-i18n-20260605232747-viewer-friend-wishlist-de-mobile-lina.png",
+          "detail": {
+            "title": "Friend Wishlist",
+            "htmlLang": "de",
+            "htmlLangMismatch": false,
+            "documentScrollWidth": 320,
+            "clientWidth": 320,
+            "overflowPx": 0,
+            "badKeyMatches": [],
+            "templateTokens": [],
+            "englishTerms": [],
+            "unnamedControls": [],
+            "overflowingElements": [],
+            "clippedTextElements": [],
+            "bodySample": "Diese Einladung ist noch nicht verknüpft. Nimm diese Einladung zuerst an. Danach kann Wishees die mit diesem Konto geteilte Wunschliste anzeigen. Einladung annehmen Alle Freunde anzeigen ✦ W ıshees DE"
+          },
+          "consoleWarningsOrErrors": [
+            {
+              "type": "error",
+              "text": "Failed to load resource: the server responded with a status of 401 ()"
+            }
+          ],
+          "networkFailures": [
+            {
+              "method": "GET",
+              "url": "https://www.wishees.com/friends/invite?_rsc=Y_z1toQ8V5ovsS5O",
+              "failure": "net::ERR_ABORTED"
+            },
+            {
+              "method": "GET",
+              "url": "https://www.wishees.com/friends/invite?code=12&lang=de&_rsc=bSLtvY-ZQYZvBBKY",
+              "failure": "net::ERR_ABORTED"
+            },
+            {
+              "method": "GET",
+              "url": "https://www.wishees.com/friends?lang=de&_rsc=bSLtvY-ZQYZvBBKY",
+              "failure": "net::ERR_ABORTED"
+            }
+          ],
+          "badResponses": [
+            {
+              "status": 401,
+              "url": "https://www.wishees.com/api/notifications"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "occurrences": 1,
+    "id": "BUG-003",
+    "firstSeenAt": "2026-06-05T23:28:52.313Z",
+    "severity": "MINOR",
+    "title": "Mobile friend wishlist browser smoke has visual or console instability",
+    "stepsToReproduce": [
+      "Log in as Maya in a 320x680 browser viewport",
+      "Open /friends/wishlist?invite=user-12&lang=de",
+      "Inspect horizontal overflow, console errors, and failed requests"
+    ],
+    "actualBehavior": "{\"overflowPx\":0,\"consoleWarningsOrErrors\":[{\"type\":\"error\",\"text\":\"Failed to load resource: the server responded with a status of 401 ()\"}],\"networkFailures\":[]}",
+    "evidence": {
+      "session": "Maya",
+      "url": "https://www.wishees.com/friends/wishlist?invite=user-12&lang=de",
+      "viewport": "320x680",
+      "title": "Friend Wishlist",
+      "documentScrollWidth": 320,
+      "bodyScrollWidth": 320,
+      "clientWidth": 320,
+      "overflowPx": 0,
+      "hasWishlistItem": true,
+      "affiliateLinksObserved": [
+        "https://www.amazon.com/s?k=burr+coffee+grinder&tag=wishees-20",
+        "https://www.amazon.com/s?k=noise+canceling+headphones&tag=wishees-20"
+      ],
+      "overflowingElements": [],
+      "consoleWarningsOrErrors": [
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 401 ()"
+        }
+      ],
+      "networkFailures": []
+    },
+    "lastSeenAt": "2026-06-05T23:28:52.313Z",
+    "lastActualBehavior": "{\"overflowPx\":0,\"consoleWarningsOrErrors\":[{\"type\":\"error\",\"text\":\"Failed to load resource: the server responded with a status of 401 ()\"}],\"networkFailures\":[]}",
+    "lastEvidence": {
+      "session": "Maya",
+      "url": "https://www.wishees.com/friends/wishlist?invite=user-12&lang=de",
+      "viewport": "320x680",
+      "title": "Friend Wishlist",
+      "documentScrollWidth": 320,
+      "bodyScrollWidth": 320,
+      "clientWidth": 320,
+      "overflowPx": 0,
+      "hasWishlistItem": true,
+      "affiliateLinksObserved": [
+        "https://www.amazon.com/s?k=burr+coffee+grinder&tag=wishees-20",
+        "https://www.amazon.com/s?k=noise+canceling+headphones&tag=wishees-20"
+      ],
+      "overflowingElements": [],
+      "consoleWarningsOrErrors": [
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 401 ()"
+        }
+      ],
+      "networkFailures": []
+    }
+  },
+  {
+    "occurrences": 1,
+    "id": "BUG-004",
+    "firstSeenAt": "2026-06-05T23:28:57.780Z",
+    "severity": "MINOR",
+    "title": "Maya browser contribution flow did not complete cleanly",
+    "stepsToReproduce": [
+      "Log in as Maya in a desktop browser",
+      "Open /friends/wishlist?invite=user-12&lang=de",
+      "Submit a partial contribution for Compact burr coffee grinder"
+    ],
+    "actualBehavior": "{\"session\":\"Maya browser context\",\"url\":\"https://www.wishees.com/friends/wishlist?invite=user-12&lang=de\",\"item\":\"Compact burr coffee grinder\",\"responseStatus\":200,\"responseOk\":true,\"responseBodyKind\":\"text\",\"responseBody\":\"<!DOCTYPE html><html data-dpl-id=\\\"dpl_E49MZbagdkjQonrkXd8TbpC5XS8m\\\" lang=\\\"de\\\"><head><meta charSet=\\\"utf-8\\\"/><meta name=\\\"viewport\\\" content=\\\"width=device-width, initial-scale=1\\\"/><link rel=\\\"stylesheet\\\" href=\\\"/_next/static/chunks/05ym_3nesopt9.css?dpl=dpl_E49MZbagdkjQonrkXd8TbpC5XS8m\\\" data-precedence=\\\"next\\\"/><link rel=\\\"stylesheet\\\" href=\\\"/_next/static/chunks/169r91up8d.pq.css?dpl=dpl_E49MZbagdkjQonrkXd8TbpC5XS8m\\\" data-precedence=\\\"next\\\"/><link rel=\\\"preload\\\" as=\\\"script\\\" fetchPriority=\\\"low\\\" href=\\\"/_next/static/chunks/0td6t8lw2d-8-.js?dpl=dpl_E49MZbagdkjQonrkXd8TbpC5XS8m\\\"/><script src=\\\"/_next/static/chunks/0kei582m8boi2.js?dpl=dpl_E49MZbagdkjQonrkXd8TbpC5XS8m\\\" async=\\\"\\\"></script><script src=\\\"/_next/static/chunks/0zc_yy4_zy~7i.js?dpl=dpl_E49MZbagdkjQonrkXd8TbpC5XS8m\\\" async=\\\"\\\"></script><script src=\\\"/_next/static/chunks/187pmd2fl966s.js?dpl=dpl_E49MZbagdkjQonrkXd8TbpC5XS8m\\\" async=\\\"\\\"></script><script src=\\\"/_next/static/chunks/turbopack-0x4ssfyiaw.bf.js?dpl=dpl_E49MZbagdkjQonrkXd8TbpC5XS8m\\\" async=\\\"\\\"></script><script src=\\\"/_next/static/chunks/0~_01nsir8kw0.js?dpl=dpl_E49MZbagdkjQonrkXd8TbpC5XS8m\\\" async=\\\"\\\"></script><script src=\\\"/_next/static/chunks/0p0kz62u_jly5.js?dpl=dpl_E49MZbagdkjQonrkXd8TbpC5XS8m\\\" async=\\\"\\\"></script><script src=\\\"/_next/static/chunks/0qrvm-j9exvsu.js?dpl=dpl_E49MZbagdkjQonrkXd8TbpC5XS8m\\\" async=\\\"\\\"></script><script src=\\\"/_next/static/chunks/0q5rj.fcm7kbm.js?dpl=dpl_E49MZbagdkjQonrkXd8TbpC5XS8m\\\" async=\\\"\\\"></script><script src=\\\"/_next/static/chunks/0dlfnckqn0qdg.js?dpl=dpl_E49MZbagdkjQonrkXd8TbpC5XS8m\\\" async=\\\"\\\"></script><script src=\\\"/_next/static/chunks/0b_kbm4mdy9k0.js?dpl=d\",\"hasSupportPhrase\":true,\"bodySnippet\":\"Geteilte Wunschlisten\\n\\nSieh, was sich deine Freunde wünschen, finde Produktlinks oder biete an, dich an einem Geschenk zu beteiligen.\\n\\nLaufend\\nCompact burr coffee grinder\\n\\nSmall burr grinder for morning coffee.\\n\\nPreishinweis: 89,00 €\\n\\nProdukt ansehen\\nGanzen Wunsch übernehmen\\nBeitragen\\nNoise-canceling headphones\\n\\nPrefer comfortable over flashy. Good for commute and focus work.\\n\\nPreishinweis: 129,00 €\\n\\nProdukt ansehen\\nGanzen Wunsch übernehmen\\nBeitragen\\n\\nWishees hilft dir bei der Geschenkkoordinati\",\"consoleWarningsOrErrors\":[{\"type\":\"error\",\"text\":\"Failed to load resource: the server responded with a status of 401 ()\"},{\"type\":\"error\",\"text\":\"Failed to load resource: the server responded with a status of 401 ()\"}],\"networkFailures\":[]}",
+    "evidence": {
+      "session": "Maya browser context",
+      "url": "https://www.wishees.com/friends/wishlist?invite=user-12&lang=de",
+      "item": "Compact burr coffee grinder",
+      "responseStatus": 200,
+      "responseOk": true,
+      "responseBodyKind": "text",
+      "responseBody": "<!DOCTYPE html><html data-dpl-id=\"dpl_E49MZbagdkjQonrkXd8TbpC5XS8m\" lang=\"de\"><head><meta charSet=\"utf-8\"/><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"/><link rel=\"stylesheet\" href=\"/_next/static/chunks/05ym_3nesopt9.css?dpl=dpl_E49MZbagdkjQonrkXd8TbpC5XS8m\" data-precedence=\"next\"/><link rel=\"stylesheet\" href=\"/_next/static/chunks/169r91up8d.pq.css?dpl=dpl_E49MZbagdkjQonrkXd8TbpC5XS8m\" data-precedence=\"next\"/><link rel=\"preload\" as=\"script\" fetchPriority=\"low\" href=\"/_next/static/chunks/0td6t8lw2d-8-.js?dpl=dpl_E49MZbagdkjQonrkXd8TbpC5XS8m\"/><script src=\"/_next/static/chunks/0kei582m8boi2.js?dpl=dpl_E49MZbagdkjQonrkXd8TbpC5XS8m\" async=\"\"></script><script src=\"/_next/static/chunks/0zc_yy4_zy~7i.js?dpl=dpl_E49MZbagdkjQonrkXd8TbpC5XS8m\" async=\"\"></script><script src=\"/_next/static/chunks/187pmd2fl966s.js?dpl=dpl_E49MZbagdkjQonrkXd8TbpC5XS8m\" async=\"\"></script><script src=\"/_next/static/chunks/turbopack-0x4ssfyiaw.bf.js?dpl=dpl_E49MZbagdkjQonrkXd8TbpC5XS8m\" async=\"\"></script><script src=\"/_next/static/chunks/0~_01nsir8kw0.js?dpl=dpl_E49MZbagdkjQonrkXd8TbpC5XS8m\" async=\"\"></script><script src=\"/_next/static/chunks/0p0kz62u_jly5.js?dpl=dpl_E49MZbagdkjQonrkXd8TbpC5XS8m\" async=\"\"></script><script src=\"/_next/static/chunks/0qrvm-j9exvsu.js?dpl=dpl_E49MZbagdkjQonrkXd8TbpC5XS8m\" async=\"\"></script><script src=\"/_next/static/chunks/0q5rj.fcm7kbm.js?dpl=dpl_E49MZbagdkjQonrkXd8TbpC5XS8m\" async=\"\"></script><script src=\"/_next/static/chunks/0dlfnckqn0qdg.js?dpl=dpl_E49MZbagdkjQonrkXd8TbpC5XS8m\" async=\"\"></script><script src=\"/_next/static/chunks/0b_kbm4mdy9k0.js?dpl=d",
+      "hasSupportPhrase": true,
+      "bodySnippet": "Geteilte Wunschlisten\n\nSieh, was sich deine Freunde wünschen, finde Produktlinks oder biete an, dich an einem Geschenk zu beteiligen.\n\nLaufend\nCompact burr coffee grinder\n\nSmall burr grinder for morning coffee.\n\nPreishinweis: 89,00 €\n\nProdukt ansehen\nGanzen Wunsch übernehmen\nBeitragen\nNoise-canceling headphones\n\nPrefer comfortable over flashy. Good for commute and focus work.\n\nPreishinweis: 129,00 €\n\nProdukt ansehen\nGanzen Wunsch übernehmen\nBeitragen\n\nWishees hilft dir bei der Geschenkkoordinati",
+      "consoleWarningsOrErrors": [
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 401 ()"
+        },
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 401 ()"
+        }
+      ],
+      "networkFailures": []
+    },
+    "lastSeenAt": "2026-06-05T23:28:57.780Z",
+    "lastActualBehavior": "{\"session\":\"Maya browser context\",\"url\":\"https://www.wishees.com/friends/wishlist?invite=user-12&lang=de\",\"item\":\"Compact burr coffee grinder\",\"responseStatus\":200,\"responseOk\":true,\"responseBodyKind\":\"text\",\"responseBody\":\"<!DOCTYPE html><html data-dpl-id=\\\"dpl_E49MZbagdkjQonrkXd8TbpC5XS8m\\\" lang=\\\"de\\\"><head><meta charSet=\\\"utf-8\\\"/><meta name=\\\"viewport\\\" content=\\\"width=device-width, initial-scale=1\\\"/><link rel=\\\"stylesheet\\\" href=\\\"/_next/static/chunks/05ym_3nesopt9.css?dpl=dpl_E49MZbagdkjQonrkXd8TbpC5XS8m\\\" data-precedence=\\\"next\\\"/><link rel=\\\"stylesheet\\\" href=\\\"/_next/static/chunks/169r91up8d.pq.css?dpl=dpl_E49MZbagdkjQonrkXd8TbpC5XS8m\\\" data-precedence=\\\"next\\\"/><link rel=\\\"preload\\\" as=\\\"script\\\" fetchPriority=\\\"low\\\" href=\\\"/_next/static/chunks/0td6t8lw2d-8-.js?dpl=dpl_E49MZbagdkjQonrkXd8TbpC5XS8m\\\"/><script src=\\\"/_next/static/chunks/0kei582m8boi2.js?dpl=dpl_E49MZbagdkjQonrkXd8TbpC5XS8m\\\" async=\\\"\\\"></script><script src=\\\"/_next/static/chunks/0zc_yy4_zy~7i.js?dpl=dpl_E49MZbagdkjQonrkXd8TbpC5XS8m\\\" async=\\\"\\\"></script><script src=\\\"/_next/static/chunks/187pmd2fl966s.js?dpl=dpl_E49MZbagdkjQonrkXd8TbpC5XS8m\\\" async=\\\"\\\"></script><script src=\\\"/_next/static/chunks/turbopack-0x4ssfyiaw.bf.js?dpl=dpl_E49MZbagdkjQonrkXd8TbpC5XS8m\\\" async=\\\"\\\"></script><script src=\\\"/_next/static/chunks/0~_01nsir8kw0.js?dpl=dpl_E49MZbagdkjQonrkXd8TbpC5XS8m\\\" async=\\\"\\\"></script><script src=\\\"/_next/static/chunks/0p0kz62u_jly5.js?dpl=dpl_E49MZbagdkjQonrkXd8TbpC5XS8m\\\" async=\\\"\\\"></script><script src=\\\"/_next/static/chunks/0qrvm-j9exvsu.js?dpl=dpl_E49MZbagdkjQonrkXd8TbpC5XS8m\\\" async=\\\"\\\"></script><script src=\\\"/_next/static/chunks/0q5rj.fcm7kbm.js?dpl=dpl_E49MZbagdkjQonrkXd8TbpC5XS8m\\\" async=\\\"\\\"></script><script src=\\\"/_next/static/chunks/0dlfnckqn0qdg.js?dpl=dpl_E49MZbagdkjQonrkXd8TbpC5XS8m\\\" async=\\\"\\\"></script><script src=\\\"/_next/static/chunks/0b_kbm4mdy9k0.js?dpl=d\",\"hasSupportPhrase\":true,\"bodySnippet\":\"Geteilte Wunschlisten\\n\\nSieh, was sich deine Freunde wünschen, finde Produktlinks oder biete an, dich an einem Geschenk zu beteiligen.\\n\\nLaufend\\nCompact burr coffee grinder\\n\\nSmall burr grinder for morning coffee.\\n\\nPreishinweis: 89,00 €\\n\\nProdukt ansehen\\nGanzen Wunsch übernehmen\\nBeitragen\\nNoise-canceling headphones\\n\\nPrefer comfortable over flashy. Good for commute and focus work.\\n\\nPreishinweis: 129,00 €\\n\\nProdukt ansehen\\nGanzen Wunsch übernehmen\\nBeitragen\\n\\nWishees hilft dir bei der Geschenkkoordinati\",\"consoleWarningsOrErrors\":[{\"type\":\"error\",\"text\":\"Failed to load resource: the server responded with a status of 401 ()\"},{\"type\":\"error\",\"text\":\"Failed to load resource: the server responded with a status of 401 ()\"}],\"networkFailures\":[]}",
+    "lastEvidence": {
+      "session": "Maya browser context",
+      "url": "https://www.wishees.com/friends/wishlist?invite=user-12&lang=de",
+      "item": "Compact burr coffee grinder",
+      "responseStatus": 200,
+      "responseOk": true,
+      "responseBodyKind": "text",
+      "responseBody": "<!DOCTYPE html><html data-dpl-id=\"dpl_E49MZbagdkjQonrkXd8TbpC5XS8m\" lang=\"de\"><head><meta charSet=\"utf-8\"/><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"/><link rel=\"stylesheet\" href=\"/_next/static/chunks/05ym_3nesopt9.css?dpl=dpl_E49MZbagdkjQonrkXd8TbpC5XS8m\" data-precedence=\"next\"/><link rel=\"stylesheet\" href=\"/_next/static/chunks/169r91up8d.pq.css?dpl=dpl_E49MZbagdkjQonrkXd8TbpC5XS8m\" data-precedence=\"next\"/><link rel=\"preload\" as=\"script\" fetchPriority=\"low\" href=\"/_next/static/chunks/0td6t8lw2d-8-.js?dpl=dpl_E49MZbagdkjQonrkXd8TbpC5XS8m\"/><script src=\"/_next/static/chunks/0kei582m8boi2.js?dpl=dpl_E49MZbagdkjQonrkXd8TbpC5XS8m\" async=\"\"></script><script src=\"/_next/static/chunks/0zc_yy4_zy~7i.js?dpl=dpl_E49MZbagdkjQonrkXd8TbpC5XS8m\" async=\"\"></script><script src=\"/_next/static/chunks/187pmd2fl966s.js?dpl=dpl_E49MZbagdkjQonrkXd8TbpC5XS8m\" async=\"\"></script><script src=\"/_next/static/chunks/turbopack-0x4ssfyiaw.bf.js?dpl=dpl_E49MZbagdkjQonrkXd8TbpC5XS8m\" async=\"\"></script><script src=\"/_next/static/chunks/0~_01nsir8kw0.js?dpl=dpl_E49MZbagdkjQonrkXd8TbpC5XS8m\" async=\"\"></script><script src=\"/_next/static/chunks/0p0kz62u_jly5.js?dpl=dpl_E49MZbagdkjQonrkXd8TbpC5XS8m\" async=\"\"></script><script src=\"/_next/static/chunks/0qrvm-j9exvsu.js?dpl=dpl_E49MZbagdkjQonrkXd8TbpC5XS8m\" async=\"\"></script><script src=\"/_next/static/chunks/0q5rj.fcm7kbm.js?dpl=dpl_E49MZbagdkjQonrkXd8TbpC5XS8m\" async=\"\"></script><script src=\"/_next/static/chunks/0dlfnckqn0qdg.js?dpl=dpl_E49MZbagdkjQonrkXd8TbpC5XS8m\" async=\"\"></script><script src=\"/_next/static/chunks/0b_kbm4mdy9k0.js?dpl=d",
+      "hasSupportPhrase": true,
+      "bodySnippet": "Geteilte Wunschlisten\n\nSieh, was sich deine Freunde wünschen, finde Produktlinks oder biete an, dich an einem Geschenk zu beteiligen.\n\nLaufend\nCompact burr coffee grinder\n\nSmall burr grinder for morning coffee.\n\nPreishinweis: 89,00 €\n\nProdukt ansehen\nGanzen Wunsch übernehmen\nBeitragen\nNoise-canceling headphones\n\nPrefer comfortable over flashy. Good for commute and focus work.\n\nPreishinweis: 129,00 €\n\nProdukt ansehen\nGanzen Wunsch übernehmen\nBeitragen\n\nWishees hilft dir bei der Geschenkkoordinati",
+      "consoleWarningsOrErrors": [
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 401 ()"
+        },
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 401 ()"
+        }
+      ],
+      "networkFailures": []
+    }
+  }
+]

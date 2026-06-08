@@ -440,11 +440,12 @@ function inspectPageState() {
   const js = `(() => {
     const clean = value => (value || '').replace(/\\s+/g, ' ').trim();
     const rows = document.querySelectorAll('[data-test-id="group"]').length;
+    const issueLinks = [...document.querySelectorAll('a[href]')].filter(a => /\\/issues\\/\\d+/.test(String(a.getAttribute('href') || '')) && !/\\/activity\\//.test(String(a.getAttribute('href') || ''))).length;
     const body = clean(document.body ? document.body.innerText : '');
     const loginish = /sign in|log in|login|authenticate/i.test(document.title + ' ' + body.slice(0, 800));
     const hasShell = /Issues|Feed|Errors & Outages|Recently Run/.test(body.slice(0, 2000));
     const emptyReason = rows === 0 && /no issues|no results|nothing to show|there are no/i.test(body) ? 'Sentry page shows an explicit empty issue-list state.' : null;
-    return JSON.stringify({title: document.title, url: location.href, readyState: document.readyState, rows, loginish, hasShell, emptyReason, bodySample: body.slice(0, 1000)});
+    return JSON.stringify({title: document.title, url: location.href, readyState: document.readyState, rows, issueLinks, loginish, hasShell, emptyReason, bodySample: body.slice(0, 1000)});
   })()`;
   return safeJsonParse(executeActiveTabJavascript(js), {});
 }
@@ -453,7 +454,7 @@ function pollForIssueList(timeoutMs = 30000) {
   const start = Date.now();
   let last = inspectPageState();
   while (Date.now() - start < timeoutMs) {
-    if (last.rows > 0 || last.emptyReason) return {ok: true, state: last};
+    if (last.issueLinks > 0 || last.emptyReason) return {ok: true, state: last};
     if (last.loginish && !last.hasShell) return {ok: false, code: EXIT.AUTH, label: 'AUTH_FAILURE', state: last};
     sleep(2000);
     last = inspectPageState();
@@ -700,11 +701,15 @@ if (!poll.ok) {
 }
 
 let page = sanitizePage(extractSentryPage());
-if (page.rowCount === 0 && !page.emptyReason) {
+const extractedIssueUrlCount = (page.rows || []).filter(row => row.issueUrl || row.issueId).length;
+if ((page.rowCount === 0 && !page.emptyReason) || (page.rowCount > 0 && extractedIssueUrlCount === 0)) {
   const finalWindows = chromeState();
   const finalMatches = scoreWindows(profiles.root, profiles.entries, finalWindows);
   const openedWindows = sanitizeWindows(finalWindows, finalMatches);
-  writeAndExit(blockerResult('EXTRACTION_AMBIGUOUS', 'Sentry extraction returned zero rows without an explicit empty issue-list state.', EXIT.AMBIGUOUS, {
+  const ambiguousMessage = page.rowCount === 0
+    ? 'Sentry extraction returned zero rows without an explicit empty issue-list state.'
+    : `Sentry extraction returned ${page.rowCount} row shell(s) but no issue URLs/IDs.`;
+  writeAndExit(blockerResult('EXTRACTION_AMBIGUOUS', ambiguousMessage, EXIT.AMBIGUOUS, {
     profileVerification: {
       method: 'Chrome Local State/Preferences email match plus per-window Chrome Sessions exact URL correlation',
       targetProfile,

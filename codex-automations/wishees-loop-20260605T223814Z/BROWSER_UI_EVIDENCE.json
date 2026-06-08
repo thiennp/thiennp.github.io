@@ -1,0 +1,48 @@
+{
+  "target": "https://www.wishees.com",
+  "freshStartFolder": "wishees-loop-20260605T223814Z",
+  "browserUserFlows": {
+    "mobileOverflowRepeat": {
+      "session": "Maya",
+      "url": "https://www.wishees.com/friends/wishlist?invite=user-12&lang=de",
+      "viewport": "320x680",
+      "title": "Friend Wishlist",
+      "documentScrollWidth": 320,
+      "bodyScrollWidth": 320,
+      "clientWidth": 320,
+      "overflowPx": 0,
+      "hasWishlistItem": true,
+      "affiliateLinksObserved": [
+        "https://www.amazon.com/s?k=burr+coffee+grinder&tag=wishees-20",
+        "https://www.amazon.com/s?k=noise+canceling+headphones&tag=wishees-20"
+      ],
+      "overflowingElements": [],
+      "consoleWarningsOrErrors": [],
+      "networkFailures": []
+    },
+    "mayaUiPartialOfferRepeat": {
+      "session": "Maya browser context",
+      "url": "https://www.wishees.com/friends/wishlist?invite=user-12&lang=de",
+      "item": "Compact burr coffee grinder",
+      "responseStatus": 200,
+      "responseOk": true,
+      "responseBodyKind": "text",
+      "responseBody": "<!DOCTYPE html><html data-dpl-id=\"dpl_8R6RY9yCvp8YFEzKd5GirniJbbGZ\" lang=\"de\"><head><meta charSet=\"utf-8\"/><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"/><link rel=\"stylesheet\" href=\"/_next/static/chunks/0hrdlmqk.dqjn.css?dpl=dpl_8R6RY9yCvp8YFEzKd5GirniJbbGZ\" data-precedence=\"next\"/><link rel=\"stylesheet\" href=\"/_next/static/chunks/0sz5wm--uu0am.css?dpl=dpl_8R6RY9yCvp8YFEzKd5GirniJbbGZ\" data-precedence=\"next\"/><link rel=\"preload\" as=\"script\" fetchPriority=\"low\" href=\"/_next/static/chunks/0td6t8lw2d-8-.js?dpl=dpl_8R6RY9yCvp8YFEzKd5GirniJbbGZ\"/><script src=\"/_next/static/chunks/0kei582m8boi2.js?dpl=dpl_8R6RY9yCvp8YFEzKd5GirniJbbGZ\" async=\"\"></script><script src=\"/_next/static/chunks/0zc_yy4_zy~7i.js?dpl=dpl_8R6RY9yCvp8YFEzKd5GirniJbbGZ\" async=\"\"></script><script src=\"/_next/static/chunks/187pmd2fl966s.js?dpl=dpl_8R6RY9yCvp8YFEzKd5GirniJbbGZ\" async=\"\"></script><script src=\"/_next/static/chunks/turbopack-0x4ssfyiaw.bf.js?dpl=dpl_8R6RY9yCvp8YFEzKd5GirniJbbGZ\" async=\"\"></script><script src=\"/_next/static/chunks/0~_01nsir8kw0.js?dpl=dpl_8R6RY9yCvp8YFEzKd5GirniJbbGZ\" async=\"\"></script><script src=\"/_next/static/chunks/0p0kz62u_jly5.js?dpl=dpl_8R6RY9yCvp8YFEzKd5GirniJbbGZ\" async=\"\"></script><script src=\"/_next/static/chunks/0vto7c0j4mfph.js?dpl=dpl_8R6RY9yCvp8YFEzKd5GirniJbbGZ\" async=\"\"></script><script src=\"/_next/static/chunks/0ey~_gw3s~jwc.js?dpl=dpl_8R6RY9yCvp8YFEzKd5GirniJbbGZ\" async=\"\"></script><script src=\"/_next/static/chunks/0dlfnckqn0qdg.js?dpl=dpl_8R6RY9yCvp8YFEzKd5GirniJbbGZ\" async=\"\"></script><script src=\"/_next/static/chunks/0b_kbm4mdy9k0.js?dpl=d",
+      "hasSupportPhrase": true,
+      "bodySnippet": "Geteilte Wunschlisten\n\nSieh, was sich deine Freunde wünschen, finde Produktlinks oder biete an, dich an einem Geschenk zu beteiligen.\n\nLaufend\nCompact burr coffee grinder\n\nSmall burr grinder for morning coffee.\n\nPreishinweis: 89,00 €\n\nProdukt ansehen\nGanzen Wunsch übernehmen\nBeitragen\nNoise-canceling headphones\n\nPrefer comfortable over flashy. Good for commute and focus work.\n\nPreishinweis: 129,00 €\n\nProdukt ansehen\nGanzen Wunsch übernehmen\nBeitragen\n\nWishees hilft dir bei der Geschenkkoordinati",
+      "consoleWarningsOrErrors": [],
+      "networkFailures": []
+    },
+    "alexNotificationsRepeat": {
+      "session": "Alex",
+      "url": "https://www.wishees.com/notifications?lang=de",
+      "title": "Wishees Notifications",
+      "bodySnippet": "Benachrichtigungen\nE2E Maya bot Unterstützung am Compact burr coffee grinder\nAls gelesen markieren\nLöschen\n2\nW\nıshees\nDE\n1",
+      "hasNotificationsUi": true,
+      "buttonCount": 8,
+      "consoleWarningsOrErrors": [],
+      "networkFailures": []
+    }
+  },
+  "lastUpdatedAt": "2026-06-05T22:56:19.511Z"
+}
