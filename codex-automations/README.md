@@ -33,6 +33,7 @@ AGENT_REPORT_WS=ws://localhost:3100/stream npm run send -- --automation-name "<a
 - `continue-nrg-readme-sweep` - Continue NRG README sweep: heartbeat automation to continue the NRG Jira/MR documentation sweep.
 - `fix-slack-security-dependency-threads` - Daily-vulnerabilities-fix: cron automation for daily security dashboard scan/fix + Jira/PR tracking.
 - `hourly-bitbucket-dependency-pr-cleanup` - Hourly assigned Bitbucket PR review: hourly review automation for Bitbucket pull requests assigned to or requiring review from Thien Nguyen.
+- `hourly-sentry-jira-bugfix-workflow` - Hourly Sentry Jira Bugfix Workflow: cron automation for the resumable Sentry-to-Jira desktop bugfix workflow.
 - `sentry-chrome-tab-snapshot` - Sentry Chrome Tab Snapshot: heartbeat automation that extracts the CHECK24 Sentry issue list from the verified Chrome profile and syncs it into the localhost triage report. Current status: `PAUSED`.
 - `sentry-jira-cursor-triage-loop` - Sentry Jira Cursor Triage Loop: heartbeat automation for Sentry triage + Jira ticket creation workflow.
 - `sync-codex-automations-to-thiennp-github-io` - Sync Codex automations to thiennp.github.io: cron automation that keeps local and exported automation definitions synchronized in both directions.
