@@ -3,6 +3,17 @@
 # Ignore generated runtime artifacts produced by automation runs.
 #
 
+# Wishees QA campaign run outputs (keep root-level *-handoff.md docs).
+wishees-*/
+qa-screenshots-*/
+**/logs/
+**/bugs.json
+**/state.json
+**/events.jsonl
+**/telemetry.jsonl
+**/UI_I18N_EVIDENCE.json
+**/BROWSER_UI_EVIDENCE.json
+
 **/price-history.json
 **/index.html
 
