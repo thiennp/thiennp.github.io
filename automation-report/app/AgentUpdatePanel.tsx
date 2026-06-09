@@ -45,7 +45,7 @@ export default function AgentUpdatePanel({ dashboard, onUpdated }: AgentUpdatePa
   };
 
   return (
-    <section className="agent-log" aria-label="Log work status">
+    <section className="agent-log">
       <label className="agent-log_label" htmlFor="agent-log-json">
         Log work status
       </label>
