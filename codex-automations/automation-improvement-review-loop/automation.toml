@@ -102,4 +102,4 @@ status = "ACTIVE"
 rrule = "FREQ=HOURLY;INTERVAL=1"
 target_thread_id = "019e8c3a-961b-7350-99f8-67adec1955a9"
 created_at = 1780469186302
-updated_at = 1780478231656
+updated_at = 1780991032851
