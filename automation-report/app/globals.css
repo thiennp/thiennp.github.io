@@ -465,6 +465,20 @@ footer {
   margin: 0;
 }
 
+.instructions_subhead {
+  font-size: 14px;
+  margin: 0 0 8px;
+}
+
+.instructions_steps {
+  margin: 0;
+  padding-left: 18px;
+}
+
+.instructions_steps li {
+  margin-bottom: 6px;
+}
+
 code {
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
   font-size: 12px;
