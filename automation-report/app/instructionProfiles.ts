@@ -8,6 +8,8 @@ export type InstructionProfile = {
   readonly setupSteps: readonly string[];
   readonly ruleLabel: string;
   readonly ruleText: string;
+  readonly hookLabel: string;
+  readonly hookExample: string;
   readonly exampleLabel: string;
   readonly workStatusExample: string;
 };
@@ -29,32 +31,45 @@ function buildWorkStatusExample(appName: string) {
   });
 }
 
+function buildHookExample(appName: string) {
+  return `window.__AUTOMATION_REPORT__.pushWorkStatus(${buildWorkStatusExample(appName)});`;
+}
+
 function buildLoggingRule(appName: string, setupLine: string) {
   const workStatusExample = buildWorkStatusExample(appName);
+  const hookExample = buildHookExample(appName);
 
   return `# Automation report logging — ${appName}
 
 Dashboard: ${REPORT_URL}
-Storage: localStorage in the browser tab that has ${REPORT_URL} open.
+Storage: browser localStorage only (the tab that has ${REPORT_URL} open).
 
 You must log what you are doing on every task, in every workspace, without waiting to be asked.
 
 SETUP
 ${setupLine}
 
+DASHBOARD UX
+- Header shows current work; Sessions is an expandable list (not separate activity/automation panels).
+- There is no manual "Log work status" JSON form at the bottom of the page.
+- Agent logging instructions on the page are collapsed by default; expand only when you need the copy blocks.
+
 WHEN TO LOG
 - Task start, each meaningful step, blocker, retry, success, and completion
 - Before and after running commands, editing files, opening PRs, or browser checks
 - Whenever status changes: running, success, warning, blocked, pending, error, info
 
-HOW TO LOG
-1. Keep ${REPORT_URL} open in the browser (same profile you automate).
-2. After each log-worthy step, paste JSON into the bottom "Log work status" field and click Submit (or press Enter).
-3. If you control the browser, fill that field directly instead of asking the user.
-4. If the report tab is already open, you may also call window.__AUTOMATION_REPORT__.pushDashboard(payload).
+HOW TO LOG (default — browser hook on the open report tab)
+1. Keep ${REPORT_URL} open in the browser you automate (same profile).
+2. Wait until window.__AUTOMATION_REPORT__?.ready is true before the first log.
+3. After each log-worthy step, run browser JavaScript on that tab:
+${hookExample}
+4. Prefer pushWorkStatus with the compact work-status object below. Do not ask the user to paste JSON manually.
+5. Optional bridge helpers on the same tab:
+   - window.__AUTOMATION_REPORT__.pushDashboard(snapshot) for full snapshots
+   - window.__AUTOMATION_REPORT__.getDashboard() to read current localStorage state
 
 PAYLOAD
-Prefer a compact work-status object:
 ${workStatusExample}
 
 Required fields:
@@ -62,11 +77,11 @@ Required fields:
 - llm: human-readable model name (e.g. Claude 4.5 Sonnet, GPT-5.4)
 - modelToken: model slug from the agent UI (e.g. claude-4.5-sonnet) — not an API secret
 
-Also include:
-- tokensUsed: token count for this step when known
+Optional fields (include when known):
+- tokensUsed: token count for this step
 - automationId: current workspace or repository folder name
 - runId: ISO timestamp at task start, kept stable for that task
-- pre, repo, pr, or url only when known for the active task
+- step, phase, title, message, nextStep, pre, repo, pr, url
 
 RULES
 - Log early and often; do not skip logging because the task feels small.
@@ -76,97 +91,95 @@ RULES
 - This rule applies in every project you work in.`;
 }
 
+function buildProfile(
+  id: string,
+  label: string,
+  appName: string,
+  setupTitle: string,
+  setupSteps: readonly string[],
+  setupLine: string,
+  ruleLabel: string
+): InstructionProfile {
+  return {
+    id,
+    label,
+    appName,
+    setupTitle,
+    setupSteps,
+    ruleLabel,
+    ruleText: buildLoggingRule(appName, setupLine),
+    hookLabel: 'Browser hook — run in the report tab after each step',
+    hookExample: buildHookExample(appName),
+    exampleLabel: 'Work-status payload for pushWorkStatus',
+    workStatusExample: buildWorkStatusExample(appName)
+  };
+}
+
 export const INSTRUCTION_PROFILES: readonly InstructionProfile[] = [
-  {
-    id: 'cursor',
-    label: 'Cursor',
-    appName: 'Cursor',
-    setupTitle: 'Cursor setup',
-    setupSteps: [
-      'Open Cursor Settings → Rules.',
-      'Paste the logging rule below into User Rules (global), not Project Rules.',
-      `Keep ${REPORT_URL} open in a browser tab while the agent runs.`,
-      'The agent logs by pasting JSON into the Log work status field at the bottom of that page.'
+  buildProfile(
+    'cursor',
+    'Cursor',
+    'Cursor',
+    'Cursor setup',
+    [
+      'Open Cursor Settings → Rules and paste the logging rule into User Rules (global).',
+      `Keep ${REPORT_URL} open in a browser tab the agent can control.`,
+      'After each step, the agent runs window.__AUTOMATION_REPORT__.pushWorkStatus(...) in that tab via browser automation.'
     ],
-    ruleLabel: 'Cursor user rule — paste into global User Rules',
-    ruleText: buildLoggingRule(
-      'Cursor',
-      '- Open Cursor Settings → Rules and paste this block into User Rules (global).'
-    ),
-    exampleLabel: 'Work-status JSON example — paste into Log work status',
-    workStatusExample: buildWorkStatusExample('Cursor')
-  },
-  {
-    id: 'codex',
-    label: 'Codex',
-    appName: 'Codex',
-    setupTitle: 'Codex setup',
-    setupSteps: [
-      'Paste the logging rule below into your Codex automation prompt or global Codex instructions.',
-      `Keep ${REPORT_URL} open in a browser tab while Codex runs.`,
-      'After each step, paste the work-status JSON into the Log work status field on that page.'
+    '- Open Cursor Settings → Rules and paste this block into User Rules (global).',
+    'Cursor user rule — paste into global User Rules'
+  ),
+  buildProfile(
+    'codex',
+    'Codex',
+    'Codex',
+    'Codex setup',
+    [
+      'Paste the logging rule into your Codex automation prompt or global Codex instructions.',
+      `Keep ${REPORT_URL} open in a browser tab Codex can control.`,
+      'After each step, run window.__AUTOMATION_REPORT__.pushWorkStatus(...) in that tab.'
     ],
-    ruleLabel: 'Codex logging rule — paste into automation or global instructions',
-    ruleText: buildLoggingRule(
-      'Codex',
-      '- Paste this block into the Codex automation prompt or your global Codex instructions.'
-    ),
-    exampleLabel: 'Work-status JSON example — paste into Log work status',
-    workStatusExample: buildWorkStatusExample('Codex')
-  },
-  {
-    id: 'claude',
-    label: 'Claude',
-    appName: 'Claude',
-    setupTitle: 'Claude Code setup',
-    setupSteps: [
-      'Paste the logging rule below into Claude Code global instructions, CLAUDE.md, or your project agent prompt.',
-      `Keep ${REPORT_URL} open in a browser tab while Claude runs.`,
-      'After each step, paste the work-status JSON into the Log work status field on that page.'
+    '- Paste this block into the Codex automation prompt or your global Codex instructions.',
+    'Codex logging rule — paste into automation or global instructions'
+  ),
+  buildProfile(
+    'claude',
+    'Claude',
+    'Claude',
+    'Claude Code setup',
+    [
+      'Paste the logging rule into Claude Code global instructions, CLAUDE.md, or your project agent prompt.',
+      `Keep ${REPORT_URL} open in a browser tab the agent can control.`,
+      'After each step, run window.__AUTOMATION_REPORT__.pushWorkStatus(...) in that tab.'
     ],
-    ruleLabel: 'Claude logging rule — paste into global instructions or CLAUDE.md',
-    ruleText: buildLoggingRule(
-      'Claude',
-      '- Paste this block into Claude Code global instructions, CLAUDE.md, or your agent system prompt.'
-    ),
-    exampleLabel: 'Work-status JSON example — paste into Log work status',
-    workStatusExample: buildWorkStatusExample('Claude')
-  },
-  {
-    id: 'antigravity',
-    label: 'Antigravity',
-    appName: 'Antigravity',
-    setupTitle: 'Antigravity setup',
-    setupSteps: [
-      'Paste the logging rule below into Antigravity agent rules or system instructions.',
-      `Keep ${REPORT_URL} open in a browser tab while Antigravity runs.`,
-      'After each step, paste the work-status JSON into the Log work status field on that page.'
+    '- Paste this block into Claude Code global instructions, CLAUDE.md, or your agent system prompt.',
+    'Claude logging rule — paste into global instructions or CLAUDE.md'
+  ),
+  buildProfile(
+    'antigravity',
+    'Antigravity',
+    'Antigravity',
+    'Antigravity setup',
+    [
+      'Paste the logging rule into Antigravity agent rules or system instructions.',
+      `Keep ${REPORT_URL} open in a browser tab Antigravity can control.`,
+      'After each step, run window.__AUTOMATION_REPORT__.pushWorkStatus(...) in that tab.'
     ],
-    ruleLabel: 'Antigravity logging rule — paste into agent rules',
-    ruleText: buildLoggingRule(
-      'Antigravity',
-      '- Paste this block into Antigravity agent rules or system instructions.'
-    ),
-    exampleLabel: 'Work-status JSON example — paste into Log work status',
-    workStatusExample: buildWorkStatusExample('Antigravity')
-  },
-  {
-    id: 'other',
-    label: 'Other',
-    appName: 'YourAgent',
-    setupTitle: 'Other agent setup',
-    setupSteps: [
-      'Paste the logging rule below into your agent global system prompt or automation definition.',
+    '- Paste this block into Antigravity agent rules or system instructions.',
+    'Antigravity logging rule — paste into agent rules'
+  ),
+  buildProfile(
+    'other',
+    'Other',
+    'YourAgent',
+    'Other agent setup',
+    [
+      'Paste the logging rule into your agent global system prompt or automation definition.',
       'Replace YourAgent in appName with your real agent app name on every log.',
-      `Keep ${REPORT_URL} open in a browser tab while the agent runs.`,
-      'After each step, paste the work-status JSON into the Log work status field on that page.'
+      `Keep ${REPORT_URL} open in a browser tab the agent can control.`,
+      'After each step, run window.__AUTOMATION_REPORT__.pushWorkStatus(...) in that tab.'
     ],
-    ruleLabel: 'Generic logging rule — paste into your agent instructions',
-    ruleText: buildLoggingRule(
-      'YourAgent',
-      '- Paste this block into your agent global system prompt or automation definition. Replace YourAgent with your agent app name.'
-    ),
-    exampleLabel: 'Work-status JSON example — replace YourAgent with your app name',
-    workStatusExample: buildWorkStatusExample('YourAgent')
-  }
+    '- Paste this block into your agent global system prompt or automation definition. Replace YourAgent with your agent app name.',
+    'Generic logging rule — paste into your agent instructions'
+  )
 ];

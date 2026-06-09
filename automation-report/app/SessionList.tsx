@@ -7,10 +7,9 @@ type SessionListProps = {
   readonly rows: SessionRow[];
   readonly statusClass: (status?: string) => string;
   readonly formatDate: (value?: string) => string;
-  readonly sentryUrl: (issueId?: string) => string;
 };
 
-export default function SessionList({ rows, statusClass, formatDate, sentryUrl }: SessionListProps) {
+export default function SessionList({ rows, statusClass, formatDate }: SessionListProps) {
   const defaultExpandedId = rows.find((row) => row.isCurrent)?.id || rows[0]?.id;
   const [expandedIds, setExpandedIds] = useState<Set<string>>(() => new Set(defaultExpandedId ? [defaultExpandedId] : []));
 
@@ -29,7 +28,7 @@ export default function SessionList({ rows, statusClass, formatDate, sentryUrl }
   if (rows.length === 0) {
     return (
       <section className="panel session-list">
-        <p className="muted">No sessions yet. Log work status to create the first session.</p>
+        <p className="muted">No sessions yet. The agent should call window.__AUTOMATION_REPORT__.pushWorkStatus(...) to create the first session.</p>
       </section>
     );
   }
@@ -64,7 +63,7 @@ export default function SessionList({ rows, statusClass, formatDate, sentryUrl }
                 <span className="session-row_aside">
                   <span className={`pill ${statusClass(row.status)}`}>{row.status || 'info'}</span>
                   <span className="session-row_counts muted">
-                    {row.eventCount} events · {row.blockedCount} blocked · {row.issueCount} issues
+                    {row.eventCount} events · {row.blockedCount} blocked
                   </span>
                   <span className="session-row_time muted">{formatDate(row.updatedAt)}</span>
                 </span>
@@ -128,38 +127,6 @@ export default function SessionList({ rows, statusClass, formatDate, sentryUrl }
                       </article>
                     </section>
                   ) : null}
-
-                  <section className="session-section">
-                    <h3>Sentry issues</h3>
-                    {row.issues.length === 0 ? <p className="muted">No Sentry issues linked to this session.</p> : null}
-                    <div className="issue-list">
-                      {row.issues.map((issue) => {
-                        const href = issue.issueUrl || sentryUrl(issue.id);
-                        return (
-                          <article className="issue" key={issue.id}>
-                            <div className="issue-main">
-                              <div>
-                                <div className="issue-title">
-                                  <strong>{issue.title}</strong>
-                                  {issue.shortId ? <span>{issue.shortId}</span> : null}
-                                </div>
-                                <p>{issue.culprit || issue.project || 'Sentry issue'}</p>
-                              </div>
-                              <div className="issue-pills">
-                                <span className={`pill ${statusClass(issue.status)}`}>{issue.status || 'unresolved'}</span>
-                                {issue.level ? <span className={`pill ${statusClass(issue.level)}`}>{issue.level}</span> : null}
-                              </div>
-                            </div>
-                            <div className="issue-meta">
-                              {issue.project ? <span>{issue.project}</span> : null}
-                              {issue.lastSeen ? <span>Last {formatDate(issue.lastSeen)}</span> : null}
-                              {href ? <a href={href}>View</a> : null}
-                            </div>
-                          </article>
-                        );
-                      })}
-                    </div>
-                  </section>
                 </div>
               ) : null}
             </article>

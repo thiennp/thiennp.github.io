@@ -36,35 +36,14 @@ export interface ReportItem {
   [key: string]: unknown;
 }
 
-export interface CurrentReportIssue {
-  id: string;
-  shortId?: string;
-  title: string;
-  status?: Status;
-  level?: string;
-  project?: string;
-  culprit?: string;
-  issueUrl?: string;
-  permalink?: string;
-  firstSeen?: string;
-  lastSeen?: string;
-  count?: number | string;
-  userCount?: number | string;
-  metadata?: unknown;
-  [key: string]: unknown;
-}
-
 export interface CurrentReport {
   title: string;
   message: string;
   status: Status;
   source?: string;
-  url?: string;
-  runId?: string;
   updatedAt: string;
   issueCount: number;
-  issues: CurrentReportIssue[];
-  [key: string]: unknown;
+  issues: [];
 }
 
 export interface ReportRun {
@@ -110,8 +89,6 @@ export interface WorkStatus {
   title: string;
   message: string;
   pre?: string;
-  sentryKey?: string;
-  sentryIssueId?: string;
   repo?: string;
   pr?: string;
   url?: string;

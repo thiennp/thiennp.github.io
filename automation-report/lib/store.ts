@@ -8,7 +8,6 @@ import {
   AutomationRecord,
   AutomationState,
   CurrentReport,
-  CurrentReportIssue,
   DashboardSnapshot,
   ReportEvent,
   ReportItem,
@@ -33,11 +32,10 @@ function emptyStore(): ReportStore {
 
 function emptyReport(): CurrentReport {
   return {
-    title: 'Check24 Sentry Issues',
-    message: 'Waiting for the first Sentry refresh.',
+    title: 'Report',
+    message: 'No external report connected.',
     status: 'pending',
-    source: 'sentry',
-    url: 'https://check24-energie.sentry.io/issues/?project=-1&statsPeriod=24h',
+    source: 'automation-report',
     updatedAt: now(),
     issueCount: 0,
     issues: []
@@ -47,8 +45,8 @@ function emptyReport(): CurrentReport {
 function emptyWorkStatus(): WorkStatus {
   return {
     status: 'pending',
-    title: 'Waiting for work status',
-    message: 'Paste work-status JSON into the Log work status field at https://thiennp.github.io/report/.',
+    title: '',
+    message: '',
     source: 'automation-report',
     updatedAt: now()
   };
@@ -76,8 +74,6 @@ function normalizeWorkStatus(input: Record<string, unknown>): WorkStatus {
     title: cleanText(input.title || input.stepTitle, 160) || 'Work update',
     message: cleanText(input.message || input.text || input.body, 600) || 'Status updated.',
     pre: normalizedPre,
-    sentryKey: cleanText(input.sentryKey || input.sentry || input.issueKey, 80),
-    sentryIssueId: cleanText(input.sentryIssueId || input.issueId || input.groupId, 80),
     repo: cleanText(input.repo || input.repository, 80),
     pr: cleanText(input.pr || input.prNumber || input.pullRequest, 32),
     url: cleanText(input.url || input.evidenceUrl, 600),
@@ -183,54 +179,21 @@ function changed(store: ReportStore, message: Omit<WsMessage, 'version' | 'creat
   return wsMessage;
 }
 
-function issueKey(input: Record<string, unknown>, index: number) {
-  const candidates = [
-    input.id,
-    input.issueId,
-    input.issue_id,
-    input.shortId,
-    input.short_id,
-    input.issueUrl,
-    input.permalink,
-    input.url,
-    input.title
-  ];
-  const key = candidates.find((candidate) => String(candidate || '').trim());
-  return String(key || `issue-${index + 1}`).trim();
-}
-
-function normalizeIssue(input: unknown, index: number): CurrentReportIssue {
-  const record = typeof input === 'object' && input !== null ? input as Record<string, unknown> : { title: String(input || '') };
-  const id = issueKey(record, index);
-  const title = String(record.title || record.shortId || record.short_id || id);
-  const issueUrl = record.issueUrl || record.permalink || record.url;
+function normalizeReport(input: unknown): CurrentReport {
+  const base = emptyReport();
+  if (!input || typeof input !== 'object') {
+    return base;
+  }
+  const record = input as Record<string, unknown>;
   return redactSecrets({
-    ...record,
-    id,
-    title,
-    issueUrl: issueUrl ? String(issueUrl) : undefined,
-    shortId: record.shortId || record.short_id ? String(record.shortId || record.short_id) : undefined,
-    status: record.status ? String(record.status) : 'unresolved',
-    level: record.level ? String(record.level) : undefined,
-    project: record.project ? String(record.project) : undefined,
-    culprit: record.culprit ? String(record.culprit) : undefined,
-    firstSeen: record.firstSeen ? String(record.firstSeen) : undefined,
-    lastSeen: record.lastSeen ? String(record.lastSeen) : undefined
-  }) as CurrentReportIssue;
-}
-
-function normalizeIssues(input: unknown) {
-  const rawIssues = Array.isArray(input) ? input : [];
-  const seen = new Set<string>();
-  const issues: CurrentReportIssue[] = [];
-  rawIssues.forEach((rawIssue, index) => {
-    const issue = normalizeIssue(rawIssue, index);
-    const key = issue.id.toLowerCase();
-    if (seen.has(key)) return;
-    seen.add(key);
-    issues.push(issue);
-  });
-  return issues;
+    title: cleanText(record.title, 120) || base.title,
+    message: cleanText(record.message, 240) || base.message,
+    status: cleanText(record.status, 32) || base.status,
+    source: cleanText(record.source, 80) || base.source,
+    updatedAt: cleanText(record.updatedAt, 80) || now(),
+    issueCount: 0,
+    issues: []
+  }) as CurrentReport;
 }
 
 export function getReport() {
@@ -345,15 +308,7 @@ export async function clearDashboard() {
 export async function importDashboardSnapshot(input: DashboardSnapshot) {
   return withStore((store) => {
     store.workStatus = normalizeWorkStatus(input.workStatus as Record<string, unknown>);
-    store.report = redactSecrets({
-      ...input.report,
-      title: String(input.report?.title || 'Check24 Sentry Issues'),
-      message: String(input.report?.message || 'Waiting for the first Sentry refresh.'),
-      status: String(input.report?.status || 'pending'),
-      updatedAt: String(input.report?.updatedAt || now()),
-      issueCount: Array.isArray(input.report?.issues) ? input.report.issues.length : 0,
-      issues: normalizeIssues(input.report?.issues)
-    }) as CurrentReport;
+    store.report = normalizeReport(input.report);
 
     store.automations = {};
     for (const summary of input.automations || []) {
@@ -409,31 +364,6 @@ export async function importDashboardSnapshot(input: DashboardSnapshot) {
       snapshot: getDashboardSnapshot(),
       event
     };
-  });
-}
-
-export async function replaceReport(input: Record<string, unknown>) {
-  return withStore((store) => {
-    const sourceIssues = input.issues || input.sentryIssues || input.items;
-    const issues = normalizeIssues(sourceIssues);
-    const report = redactSecrets({
-      ...input,
-      title: String(input.title || 'Check24 Sentry Issues'),
-      message: String(input.message || `${issues.length} Sentry issue(s) in the latest 24h view.`),
-      status: String(input.status || 'info'),
-      source: String(input.source || 'sentry'),
-      url: String(input.url || 'https://check24-energie.sentry.io/issues/?project=-1&statsPeriod=24h'),
-      updatedAt: String(input.updatedAt || now()),
-      issueCount: issues.length,
-      issues
-    }) as CurrentReport;
-    store.report = report;
-    const event = changed(store, {
-      type: 'report.replaced',
-      status: report.status,
-      payload: report
-    });
-    return { report, event };
   });
 }
 
@@ -674,33 +604,6 @@ export function listItems(automationId: string, runId: string, filters: URLSearc
     items = items.filter((item) => !['done', 'DONE'].includes(String(item.status)));
   }
   return { items };
-}
-
-export function search(q: string) {
-  const store = readStoreUnsafe();
-  const needle = q.toLowerCase();
-  const results: unknown[] = [];
-  for (const automation of Object.values(store.automations)) {
-    if (automation.automationId.toLowerCase().includes(needle) || JSON.stringify(automation.state).toLowerCase().includes(needle)) {
-      results.push({ type: 'automation', automationId: automation.automationId, state: automation.state });
-    }
-    for (const run of Object.values(automation.runs)) {
-      if (JSON.stringify(run).toLowerCase().includes(needle)) {
-        results.push({ type: 'run', automationId: automation.automationId, runId: run.runId, status: run.status });
-      }
-      for (const event of run.events) {
-        if (JSON.stringify(event).toLowerCase().includes(needle)) {
-          results.push({ type: 'event', automationId: automation.automationId, runId: run.runId, event });
-        }
-      }
-      for (const item of Object.values(run.items)) {
-        if (JSON.stringify(item).toLowerCase().includes(needle)) {
-          results.push({ type: 'item', automationId: automation.automationId, runId: run.runId, item });
-        }
-      }
-    }
-  }
-  return { query: q, results };
 }
 
 export { storePath };

@@ -1,4 +1,4 @@
-import type { CurrentReportIssue, DashboardSnapshot, ReportEvent, Status } from './types';
+import type { DashboardSnapshot, ReportEvent, Status } from './types';
 
 export type SessionAutomation = {
   automationId: string;
@@ -26,11 +26,9 @@ export type SessionRow = {
   updatedAt: string;
   eventCount: number;
   blockedCount: number;
-  issueCount: number;
   isCurrent: boolean;
   events: SessionEvent[];
   automation?: SessionAutomation;
-  issues: CurrentReportIssue[];
 };
 
 function sessionKey(automationId: string, runId: string) {
@@ -41,36 +39,6 @@ function compareDates(left?: string, right?: string) {
   const leftTime = left ? new Date(left).getTime() : 0;
   const rightTime = right ? new Date(right).getTime() : 0;
   return rightTime - leftTime;
-}
-
-function collectSentryRefs(events: SessionEvent[], workStatus: DashboardSnapshot['workStatus'], isCurrent: boolean) {
-  const refs = new Set<string>();
-  if (isCurrent && workStatus.sentryIssueId) {
-    refs.add(workStatus.sentryIssueId);
-  }
-  if (isCurrent && workStatus.sentryKey) {
-    refs.add(workStatus.sentryKey.toLowerCase());
-  }
-  if (isCurrent && workStatus.pre) {
-    refs.add(workStatus.pre.toLowerCase());
-  }
-  return refs;
-}
-
-function issueMatchesSession(issue: CurrentReportIssue, refs: Set<string>) {
-  if (refs.has(issue.id)) {
-    return true;
-  }
-  if (issue.shortId && refs.has(issue.shortId.toLowerCase())) {
-    return true;
-  }
-  const haystack = `${issue.title} ${issue.culprit || ''} ${issue.project || ''}`.toLowerCase();
-  for (const ref of refs) {
-    if (ref.length >= 4 && haystack.includes(ref)) {
-      return true;
-    }
-  }
-  return false;
 }
 
 export function buildSessionRows(dashboard: DashboardSnapshot): SessionRow[] {
@@ -91,7 +59,6 @@ export function buildSessionRows(dashboard: DashboardSnapshot): SessionRow[] {
   }
 
   const automationById = new Map(dashboard.automations.map((automation) => [automation.automationId, automation]));
-  const assignedIssueIds = new Set<string>();
   const rows: SessionRow[] = [];
 
   for (const [key, events] of grouped.entries()) {
@@ -102,17 +69,6 @@ export function buildSessionRows(dashboard: DashboardSnapshot): SessionRow[] {
     const latestEvent = sortedEvents[0];
     const isCurrent = key === currentKey;
     const automation = automationById.get(automationId);
-    const refs = collectSentryRefs(sortedEvents, work, isCurrent);
-    const issues = dashboard.report.issues.filter((issue) => {
-      if (assignedIssueIds.has(issue.id)) {
-        return false;
-      }
-      if (!issueMatchesSession(issue, refs)) {
-        return false;
-      }
-      assignedIssueIds.add(issue.id);
-      return true;
-    });
 
     rows.push({
       id: key,
@@ -131,37 +87,10 @@ export function buildSessionRows(dashboard: DashboardSnapshot): SessionRow[] {
         : latestEvent?.createdAt || automation?.latestUpdateTime || work.updatedAt,
       eventCount: sortedEvents.length,
       blockedCount: automation?.activeBlockerCount || 0,
-      issueCount: issues.length,
       isCurrent,
       events: sortedEvents,
-      automation,
-      issues
+      automation
     });
-  }
-
-  const orphanIssues = dashboard.report.issues.filter((issue) => !assignedIssueIds.has(issue.id));
-  if (orphanIssues.length > 0) {
-    const fallbackRow = rows.find((row) => row.isCurrent) || rows[0];
-    if (fallbackRow) {
-      fallbackRow.issues = [...fallbackRow.issues, ...orphanIssues];
-      fallbackRow.issueCount = fallbackRow.issues.length;
-    } else {
-      rows.push({
-        id: 'sentry-report',
-        automationId: 'sentry',
-        runId: dashboard.report.updatedAt || 'report',
-        title: dashboard.report.title || 'Sentry issues',
-        message: dashboard.report.message || 'Sentry report snapshot',
-        status: dashboard.report.status || 'info',
-        updatedAt: dashboard.report.updatedAt,
-        eventCount: 0,
-        blockedCount: 0,
-        issueCount: orphanIssues.length,
-        isCurrent: false,
-        events: [],
-        issues: orphanIssues
-      });
-    }
   }
 
   rows.sort((left, right) => {
@@ -172,31 +101,4 @@ export function buildSessionRows(dashboard: DashboardSnapshot): SessionRow[] {
   });
 
   return rows;
-}
-
-export function filterSessionRows(rows: SessionRow[], query: string) {
-  const needle = query.trim().toLowerCase();
-  if (!needle) {
-    return rows;
-  }
-
-  return rows.filter((row) => {
-    const searchable = [
-      row.title,
-      row.message,
-      row.automationId,
-      row.runId,
-      row.appName,
-      row.llm,
-      row.modelToken,
-      row.automation?.latestStatus,
-      ...row.events.map((event) => `${event.title} ${event.message || ''}`),
-      ...row.issues.map((issue) => `${issue.title} ${issue.culprit || ''} ${issue.project || ''} ${issue.shortId || ''}`)
-    ]
-      .filter(Boolean)
-      .join(' ')
-      .toLowerCase();
-
-    return searchable.includes(needle);
-  });
 }

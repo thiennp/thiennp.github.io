@@ -5,55 +5,86 @@ import CopyableBlock from './CopyableBlock';
 import { INSTRUCTION_PROFILES, REPORT_URL } from './instructionProfiles';
 
 export default function UsageInstructions() {
-  const [activeProfileId, setActiveProfileId] = useState(INSTRUCTION_PROFILES[0]?.id || 'cursor');
-  const activeProfile =
-    INSTRUCTION_PROFILES.find((profile) => profile.id === activeProfileId) || INSTRUCTION_PROFILES[0];
-
-  if (!activeProfile) {
-    return null;
-  }
+  const [isExpanded, setIsExpanded] = useState(false);
+  const [activeProfileId, setActiveProfileId] = useState<string | null>(null);
+  const activeProfile = activeProfileId
+    ? INSTRUCTION_PROFILES.find((profile) => profile.id === activeProfileId)
+    : null;
 
   return (
-    <section className="panel instructions">
-      <div className="panel-head">
-        <h2>Agent logging instructions</h2>
-        <span className="muted">
-          <a href={REPORT_URL}>{REPORT_URL}</a>
+    <section className={`panel instructions ${isExpanded ? 'instructions___expanded' : ''}`}>
+      <button
+        className="instructions_summary"
+        type="button"
+        aria-expanded={isExpanded}
+        onClick={() => setIsExpanded((current) => !current)}
+      >
+        <span className="instructions_chevron" aria-hidden="true">
+          {isExpanded ? '▾' : '▸'}
         </span>
-      </div>
+        <span className="instructions_summary_main">
+          <h2>Agent logging instructions</h2>
+          <span className="muted">
+            <a
+              href={REPORT_URL}
+              onClick={(event) => {
+                event.stopPropagation();
+              }}
+            >
+              {REPORT_URL}
+            </a>
+          </span>
+        </span>
+      </button>
 
-      <p className="instructions_lead muted">
-        Choose the agent app you use. Each tab has setup steps, the rule to paste, and a JSON example with the
-        correct <strong>appName</strong>.
-      </p>
+      {isExpanded ? (
+        <div className="instructions_body">
+          <p className="instructions_lead muted">
+            Data stays in browser localStorage on{' '}
+            <a href={REPORT_URL}>{REPORT_URL}</a>. Default logging is the browser hook{' '}
+            <code>window.__AUTOMATION_REPORT__.pushWorkStatus(...)</code> on that tab — also{' '}
+            <code>pushDashboard(snapshot)</code>, <code>getDashboard()</code>, and a <code>ready</code> flag. There is
+            no manual JSON form at the bottom. Choose Cursor, Codex, Claude, Antigravity, or Other for setup steps and
+            copy blocks.
+          </p>
 
-      <div className="instructions_tabs" role="tablist" aria-label="Agent app instructions">
-        {INSTRUCTION_PROFILES.map((profile) => (
-          <button
-            key={profile.id}
-            className={`instructions_tab ${profile.id === activeProfileId ? 'instructions_tab___active' : ''}`}
-            type="button"
-            role="tab"
-            aria-selected={profile.id === activeProfileId}
-            onClick={() => setActiveProfileId(profile.id)}
-          >
-            {profile.label}
-          </button>
-        ))}
-      </div>
+          <div className="instructions_tabs" role="tablist" aria-label="Agent app instructions">
+            {INSTRUCTION_PROFILES.map((profile) => (
+              <button
+                key={profile.id}
+                className={`instructions_tab ${profile.id === activeProfileId ? 'instructions_tab___active' : ''}`}
+                type="button"
+                role="tab"
+                aria-selected={profile.id === activeProfileId}
+                onClick={() => setActiveProfileId(profile.id)}
+              >
+                {profile.label}
+              </button>
+            ))}
+          </div>
 
-      <div className="instructions_note" role="tabpanel">
-        <h3 className="instructions_subhead">{activeProfile.setupTitle}</h3>
-        <ol className="instructions_steps">
-          {activeProfile.setupSteps.map((step) => (
-            <li key={step}>{step}</li>
-          ))}
-        </ol>
-      </div>
+          {activeProfile ? (
+            <>
+              <div className="instructions_note" role="tabpanel">
+                <h3 className="instructions_subhead">{activeProfile.setupTitle}</h3>
+                <ol className="instructions_steps">
+                  {activeProfile.setupSteps.map((step) => (
+                    <li key={step}>{step}</li>
+                  ))}
+                </ol>
+              </div>
 
-      <CopyableBlock label={activeProfile.ruleLabel} text={activeProfile.ruleText} />
+              <CopyableBlock label={activeProfile.ruleLabel} text={activeProfile.ruleText} />
 
-      <CopyableBlock label={activeProfile.exampleLabel} text={activeProfile.workStatusExample} compact />
+              <CopyableBlock label={activeProfile.hookLabel} text={activeProfile.hookExample} compact />
+
+              <CopyableBlock label={activeProfile.exampleLabel} text={activeProfile.workStatusExample} compact />
+            </>
+          ) : (
+            <p className="instructions_pick muted">Choose an agent app above to see setup steps and copy blocks.</p>
+          )}
+        </div>
+      ) : null}
     </section>
   );
 }

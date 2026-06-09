@@ -1,22 +1,24 @@
+import { PENDING_HOOK_MESSAGE } from './constants';
 import type { DashboardSnapshot } from './types';
 
-export function getSnapshotRevision(snapshot: DashboardSnapshot) {
-  const timestamps = [
-    snapshot.workStatus?.updatedAt,
-    snapshot.report?.updatedAt,
-    ...snapshot.recentEvents.map((event) => event.createdAt),
-    ...snapshot.automations.map((automation) => automation.latestUpdateTime).filter(Boolean)
-  ].filter((value): value is string => Boolean(value));
-
-  if (timestamps.length === 0) {
-    return '';
+function isDefaultEmptyWorkStatus(workStatus: DashboardSnapshot['workStatus'] | undefined) {
+  if (!workStatus) {
+    return true;
   }
 
-  return timestamps.sort((left, right) => right.localeCompare(left))[0];
+  const legacyEmptyTitle = workStatus.title === 'Waiting for work status';
+  const message = workStatus.message?.trim() || '';
+  const defaultEmptyWorkStatus =
+    workStatus.status === 'pending' &&
+    workStatus.source === 'automation-report' &&
+    !workStatus.title?.trim() &&
+    (!message || message === PENDING_HOOK_MESSAGE);
+
+  return legacyEmptyTitle || defaultEmptyWorkStatus;
 }
 
 export function isEmptyDashboardSnapshot(snapshot: DashboardSnapshot) {
-  const waitingForWork = snapshot.workStatus?.title === 'Waiting for work status';
+  const waitingForWork = isDefaultEmptyWorkStatus(snapshot.workStatus);
   const noAutomations = snapshot.automations.length === 0;
   const noEvents = snapshot.recentEvents.length === 0;
   const noIssues = (snapshot.report?.issueCount ?? 0) === 0;

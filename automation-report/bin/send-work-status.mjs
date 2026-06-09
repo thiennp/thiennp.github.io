@@ -12,8 +12,6 @@ const options = {
   title: '',
   message: '',
   pre: '',
-  sentryKey: '',
-  sentryIssueId: '',
   repo: '',
   pr: '',
   url: '',
@@ -61,8 +59,11 @@ if (!options.message && messageParts.length) {
 }
 
 if (!options.status || !options.message) {
-  console.error('Usage: node send-work-status.mjs --status running --step 2.3 --phase cursor --title "Cursor fix" --pre PRE-4309 "Applying the bug fix"');
-  console.error('Optional: --file snapshot.json --out snapshot.json --inject');
+  console.error('Build a dashboard snapshot JSON file. Primary logging is the browser hook on https://thiennp.github.io/report/:');
+  console.error('  window.__AUTOMATION_REPORT__.pushWorkStatus({ status, message, appName, llm, modelToken, ... })');
+  console.error('');
+  console.error('Usage: node send-work-status.mjs --status running --appName Cursor --llm "Claude 4.5 Sonnet" --modelToken claude-4.5-sonnet --title "Cursor fix" "Applying the bug fix"');
+  console.error('Optional: --file snapshot.json --out snapshot.json --inject (writes JSON and runs push-dashboard-to-browser.mjs)');
   process.exit(1);
 }
 

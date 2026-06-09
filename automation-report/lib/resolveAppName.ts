@@ -19,16 +19,3 @@ export function resolveAppName(input: Record<string, unknown>): string | undefin
 
   return APP_NAME_ALIASES[trimmed.toLowerCase()] || trimmed;
 }
-
-export function withResolvedAppName<T extends Record<string, unknown>>(input: T): T & { appName?: string; agentName?: string } {
-  const appName = resolveAppName(input);
-  if (!appName) {
-    return input;
-  }
-
-  return {
-    ...input,
-    appName,
-    agentName: appName
-  };
-}

@@ -1,18 +1,20 @@
+import { PENDING_HOOK_MESSAGE } from './constants';
+
 export function createEmptyStoredDashboard() {
   const updatedAt = new Date().toISOString();
   return {
     workStatus: {
       status: 'pending',
-      title: 'Waiting for work status',
-      message: 'Paste work-status JSON into the Log work status field at the bottom of this page.',
+      title: '',
+      message: PENDING_HOOK_MESSAGE,
       source: 'automation-report',
       updatedAt
     },
     automations: [] as Array<Record<string, unknown>>,
     recentEvents: [] as Array<Record<string, unknown>>,
     report: {
-      title: 'Check24 Sentry Issues',
-      message: 'Waiting for the first Sentry refresh.',
+      title: 'Report',
+      message: 'No external report connected.',
       status: 'pending',
       updatedAt,
       issueCount: 0,

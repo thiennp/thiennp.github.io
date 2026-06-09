@@ -6,8 +6,7 @@ import { clearDashboardEverywhere, pushDashboardSnapshot, syncDashboard } from '
 import { installDashboardIngest } from '../lib/dashboardStorage';
 import { createEmptyStoredDashboard } from '../lib/emptyDashboard';
 import type { DashboardSnapshot } from '../lib/types';
-import { buildSessionRows, filterSessionRows } from '../lib/buildSessionRows';
-import AgentUpdatePanel from './AgentUpdatePanel';
+import { buildSessionRows } from '../lib/buildSessionRows';
 import SessionList from './SessionList';
 import UsageInstructions from './UsageInstructions';
 
@@ -20,8 +19,6 @@ type WorkStatus = {
   title: string;
   message: string;
   pre?: string;
-  sentryKey?: string;
-  sentryIssueId?: string;
   repo?: string;
   pr?: string;
   url?: string;
@@ -38,20 +35,7 @@ type WorkStatus = {
   updatedAt: string;
 };
 
-type Health = {
-  status?: string;
-  storePath?: string;
-  storeVersion?: number;
-  websocket?: { ready: boolean; clients: number };
-};
-
-const emptyWorkStatus: WorkStatus = {
-  status: 'pending',
-  title: 'Waiting for work status',
-  message: 'Paste work-status JSON into the Log work status field at the bottom of this page.',
-  source: 'automation-report',
-  updatedAt: new Date().toISOString()
-};
+const emptyWorkStatus: WorkStatus = createEmptyStoredDashboard().workStatus as WorkStatus;
 
 function createEmptyDashboard(): DashboardSnapshot {
   return createEmptyStoredDashboard() as unknown as DashboardSnapshot;
@@ -73,17 +57,11 @@ function formatDate(value?: string) {
   return date.toLocaleString();
 }
 
-function sentryUrl(issueId?: string) {
-  if (!issueId) return '';
-  return `https://check24-energie.sentry.io/issues/${issueId}/`;
-}
-
 export default function Home() {
-  const [health, setHealth] = useState<Health>({});
   const [dashboard, setDashboard] = useState<DashboardSnapshot>(createEmptyDashboard());
   const [dataSource, setDataSource] = useState('loading');
-  const [query, setQuery] = useState('');
   const [isClearing, setIsClearing] = useState(false);
+  const [hookReady, setHookReady] = useState(false);
 
   const applyDashboard = (dashboardData: DashboardSnapshot, source: string) => {
     setDashboard({
@@ -96,12 +74,11 @@ export default function Home() {
   const loadDashboard = (force = false) => {
     const result = syncDashboard(force);
     applyDashboard(result.snapshot, result.source);
-    setHealth(result.health);
   };
 
   const clearDashboardView = async () => {
     const confirmed = window.confirm(
-      'Clear the dashboard? This removes current work, activities, automations, and issues from localStorage in this browser.'
+      'Clear the dashboard? This removes current work, sessions, and activity from localStorage in this browser.'
     );
     if (!confirmed) {
       return;
@@ -111,7 +88,6 @@ export default function Home() {
     try {
       const result = await clearDashboardEverywhere();
       applyDashboard(result.snapshot, 'cleared');
-      setHealth({ status: 'cleared-local', storeVersion: 0 });
     } catch {
       window.alert('Could not clear the dashboard cache in this browser.');
     } finally {
@@ -122,10 +98,13 @@ export default function Home() {
   useEffect(() => {
     loadDashboard();
 
-    return installDashboardIngest((snapshot) => {
+    const cleanup = installDashboardIngest((snapshot) => {
       const result = pushDashboardSnapshot(snapshot);
       applyDashboard(result.snapshot, result.source);
     });
+    setHookReady(Boolean((window as Window & { __AUTOMATION_REPORT__?: { ready?: boolean } }).__AUTOMATION_REPORT__?.ready));
+
+    return cleanup;
   }, []);
 
   useEffect(() => {
@@ -141,22 +120,28 @@ export default function Home() {
 
   const work = dashboard.workStatus || emptyWorkStatus;
   const sessionRows = useMemo(() => buildSessionRows(dashboard), [dashboard]);
-  const filteredSessions = useMemo(() => filterSessionRows(sessionRows, query), [sessionRows, query]);
   const blockedCount = dashboard.automations.reduce((total, automation) => total + automation.activeBlockerCount, 0);
-  const issueCount = dashboard.report.issues.length;
 
   return (
     <main>
       <header className="topbar">
         <div>
-          <p className="eyebrow">{work.appName || work.agentName || work.source || 'current work'}</p>
-          <h1>{work.title}</h1>
-          <p className="lead">{work.message}</p>
+          {work.appName || work.agentName || work.title ? (
+            <p className="eyebrow">{work.appName || work.agentName || work.source || 'current work'}</p>
+          ) : null}
+          {work.title ? <h1>{work.title}</h1> : null}
+          {work.message ? <p className="lead">{work.message}</p> : null}
         </div>
         <div className="status-grid">
-          <span className={`pill ${statusClass(work.status)}`}>{work.status || 'unknown'}</span>
-          <span className="pill neutral">localStorage</span>
-          <span className={`pill ${statusClass(health.status)}`}>{health.status || 'health unknown'}</span>
+          <span className={`pill ${statusClass(work.status)}`} title="Current work status">
+            {work.status || 'unknown'}
+          </span>
+          <span className={`pill ${hookReady ? 'good' : 'warn'}`} title="Browser hook on this tab">
+            {hookReady ? 'hook ready' : 'hook loading'}
+          </span>
+          <span className="pill neutral" title="Data is stored in this browser only">
+            browser storage
+          </span>
         </div>
       </header>
 
@@ -173,21 +158,9 @@ export default function Home() {
           <span>Blocked</span>
           <strong>{blockedCount}</strong>
         </div>
-        <div>
-          <span>Sentry issues</span>
-          <strong>{issueCount}</strong>
-        </div>
       </section>
 
       <section className="toolbar">
-        <label>
-          Filter sessions
-          <input
-            value={query}
-            onChange={(event) => setQuery(event.target.value)}
-            placeholder="Session title, automation, activity, Sentry issue..."
-          />
-        </label>
         <button onClick={() => loadDashboard(true)}>Refresh</button>
         <button
           className="button-danger"
@@ -198,29 +171,20 @@ export default function Home() {
         >
           {isClearing ? 'Clearing…' : 'Clear report'}
         </button>
-        {dashboard.report.url ? <a className="button-link" href={dashboard.report.url}>Open Sentry</a> : null}
       </section>
 
-      <SessionList
-        rows={filteredSessions}
-        statusClass={statusClass}
-        formatDate={formatDate}
-        sentryUrl={sentryUrl}
-      />
+      <SessionList rows={sessionRows} statusClass={statusClass} formatDate={formatDate} />
 
       <UsageInstructions />
 
-      <AgentUpdatePanel
-        dashboard={dashboard}
-        onUpdated={(snapshot, source) => {
-          applyDashboard(snapshot, source);
-          setHealth({ status: 'localStorage', storeVersion: 0 });
-        }}
-      />
-
       <footer>
-        <span>Storage localStorage · source {dataSource}</span>
-        <span>Status {health.status || 'unknown'} · updated {formatDate(work.updatedAt)}</span>
+        <span>
+          Agent hook {hookReady ? 'ready' : 'loading'} ·{' '}
+          <code>window.__AUTOMATION_REPORT__.pushWorkStatus(...)</code>
+        </span>
+        <span>
+          localStorage · source {dataSource} · updated {formatDate(work.updatedAt)}
+        </span>
       </footer>
     </main>
   );

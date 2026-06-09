@@ -1,10 +1,53 @@
 # Automation Report
 
-Browser-first work-status dashboard for Codex automations and Cursor agents. The public UI at `https://thiennp.github.io/report/` stores data in the browser's localStorage. Agents update the report from the page using the Log work status button or `window.__AUTOMATION_REPORT__.pushDashboard()`.
+Browser-first work-status dashboard for Codex automations and Cursor agents.
 
-## Run
+**Dashboard:** https://thiennp.github.io/report/
 
-GitHub Pages deploy at `https://thiennp.github.io/report/`:
+**Storage:** browser `localStorage` only. The GitHub Pages UI does not call a backend API.
+
+**Default logging:** keep the report tab open and call the browser hook after each step:
+
+```js
+window.__AUTOMATION_REPORT__.pushWorkStatus({
+  status: 'running',
+  appName: 'Cursor',
+  llm: 'Claude 4.5 Sonnet',
+  modelToken: 'claude-4.5-sonnet',
+  title: 'Fix failing test',
+  message: 'Updating assertion in user service test',
+  automationId: 'my-repo',
+  runId: '2026-06-08T12:00:00.000Z'
+});
+```
+
+Bridge helpers installed when the report tab loads:
+
+- `window.__AUTOMATION_REPORT__.pushWorkStatus({...})` — preferred per-step logging
+- `window.__AUTOMATION_REPORT__.pushDashboard(snapshot)` — optional full snapshot
+- `window.__AUTOMATION_REPORT__.getDashboard()` — read current localStorage state
+- `window.__AUTOMATION_REPORT__.ready` — `true` when the hook is ready
+
+Wait for `ready` before the first log. Do not ask the user to paste JSON into a form on the page — there is no manual "Log work status" input at the bottom.
+
+## Dashboard UX
+
+- Header: current work status, hook readiness, and browser-storage indicator
+- **Sessions:** expandable rows (not separate activity/automation/Sentry panels)
+- **Agent logging instructions:** collapsed by default on the page; per-app tabs for Cursor, Codex, Claude, Antigravity, Other
+- Empty/pending state: no "Waiting for work status" title; shows the hook message until the first `pushWorkStatus`
+
+### Required log fields
+
+- `appName` — agent app (Cursor, Codex, Claude, Antigravity, or your agent name)
+- `llm` — human-readable model name
+- `modelToken` — model slug from the agent UI (not an API secret)
+
+### Optional log fields
+
+`tokensUsed`, `automationId`, `runId`, `step`, `phase`, `title`, `message`, `nextStep`, `pre`, `repo`, `pr`, `url`
+
+## Deploy (GitHub Pages)
 
 ```sh
 npm install
@@ -14,19 +57,18 @@ git commit -m "Publish automation report UI"
 git push origin master
 ```
 
-`deploy:pages` exports only the static Next.js UI into the repo-root `report/` folder. Dashboard data lives in localStorage on `https://thiennp.github.io/report/`.
+`deploy:pages` exports the static Next.js UI into the repo-root `report/` folder.
 
-Log work status from the open report page:
+## Optional CLI helpers
 
-1. Open `https://thiennp.github.io/report/`
-2. Click **Log work status**
-3. Submit the form
-
-Optional CLI helper to build a snapshot JSON file:
+Build a snapshot JSON file (for `pushDashboard` or local debugging):
 
 ```sh
 node bin/send-work-status.mjs \
   --status running \
+  --appName Cursor \
+  --llm "Claude 4.5 Sonnet" \
+  --modelToken claude-4.5-sonnet \
   --step 6 \
   --phase cursor \
   --title "Cursor fix" \
@@ -35,221 +77,50 @@ node bin/send-work-status.mjs \
   "Cursor is applying /agent-fix-bug"
 ```
 
-Optional local API server for development only:
+Push a snapshot into the open report tab:
+
+```sh
+node bin/send-work-status.mjs --status running --title "Test" "Message" --out /tmp/snapshot.json --inject
+# or
+node bin/push-dashboard-to-browser.mjs --file /tmp/snapshot.json
+```
+
+## Optional local API server (development only)
+
+The static GitHub Pages dashboard does not use this server.
 
 ```sh
 npm run build
 AUTOMATION_REPORT_PORT=3120 npm run start
 ```
 
-The GitHub Pages UI does not call this server.
+Environment:
 
-## Environment
+- `AUTOMATION_REPORT_PORT` — defaults to `3120`
+- `AUTOMATION_REPORT_HOST` — defaults to `127.0.0.1`
+- `AUTOMATION_REPORT_DATA_DIR` — defaults to `./data`
+- `AUTOMATION_REPORT_TOKEN` — optional bearer token for mutating endpoints
 
-- `AUTOMATION_REPORT_PORT`: defaults to `3120`.
-- `AUTOMATION_REPORT_HOST`: defaults to `127.0.0.1`.
-- `AUTOMATION_REPORT_DATA_DIR`: defaults to `./data`.
-- `AUTOMATION_REPORT_TOKEN`: optional token. When set, mutating endpoints require `Authorization: Bearer <token>` or `X-Automation-Report-Token`.
-
-## API Examples
-
-Health:
+Health check:
 
 ```sh
 curl -fsS http://127.0.0.1:3120/api/health | jq
 ```
 
-Update what you are working on:
-
-```sh
-node bin/send-work-status.mjs \
-  --status running \
-  --step 6 \
-  --phase cursor \
-  --title "Cursor fix" \
-  --pre PRE-4401 \
-  "Cursor is applying /agent-fix-bug"
-```
-
-Or with curl:
+Work-status POST (dev server only):
 
 ```sh
 curl -fsS -X POST http://127.0.0.1:3120/api/work-status \
   -H 'Content-Type: application/json' \
   -d '{
     "status": "running",
-    "step": "6",
-    "phase": "cursor",
+    "appName": "Cursor",
+    "llm": "Claude 4.5 Sonnet",
+    "modelToken": "claude-4.5-sonnet",
     "title": "Cursor fix",
     "message": "Cursor is applying /agent-fix-bug",
     "pre": "PRE-4401",
-    "automationId": "sentry-triage",
-    "runId": "20260608T120000Z"
+    "automationId": "my-repo",
+    "runId": "2026-06-08T12:00:00.000Z"
   }' | jq
 ```
-
-Replace the current Sentry report:
-
-```sh
-curl -fsS -X PUT http://127.0.0.1:3120/api/report \
-  -H 'Content-Type: application/json' \
-  -d '{
-    "title": "Check24 Sentry Issues",
-    "message": "3 unresolved Sentry issue(s) in the latest 24h view.",
-    "status": "warning",
-    "url": "https://check24-energie.sentry.io/issues/?project=-1&statsPeriod=24h",
-    "issues": [
-      {
-        "id": "1234567890",
-        "shortId": "ENERGIE-ABC",
-        "title": "Example Sentry issue",
-        "status": "unresolved",
-        "level": "error",
-        "project": "energie",
-        "culprit": "src/example.ts",
-        "issueUrl": "https://check24-energie.sentry.io/issues/1234567890/",
-        "lastSeen": "2026-06-05T08:30:00.000Z",
-        "count": 12,
-        "userCount": 4
-      }
-    ]
-  }' | jq
-```
-
-`PUT` and `POST` replace the whole visible report. The server deduplicates issues by stable issue identifiers and does not retain issues omitted from the latest payload.
-
-Create a run:
-
-```sh
-curl -fsS -X POST http://127.0.0.1:3120/api/automations/fix-slack-security-dependency-threads/runs \
-  -H 'Content-Type: application/json' \
-  -d '{
-    "runId": "20260603T090000-daily-vulnerabilities-run",
-    "automationName": "Daily-vulnerabilities-fix",
-    "startedAt": "2026-06-03T09:00:00.000Z",
-    "mode": "daily"
-  }' | jq
-```
-
-Append a step event:
-
-```sh
-curl -fsS -X POST http://127.0.0.1:3120/api/automations/fix-slack-security-dependency-threads/runs/20260603T090000-daily-vulnerabilities-run/events \
-  -H 'Content-Type: application/json' \
-  -d '{
-    "stepNumber": "2.1",
-    "title": "Chrome sync gate",
-    "status": "running",
-    "message": "Opening package-audit, Jira, and Bitbucket in Chrome.",
-    "nextStep": "2.2"
-  }' | jq
-```
-
-Upsert an item:
-
-```sh
-curl -fsS -X PUT http://127.0.0.1:3120/api/automations/fix-slack-security-dependency-threads/runs/20260603T090000-daily-vulnerabilities-run/items/PRE-4300 \
-  -H 'Content-Type: application/json' \
-  -d '{
-    "type": "jira-ticket",
-    "status": "blocked",
-    "actionability": "Actionable - restore Chrome auth",
-    "blockReason": "Package-audit auth wall detected in Chrome.",
-    "repo": "enrglib-cella-client",
-    "jiraUrl": "https://c24-energie.atlassian.net/browse/PRE-4300",
-    "nextAction": "Thien Nguyen logs into package-audit in Chrome."
-  }' | jq
-```
-
-Read state:
-
-```sh
-curl -fsS http://127.0.0.1:3120/api/automations/fix-slack-security-dependency-threads/state | jq
-```
-
-Replace final state:
-
-```sh
-curl -fsS -X PUT http://127.0.0.1:3120/api/automations/fix-slack-security-dependency-threads/state \
-  -H 'Content-Type: application/json' \
-  -d '{
-    "activeRunId": "20260603T090000-daily-vulnerabilities-run",
-    "latestStatus": "blocked",
-    "blockedItems": [
-      {
-        "itemId": "PRE-4300",
-        "status": "blocked",
-        "blockReason": "Package-audit auth wall detected in Chrome.",
-        "actionability": "Actionable - log in through Chrome",
-        "updatedAt": "2026-06-03T09:05:00.000Z"
-      }
-    ],
-    "links": {
-      "packageAudit": "https://sec.check24.de/package-audit?slug=power"
-    }
-  }' | jq
-```
-
-Search:
-
-```sh
-curl -fsS 'http://127.0.0.1:3120/api/search?q=PRE-4300' | jq
-```
-
-## WebSocket Example
-
-Subscribe to live updates:
-
-```sh
-node - <<'NODE'
-const WebSocket = require('ws');
-const ws = new WebSocket('ws://127.0.0.1:3120/ws');
-ws.on('open', () => console.log('connected'));
-ws.on('message', (message) => console.log(String(message)));
-NODE
-```
-
-Push work status over WebSocket:
-
-```sh
-node - <<'NODE'
-const WebSocket = require('ws');
-const ws = new WebSocket('ws://127.0.0.1:3120/ws');
-ws.on('open', () => {
-  ws.send(JSON.stringify({
-    type: 'work-status.update',
-    payload: {
-      status: 'running',
-      step: '2.1',
-      phase: 'review',
-      title: 'PR review',
-      message: 'Reviewing Bitbucket comments',
-      pre: 'PRE-4309'
-    }
-  }));
-});
-ws.on('message', (message) => console.log(String(message)));
-NODE
-```
-
-Each successful mutating API call broadcasts:
-
-```json
-{
-  "type": "event.created",
-  "automationId": "fix-slack-security-dependency-threads",
-  "runId": "20260603T090000-daily-vulnerabilities-run",
-  "status": "running",
-  "version": 2,
-  "createdAt": "2026-06-03T09:00:02.000Z",
-  "payload": {}
-}
-```
-
-## Semantics
-
-- Current view hides `DONE` items.
-- Terminal PRs are historical and not active.
-- `Approved` requires explicit Bitbucket approval evidence.
-- `Done` means no PR is needed because the repo is already clean/current or the dashboard row is stale.
-- Every blocked item should include `Block reason` and `Actionability`.

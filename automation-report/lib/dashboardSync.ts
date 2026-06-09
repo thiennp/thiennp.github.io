@@ -11,15 +11,9 @@ import { createEmptyStoredDashboard } from './emptyDashboard';
 import { isEmptyDashboardSnapshot } from './dashboardRevision';
 import type { DashboardSnapshot } from './types';
 
-type HealthResponse = {
-  status?: string;
-  storeVersion?: number;
-};
-
 export type DashboardSyncResult = {
   snapshot: DashboardSnapshot;
   source: string;
-  health: HealthResponse;
 };
 
 function normalizeSnapshot(snapshot: DashboardSnapshot): DashboardSnapshot {
@@ -51,8 +45,7 @@ export function syncDashboard(force = false): DashboardSyncResult {
     const cached = readDashboardCache();
     return {
       snapshot: cached ? cacheToSnapshot(cached) : emptySnapshot,
-      source: 'cleared',
-      health: { status: 'cleared-local', storeVersion: 0 }
+      source: 'cleared'
     };
   }
 
@@ -65,8 +58,7 @@ export function syncDashboard(force = false): DashboardSyncResult {
 
   return {
     snapshot,
-    source: cached ? 'localStorage' : 'empty',
-    health: { status: 'localStorage', storeVersion: 0 }
+    source: cached ? 'localStorage' : 'empty'
   };
 }
 

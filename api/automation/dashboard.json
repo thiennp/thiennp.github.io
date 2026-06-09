@@ -1,7 +1,7 @@
 {
   "workStatus": {
     "status": "pending",
-    "title": "Waiting for work status",
+    "title": "",
     "message": "Agents should POST work status to https://thiennp.github.io/api/automation/work-status",
     "source": "automation-report",
     "updatedAt": "2026-06-08T12:00:00.000Z"

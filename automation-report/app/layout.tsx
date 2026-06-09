@@ -3,7 +3,7 @@ import './globals.css';
 
 export const metadata: Metadata = {
   title: 'Work Status Dashboard',
-  description: 'Live dashboard for current work, automation activity, and Sentry issues'
+  description: 'Live dashboard for agent work status, sessions, and automation activity'
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
