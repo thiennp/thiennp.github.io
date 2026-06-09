@@ -1,4 +1,38 @@
+import CopyableBlock from './CopyableBlock';
+
 const REPORT_URL = 'https://thiennp.github.io/report/';
+
+const workStatusExample =
+  '{"status":"running","step":"2.1","phase":"cursor","title":"Fix failing test","message":"Updating assertion in user service test","appName":"Cursor","llm":"Claude 4.5 Sonnet","modelToken":"claude-4.5-sonnet","tokensUsed":12400,"automationId":"my-repo","runId":"2026-06-08T12:00:00.000Z","nextStep":"2.2"}';
+
+const fullSnapshotExample =
+  '{"workStatus":{"status":"running","title":"Fix failing test","message":"Updating assertion in user service test","appName":"Cursor","llm":"Claude 4.5 Sonnet","modelToken":"claude-4.5-sonnet","tokensUsed":12400,"updatedAt":"2026-06-08T12:00:00.000Z","source":"automation-report"},"automations":[{"automationId":"my-repo","latestRunId":"2026-06-08T12:00:00.000Z","latestStatus":"running","latestUpdateTime":"2026-06-08T12:00:00.000Z","activeBlockerCount":0}],"recentEvents":[{"id":"evt-1","title":"Fix failing test","status":"running","message":"Updating assertion in user service test","stepNumber":"2.1","appName":"Cursor","llm":"Claude 4.5 Sonnet","modelToken":"claude-4.5-sonnet","tokensUsed":12400,"createdAt":"2026-06-08T12:00:00.000Z","automationId":"my-repo","runId":"2026-06-08T12:00:00.000Z"}],"report":{"title":"Current report","message":"No external report connected.","status":"pending","updatedAt":"2026-06-08T12:00:00.000Z","issueCount":0,"issues":[]}}';
+
+const appNameGuide = `appName values:
+- Cursor
+- Codex
+- Claude
+- Other agent app name if different
+
+Every log must include appName.
+agentName is also accepted as an alias, but prefer appName.`;
+
+const llmGuide = `LLM and token fields (required on every log):
+
+llm — human-readable model name you are running on
+  Examples: Claude 4.5 Sonnet, GPT-5.4, Composer 2.5, Gemini 3 Flash
+
+modelToken — model slug / token id from the agent UI (not an API secret)
+  Examples: claude-4.5-sonnet, gpt-5.4, composer-2.5-fast
+
+tokensUsed — optional number of tokens consumed for this step if known
+
+Aliases accepted:
+- model or modelName → llm
+- token → modelToken when it is a model slug string; token count when it is a number
+- tokenUsed or tokens → tokensUsed
+
+Never log API keys, bearer tokens, or other secrets.`;
 
 const cursorUserRule = `# Automation report logging (all projects)
 
@@ -20,15 +54,24 @@ HOW TO LOG
 
 PAYLOAD
 Prefer a compact work-status object:
-{"status":"running","step":"2.1","phase":"cursor","title":"Short headline","message":"What you are doing now","automationId":"<workspace-folder-name>","runId":"<iso-timestamp>","agentName":"Cursor","source":"automation-report"}
+${workStatusExample}
 
-Use the current workspace or repo folder name for automationId (not a hardcoded project path).
-Use a new ISO timestamp for runId at task start; keep it stable for the rest of that task.
-Add pre, repo, pr, or url fields only when they are known from the current task.
+Required fields:
+- appName: Cursor | Codex | Claude | your agent app name
+- llm: human-readable model name (e.g. Claude 4.5 Sonnet, GPT-5.4)
+- modelToken: model slug from the agent UI (e.g. claude-4.5-sonnet) — not an API secret
+
+Also include:
+- tokensUsed: token count for this step when known
+- automationId: current workspace or repository folder name
+- runId: ISO timestamp at task start, kept stable for that task
+- pre, repo, pr, or url only when known for the active task
 
 RULES
 - Log early and often; do not skip logging because the task feels small.
+- Always include appName, llm, and modelToken so the dashboard shows which agent and model produced the update.
 - Use blocked with a clear next action when stuck.
+- Never log API keys or secret bearer tokens.
 - Do not require GitHub tokens, repo scripts, or per-project setup.
 - This rule applies in every Cursor project.`;
 
@@ -60,19 +103,19 @@ PREFERRED — BOTTOM JSON INPUT
 4. Click Submit or press Enter.
 
 Work-status object example:
-{"status":"running","step":"2.1","phase":"cursor","title":"Fix failing test","message":"Updating assertion in user service test","automationId":"my-repo","runId":"2026-06-08T12:00:00.000Z","agentName":"Cursor","nextStep":"2.2"}
+${workStatusExample}
 
 Full dashboard snapshot example:
-{"workStatus":{"status":"running","title":"Fix failing test","message":"Updating assertion in user service test","updatedAt":"2026-06-08T12:00:00.000Z","source":"automation-report"},"automations":[{"automationId":"my-repo","latestRunId":"2026-06-08T12:00:00.000Z","latestStatus":"running","latestUpdateTime":"2026-06-08T12:00:00.000Z","activeBlockerCount":0}],"recentEvents":[{"id":"evt-1","title":"Fix failing test","status":"running","message":"Updating assertion in user service test","stepNumber":"2.1","agentName":"Cursor","createdAt":"2026-06-08T12:00:00.000Z","automationId":"my-repo","runId":"2026-06-08T12:00:00.000Z"}],"report":{"title":"Current report","message":"No external report connected.","status":"pending","updatedAt":"2026-06-08T12:00:00.000Z","issueCount":0,"issues":[]}}
-
-ALTERNATIVE — BROWSER HOOK
-With ${REPORT_URL} open:
-window.__AUTOMATION_REPORT__.pushDashboard({ /* same JSON as above */ });
+${fullSnapshotExample}
 
 IDENTITY FIELDS
+- appName: required — Cursor | Codex | Claude | other agent app name
+- llm: required — human-readable model name (Claude 4.5 Sonnet, GPT-5.4, Composer 2.5, …)
+- modelToken: required — model slug from the agent UI (claude-4.5-sonnet, gpt-5.4, …); not an API secret
+- tokensUsed: optional — token count for this step when known
 - automationId: current workspace or repository folder name
 - runId: ISO timestamp at task start
-- agentName: Cursor | Codex | Claude | other agent name
+- agentName: optional alias for appName
 - pre / repo / pr / url: include only when known for the active task
 
 SYNC RULES
@@ -82,6 +125,8 @@ SYNC RULES
 
 RULES
 - Use real status values; mark blockers as blocked with an actionable message.
+- Always include appName, llm, and modelToken on every log.
+- Never log API keys or secret bearer tokens.
 - Prefer the bottom JSON input when browser automation is available.
 - Never limit this workflow to one repository or one project.`;
 
@@ -101,21 +146,27 @@ export default function UsageInstructions() {
           <li>Open <strong>Cursor Settings → Rules</strong>.</li>
           <li>Paste the <strong>Cursor user rule</strong> below into <strong>User Rules</strong> (global), not Project Rules.</li>
           <li>Keep {REPORT_URL} open in a browser tab while the agent runs.</li>
-          <li>The agent logs by pasting JSON into the <strong>Log work status</strong> field at the bottom of that page.</li>
+          <li>
+            The agent logs by pasting JSON with <strong>appName</strong>, <strong>llm</strong>, and{' '}
+            <strong>modelToken</strong> into the <strong>Log work status</strong> field at the bottom of that page.
+          </li>
         </ol>
       </div>
 
-      <p className="muted instructions_lead">Copy this Cursor user rule into global User Rules:</p>
-      <pre className="instructions_code instructions_prompt">
-        <code>{cursorUserRule}</code>
-      </pre>
+      <CopyableBlock label="Cursor user rule — paste into global User Rules" text={cursorUserRule} />
 
-      <p className="muted instructions_lead">
-        For Codex, Claude Code, or other agents, use the full prompt below in their global instructions:
-      </p>
-      <pre className="instructions_code instructions_prompt">
-        <code>{agentLoggingPrompt}</code>
-      </pre>
+      <CopyableBlock label="appName values — include on every log" text={appNameGuide} compact />
+
+      <CopyableBlock label="LLM and token fields — include on every log" text={llmGuide} compact />
+
+      <CopyableBlock label="Work-status JSON example — paste into Log work status" text={workStatusExample} compact />
+
+      <CopyableBlock label="Full dashboard snapshot example — paste into Log work status" text={fullSnapshotExample} compact />
+
+      <CopyableBlock
+        label="Full agent logging prompt — for Codex, Claude Code, or other agents"
+        text={agentLoggingPrompt}
+      />
     </section>
   );
 }

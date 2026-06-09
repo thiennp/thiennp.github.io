@@ -479,6 +479,34 @@ footer {
   margin-bottom: 6px;
 }
 
+.copyable-block {
+  margin-bottom: 14px;
+}
+
+.copyable-block_head {
+  align-items: center;
+  display: flex;
+  gap: 12px;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.copyable-block_label {
+  flex: 1;
+  margin: 0;
+}
+
+.copyable-block_button {
+  flex: 0 0 auto;
+  font-size: 12px;
+  min-height: 32px;
+  padding: 6px 12px;
+}
+
+.copyable-block_code_compact {
+  max-height: 120px;
+}
+
 code {
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
   font-size: 12px;

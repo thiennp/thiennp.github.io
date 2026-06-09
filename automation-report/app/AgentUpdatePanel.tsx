@@ -75,7 +75,7 @@ export default function AgentUpdatePanel({ dashboard, onUpdated }: AgentUpdatePa
             submitPayload();
           }
         }}
-        placeholder='{"status":"running","message":"Applying patch",...} or full dashboard JSON'
+        placeholder='{"status":"running","appName":"Cursor","message":"Applying patch",...}'
         spellCheck={false}
       />
       <button className="agent-log_submit" type="button" onClick={submitPayload}>

@@ -1,5 +1,7 @@
 import { MAX_RECENT_EVENTS } from './constants';
 import { createEmptyStoredDashboard } from './emptyDashboard';
+import { resolveAppName } from './resolveAppName';
+import { resolveModelFields } from './resolveModelFields';
 import type { DashboardSnapshot, WorkStatus } from './types';
 
 export function mergeWorkStatusIntoSnapshot(
@@ -8,10 +10,15 @@ export function mergeWorkStatusIntoSnapshot(
 ): DashboardSnapshot {
   const base = baseInput || (createEmptyStoredDashboard() as unknown as DashboardSnapshot);
   const updatedAt = new Date().toISOString();
+  const inputRecord = workStatusInput as Record<string, unknown>;
+  const appName = resolveAppName(inputRecord);
+  const modelFields = resolveModelFields(inputRecord);
   const workStatus: WorkStatus = {
     ...workStatusInput,
     title: workStatusInput.title || workStatusInput.message,
-    updatedAt: workStatusInput.updatedAt || updatedAt
+    updatedAt: workStatusInput.updatedAt || updatedAt,
+    ...(appName ? { appName, agentName: appName } : {}),
+    ...modelFields
   } as WorkStatus;
 
   const automationId = workStatus.automationId || base.workStatus?.automationId || 'manual';
@@ -24,7 +31,11 @@ export function mergeWorkStatusIntoSnapshot(
     message: workStatus.message,
     stepNumber: workStatus.step,
     nextStep: workStatus.nextStep,
-    agentName: workStatus.agentName,
+    appName: workStatus.appName || workStatus.agentName,
+    agentName: workStatus.appName || workStatus.agentName,
+    llm: workStatus.llm,
+    modelToken: workStatus.modelToken,
+    tokensUsed: workStatus.tokensUsed,
     createdAt: updatedAt,
     automationId,
     runId

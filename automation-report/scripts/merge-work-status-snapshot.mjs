@@ -21,7 +21,11 @@ export function mergeWorkStatusIntoSnapshot(baseInput, workStatusInput) {
     message: workStatus.message,
     stepNumber: workStatus.step || undefined,
     nextStep: workStatus.nextStep || undefined,
-    agentName: workStatus.agentName || undefined,
+    appName: workStatus.appName || workStatus.agentName || undefined,
+    agentName: workStatus.appName || workStatus.agentName || undefined,
+    llm: workStatus.llm || undefined,
+    modelToken: workStatus.modelToken || undefined,
+    tokensUsed: workStatus.tokensUsed || undefined,
     createdAt: updatedAt,
     automationId,
     runId

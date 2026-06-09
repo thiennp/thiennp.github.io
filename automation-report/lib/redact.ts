@@ -1,3 +1,5 @@
+const SAFE_MODEL_KEYS = new Set(['modelToken', 'tokensUsed', 'tokenUsed', 'llm', 'model', 'modelName']);
+
 const SECRET_PATTERNS = [
   /(token|secret|password|authorization|cookie|client[_-]?certificate)(["':= ]+)([^\\s"',}]+)/gi,
   /(Bearer\\s+)[A-Za-z0-9._~+/=-]+/gi,
@@ -18,7 +20,7 @@ export function redactSecrets<T>(value: T): T {
   if (value && typeof value === 'object') {
     const next: Record<string, unknown> = {};
     for (const [key, entry] of Object.entries(value)) {
-      if (/token|secret|password|authorization|cookie|certificate/i.test(key)) {
+      if (/token|secret|password|authorization|cookie|certificate/i.test(key) && !SAFE_MODEL_KEYS.has(key)) {
         next[key] = '[REDACTED]';
       } else {
         next[key] = redactSecrets(entry);

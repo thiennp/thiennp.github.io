@@ -26,8 +26,12 @@ type WorkStatus = {
   source?: string;
   automationId?: string;
   runId?: string;
+  appName?: string;
   agentName?: string;
   agentRole?: string;
+  llm?: string;
+  modelToken?: string;
+  tokensUsed?: number;
   nextStep?: string;
   updatedAt: string;
 };
@@ -39,7 +43,11 @@ type ReportEvent = {
   status?: Status;
   message?: string;
   nextStep?: string;
+  appName?: string;
   agentName?: string;
+  llm?: string;
+  modelToken?: string;
+  tokensUsed?: number;
   createdAt: string;
   automationId: string;
   runId: string;
@@ -208,7 +216,7 @@ export default function Home() {
     <main>
       <header className="topbar">
         <div>
-          <p className="eyebrow">{work.source || 'current work'}</p>
+          <p className="eyebrow">{work.appName || work.agentName || work.source || 'current work'}</p>
           <h1>{work.title}</h1>
           <p className="lead">{work.message}</p>
         </div>
@@ -225,7 +233,14 @@ export default function Home() {
             {work.step ? <span className="pill neutral">Step {work.step}</span> : null}
             {work.phase ? <span className="pill neutral">{work.phase}</span> : null}
             {work.nextStep ? <span className="pill warn">Next {work.nextStep}</span> : null}
-            {work.agentName ? <span className="pill neutral">{work.agentName}</span> : null}
+            {work.appName || work.agentName ? (
+              <span className="pill neutral">{work.appName || work.agentName}</span>
+            ) : null}
+            {work.llm ? <span className="pill neutral">{work.llm}</span> : null}
+            {work.modelToken ? <span className="pill neutral">{work.modelToken}</span> : null}
+            {typeof work.tokensUsed === 'number' ? (
+              <span className="pill neutral">{work.tokensUsed.toLocaleString()} tokens</span>
+            ) : null}
           </div>
           <p className="work-hero_target">
             {work.pre || work.sentryKey || (work.repo && work.pr ? `${work.repo} #${work.pr}` : 'No active target yet')}
@@ -304,7 +319,10 @@ export default function Home() {
                 <div className="timeline-item_meta">
                   {event.stepNumber ? <span>Step {event.stepNumber}</span> : null}
                   {event.nextStep ? <span>Next {event.nextStep}</span> : null}
-                  {event.agentName ? <span>{event.agentName}</span> : null}
+                  {event.appName || event.agentName ? <span>{event.appName || event.agentName}</span> : null}
+                  {event.llm ? <span>{event.llm}</span> : null}
+                  {event.modelToken ? <span>{event.modelToken}</span> : null}
+                  {typeof event.tokensUsed === 'number' ? <span>{event.tokensUsed.toLocaleString()} tokens</span> : null}
                   <span>{formatDate(event.createdAt)}</span>
                 </div>
               </article>

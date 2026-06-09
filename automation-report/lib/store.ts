@@ -1,6 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { redactSecrets } from './redact';
+import { resolveModelFields } from './resolveModelFields';
 import { broadcast } from './realtime';
 import { MAX_RECENT_EVENTS } from './constants';
 import {
@@ -67,6 +68,7 @@ function cleanText(value: unknown, maxLength = 240) {
 function normalizeWorkStatus(input: Record<string, unknown>): WorkStatus {
   const pre = cleanText(input.pre || input.preKey || input.jiraKey, 24);
   const normalizedPre = pre && /^PRE-\d+$/i.test(pre) ? pre.toUpperCase() : pre;
+  const modelFields = resolveModelFields(input);
   return redactSecrets({
     status: cleanText(input.status, 32) || 'info',
     step: cleanText(input.step || input.stepNumber, 32),
@@ -82,8 +84,10 @@ function normalizeWorkStatus(input: Record<string, unknown>): WorkStatus {
     source: cleanText(input.source, 120) || 'automation-report',
     automationId: cleanText(input.automationId, 120),
     runId: cleanText(input.runId, 120),
-    agentName: cleanText(input.agentName, 120),
+    appName: cleanText(input.appName || input.app || input.agentName || input.agent, 120),
+    agentName: cleanText(input.agentName || input.appName || input.app || input.agent, 120),
     agentRole: cleanText(input.agentRole, 120),
+    ...modelFields,
     nextStep: cleanText(input.nextStep, 80),
     updatedAt: cleanText(input.updatedAt, 80) || now()
   }) as WorkStatus;
@@ -376,8 +380,12 @@ export async function importDashboardSnapshot(input: DashboardSnapshot) {
           status: event.status || 'info',
           message: event.message,
           nextStep: event.nextStep,
-          agentName: event.agentName,
+          appName: event.appName || event.agentName,
+          agentName: event.agentName || event.appName,
           agentRole: event.agentRole,
+          llm: event.llm,
+          modelToken: event.modelToken,
+          tokensUsed: event.tokensUsed,
           stepNumber: event.stepNumber,
           createdAt: event.createdAt
         }) as ReportEvent);

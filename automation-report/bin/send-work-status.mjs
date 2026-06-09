@@ -20,7 +20,11 @@ const options = {
   source: 'automation',
   automationId: '',
   runId: '',
+  appName: '',
   agentName: '',
+  llm: '',
+  modelToken: '',
+  tokensUsed: '',
   nextStep: ''
 };
 const messageParts = [];
@@ -80,10 +84,14 @@ function readBaseSnapshot() {
 }
 
 const updatedAt = new Date().toISOString();
+const tokensUsed = options.tokensUsed && /^\d+$/.test(String(options.tokensUsed))
+  ? Number(options.tokensUsed)
+  : undefined;
 const workStatus = {
   ...options,
   title: options.title || options.message,
-  updatedAt
+  updatedAt,
+  ...(tokensUsed !== undefined ? { tokensUsed } : {})
 };
 
 const base = readBaseSnapshot() || createEmptyDashboardSnapshot();

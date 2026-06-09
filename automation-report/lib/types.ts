@@ -8,8 +8,12 @@ export interface ReportEvent {
   message?: string;
   evidence?: unknown;
   nextStep?: string;
+  appName?: string;
   agentName?: string;
   agentRole?: string;
+  llm?: string;
+  modelToken?: string;
+  tokensUsed?: number;
   createdAt: string;
 }
 
@@ -114,8 +118,12 @@ export interface WorkStatus {
   source?: string;
   automationId?: string;
   runId?: string;
+  appName?: string;
   agentName?: string;
   agentRole?: string;
+  llm?: string;
+  modelToken?: string;
+  tokensUsed?: number;
   nextStep?: string;
   updatedAt: string;
   [key: string]: unknown;
