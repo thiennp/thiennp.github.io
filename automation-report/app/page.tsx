@@ -8,6 +8,7 @@ import { createEmptyStoredDashboard } from '../lib/emptyDashboard';
 import { PENDING_HOOK_MESSAGE } from '../lib/constants';
 import type { DashboardSnapshot } from '../lib/types';
 import { buildSessionRows } from '../lib/buildSessionRows';
+import AgentUpdatePanel from './AgentUpdatePanel';
 import SessionList from './SessionList';
 import UsageInstructions from './UsageInstructions';
 
@@ -205,6 +206,13 @@ export default function Home() {
       <SessionList rows={sessionRows} statusClass={statusClass} formatDate={formatDate} />
 
       <UsageInstructions />
+
+      <AgentUpdatePanel
+        dashboard={dashboard}
+        onUpdated={(snapshot, source) => {
+          applyDashboard(snapshot, source);
+        }}
+      />
 
       <footer>
         <span>

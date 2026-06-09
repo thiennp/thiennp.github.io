@@ -43,9 +43,9 @@ export default function UsageInstructions() {
             Data stays in browser localStorage on{' '}
             <a href={REPORT_URL}>{REPORT_URL}</a>. Default logging is the browser hook{' '}
             <code>window.__AUTOMATION_REPORT__.pushWorkStatus(...)</code> on that tab — also{' '}
-            <code>pushDashboard(snapshot)</code>, <code>getDashboard()</code>, and a <code>ready</code> flag. There is
-            no manual JSON form at the bottom. Choose Cursor, Codex, Claude, Antigravity, or Other for setup steps and
-            copy blocks.
+            <code>pushDashboard(snapshot)</code>, <code>getDashboard()</code>, and a <code>ready</code> flag — or use the
+            bottom <strong>Log work status</strong> field via browser UI automation. Choose Cursor, Codex, Claude,
+            Antigravity, or Other for setup steps and copy blocks.
           </p>
 
           <div className="instructions_tabs" role="tablist" aria-label="Agent app instructions">

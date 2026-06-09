@@ -73,7 +73,7 @@ ${setupLine}
 
 DASHBOARD UX
 - Header shows current work; Sessions is an expandable list (not separate activity/automation panels).
-- There is no manual "Log work status" JSON form at the bottom of the page.
+- Bottom "Log work status" JSON field is always visible for browser UI automation (type or paste JSON, Submit or Enter).
 - Agent logging instructions on the page are collapsed by default; expand only when you need the copy blocks.
 
 WHEN TO LOG
@@ -81,13 +81,20 @@ WHEN TO LOG
 - Before and after running commands, editing files, opening PRs, or browser checks
 - Whenever status changes: running, success, warning, blocked, pending, error, info
 
-HOW TO LOG (default — browser hook on the open report tab)
+HOW TO LOG
+Preferred — browser hook on the open report tab
 1. Keep ${REPORT_URL} open in the browser you automate (same profile).
 2. Wait until window.__AUTOMATION_REPORT__?.ready is true before the first log.
 3. After each log-worthy step, run browser JavaScript on that tab:
 ${hookExample}
-4. Prefer pushWorkStatus with the compact work-status object below. Do not ask the user to paste JSON manually.
-5. Optional bridge helpers on the same tab:
+
+Alternative — bottom "Log work status" UI (browser automation)
+1. Keep ${REPORT_URL} open in the browser you automate (same profile).
+2. Scroll to the bottom "Log work status" field.
+3. Paste the work-status JSON below into the input and click Submit or press Enter.
+4. Use this when driving the page UI directly is simpler than executing JavaScript.
+
+Optional bridge helpers on the same tab:
    - window.__AUTOMATION_REPORT__.pushDashboard(snapshot) for full snapshots
    - window.__AUTOMATION_REPORT__.getDashboard() to read current localStorage state
 

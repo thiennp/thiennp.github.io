@@ -28,12 +28,13 @@ Bridge helpers installed when the report tab loads:
 - `window.__AUTOMATION_REPORT__.getDashboard()` — read current localStorage state
 - `window.__AUTOMATION_REPORT__.ready` — `true` when the hook is ready
 
-Wait for `ready` before the first log. Do not ask the user to paste JSON into a form on the page — there is no manual "Log work status" input at the bottom.
+Wait for `ready` before the first log when using the hook. Alternatively, agents can paste work-status JSON into the bottom **Log work status** field and press Submit (or Enter) via browser UI automation.
 
 ## Dashboard UX
 
 - Header: current work status, hook readiness, and browser-storage indicator
 - **Sessions:** expandable rows (not separate activity/automation/Sentry panels)
+- **Log work status:** bottom JSON input for browser UI automation (work-status object or full snapshot)
 - **Agent logging instructions:** collapsed by default on the page; per-app tabs for Cursor, Codex, Claude, Antigravity, Other
 - Empty/pending state: no "Waiting for work status" title; shows the hook message until the first `pushWorkStatus`
 
