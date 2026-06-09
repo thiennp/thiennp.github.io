@@ -2,30 +2,7 @@ version = 1
 id = "agent-report-server-guard"
 kind = "cron"
 name = "Agent Report server guard"
-prompt = "Check whether the Agent Report server is running on http://localhost:3100/.
-
-Global shared rules:
-- Follow `/Users/thien.nguyen/.codex/AGENTS.md` for automation reporting and shared Jira duplicate-check/fingerprint rules. Do not duplicate those shared rules inside this automation prompt.
-
-Run this exact command from the local machine in `/Users/thien.nguyen/thiennp.github.io/agent-report`:
-`AGENT_REPORT_SEND_STATUS=changes /Users/thien.nguyen/thiennp.github.io/agent-report/scripts/ensure-agent-report-server.sh`
-
-Flow and ownership:
-- Codex owns this automation run: read the automation memory first, run the guard command, inspect only the evidence needed to classify the result, update memory, and return a concise status.
-- The guard script owns health checking, starting the server, and sending Agent Report messages. Do not send a duplicate Agent Report message from Codex.
-- Agent Report should receive a message only when the guard starts the server or hits a blocker. A healthy already-running server should stay quiet.
-- Slack is for human escalation only when the blocker is new or materially changed from the last memory entry. Do not spam Slack for the same repeated blocker; if Slack sending is unavailable, include a short escalation draft in the final result instead.
-- Chrome is only for visual/manual verification when command and log evidence are inconclusive.
-- Claude AI is only for explicit review/evaluation requests, not for the normal guard loop.
-- Cursor AI is only for larger code changes or refactors, not for routine health checks.
-
-Classification:
-- If the command exits 0 and the fresh autostart log entry says the server was already running, report `already healthy`.
-- If the command exits 0 and the fresh autostart log entry says the server started, report `started`.
-- If the command exits nonzero, report `blocked`; inspect `/Users/thien.nguyen/thiennp.github.io/agent-report/logs/autostart.log`, and when useful check port 3100/listener and `http://localhost:3100/` to identify the blocker.
-
-Final report:
-Keep the result concise. Include whether the server was `already healthy`, `started`, or `blocked`, and include `/Users/thien.nguyen/thiennp.github.io/agent-report/logs/autostart.log` when useful."
+prompt = "Check whether the Agent Report server is running on http://localhost:3100/.\n\nGlobal shared rules:\n- Follow `/Users/thien.nguyen/.codex/AGENTS.md` for automation reporting and shared Jira duplicate-check/fingerprint rules. Do not duplicate those shared rules inside this automation prompt.\n\nRun this exact command from the local machine in `/Users/thien.nguyen/thiennp.github.io/agent-report`:\n`AGENT_REPORT_SEND_STATUS=changes /Users/thien.nguyen/thiennp.github.io/agent-report/scripts/ensure-agent-report-server.sh`\n\nFlow and ownership:\n- Codex owns this automation run: read the automation memory first, run the guard command, inspect only the evidence needed to classify the result, update memory, and return a concise status.\n- The guard script owns health checking, starting the server, and sending Agent Report messages. Do not send a duplicate Agent Report message from Codex.\n- Agent Report should receive a message only when the guard starts the server or hits a blocker. A healthy already-running server should stay quiet.\n- Slack is for human escalation only when the blocker is new or materially changed from the last memory entry. Do not spam Slack for the same repeated blocker; if Slack sending is unavailable, include a short escalation draft in the final result instead.\n- Chrome is only for visual/manual verification when command and log evidence are inconclusive.\n- Claude AI is only for explicit review/evaluation requests, not for the normal guard loop.\n- Cursor AI is only for larger code changes or refactors, not for routine health checks.\n\nClassification:\n- If the command exits 0 and the fresh autostart log entry says the server was already running, report `already healthy`.\n- If the command exits 0 and the fresh autostart log entry says the server started, report `started`.\n- If the command exits nonzero, report `blocked`; inspect `/Users/thien.nguyen/thiennp.github.io/agent-report/logs/autostart.log`, and when useful check port 3100/listener and `http://localhost:3100/` to identify the blocker.\n\nFinal report:\nKeep the result concise. Include whether the server was `already healthy`, `started`, or `blocked`, and include `/Users/thien.nguyen/thiennp.github.io/agent-report/logs/autostart.log` when useful."
 status = "PAUSED"
 rrule = "FREQ=MINUTELY;INTERVAL=30"
 model = "gpt-5.5"

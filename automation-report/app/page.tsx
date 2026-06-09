@@ -5,8 +5,10 @@ import { MAX_RECENT_EVENTS } from '../lib/constants';
 import { clearDashboardEverywhere, pushDashboardSnapshot, syncDashboard } from '../lib/dashboardSync';
 import { installDashboardIngest } from '../lib/dashboardStorage';
 import { createEmptyStoredDashboard } from '../lib/emptyDashboard';
+import { PENDING_HOOK_MESSAGE } from '../lib/constants';
 import type { DashboardSnapshot } from '../lib/types';
 import { buildSessionRows } from '../lib/buildSessionRows';
+import AgentUpdatePanel from './AgentUpdatePanel';
 import SessionList from './SessionList';
 import UsageInstructions from './UsageInstructions';
 
@@ -35,10 +37,24 @@ type WorkStatus = {
   updatedAt: string;
 };
 
-const emptyWorkStatus: WorkStatus = createEmptyStoredDashboard().workStatus as WorkStatus;
+const emptyWorkStatus: WorkStatus = {
+  status: 'pending',
+  title: '',
+  message: PENDING_HOOK_MESSAGE,
+  source: 'automation-report',
+  updatedAt: ''
+};
 
 function createEmptyDashboard(): DashboardSnapshot {
-  return createEmptyStoredDashboard() as unknown as DashboardSnapshot;
+  const empty = createEmptyStoredDashboard() as unknown as DashboardSnapshot;
+  return {
+    ...empty,
+    workStatus: emptyWorkStatus,
+    report: {
+      ...empty.report,
+      updatedAt: ''
+    }
+  };
 }
 
 function statusClass(status?: string) {
@@ -59,16 +75,13 @@ function formatDate(value?: string) {
 
 export default function Home() {
   const [dashboard, setDashboard] = useState<DashboardSnapshot>(createEmptyDashboard());
-  const [dataSource, setDataSource] = useState('loading');
   const [isClearing, setIsClearing] = useState(false);
-  const [hookReady, setHookReady] = useState(false);
 
-  const applyDashboard = (dashboardData: DashboardSnapshot, source: string) => {
+  const applyDashboard = (dashboardData: DashboardSnapshot, _source: string) => {
     setDashboard({
       ...dashboardData,
       recentEvents: dashboardData.recentEvents.slice(0, MAX_RECENT_EVENTS)
     });
-    setDataSource(source);
   };
 
   const loadDashboard = (force = false) => {
@@ -102,7 +115,6 @@ export default function Home() {
       const result = pushDashboardSnapshot(snapshot);
       applyDashboard(result.snapshot, result.source);
     });
-    setHookReady(Boolean((window as Window & { __AUTOMATION_REPORT__?: { ready?: boolean } }).__AUTOMATION_REPORT__?.ready));
 
     return cleanup;
   }, []);
@@ -113,9 +125,22 @@ export default function Home() {
         loadDashboard();
       }
     };
+    const onBridgeUpdate = () => {
+      loadDashboard();
+    };
 
     window.addEventListener('storage', onStorage);
-    return () => window.removeEventListener('storage', onStorage);
+    window.addEventListener('automation-report:updated', onBridgeUpdate);
+    window.addEventListener('automation-report:ready', onBridgeUpdate);
+    const pollDashboard = window.setInterval(() => {
+      loadDashboard();
+    }, 1000);
+    return () => {
+      window.removeEventListener('storage', onStorage);
+      window.removeEventListener('automation-report:updated', onBridgeUpdate);
+      window.removeEventListener('automation-report:ready', onBridgeUpdate);
+      window.clearInterval(pollDashboard);
+    };
   }, []);
 
   const work = dashboard.workStatus || emptyWorkStatus;
@@ -135,12 +160,6 @@ export default function Home() {
         <div className="status-grid">
           <span className={`pill ${statusClass(work.status)}`} title="Current work status">
             {work.status || 'unknown'}
-          </span>
-          <span className={`pill ${hookReady ? 'good' : 'warn'}`} title="Browser hook on this tab">
-            {hookReady ? 'hook ready' : 'hook loading'}
-          </span>
-          <span className="pill neutral" title="Data is stored in this browser only">
-            browser storage
           </span>
         </div>
       </header>
@@ -177,14 +196,15 @@ export default function Home() {
 
       <UsageInstructions />
 
+      <AgentUpdatePanel
+        dashboard={dashboard}
+        onUpdated={(snapshot, source) => {
+          applyDashboard(snapshot, source);
+        }}
+      />
+
       <footer>
-        <span>
-          Agent hook {hookReady ? 'ready' : 'loading'} ·{' '}
-          <code>window.__AUTOMATION_REPORT__.pushWorkStatus(...)</code>
-        </span>
-        <span>
-          localStorage · source {dataSource} · updated {formatDate(work.updatedAt)}
-        </span>
+        <span>Updated {formatDate(work.updatedAt)}</span>
       </footer>
     </main>
   );

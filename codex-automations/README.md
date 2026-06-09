@@ -14,9 +14,9 @@ Dashboard: <https://thiennp.github.io/report/>
 
 Storage: `localStorage` in the browser profile that has the dashboard open. No GitHub token or server API is required.
 
-Preferred logging flow: open the dashboard, scroll to the bottom `Log work status` field, paste a work-status JSON object or full dashboard snapshot, then click Submit or press Enter. When browser automation is available, type or paste directly into that bottom field. As an alternative with the dashboard open, call `window.__AUTOMATION_REPORT__.pushDashboard(...)` with the full snapshot object.
+Preferred logging flow: open the dashboard, scroll to the bottom `Log work status` field, paste a work-status JSON object or full dashboard snapshot, then click Submit or press Enter. When browser automation is available, type or paste directly into that bottom field. As an alternative with the dashboard open, call `window.__AUTOMATION_REPORT__.pushWorkStatus(...)` for work-status events or `window.__AUTOMATION_REPORT__.pushDashboard(...)` with the full snapshot object. If direct access to `window.__AUTOMATION_REPORT__` fails, use the bottom form rather than treating logging as blocked.
 
-Use real status values: `running`, `success`, `warning`, `blocked`, `pending`, `error`, and `info`. Mark blockers as `blocked` with an actionable message, and include `PRE-####` when tied to Jira. `Clear report` wipes only this browser profile's localStorage, and activity history is capped at 200 events.
+Use real status values: `running`, `success`, `warning`, `blocked`, `pending`, `error`, and `info`. Mark blockers as `blocked` with an actionable message, and include `PRE-####` when tied to Jira. Include `tokensUsed` only when the runtime exposes an exact reliable token count; omit it rather than estimating or copying an example value. `Clear report` wipes only this browser profile's localStorage, and activity history is capped at 200 events.
 
 ## Automations
 

@@ -6,35 +6,45 @@ Browser-first work-status dashboard for Codex automations and Cursor agents.
 
 **Storage:** browser `localStorage` only. The GitHub Pages UI does not call a backend API.
 
-**Default logging:** keep the report tab open and call the browser hook after each step:
+**Default logging:** keep the report tab open in Chrome and use the local Chrome DevTools bridge after each step:
 
-```js
-window.__AUTOMATION_REPORT__.pushWorkStatus({
-  status: 'running',
-  appName: 'Cursor',
-  llm: 'Claude 4.5 Sonnet',
-  modelToken: 'claude-4.5-sonnet',
-  title: 'Fix failing test',
-  message: 'Updating assertion in user service test',
-  automationId: 'my-repo',
-  runId: '2026-06-08T12:00:00.000Z'
-});
+```sh
+node /Users/thien.nguyen/thiennp.github.io/automation-report/bin/log-to-pages-tab.mjs \
+  --status running \
+  --appName Codex \
+  --llm "GPT-5" \
+  --modelToken gpt-5-codex \
+  --title "Fix failing test" \
+  --automation-id my-repo \
+  --run-id 2026-06-08T12:00:00.000Z \
+  "Updating assertion in user service test"
 ```
 
-Bridge helpers installed when the report tab loads:
+The bridge writes into the open `https://thiennp.github.io/report/` tab through local Chrome DevTools and stores data in that tab's `localStorage`. It does **not** call an API on GitHub Pages.
 
-- `window.__AUTOMATION_REPORT__.pushWorkStatus({...})` — preferred per-step logging
+Start Chrome with local debugging enabled if the bridge cannot reach it:
+
+```sh
+/Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome \
+  --remote-debugging-port=9222 \
+  --profile-directory=Default
+```
+
+Advanced browser helpers installed when the report tab loads:
+
+- `window.__AUTOMATION_REPORT__.pushWorkStatus({...})` — direct in-tab logging for browser automation that can execute page JavaScript
 - `window.__AUTOMATION_REPORT__.pushDashboard(snapshot)` — optional full snapshot
 - `window.__AUTOMATION_REPORT__.getDashboard()` — read current localStorage state
 - `window.__AUTOMATION_REPORT__.ready` — `true` when the hook is ready
 
-Wait for `ready` before the first log. Do not ask the user to paste JSON into a form on the page — there is no manual "Log work status" input at the bottom.
+Use the local Chrome DevTools bridge for normal AI-agent logging. If that is unavailable, agents can paste work-status JSON into the bottom **Log work status** field and press Submit or Enter via browser UI automation.
 
 ## Dashboard UX
 
 - Header: current work status, hook readiness, and browser-storage indicator
 - **Sessions:** expandable rows (not separate activity/automation/Sentry panels)
-- **Agent logging instructions:** collapsed by default on the page; per-app tabs for Cursor, Codex, Claude, Antigravity, Other
+- **Log work status:** bottom JSON input for browser UI automation (work-status object or full snapshot)
+- **Agent logging instructions:** collapsed by default on the page; per-app tabs provide prompts that ask each agent to update its own persistent instructions
 - Empty/pending state: no "Waiting for work status" title; shows the hook message until the first `pushWorkStatus`
 
 ### Required log fields
@@ -83,6 +93,18 @@ Push a snapshot into the open report tab:
 node bin/send-work-status.mjs --status running --title "Test" "Message" --out /tmp/snapshot.json --inject
 # or
 node bin/push-dashboard-to-browser.mjs --file /tmp/snapshot.json
+```
+
+Log directly into the open GitHub Pages tab through Chrome DevTools:
+
+```sh
+npm run log:pages -- \
+  --status running \
+  --appName Codex \
+  --llm GPT-5 \
+  --modelToken gpt-5-codex \
+  --title "Test local bridge" \
+  "This updates localStorage in the open report tab"
 ```
 
 ## Optional local API server (development only)

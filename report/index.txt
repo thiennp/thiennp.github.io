@@ -1,17 +1,210 @@
 1:"$Sreact.fragment"
-2:I[39756,["/report/_next/static/chunks/158myu8e_yme3.js"],"default"]
-3:I[37457,["/report/_next/static/chunks/158myu8e_yme3.js"],"default"]
-4:I[47257,["/report/_next/static/chunks/158myu8e_yme3.js"],"ClientPageRoot"]
-5:I[31713,["/report/_next/static/chunks/158myu8e_yme3.js","/report/_next/static/chunks/0ko5q_11nsbfs.js"],"default"]
-8:I[97367,["/report/_next/static/chunks/158myu8e_yme3.js"],"OutletBoundary"]
-9:"$Sreact.suspense"
-b:I[97367,["/report/_next/static/chunks/158myu8e_yme3.js"],"ViewportBoundary"]
-d:I[97367,["/report/_next/static/chunks/158myu8e_yme3.js"],"MetadataBoundary"]
-f:I[68027,["/report/_next/static/chunks/158myu8e_yme3.js"],"default",1]
-:HL["/report/_next/static/chunks/448oj1wfmaix0.css","style"]
-0:{"P":null,"c":["",""],"q":"","i":false,"f":[[["",{"children":["__PAGE__",{}]},"$undefined","$undefined",16],[["$","$1","c",{"children":[[["$","link","0",{"rel":"stylesheet","href":"/report/_next/static/chunks/448oj1wfmaix0.css","precedence":"next","crossOrigin":"$undefined","nonce":"$undefined"}],["$","script","script-0",{"src":"/report/_next/static/chunks/158myu8e_yme3.js","async":true,"nonce":"$undefined"}]],["$","html",null,{"lang":"en","children":["$","body",null,{"children":["$","$L2",null,{"parallelRouterKey":"children","error":"$undefined","errorStyles":"$undefined","errorScripts":"$undefined","template":["$","$L3",null,{}],"templateStyles":"$undefined","templateScripts":"$undefined","notFound":[[["$","title",null,{"children":"404: This page could not be found."}],["$","div",null,{"style":{"fontFamily":"system-ui,\"Segoe UI\",Roboto,Helvetica,Arial,sans-serif,\"Apple Color Emoji\",\"Segoe UI Emoji\"","height":"100vh","textAlign":"center","display":"flex","flexDirection":"column","alignItems":"center","justifyContent":"center"},"children":["$","div",null,{"children":[["$","style",null,{"dangerouslySetInnerHTML":{"__html":"body{color:#000;background:#fff;margin:0}.next-error-h1{border-right:1px solid rgba(0,0,0,.3)}@media (prefers-color-scheme:dark){body{color:#fff;background:#000}.next-error-h1{border-right:1px solid rgba(255,255,255,.3)}}"}}],["$","h1",null,{"className":"next-error-h1","style":{"display":"inline-block","margin":"0 20px 0 0","padding":"0 23px 0 0","fontSize":24,"fontWeight":500,"verticalAlign":"top","lineHeight":"49px"},"children":404}],["$","div",null,{"style":{"display":"inline-block"},"children":["$","h2",null,{"style":{"fontSize":14,"fontWeight":400,"lineHeight":"49px","margin":0},"children":"This page could not be found."}]}]]}]}]],[]],"forbidden":"$undefined","unauthorized":"$undefined"}]}]}]]}],{"children":[["$","$1","c",{"children":[["$","$L4",null,{"Component":"$5","serverProvidedParams":{"searchParams":{},"params":{},"promises":["$@6","$@7"]}}],[["$","script","script-0",{"src":"/report/_next/static/chunks/0ko5q_11nsbfs.js","async":true,"nonce":"$undefined"}]],["$","$L8",null,{"children":["$","$9",null,{"name":"Next.MetadataOutlet","children":"$@a"}]}]]}],{},null,false,null]},null,false,null],["$","$1","h",{"children":[null,["$","$Lb",null,{"children":"$Lc"}],["$","div",null,{"hidden":true,"children":["$","$Ld",null,{"children":["$","$9",null,{"name":"Next.Metadata","children":"$Le"}]}]}],null]}],false]],"m":"$undefined","G":["$f",[["$","link","0",{"rel":"stylesheet","href":"/report/_next/static/chunks/448oj1wfmaix0.css","precedence":"next","crossOrigin":"$undefined","nonce":"$undefined"}]]],"S":true,"h":null,"s":"$undefined","l":"$undefined","p":"$undefined","d":"$undefined","b":"iC7TcT4zGUFjO4piZ9ZQx"}
-6:{}
-7:"$0:f:0:1:1:children:0:props:children:0:props:serverProvidedParams:params"
-c:[["$","meta","0",{"charSet":"utf-8"}],["$","meta","1",{"name":"viewport","content":"width=device-width, initial-scale=1"}]]
-a:null
-e:[["$","title","0",{"children":"Work Status Dashboard"}],["$","meta","1",{"name":"description","content":"Live dashboard for agent work status, sessions, and automation activity"}]]
+6:I[68027,["/report/_next/static/chunks/158myu8e_yme3.js"],"default",1]
+:HL["/report/_next/static/chunks/0akajeyephbim.css","style"]
+2:T19e1,
+(() => {
+  const STORAGE_KEY = 'automation-report-dashboard-v1';
+  const CLEARED_FLAG_KEY = 'automation-report-cleared-v1';
+  const MAX_RECENT_EVENTS = 200;
+  const PENDING_MESSAGE = 'No current work has been logged yet.';
+
+  const emptyDashboard = () => {
+    const updatedAt = new Date().toISOString();
+    return {
+      workStatus: {
+        status: 'pending',
+        title: '',
+        message: PENDING_MESSAGE,
+        source: 'automation-report',
+        updatedAt
+      },
+      automations: [],
+      recentEvents: [],
+      report: {
+        title: 'Report',
+        message: 'No external report connected.',
+        status: 'pending',
+        updatedAt,
+        issueCount: 0,
+        issues: []
+      }
+    };
+  };
+
+  const isDashboard = (value) =>
+    Boolean(value && typeof value === 'object' && value.workStatus && value.report);
+
+  const isWorkStatus = (value) =>
+    Boolean(value && typeof value === 'object' && typeof value.status === 'string' && typeof value.message === 'string');
+
+  const readDashboard = () => {
+    try {
+      const raw = window.localStorage.getItem(STORAGE_KEY);
+      if (!raw) return null;
+      const parsed = JSON.parse(raw);
+      return isDashboard(parsed) ? parsed : null;
+    } catch {
+      return null;
+    }
+  };
+
+  const writeDashboard = (snapshot) => {
+    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(snapshot));
+    window.dispatchEvent(new CustomEvent('automation-report:updated'));
+  };
+
+  const normalizeSnapshot = (snapshot) => ({
+    ...snapshot,
+    automations: snapshot.automations || [],
+    recentEvents: snapshot.recentEvents || [],
+    report: snapshot.report || emptyDashboard().report,
+    workStatus: snapshot.workStatus || emptyDashboard().workStatus
+  });
+
+  const resolveAppName = (workStatus) => {
+    const value = workStatus.appName || workStatus.app || workStatus.agentName || workStatus.agent;
+    if (typeof value !== 'string') return undefined;
+    const trimmed = value.trim();
+    if (!trimmed) return undefined;
+    const known = {
+      antigravity: 'Antigravity',
+      'claude code': 'Claude',
+      claude: 'Claude',
+      codex: 'Codex',
+      cursor: 'Cursor'
+    };
+    return known[trimmed.toLowerCase()] || trimmed;
+  };
+
+  const numericToken = (value) => {
+    if (typeof value === 'number' && Number.isFinite(value) && value >= 0) return Math.round(value);
+    if (typeof value === 'string' && /^\d+$/.test(value.trim())) return Number(value.trim());
+    return undefined;
+  };
+
+  const text = (value, maxLength = 120) => {
+    if (value == null) return undefined;
+    const normalized = String(value).replace(/\s+/g, ' ').trim();
+    return normalized ? normalized.slice(0, maxLength) : undefined;
+  };
+
+  const resolveModelFields = (workStatus) => {
+    const llm = text(workStatus.llm || workStatus.model || workStatus.modelName);
+    const explicitModelToken = text(workStatus.modelToken);
+    const tokenValue = workStatus.token;
+    const tokenText = typeof tokenValue === 'string' && !/^\d+$/.test(tokenValue.trim()) ? text(tokenValue) : undefined;
+    const modelToken = explicitModelToken || tokenText;
+    const tokensUsed = numericToken(workStatus.tokensUsed ?? workStatus.tokenUsed ?? workStatus.tokens);
+    const tokenCount = numericToken(tokenValue);
+    return {
+      ...(llm || modelToken ? { llm: llm || modelToken } : {}),
+      ...(modelToken ? { modelToken } : {}),
+      ...(tokensUsed ?? tokenCount ? { tokensUsed: tokensUsed ?? tokenCount } : {})
+    };
+  };
+
+  const mergeWorkStatus = (baseInput, workStatusInput) => {
+    const base = normalizeSnapshot(baseInput || emptyDashboard());
+    const updatedAt = new Date().toISOString();
+    const appName = resolveAppName(workStatusInput);
+    const modelFields = resolveModelFields(workStatusInput);
+    const workStatus = {
+      ...workStatusInput,
+      title: workStatusInput.title || workStatusInput.message,
+      updatedAt: workStatusInput.updatedAt || updatedAt,
+      ...(appName ? { appName, agentName: appName } : {}),
+      ...modelFields
+    };
+    const automationId = workStatus.automationId || base.workStatus?.automationId || 'manual';
+    const runId = workStatus.runId || base.workStatus?.runId || updatedAt.replace(/[:.]/g, '-');
+    const event = {
+      id: `evt-${updatedAt}`,
+      title: workStatus.title,
+      status: workStatus.status,
+      message: workStatus.message,
+      stepNumber: workStatus.step,
+      nextStep: workStatus.nextStep,
+      appName: workStatus.appName || workStatus.agentName,
+      agentName: workStatus.appName || workStatus.agentName,
+      llm: workStatus.llm,
+      modelToken: workStatus.modelToken,
+      tokensUsed: workStatus.tokensUsed,
+      createdAt: updatedAt,
+      automationId,
+      runId
+    };
+    const automations = [...base.automations];
+    const existingAutomationIndex = automations.findIndex((item) => item.automationId === automationId);
+    const automationSummary = {
+      automationId,
+      latestRunId: runId,
+      latestStatus: workStatus.status,
+      latestUpdateTime: updatedAt,
+      activeBlockerCount: workStatus.status === 'blocked' ? 1 : 0
+    };
+    if (existingAutomationIndex >= 0) {
+      automations[existingAutomationIndex] = {
+        ...automations[existingAutomationIndex],
+        ...automationSummary,
+        activeBlockerCount:
+          workStatus.status === 'blocked'
+            ? (automations[existingAutomationIndex].activeBlockerCount || 0) + 1
+            : automations[existingAutomationIndex].activeBlockerCount || 0
+      };
+    } else {
+      automations.unshift(automationSummary);
+    }
+    return {
+      ...base,
+      workStatus,
+      automations,
+      recentEvents: [event, ...base.recentEvents].slice(0, MAX_RECENT_EVENTS),
+      report: base.report
+    };
+  };
+
+  const pushDashboard = (snapshot) => {
+    if (!isDashboard(snapshot)) return false;
+    window.localStorage.removeItem(CLEARED_FLAG_KEY);
+    writeDashboard(normalizeSnapshot(snapshot));
+    return true;
+  };
+
+  const pushWorkStatus = (workStatus) => {
+    if (!isWorkStatus(workStatus)) return false;
+    return pushDashboard(mergeWorkStatus(readDashboard(), workStatus));
+  };
+
+  const onMessage = (event) => {
+    const data = event.data;
+    if (data?.type === 'dashboard.update') pushDashboard(data.payload);
+    if (data?.type === 'work-status.update') pushWorkStatus(data.payload);
+  };
+
+  window.__AUTOMATION_REPORT__ = {
+    pushDashboard,
+    pushWorkStatus,
+    getDashboard: readDashboard,
+    ready: true
+  };
+  window.addEventListener('message', onMessage);
+  window.dispatchEvent(new CustomEvent('automation-report:ready'));
+})();
+0:{"P":null,"c":["",""],"q":"","i":false,"f":[[["",{"children":["__PAGE__",{}]},"$undefined","$undefined",16],[["$","$1","c",{"children":[[["$","link","0",{"rel":"stylesheet","href":"/report/_next/static/chunks/0akajeyephbim.css","precedence":"next","crossOrigin":"$undefined","nonce":"$undefined"}],["$","script","script-0",{"src":"/report/_next/static/chunks/158myu8e_yme3.js","async":true,"nonce":"$undefined"}]],["$","html",null,{"lang":"en","children":["$","body",null,{"children":[["$","script",null,{"dangerouslySetInnerHTML":{"__html":"$2"}}],"$L3"]}]}]]}],{"children":["$L4",{},null,false,null]},null,false,null],"$L5",false]],"m":"$undefined","G":["$6",["$L7"]],"S":true,"h":null,"s":"$undefined","l":"$undefined","p":"$undefined","d":"$undefined","b":"WVHO__2kHjdkDH_c6RhdH"}
+8:I[39756,["/report/_next/static/chunks/158myu8e_yme3.js"],"default"]
+9:I[37457,["/report/_next/static/chunks/158myu8e_yme3.js"],"default"]
+a:I[47257,["/report/_next/static/chunks/158myu8e_yme3.js"],"ClientPageRoot"]
+b:I[31713,["/report/_next/static/chunks/158myu8e_yme3.js","/report/_next/static/chunks/1zu7cworvtm9i.js"],"default"]
+e:I[97367,["/report/_next/static/chunks/158myu8e_yme3.js"],"OutletBoundary"]
+f:"$Sreact.suspense"
+11:I[97367,["/report/_next/static/chunks/158myu8e_yme3.js"],"ViewportBoundary"]
+13:I[97367,["/report/_next/static/chunks/158myu8e_yme3.js"],"MetadataBoundary"]
+3:["$","$L8",null,{"parallelRouterKey":"children","error":"$undefined","errorStyles":"$undefined","errorScripts":"$undefined","template":["$","$L9",null,{}],"templateStyles":"$undefined","templateScripts":"$undefined","notFound":[[["$","title",null,{"children":"404: This page could not be found."}],["$","div",null,{"style":{"fontFamily":"system-ui,\"Segoe UI\",Roboto,Helvetica,Arial,sans-serif,\"Apple Color Emoji\",\"Segoe UI Emoji\"","height":"100vh","textAlign":"center","display":"flex","flexDirection":"column","alignItems":"center","justifyContent":"center"},"children":["$","div",null,{"children":[["$","style",null,{"dangerouslySetInnerHTML":{"__html":"body{color:#000;background:#fff;margin:0}.next-error-h1{border-right:1px solid rgba(0,0,0,.3)}@media (prefers-color-scheme:dark){body{color:#fff;background:#000}.next-error-h1{border-right:1px solid rgba(255,255,255,.3)}}"}}],["$","h1",null,{"className":"next-error-h1","style":{"display":"inline-block","margin":"0 20px 0 0","padding":"0 23px 0 0","fontSize":24,"fontWeight":500,"verticalAlign":"top","lineHeight":"49px"},"children":404}],["$","div",null,{"style":{"display":"inline-block"},"children":["$","h2",null,{"style":{"fontSize":14,"fontWeight":400,"lineHeight":"49px","margin":0},"children":"This page could not be found."}]}]]}]}]],[]],"forbidden":"$undefined","unauthorized":"$undefined"}]
+4:["$","$1","c",{"children":[["$","$La",null,{"Component":"$b","serverProvidedParams":{"searchParams":{},"params":{},"promises":["$@c","$@d"]}}],[["$","script","script-0",{"src":"/report/_next/static/chunks/1zu7cworvtm9i.js","async":true,"nonce":"$undefined"}]],["$","$Le",null,{"children":["$","$f",null,{"name":"Next.MetadataOutlet","children":"$@10"}]}]]}]
+5:["$","$1","h",{"children":[null,["$","$L11",null,{"children":"$L12"}],["$","div",null,{"hidden":true,"children":["$","$L13",null,{"children":["$","$f",null,{"name":"Next.Metadata","children":"$L14"}]}]}],null]}]
+7:["$","link","0",{"rel":"stylesheet","href":"/report/_next/static/chunks/0akajeyephbim.css","precedence":"next","crossOrigin":"$undefined","nonce":"$undefined"}]
+c:{}
+d:"$4:props:children:0:props:serverProvidedParams:params"
+12:[["$","meta","0",{"charSet":"utf-8"}],["$","meta","1",{"name":"viewport","content":"width=device-width, initial-scale=1"}]]
+10:null
+14:[["$","title","0",{"children":"Work Status Dashboard"}],["$","meta","1",{"name":"description","content":"Live dashboard for agent work status, sessions, and automation activity"}]]

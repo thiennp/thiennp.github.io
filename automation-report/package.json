@@ -7,6 +7,7 @@
     "build": "next build",
     "build:pages": "node scripts/build-github-pages.mjs",
     "deploy:pages": "npm run build:pages",
+    "log:pages": "node bin/log-to-pages-tab.mjs",
     "start": "NODE_ENV=production node server.mjs",
     "lint": "next lint"
   },

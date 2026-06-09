@@ -2,7 +2,7 @@
 
 This mirror is maintained as a two-way sync between `~/.codex/automations` and this repo export. A missing copy on one side should be restored from the other side, not treated as a deletion, unless explicitly directed otherwise.
 
-All automations should log meaningful workflow steps through the browser page at `https://thiennp.github.io/report/`. Data is stored in that browser profile's `localStorage`; no GitHub token or server API is required. Prefer the bottom `Log work status` JSON input for run start, step transitions, blockers, successes, and terminal state. When controlling the open dashboard directly, agents may alternatively call `window.__AUTOMATION_REPORT__.pushDashboard(...)` with a full snapshot object.
+All automations should log meaningful workflow steps through the browser page at `https://thiennp.github.io/report/`. Data is stored in that browser profile's `localStorage`; no GitHub token or server API is required. Prefer the bottom `Log work status` JSON input for run start, step transitions, blockers, successes, and terminal state, especially when the automation context cannot access `window.__AUTOMATION_REPORT__` directly. When controlling the open dashboard directly, agents may alternatively call `window.__AUTOMATION_REPORT__.pushWorkStatus(...)` for work-status events or `window.__AUTOMATION_REPORT__.pushDashboard(...)` with a full snapshot object. Include `tokensUsed` only when the runtime exposes an exact reliable count; omit it rather than estimating.
 
 | Automation ID | Name | Type | Status | File |
 | --- | --- | --- | --- | --- |

@@ -37,3 +37,8 @@ sentry-chrome-tab-snapshot/snapshot-compact.json
 sentry-chrome-tab-snapshot/snapshot-last.stderr.log
 sentry-chrome-tab-snapshot/live-report-sync-status.json
 sentry-chrome-tab-snapshot/issue-jira-scan-status.json
+sentry-jira-cursor-triage-loop/sentry-source-union.latest.json
+sentry-jira-cursor-triage-loop/jira-snapshot.latest.json
+sentry-jira-cursor-triage-loop/bitbucket-snapshot.latest.json
+sentry-jira-cursor-triage-loop/jira-bitbucket-snapshot.latest.json
+sentry-jira-cursor-triage-loop/automation.toml.bak-*

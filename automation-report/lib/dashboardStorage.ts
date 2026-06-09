@@ -142,8 +142,5 @@ export function installDashboardIngest(handler: (snapshot: StoredDashboard) => v
   window.addEventListener('message', onMessage);
   return () => {
     window.removeEventListener('message', onMessage);
-    if (globalTarget.__AUTOMATION_REPORT__?.pushDashboard === pushDashboard) {
-      delete globalTarget.__AUTOMATION_REPORT__;
-    }
   };
 }
