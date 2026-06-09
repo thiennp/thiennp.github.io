@@ -11,7 +11,7 @@ const automationReportBridgeScript = `
   const STORAGE_KEY = 'automation-report-dashboard-v1';
   const CLEARED_FLAG_KEY = 'automation-report-cleared-v1';
   const MAX_RECENT_EVENTS = 200;
-  const PENDING_MESSAGE = 'Waiting for the agent to call window.__AUTOMATION_REPORT__.pushWorkStatus(...) in this browser tab.';
+  const PENDING_MESSAGE = 'No current work has been logged yet.';
 
   const emptyDashboard = () => {
     const updatedAt = new Date().toISOString();

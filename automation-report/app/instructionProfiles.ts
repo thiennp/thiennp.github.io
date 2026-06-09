@@ -22,14 +22,8 @@ function buildLoggingRule(appName: string) {
   return `# Automation report logging — ${appName}
 
 Dashboard: ${REPORT_URL}
-Storage: browser localStorage only (the tab that has ${REPORT_URL} open).
 
 You must log what you are doing on every task, in every workspace, without waiting to be asked.
-
-DASHBOARD UX
-- Header shows current work; Sessions is an expandable list (not separate activity/automation panels).
-- Bottom "Log work status" JSON field is always visible for browser UI automation (type or paste JSON, Submit or Enter).
-- Agent logging instructions on the page are collapsed by default; expand only when you need the one setup prompt.
 
 WHEN TO LOG
 - Task start, each meaningful step, blocker, retry, success, and completion
@@ -37,25 +31,20 @@ WHEN TO LOG
 - Whenever status changes: running, success, warning, blocked, pending, error, info
 
 HOW TO LOG
-Preferred — local Chrome DevTools bridge
-1. Keep ${REPORT_URL} open in Google Chrome with the intended profile.
-2. Start Chrome with local debugging enabled when needed:
+Preferred
+1. Keep ${REPORT_URL} open in Google Chrome.
+2. If logging cannot reach Chrome, start Chrome with:
    /Applications/Google\\ Chrome.app/Contents/MacOS/Google\\ Chrome --remote-debugging-port=9222 --profile-directory=Default
-3. After each log-worthy step, run a local command like this:
+3. After each log-worthy step, run:
 ${LOCAL_BRIDGE_COMMAND}
 
-This writes into the open report tab localStorage through Chrome DevTools. It does not call an API on ${REPORT_URL}.
-
-Fallback — bottom "Log work status" UI (browser automation)
-1. Keep ${REPORT_URL} open in the browser you automate (same profile).
-2. Scroll to the bottom "Log work status" field.
-3. Paste a work-status JSON object into the input and click Submit or press Enter.
-4. Use this only when the local Chrome DevTools bridge is unavailable.
+Fallback
+- Paste a work-status JSON object into the bottom "Log work status" field and submit it.
 
 Required fields:
 - appName: ${appName}
 - llm: human-readable model name (e.g. Claude 4.5 Sonnet, GPT-5.4)
-- modelToken: model slug from the agent UI (e.g. claude-4.5-sonnet) — not an API secret
+- modelToken: model slug from the agent UI (e.g. claude-4.5-sonnet)
 
 Optional fields (include when known):
 - tokensUsed: exact token count for this step or run; omit it when the runtime does not expose a reliable number
@@ -83,9 +72,9 @@ ${targetPlace}
 What to do:
 - Add the automation report logging rule below to the target place.
 - Preserve all existing useful instructions.
-- Remove older duplicate or conflicting report-logging instructions, especially browser-hook-only or thiennp report rules that do not prefer the local Chrome DevTools bridge.
+- Remove older duplicate or conflicting report-logging instructions.
 - Do not change unrelated project files or unrelated rules.
-- After updating, confirm exactly where you saved it and whether any old duplicate rule was removed.
+- Confirm exactly where you saved it and whether any old duplicate rule was removed.
 ${optionalExtra}
 Rule to install:
 ${buildLoggingRule(appName)}`;

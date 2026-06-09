@@ -40,12 +40,8 @@ export default function UsageInstructions() {
       {isExpanded ? (
         <div className="instructions_body">
           <p className="instructions_lead muted">
-            Data stays in browser localStorage on{' '}
-            <a href={REPORT_URL}>{REPORT_URL}</a>. The most reliable local-first path is the Chrome DevTools bridge
-            command: it writes into the open report tab and does not call an API on <code>thiennp.github.io</code>.
-            The bottom <strong>Log work status</strong> field remains a fallback. Choose Cursor, Codex, Claude,
-            Antigravity, or Other and copy the prompt into that agent so it can update its own instructions. Include <code>tokensUsed</code> only
-            when the exact count is available from the runtime; omit it rather than estimating.
+            Choose an agent and copy the prompt into that agent. The prompt asks it to update the right persistent
+            instruction location and remove old duplicate report rules.
           </p>
 
           <div className="instructions_tabs" role="tablist" aria-label="Agent app instructions">
@@ -69,7 +65,7 @@ export default function UsageInstructions() {
                 <h3 className="instructions_subhead">{activeProfile.promptTitle}</h3>
                 <p className="muted">
                   Paste this prompt into {activeProfile.label}. It asks the agent to update the right persistent
-                  instruction location, preserve existing rules, and remove obsolete report-logging duplicates.
+                  instruction location and keep only one current report rule.
                 </p>
               </div>
 

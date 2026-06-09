@@ -28,7 +28,7 @@ export default function SessionList({ rows, statusClass, formatDate }: SessionLi
   if (rows.length === 0) {
     return (
       <section className="panel session-list">
-        <p className="muted">No sessions yet. The agent should call window.__AUTOMATION_REPORT__.pushWorkStatus(...) to create the first session.</p>
+        <p className="muted">No sessions yet.</p>
       </section>
     );
   }

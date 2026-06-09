@@ -75,16 +75,13 @@ function formatDate(value?: string) {
 
 export default function Home() {
   const [dashboard, setDashboard] = useState<DashboardSnapshot>(createEmptyDashboard());
-  const [dataSource, setDataSource] = useState('loading');
   const [isClearing, setIsClearing] = useState(false);
-  const [hookReady, setHookReady] = useState(false);
 
-  const applyDashboard = (dashboardData: DashboardSnapshot, source: string) => {
+  const applyDashboard = (dashboardData: DashboardSnapshot, _source: string) => {
     setDashboard({
       ...dashboardData,
       recentEvents: dashboardData.recentEvents.slice(0, MAX_RECENT_EVENTS)
     });
-    setDataSource(source);
   };
 
   const loadDashboard = (force = false) => {
@@ -118,7 +115,6 @@ export default function Home() {
       const result = pushDashboardSnapshot(snapshot);
       applyDashboard(result.snapshot, result.source);
     });
-    setHookReady(Boolean((window as Window & { __AUTOMATION_REPORT__?: { ready?: boolean } }).__AUTOMATION_REPORT__?.ready));
 
     return cleanup;
   }, []);
@@ -131,7 +127,6 @@ export default function Home() {
     };
     const onBridgeUpdate = () => {
       loadDashboard();
-      setHookReady(Boolean((window as Window & { __AUTOMATION_REPORT__?: { ready?: boolean } }).__AUTOMATION_REPORT__?.ready));
     };
 
     window.addEventListener('storage', onStorage);
@@ -165,12 +160,6 @@ export default function Home() {
         <div className="status-grid">
           <span className={`pill ${statusClass(work.status)}`} title="Current work status">
             {work.status || 'unknown'}
-          </span>
-          <span className={`pill ${hookReady ? 'good' : 'warn'}`} title="Browser hook on this tab">
-            {hookReady ? 'hook ready' : 'hook loading'}
-          </span>
-          <span className="pill neutral" title="Data is stored in this browser only">
-            browser storage
           </span>
         </div>
       </header>
@@ -215,13 +204,7 @@ export default function Home() {
       />
 
       <footer>
-        <span>
-          Agent hook {hookReady ? 'ready' : 'loading'} ·{' '}
-          <code>window.__AUTOMATION_REPORT__.pushWorkStatus(...)</code>
-        </span>
-        <span>
-          localStorage · source {dataSource} · updated {formatDate(work.updatedAt)}
-        </span>
+        <span>Updated {formatDate(work.updatedAt)}</span>
       </footer>
     </main>
   );
