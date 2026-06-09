@@ -44,7 +44,7 @@ Use the local Chrome DevTools bridge for normal AI-agent logging. If that is una
 - Header: current work status, hook readiness, and browser-storage indicator
 - **Sessions:** expandable rows (not separate activity/automation/Sentry panels)
 - **Log work status:** bottom JSON input for browser UI automation (work-status object or full snapshot)
-- **Agent logging instructions:** collapsed by default on the page; per-app tabs for Cursor, Codex, Claude, Antigravity, Other
+- **Agent logging instructions:** collapsed by default on the page; per-app tabs provide prompts that ask each agent to update its own persistent instructions
 - Empty/pending state: no "Waiting for work status" title; shows the hook message until the first `pushWorkStatus`
 
 ### Required log fields

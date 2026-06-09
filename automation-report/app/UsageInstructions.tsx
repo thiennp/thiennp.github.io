@@ -44,7 +44,7 @@ export default function UsageInstructions() {
             <a href={REPORT_URL}>{REPORT_URL}</a>. The most reliable local-first path is the Chrome DevTools bridge
             command: it writes into the open report tab and does not call an API on <code>thiennp.github.io</code>.
             The bottom <strong>Log work status</strong> field remains a fallback. Choose Cursor, Codex, Claude,
-            Antigravity, or Other for setup steps and the copy block. Include <code>tokensUsed</code> only
+            Antigravity, or Other and copy the prompt into that agent so it can update its own instructions. Include <code>tokensUsed</code> only
             when the exact count is available from the runtime; omit it rather than estimating.
           </p>
 
@@ -66,18 +66,17 @@ export default function UsageInstructions() {
           {activeProfile ? (
             <>
               <div className="instructions_note" role="tabpanel">
-                <h3 className="instructions_subhead">{activeProfile.setupTitle}</h3>
-                <ol className="instructions_steps">
-                  {activeProfile.setupSteps.map((step) => (
-                    <li key={step}>{step}</li>
-                  ))}
-                </ol>
+                <h3 className="instructions_subhead">{activeProfile.promptTitle}</h3>
+                <p className="muted">
+                  Paste this prompt into {activeProfile.label}. It asks the agent to update the right persistent
+                  instruction location, preserve existing rules, and remove obsolete report-logging duplicates.
+                </p>
               </div>
 
-              <CopyableBlock label={activeProfile.ruleLabel} text={activeProfile.ruleText} />
+              <CopyableBlock label={activeProfile.promptLabel} text={activeProfile.promptText} />
             </>
           ) : (
-            <p className="instructions_pick muted">Choose an agent app above to see setup steps and the copy block.</p>
+            <p className="instructions_pick muted">Choose an agent app above to copy its self-update prompt.</p>
           )}
         </div>
       ) : null}
