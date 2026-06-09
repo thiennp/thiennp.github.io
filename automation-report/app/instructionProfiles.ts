@@ -14,8 +14,8 @@ export type InstructionProfile = {
   readonly workStatusExample: string;
 };
 
-function buildWorkStatusExample(appName: string) {
-  return JSON.stringify({
+function buildWorkStatusPayload(appName: string) {
+  return {
     status: 'running',
     step: '2.1',
     phase: 'implement',
@@ -28,11 +28,33 @@ function buildWorkStatusExample(appName: string) {
     automationId: 'my-repo',
     runId: '2026-06-08T12:00:00.000Z',
     nextStep: '2.2'
-  });
+  };
+}
+
+function buildWorkStatusExample(appName: string) {
+  return JSON.stringify(buildWorkStatusPayload(appName), null, 2);
 }
 
 function buildHookExample(appName: string) {
-  return `window.__AUTOMATION_REPORT__.pushWorkStatus(${buildWorkStatusExample(appName)});`;
+  const payload = buildWorkStatusPayload(appName);
+  const lines = [
+    'window.__AUTOMATION_REPORT__.pushWorkStatus({',
+    `  status: '${payload.status}',`,
+    `  step: '${payload.step}',`,
+    `  phase: '${payload.phase}',`,
+    `  title: '${payload.title}',`,
+    `  message: '${payload.message}',`,
+    `  appName: '${payload.appName}',`,
+    `  llm: '${payload.llm}',`,
+    `  modelToken: '${payload.modelToken}',`,
+    `  tokensUsed: ${payload.tokensUsed},`,
+    `  automationId: '${payload.automationId}',`,
+    `  runId: '${payload.runId}',`,
+    `  nextStep: '${payload.nextStep}'`,
+    '});'
+  ];
+
+  return lines.join('\n');
 }
 
 function buildLoggingRule(appName: string, setupLine: string) {
