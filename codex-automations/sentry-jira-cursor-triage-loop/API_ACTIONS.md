@@ -18,7 +18,7 @@ Do not use or require the old local live report app at `http://127.0.0.1:8766/`.
 Do not read or write `/Users/thien.nguyen/Desktop/Sentry Triage History/report-data.json` as automation state.
 Do not create Jenkins blockers or require Jenkins PR/release/build checks.
 
-Progress reporting still goes to `https://thiennp.github.io/report/`, but the browser hook may be used from the Codex in-app browser for that reporting page. Google Chrome remains for external visual checks/mutations only.
+Progress reporting still goes to `https://thiennp.github.io/report/`. Prefer the Codex in-app browser for that reporting page when an in-app browser control tool is exposed in the thread. If no in-app browser control is available and Chrome JavaScript automation is unavailable, record `reportHookWarning` in the heartbeat final instead of claiming the dashboard was updated. Google Chrome remains for external visual checks/mutations only.
 
 ## Fast Connectivity Check
 
@@ -150,7 +150,7 @@ Prefer API actions above for read-only source and status checks. Chrome is still
 - Bitbucket review/comment/activity details not present in the API snapshot
 - Sonar, staging, and production smoke checks when visual validation is required
 
-Chrome is not required for browser-hook reporting; use the Codex in-app browser for `https://thiennp.github.io/report/` when possible.
+Chrome is not required for browser-hook reporting. Use the Codex in-app browser for `https://thiennp.github.io/report/` when possible; if no callable in-app browser tool is available, report that limitation explicitly.
 
 ## Do Not Guess
 
