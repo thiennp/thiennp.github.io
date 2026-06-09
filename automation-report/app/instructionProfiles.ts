@@ -17,59 +17,9 @@ export type InstructionProfile = {
   readonly setupSteps: readonly string[];
   readonly ruleLabel: string;
   readonly ruleText: string;
-  readonly hookLabel: string;
-  readonly hookExample: string;
-  readonly exampleLabel: string;
-  readonly workStatusExample: string;
 };
 
-function buildWorkStatusPayload(appName: string, includeTokenCount = false) {
-  return {
-    status: 'running',
-    step: '2.1',
-    phase: 'implement',
-    title: 'Fix failing test',
-    message: 'Updating assertion in user service test',
-    appName,
-    llm: 'Claude 4.5 Sonnet',
-    modelToken: 'claude-4.5-sonnet',
-    ...(includeTokenCount ? { tokensUsed: 12400 } : {}),
-    automationId: 'my-repo',
-    runId: '2026-06-08T12:00:00.000Z',
-    nextStep: '2.2'
-  };
-}
-
-function buildWorkStatusExample(appName: string) {
-  return JSON.stringify(buildWorkStatusPayload(appName), null, 2);
-}
-
-function buildHookExample(appName: string) {
-  const payload = buildWorkStatusPayload(appName, true);
-  const lines = [
-    'window.__AUTOMATION_REPORT__.pushWorkStatus({',
-    `  status: '${payload.status}',`,
-    `  step: '${payload.step}',`,
-    `  phase: '${payload.phase}',`,
-    `  title: '${payload.title}',`,
-    `  message: '${payload.message}',`,
-    `  appName: '${payload.appName}',`,
-    `  llm: '${payload.llm}',`,
-    `  modelToken: '${payload.modelToken}',`,
-    `  tokensUsed: ${payload.tokensUsed}, // Include only when the exact count is available.`,
-    `  automationId: '${payload.automationId}',`,
-    `  runId: '${payload.runId}',`,
-    `  nextStep: '${payload.nextStep}'`,
-    '});'
-  ];
-
-  return lines.join('\n');
-}
-
 function buildLoggingRule(appName: string, setupLine: string) {
-  const workStatusExample = buildWorkStatusExample(appName);
-  const hookExample = buildHookExample(appName);
-
   return `# Automation report logging — ${appName}
 
 Dashboard: ${REPORT_URL}
@@ -83,7 +33,7 @@ ${setupLine}
 DASHBOARD UX
 - Header shows current work; Sessions is an expandable list (not separate activity/automation panels).
 - Bottom "Log work status" JSON field is always visible for browser UI automation (type or paste JSON, Submit or Enter).
-- Agent logging instructions on the page are collapsed by default; expand only when you need the copy blocks.
+- Agent logging instructions on the page are collapsed by default; expand only when you need the one setup rule.
 
 WHEN TO LOG
 - Task start, each meaningful step, blocker, retry, success, and completion
@@ -100,26 +50,11 @@ ${LOCAL_BRIDGE_COMMAND}
 
 This writes into the open report tab localStorage through Chrome DevTools. It does not call an API on ${REPORT_URL}.
 
-Fallback — browser hook on the open report tab
-1. Keep ${REPORT_URL} open in the browser you automate (same profile).
-2. Wait until window.__AUTOMATION_REPORT__?.ready is true before the first log.
-3. After each log-worthy step, run browser JavaScript on that tab:
-${hookExample}
-
-If the automation context cannot access window.__AUTOMATION_REPORT__ directly, do not treat that as a blocker. Use the bottom "Log work status" field instead.
-
-Alternative — bottom "Log work status" UI (browser automation)
+Fallback — bottom "Log work status" UI (browser automation)
 1. Keep ${REPORT_URL} open in the browser you automate (same profile).
 2. Scroll to the bottom "Log work status" field.
-3. Paste the work-status JSON below into the input and click Submit or press Enter.
-4. Use this when driving the page UI directly is simpler than executing JavaScript.
-
-Optional bridge helpers on the same tab:
-   - window.__AUTOMATION_REPORT__.pushDashboard(snapshot) for full snapshots
-   - window.__AUTOMATION_REPORT__.getDashboard() to read current localStorage state
-
-PAYLOAD
-${workStatusExample}
+3. Paste a work-status JSON object into the input and click Submit or press Enter.
+4. Use this only when the local Chrome DevTools bridge is unavailable.
 
 Required fields:
 - appName: ${appName}
@@ -157,11 +92,7 @@ function buildProfile(
     setupTitle,
     setupSteps,
     ruleLabel,
-    ruleText: buildLoggingRule(appName, setupLine),
-    hookLabel: 'Browser hook — run in the report tab after each step',
-    hookExample: buildHookExample(appName),
-    exampleLabel: 'Work-status payload for pushWorkStatus',
-    workStatusExample: buildWorkStatusExample(appName)
+    ruleText: buildLoggingRule(appName, setupLine)
   };
 }
 
@@ -173,8 +104,8 @@ export const INSTRUCTION_PROFILES: readonly InstructionProfile[] = [
     'Cursor setup',
     [
       'Open Cursor Settings → Rules and paste the logging rule into User Rules (global).',
-      `Keep ${REPORT_URL} open in a browser tab the agent can control.`,
-      'After each step, the agent runs window.__AUTOMATION_REPORT__.pushWorkStatus(...) in that tab via browser automation.'
+      `Keep ${REPORT_URL} open in Chrome with local debugging enabled.`,
+      'After each step, the agent runs the local log-to-pages-tab.mjs bridge command.'
     ],
     '- Open Cursor Settings → Rules and paste this block into User Rules (global).',
     'Cursor user rule — paste into global User Rules'
@@ -186,8 +117,8 @@ export const INSTRUCTION_PROFILES: readonly InstructionProfile[] = [
     'Codex setup',
     [
       'Paste the logging rule into your Codex automation prompt or global Codex instructions.',
-      `Keep ${REPORT_URL} open in a browser tab Codex can control.`,
-      'After each step, run window.__AUTOMATION_REPORT__.pushWorkStatus(...) in that tab.'
+      `Keep ${REPORT_URL} open in Chrome with local debugging enabled.`,
+      'After each step, run the local log-to-pages-tab.mjs bridge command.'
     ],
     '- Paste this block into the Codex automation prompt or your global Codex instructions.',
     'Codex logging rule — paste into automation or global instructions'
@@ -199,8 +130,8 @@ export const INSTRUCTION_PROFILES: readonly InstructionProfile[] = [
     'Claude Code setup',
     [
       'Paste the logging rule into Claude Code global instructions, CLAUDE.md, or your project agent prompt.',
-      `Keep ${REPORT_URL} open in a browser tab the agent can control.`,
-      'After each step, run window.__AUTOMATION_REPORT__.pushWorkStatus(...) in that tab.'
+      `Keep ${REPORT_URL} open in Chrome with local debugging enabled.`,
+      'After each step, run the local log-to-pages-tab.mjs bridge command.'
     ],
     '- Paste this block into Claude Code global instructions, CLAUDE.md, or your agent system prompt.',
     'Claude logging rule — paste into global instructions or CLAUDE.md'
@@ -212,8 +143,8 @@ export const INSTRUCTION_PROFILES: readonly InstructionProfile[] = [
     'Antigravity setup',
     [
       'Paste the logging rule into Antigravity agent rules or system instructions.',
-      `Keep ${REPORT_URL} open in a browser tab Antigravity can control.`,
-      'After each step, run window.__AUTOMATION_REPORT__.pushWorkStatus(...) in that tab.'
+      `Keep ${REPORT_URL} open in Chrome with local debugging enabled.`,
+      'After each step, run the local log-to-pages-tab.mjs bridge command.'
     ],
     '- Paste this block into Antigravity agent rules or system instructions.',
     'Antigravity logging rule — paste into agent rules'
@@ -226,8 +157,8 @@ export const INSTRUCTION_PROFILES: readonly InstructionProfile[] = [
     [
       'Paste the logging rule into your agent global system prompt or automation definition.',
       'Replace YourAgent in appName with your real agent app name on every log.',
-      `Keep ${REPORT_URL} open in a browser tab the agent can control.`,
-      'After each step, run window.__AUTOMATION_REPORT__.pushWorkStatus(...) in that tab.'
+      `Keep ${REPORT_URL} open in Chrome with local debugging enabled.`,
+      'After each step, run the local log-to-pages-tab.mjs bridge command.'
     ],
     '- Paste this block into your agent global system prompt or automation definition. Replace YourAgent with your agent app name.',
     'Generic logging rule — paste into your agent instructions'

@@ -30,29 +30,14 @@ Start Chrome with local debugging enabled if the bridge cannot reach it:
   --profile-directory=Default
 ```
 
-**Fallback logging:** call the browser hook on the report tab after each step:
+Advanced browser helpers installed when the report tab loads:
 
-```js
-window.__AUTOMATION_REPORT__.pushWorkStatus({
-  status: 'running',
-  appName: 'Cursor',
-  llm: 'Claude 4.5 Sonnet',
-  modelToken: 'claude-4.5-sonnet',
-  title: 'Fix failing test',
-  message: 'Updating assertion in user service test',
-  automationId: 'my-repo',
-  runId: '2026-06-08T12:00:00.000Z'
-});
-```
-
-Bridge helpers installed when the report tab loads:
-
-- `window.__AUTOMATION_REPORT__.pushWorkStatus({...})` — preferred per-step logging
+- `window.__AUTOMATION_REPORT__.pushWorkStatus({...})` — direct in-tab logging for browser automation that can execute page JavaScript
 - `window.__AUTOMATION_REPORT__.pushDashboard(snapshot)` — optional full snapshot
 - `window.__AUTOMATION_REPORT__.getDashboard()` — read current localStorage state
 - `window.__AUTOMATION_REPORT__.ready` — `true` when the hook is ready
 
-Wait for `ready` before the first log when using the hook. Alternatively, agents can paste work-status JSON into the bottom **Log work status** field and press Submit (or Enter) via browser UI automation.
+Use the local Chrome DevTools bridge for normal AI-agent logging. If that is unavailable, agents can paste work-status JSON into the bottom **Log work status** field and press Submit or Enter via browser UI automation.
 
 ## Dashboard UX
 

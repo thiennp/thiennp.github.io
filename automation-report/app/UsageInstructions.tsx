@@ -43,8 +43,8 @@ export default function UsageInstructions() {
             Data stays in browser localStorage on{' '}
             <a href={REPORT_URL}>{REPORT_URL}</a>. The most reliable local-first path is the Chrome DevTools bridge
             command: it writes into the open report tab and does not call an API on <code>thiennp.github.io</code>.
-            Browser hook logging and the bottom <strong>Log work status</strong> field remain fallbacks. Choose Cursor,
-            Codex, Claude, Antigravity, or Other for setup steps and copy blocks. Include <code>tokensUsed</code> only
+            The bottom <strong>Log work status</strong> field remains a fallback. Choose Cursor, Codex, Claude,
+            Antigravity, or Other for setup steps and the copy block. Include <code>tokensUsed</code> only
             when the exact count is available from the runtime; omit it rather than estimating.
           </p>
 
@@ -75,13 +75,9 @@ export default function UsageInstructions() {
               </div>
 
               <CopyableBlock label={activeProfile.ruleLabel} text={activeProfile.ruleText} />
-
-              <CopyableBlock label={activeProfile.hookLabel} text={activeProfile.hookExample} compact />
-
-              <CopyableBlock label={activeProfile.exampleLabel} text={activeProfile.workStatusExample} compact />
             </>
           ) : (
-            <p className="instructions_pick muted">Choose an agent app above to see setup steps and copy blocks.</p>
+            <p className="instructions_pick muted">Choose an agent app above to see setup steps and the copy block.</p>
           )}
         </div>
       ) : null}
