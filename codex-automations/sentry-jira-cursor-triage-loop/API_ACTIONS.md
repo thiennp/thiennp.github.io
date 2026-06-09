@@ -12,6 +12,14 @@ Run API-first actions through:
 
 The wrapper calls the underlying Node helpers and keeps mutation commands explicit. It reads credentials only through the helper scripts from `~/.env` or the current process environment. Never print, paste, log, or delegate token values.
 
+## Retired Dependencies
+
+Do not use or require the old local live report app at `http://127.0.0.1:8766/`.
+Do not read or write `/Users/thien.nguyen/Desktop/Sentry Triage History/report-data.json` as automation state.
+Do not create Jenkins blockers or require Jenkins PR/release/build checks.
+
+Progress reporting still goes to `https://thiennp.github.io/report/`, but the browser hook may be used from the Codex in-app browser for that reporting page. Google Chrome remains for external visual checks/mutations only.
+
 ## Fast Connectivity Check
 
 ```bash
@@ -140,9 +148,9 @@ Prefer API actions above for read-only source and status checks. Chrome is still
 - Sentry unlink operations unless an API unlink endpoint has been separately verified; this playbook verifies inspect/create/link only
 - Jira transitions if no safe connector/API transition path has been verified
 - Bitbucket review/comment/activity details not present in the API snapshot
-- Jenkins, Sonar, staging, production smoke checks
-- Live report rendering at `http://127.0.0.1:8766/`
-- Browser-hook reporting to `https://thiennp.github.io/report/`
+- Sonar, staging, and production smoke checks when visual validation is required
+
+Chrome is not required for browser-hook reporting; use the Codex in-app browser for `https://thiennp.github.io/report/` when possible.
 
 ## Do Not Guess
 
