@@ -425,6 +425,31 @@ footer {
   margin-bottom: 16px;
 }
 
+.instructions_tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.instructions_tab {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  color: var(--ink);
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
+  min-height: 36px;
+  padding: 8px 14px;
+}
+
+.instructions_tab___active {
+  background: var(--blue-bg);
+  border-color: var(--blue);
+  color: var(--blue);
+}
+
 .instructions_lead {
   margin: 0 0 12px;
 }

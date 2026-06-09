@@ -1,4 +1,5 @@
 const APP_NAME_ALIASES: Record<string, string> = {
+  antigravity: 'Antigravity',
   'claude code': 'Claude',
   claude: 'Claude',
   codex: 'Codex',
