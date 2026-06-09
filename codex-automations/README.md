@@ -21,15 +21,15 @@ Use real status values: `running`, `success`, `warning`, `blocked`, `pending`, `
 ## Automations
 
 - `agent-report-server-guard` - Agent Report server guard: cron automation that checks every 30 minutes and starts the Agent Report server if it is down. Current status: `PAUSED`.
-- `automation-improvement-review-loop` - Automation improvement review loop: hourly heartbeat automation that audits all mirrored automations and runs the improvement review loop for explicit change requests in this thread.
-- `check24-package-audit-extractor` - CHECK24 package audit extractor: cron automation for rechecking the Power package-audit dashboard and exporting details to `~/sec.check24.de.json`.
-- `continue-nrg-readme-sweep` - Continue NRG README sweep: heartbeat automation to continue the NRG Jira/MR documentation sweep.
-- `fix-slack-security-dependency-threads` - Daily-vulnerabilities-fix: cron automation for daily security dashboard scan/fix + Jira/PR tracking.
-- `hourly-bitbucket-dependency-pr-cleanup` - Hourly assigned Bitbucket PR review: hourly review automation for Bitbucket pull requests assigned to or requiring review from Thien Nguyen.
-- `hourly-sentry-jira-bugfix-workflow` - Hourly Sentry Jira Bugfix Workflow: cron automation for the resumable Sentry-to-Jira desktop bugfix workflow.
+- `automation-improvement-review-loop` - Automation improvement review loop: hourly heartbeat automation that audits all mirrored automations and runs the improvement review loop for explicit change requests in this thread. Current status: `ACTIVE`.
+- `check24-package-audit-extractor` - CHECK24 package audit extractor: cron automation for rechecking the Power package-audit dashboard and exporting details to `~/sec.check24.de.json`. Current status: `PAUSED`.
+- `continue-nrg-readme-sweep` - Continue NRG README sweep: heartbeat automation to continue the NRG Jira/MR documentation sweep. Current status: `PAUSED`.
+- `fix-slack-security-dependency-threads` - Daily-vulnerabilities-fix: cron automation for daily security dashboard scan/fix + Jira/PR tracking. Current status: `ACTIVE`.
+- `hourly-bitbucket-dependency-pr-cleanup` - Hourly assigned Bitbucket PR review: hourly review automation for Bitbucket pull requests assigned to or requiring review from Thien Nguyen. Current status: `PAUSED`.
+- `hourly-sentry-jira-bugfix-workflow` - Hourly Sentry Jira Bugfix Workflow: cron automation for the resumable Sentry-to-Jira desktop bugfix workflow. Current status: `ACTIVE`.
 - `sentry-chrome-tab-snapshot` - Sentry Chrome Tab Snapshot: heartbeat automation that extracts the CHECK24 Sentry issue list from the verified Chrome profile and syncs it into the localhost triage report. Current status: `PAUSED`.
-- `sentry-jira-cursor-triage-loop` - Sentry Jira Cursor Triage Loop: heartbeat automation for Sentry triage + Jira ticket creation workflow.
-- `sync-codex-automations-to-thiennp-github-io` - Sync Codex automations to thiennp.github.io: cron automation that keeps local and exported automation definitions synchronized in both directions.
+- `sentry-jira-cursor-triage-loop` - Sentry Jira Cursor Triage Loop: heartbeat automation for Sentry triage + Jira ticket creation workflow. Current status: `ACTIVE`.
+- `sync-codex-automations-to-thiennp-github-io` - Sync Codex automations to thiennp.github.io: cron automation that keeps local and exported automation definitions synchronized in both directions. Current status: `ACTIVE`.
 
 ## Layout
 
