@@ -5,6 +5,7 @@ import { MAX_RECENT_EVENTS } from '../lib/constants';
 import { clearDashboardEverywhere, pushDashboardSnapshot, syncDashboard } from '../lib/dashboardSync';
 import { installDashboardIngest } from '../lib/dashboardStorage';
 import { createEmptyStoredDashboard } from '../lib/emptyDashboard';
+import { PENDING_HOOK_MESSAGE } from '../lib/constants';
 import type { DashboardSnapshot } from '../lib/types';
 import { buildSessionRows } from '../lib/buildSessionRows';
 import SessionList from './SessionList';
@@ -35,10 +36,24 @@ type WorkStatus = {
   updatedAt: string;
 };
 
-const emptyWorkStatus: WorkStatus = createEmptyStoredDashboard().workStatus as WorkStatus;
+const emptyWorkStatus: WorkStatus = {
+  status: 'pending',
+  title: '',
+  message: PENDING_HOOK_MESSAGE,
+  source: 'automation-report',
+  updatedAt: ''
+};
 
 function createEmptyDashboard(): DashboardSnapshot {
-  return createEmptyStoredDashboard() as unknown as DashboardSnapshot;
+  const empty = createEmptyStoredDashboard() as unknown as DashboardSnapshot;
+  return {
+    ...empty,
+    workStatus: emptyWorkStatus,
+    report: {
+      ...empty.report,
+      updatedAt: ''
+    }
+  };
 }
 
 function statusClass(status?: string) {
@@ -113,9 +128,23 @@ export default function Home() {
         loadDashboard();
       }
     };
+    const onBridgeUpdate = () => {
+      loadDashboard();
+      setHookReady(Boolean((window as Window & { __AUTOMATION_REPORT__?: { ready?: boolean } }).__AUTOMATION_REPORT__?.ready));
+    };
 
     window.addEventListener('storage', onStorage);
-    return () => window.removeEventListener('storage', onStorage);
+    window.addEventListener('automation-report:updated', onBridgeUpdate);
+    window.addEventListener('automation-report:ready', onBridgeUpdate);
+    const pollDashboard = window.setInterval(() => {
+      loadDashboard();
+    }, 1000);
+    return () => {
+      window.removeEventListener('storage', onStorage);
+      window.removeEventListener('automation-report:updated', onBridgeUpdate);
+      window.removeEventListener('automation-report:ready', onBridgeUpdate);
+      window.clearInterval(pollDashboard);
+    };
   }, []);
 
   const work = dashboard.workStatus || emptyWorkStatus;
