@@ -6,7 +6,31 @@ Browser-first work-status dashboard for Codex automations and Cursor agents.
 
 **Storage:** browser `localStorage` only. The GitHub Pages UI does not call a backend API.
 
-**Default logging:** keep the report tab open and call the browser hook after each step:
+**Default logging:** keep the report tab open in Chrome and use the local Chrome DevTools bridge after each step:
+
+```sh
+node /Users/thien.nguyen/thiennp.github.io/automation-report/bin/log-to-pages-tab.mjs \
+  --status running \
+  --appName Codex \
+  --llm "GPT-5" \
+  --modelToken gpt-5-codex \
+  --title "Fix failing test" \
+  --automation-id my-repo \
+  --run-id 2026-06-08T12:00:00.000Z \
+  "Updating assertion in user service test"
+```
+
+The bridge writes into the open `https://thiennp.github.io/report/` tab through local Chrome DevTools and stores data in that tab's `localStorage`. It does **not** call an API on GitHub Pages.
+
+Start Chrome with local debugging enabled if the bridge cannot reach it:
+
+```sh
+/Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome \
+  --remote-debugging-port=9222 \
+  --profile-directory=Default
+```
+
+**Fallback logging:** call the browser hook on the report tab after each step:
 
 ```js
 window.__AUTOMATION_REPORT__.pushWorkStatus({
@@ -84,6 +108,18 @@ Push a snapshot into the open report tab:
 node bin/send-work-status.mjs --status running --title "Test" "Message" --out /tmp/snapshot.json --inject
 # or
 node bin/push-dashboard-to-browser.mjs --file /tmp/snapshot.json
+```
+
+Log directly into the open GitHub Pages tab through Chrome DevTools:
+
+```sh
+npm run log:pages -- \
+  --status running \
+  --appName Codex \
+  --llm GPT-5 \
+  --modelToken gpt-5-codex \
+  --title "Test local bridge" \
+  "This updates localStorage in the open report tab"
 ```
 
 ## Optional local API server (development only)

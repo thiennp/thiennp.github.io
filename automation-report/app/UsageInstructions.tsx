@@ -41,11 +41,11 @@ export default function UsageInstructions() {
         <div className="instructions_body">
           <p className="instructions_lead muted">
             Data stays in browser localStorage on{' '}
-            <a href={REPORT_URL}>{REPORT_URL}</a>. Default logging is the browser hook{' '}
-            <code>window.__AUTOMATION_REPORT__.pushWorkStatus(...)</code> on that tab — also{' '}
-            <code>pushDashboard(snapshot)</code>, <code>getDashboard()</code>, and a <code>ready</code> flag — or use the
-            bottom <strong>Log work status</strong> field via browser UI automation. Choose Cursor, Codex, Claude,
-            Antigravity, or Other for setup steps and copy blocks.
+            <a href={REPORT_URL}>{REPORT_URL}</a>. The most reliable local-first path is the Chrome DevTools bridge
+            command: it writes into the open report tab and does not call an API on <code>thiennp.github.io</code>.
+            Browser hook logging and the bottom <strong>Log work status</strong> field remain fallbacks. Choose Cursor,
+            Codex, Claude, Antigravity, or Other for setup steps and copy blocks. Include <code>tokensUsed</code> only
+            when the exact count is available from the runtime; omit it rather than estimating.
           </p>
 
           <div className="instructions_tabs" role="tablist" aria-label="Agent app instructions">

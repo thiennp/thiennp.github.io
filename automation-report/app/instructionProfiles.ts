@@ -1,4 +1,13 @@
 export const REPORT_URL = 'https://thiennp.github.io/report/';
+const LOCAL_BRIDGE_COMMAND = `node /Users/thien.nguyen/thiennp.github.io/automation-report/bin/log-to-pages-tab.mjs \\
+  --status running \\
+  --appName Codex \\
+  --llm "GPT-5" \\
+  --modelToken gpt-5-codex \\
+  --title "Fix failing test" \\
+  --automation-id my-repo \\
+  --run-id 2026-06-08T12:00:00.000Z \\
+  "Updating assertion in user service test"`;
 
 export type InstructionProfile = {
   readonly id: string;
@@ -14,7 +23,7 @@ export type InstructionProfile = {
   readonly workStatusExample: string;
 };
 
-function buildWorkStatusPayload(appName: string) {
+function buildWorkStatusPayload(appName: string, includeTokenCount = false) {
   return {
     status: 'running',
     step: '2.1',
@@ -24,7 +33,7 @@ function buildWorkStatusPayload(appName: string) {
     appName,
     llm: 'Claude 4.5 Sonnet',
     modelToken: 'claude-4.5-sonnet',
-    tokensUsed: 12400,
+    ...(includeTokenCount ? { tokensUsed: 12400 } : {}),
     automationId: 'my-repo',
     runId: '2026-06-08T12:00:00.000Z',
     nextStep: '2.2'
@@ -36,7 +45,7 @@ function buildWorkStatusExample(appName: string) {
 }
 
 function buildHookExample(appName: string) {
-  const payload = buildWorkStatusPayload(appName);
+  const payload = buildWorkStatusPayload(appName, true);
   const lines = [
     'window.__AUTOMATION_REPORT__.pushWorkStatus({',
     `  status: '${payload.status}',`,
@@ -47,7 +56,7 @@ function buildHookExample(appName: string) {
     `  appName: '${payload.appName}',`,
     `  llm: '${payload.llm}',`,
     `  modelToken: '${payload.modelToken}',`,
-    `  tokensUsed: ${payload.tokensUsed},`,
+    `  tokensUsed: ${payload.tokensUsed}, // Include only when the exact count is available.`,
     `  automationId: '${payload.automationId}',`,
     `  runId: '${payload.runId}',`,
     `  nextStep: '${payload.nextStep}'`,
@@ -82,11 +91,22 @@ WHEN TO LOG
 - Whenever status changes: running, success, warning, blocked, pending, error, info
 
 HOW TO LOG
-Preferred — browser hook on the open report tab
+Preferred — local Chrome DevTools bridge
+1. Keep ${REPORT_URL} open in Google Chrome with the intended profile.
+2. Start Chrome with local debugging enabled when needed:
+   /Applications/Google\\ Chrome.app/Contents/MacOS/Google\\ Chrome --remote-debugging-port=9222 --profile-directory=Default
+3. After each log-worthy step, run a local command like this:
+${LOCAL_BRIDGE_COMMAND}
+
+This writes into the open report tab localStorage through Chrome DevTools. It does not call an API on ${REPORT_URL}.
+
+Fallback — browser hook on the open report tab
 1. Keep ${REPORT_URL} open in the browser you automate (same profile).
 2. Wait until window.__AUTOMATION_REPORT__?.ready is true before the first log.
 3. After each log-worthy step, run browser JavaScript on that tab:
 ${hookExample}
+
+If the automation context cannot access window.__AUTOMATION_REPORT__ directly, do not treat that as a blocker. Use the bottom "Log work status" field instead.
 
 Alternative — bottom "Log work status" UI (browser automation)
 1. Keep ${REPORT_URL} open in the browser you automate (same profile).
@@ -107,7 +127,7 @@ Required fields:
 - modelToken: model slug from the agent UI (e.g. claude-4.5-sonnet) — not an API secret
 
 Optional fields (include when known):
-- tokensUsed: token count for this step
+- tokensUsed: exact token count for this step or run; omit it when the runtime does not expose a reliable number
 - automationId: current workspace or repository folder name
 - runId: ISO timestamp at task start, kept stable for that task
 - step, phase, title, message, nextStep, pre, repo, pr, url
@@ -115,6 +135,7 @@ Optional fields (include when known):
 RULES
 - Log early and often; do not skip logging because the task feels small.
 - Always include appName (${appName}), llm, and modelToken on every log.
+- Never estimate tokensUsed or copy the example token number into real logs.
 - Use blocked with a clear next action when stuck.
 - Never log API keys or secret bearer tokens.
 - This rule applies in every project you work in.`;
