@@ -9,6 +9,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const DEFAULT_ARTIFACT_DIR = path.join(__dirname, 'artifacts');
 const DEFAULT_STATUS = path.join(DEFAULT_ARTIFACT_DIR, 'current-sentry-issue-status.json');
 const DEFAULT_HTML = path.join(DEFAULT_ARTIFACT_DIR, 'current-sentry-issue-list.html');
+const DEFAULT_RUN_LOG_DIR = path.join(DEFAULT_ARTIFACT_DIR, 'issue-runs');
 const SAFE_DELEGATE = path.join(__dirname, 'safe-delegate-cli.mjs');
 const CLAUDE_TIMEOUT_MS = 120_000;
 const ALLOWED_REPO_ROOTS = [
@@ -76,6 +77,67 @@ const writeJsonAtomic = (file, data) => {
   fs.renameSync(tmp, file);
 };
 
+const safeIssueFileName = (issueId) => String(issueId).replace(/[^A-Za-z0-9_.-]+/g, '-');
+
+const runLogPathFor = (statusFile, issueId) => {
+  const dir = path.join(path.dirname(statusFile), 'issue-runs');
+  return path.join(dir, `${safeIssueFileName(issueId)}.json`);
+};
+
+const readRunLog = (statusFile, issueId) => {
+  const file = runLogPathFor(statusFile, issueId);
+  const existing = readJson(file);
+  return {
+    issueId,
+    createdAt: existing.createdAt || new Date().toISOString(),
+    updatedAt: existing.updatedAt || null,
+    status: existing.status || 'not-started',
+    blocked: existing.blocked || null,
+    lastAction: existing.lastAction || null,
+    events: Array.isArray(existing.events) ? existing.events : [],
+    artifacts: existing.artifacts || {},
+  };
+};
+
+const appendRunLogEvent = ({ statusFile, issueId, event, issueState, artifact }) => {
+  if (!issueId || !event) return null;
+  const file = runLogPathFor(statusFile, issueId);
+  const log = readRunLog(statusFile, issueId);
+  const normalizedEvent = {
+    ...event,
+    at: event.at || new Date().toISOString(),
+  };
+  log.events = mergeTimeline(log.events, [normalizedEvent]);
+  log.updatedAt = new Date().toISOString();
+  log.status = issueState?.status || event.status || log.status;
+  log.lastAction = {
+    actor: normalizedEvent.actor,
+    phase: normalizedEvent.phase,
+    status: normalizedEvent.status,
+    title: normalizedEvent.title,
+    message: normalizedEvent.message,
+    at: normalizedEvent.at,
+  };
+  if (issueState?.status === 'blocked' || normalizedEvent.status === 'blocked') {
+    log.blocked = {
+      at: normalizedEvent.at,
+      actor: normalizedEvent.actor,
+      phase: normalizedEvent.phase,
+      title: normalizedEvent.title,
+      reason: normalizedEvent.message,
+      requestedAction: issueState?.requestedAction || '',
+      requestedJiraKey: issueState?.requestedJiraKey || '',
+    };
+  } else if (issueState?.status === 'done') {
+    log.blocked = null;
+  }
+  if (artifact) {
+    log.artifacts[artifact.name] = artifact.value;
+  }
+  writeJsonAtomic(file, log);
+  return file;
+};
+
 const mergeTimeline = (...timelines) => {
   const byId = new Map();
   for (const timeline of timelines) {
@@ -115,7 +177,7 @@ const updateStatus = ({ statusFile, issueId, status, message, action, requestedJ
     title: `Status changed to ${normalizeStatus(status)}`,
     message: message ?? previous.message ?? '',
   });
-  data.issues[issueId] = {
+  const nextIssue = {
     ...previous,
     id: issueId,
     status: normalizeStatus(status),
@@ -124,6 +186,11 @@ const updateStatus = ({ statusFile, issueId, status, message, action, requestedJ
     requestedJiraKey: requestedJiraKey ?? previous.requestedJiraKey ?? '',
     timeline: mergeTimeline(previous.timeline, [event]),
     updatedAt: new Date().toISOString(),
+  };
+  const logPath = appendRunLogEvent({ statusFile, issueId, event, issueState: nextIssue });
+  data.issues[issueId] = {
+    ...nextIssue,
+    runLogPath: logPath || previous.runLogPath || '',
   };
   data.lastUpdated = data.issues[issueId].updatedAt;
   writeJsonAtomic(statusFile, data);
@@ -143,12 +210,23 @@ const updateClaudeResult = ({ statusFile, issueId, result }) => {
     title: `Claude analysis ${result.status || 'finished'}`,
     message: message.slice(0, 1000),
   });
-  data.issues[issueId] = {
+  const nextIssue = {
     ...previous,
     id: issueId,
     claude: result,
     timeline: mergeTimeline(previous.timeline, [event]),
     updatedAt: new Date().toISOString(),
+  };
+  const logPath = appendRunLogEvent({
+    statusFile,
+    issueId,
+    event,
+    issueState: nextIssue,
+    artifact: { name: 'claude', value: result },
+  });
+  data.issues[issueId] = {
+    ...nextIssue,
+    runLogPath: logPath || previous.runLogPath || '',
   };
   data.lastUpdated = data.issues[issueId].updatedAt;
   writeJsonAtomic(statusFile, data);
@@ -351,6 +429,12 @@ if (command === 'set') {
           sendJson(response, 200, data);
           return;
         }
+      }
+      if (url.pathname === '/api/run-log') {
+        const issueId = url.searchParams.get('issueId');
+        if (!issueId) throw new Error('issueId is required');
+        sendJson(response, 200, readRunLog(statusFile, issueId));
+        return;
       }
       if (url.pathname === '/api/claude') {
         if (request.method !== 'POST') {

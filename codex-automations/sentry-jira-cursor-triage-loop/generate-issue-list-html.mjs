@@ -384,6 +384,7 @@ const rowsHtml = rows.map((row) => {
         </div>
         <input class="status-message" type="text" placeholder="Optional status note" />
         <div class="muted row-note"></div>
+        <div class="muted run-log"></div>
         <details class="timeline-details">
           <summary>Action history</summary>
           <ol class="action-timeline"></ol>
@@ -422,6 +423,7 @@ if (fs.existsSync(statusOutPath)) {
         requestedAction: old.requestedAction || '',
         requestedJiraKey: old.requestedJiraKey || '',
         timeline: Array.isArray(old.timeline) ? old.timeline : [],
+        runLogPath: old.runLogPath || '',
       }];
     }));
     statusSeed.previousGeneratedAt = existing.generatedAt || existing.previousGeneratedAt || null;
@@ -640,6 +642,7 @@ const mergeStatus = (remote, local) => {
       requestedAction: '',
       requestedJiraKey: '',
       timeline: [],
+      runLogPath: '',
     };
     const remoteIssue = remote?.issues?.[issue.id] || {};
     const localIssue = local?.issues?.[issue.id] || {};
@@ -682,6 +685,7 @@ const renderStatus = () => {
     const claudeResult = row.querySelector('.claude-result');
     const requestedAction = row.querySelector('.requested-action');
     const timeline = row.querySelector('.action-timeline');
+    const runLog = row.querySelector('.run-log');
     const isActive = normalized === 'working' || normalized === 'selected';
     row.classList.toggle('is-active', isActive);
     summaryRow?.classList.toggle('is-active', isActive);
@@ -691,6 +695,7 @@ const renderStatus = () => {
     requestedAction.textContent = status.requestedAction
       ? 'Requested: ' + status.requestedAction + (status.requestedJiraKey ? ' (' + status.requestedJiraKey + ')' : '')
       : '';
+    runLog.textContent = status.runLogPath ? 'JSON log: ' + status.runLogPath : '';
     if (document.activeElement !== messageInput && messageInput.value !== (status.message || '')) {
       messageInput.value = status.message || '';
     }
