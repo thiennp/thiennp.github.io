@@ -309,6 +309,8 @@ const rowActionButtons = (row) => {
   }
   if (!row.jira) {
     parts.push('<button type="button" class="action-button" data-action="create-jira" title="Run duplicate and idempotency checks, dry-run Sentry Jira create/link, then create/link Jira only through the verified helper with required confirmation flags.">Create JIRA</button>');
+  } else if (row.jira.browseUrl) {
+    parts.push(`<a class="action-button" href="${escapeHtml(row.jira.browseUrl)}" target="_blank" rel="noreferrer" title="Open matched Jira ticket ${escapeHtml(row.jira.key || '')} directly">View JIRA</a>`);
   }
   const pr = (row.prs || [])[0];
   if (pr?.links?.html) {
