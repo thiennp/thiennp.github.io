@@ -34,6 +34,30 @@ This verifies:
 
 If this passes, do not use Chrome for these read-only source-list/status reads.
 
+## HTML Issue List
+
+When Thien asks to “show the Sentry issue list in HTML” or similar, run:
+
+```bash
+/Users/thien.nguyen/thiennp.github.io/codex-automations/sentry-jira-cursor-triage-loop/triage-api-actions.sh issue-list-html --fresh
+```
+
+This fetches fresh sanitized Sentry and Jira/Bitbucket API snapshots, then writes:
+
+```text
+/Users/thien.nguyen/thiennp.github.io/codex-automations/sentry-jira-cursor-triage-loop/artifacts/current-sentry-issue-list.html
+```
+
+To render from already-fetched artifacts instead of fetching again:
+
+```bash
+triage-api-actions.sh issue-list-html \
+  --sentry /tmp/path/to/sentry-source-union.json \
+  --jira-bitbucket /tmp/path/to/jira-bitbucket-snapshot.json
+```
+
+Generated HTML is a local artifact and contains no token values.
+
 ## Read-Only Source Actions
 
 ```bash

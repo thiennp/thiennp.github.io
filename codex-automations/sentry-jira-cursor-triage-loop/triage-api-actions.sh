@@ -6,6 +6,7 @@ SENTRY_UNION="${SCRIPT_DIR}/sentry-source-union.mjs"
 JIRA_BB="${SCRIPT_DIR}/jira-bitbucket-snapshot.mjs"
 SENTRY_JIRA="${SCRIPT_DIR}/sentry-jira-integration.mjs"
 SAFE_DELEGATE="${SCRIPT_DIR}/safe-delegate-cli.mjs"
+ISSUE_LIST_HTML="${SCRIPT_DIR}/generate-issue-list-html.mjs"
 
 usage() {
   cat <<'EOF'
@@ -22,6 +23,8 @@ Read-only source actions:
       Fetch Bitbucket Thien-authored PR inventory/state snapshot.
   jira-bitbucket-snapshot [--out PATH] [extra jira-bitbucket-snapshot.mjs args...]
       Fetch Jira + Bitbucket in one call.
+  issue-list-html [--fresh] [--sentry PATH] [--jira-bitbucket PATH] [--out PATH]
+      Generate a sanitized HTML issue list from API snapshots.
 
 Sentry Jira integration actions:
   sentry-jira-inspect --issue-id ID
@@ -182,6 +185,10 @@ case "$action" in
   jira-bitbucket-snapshot)
     require_node_script "$JIRA_BB"
     node "$JIRA_BB" --mode all "$@"
+    ;;
+  issue-list-html)
+    require_node_script "$ISSUE_LIST_HTML"
+    node "$ISSUE_LIST_HTML" "$@"
     ;;
   sentry-jira-inspect)
     require_node_script "$SENTRY_JIRA"
