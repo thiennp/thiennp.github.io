@@ -362,22 +362,15 @@ const rowsHtml = rows.map((row) => {
     <td class="num">${escapeHtml(row.count)}</td>
     <td>${escapeHtml(assignee)}</td>
     <td>${escapeHtml(source)}</td>
+    <td>${renderExistingWork(row)}</td>
     <td>
-      <button type="button" class="details-toggle" aria-expanded="false">Details</button>
+      <div class="action-strip">${rowActionButtons(row)}</div>
     </td>
   </tr>
-  <tr class="issue-detail-row ${row.isPriority ? 'priority' : ''}" data-issue-id="${escapeHtml(row.id)}" hidden>
-    <td colspan="9">
+  <tr class="issue-detail-row ${row.isPriority ? 'priority' : ''}" data-issue-id="${escapeHtml(row.id)}">
+    <td colspan="10">
       <div class="workflow-panel">
         <div class="workflow-primary">
-          <div class="detail-section">
-            <strong>Jira / PR</strong>
-            <div class="existing-work-detail">${renderExistingWork(row)}</div>
-          </div>
-          <div class="detail-section">
-            <strong>Actions</strong>
-            <div class="action-strip">${rowActionButtons(row)}</div>
-          </div>
           <button type="button" class="ask-claude primary-action" data-prompt-base64="${encodePrompt(claudePrompt)}">Fix it</button>
           <button type="button" class="copy-prompt" data-prompt-base64="${encodePrompt(handoffPrompt)}">Copy prompt</button>
           <div class="muted claude-result"></div>
@@ -485,7 +478,6 @@ const html = `<!doctype html>
   tr.is-active { outline: 2px solid #0ea5e9; outline-offset: -2px; }
   .issue-detail-row td { padding-top: 0; background: #f8fafc; }
   .issue-detail-row.priority td { background: #fff7ed; }
-  .issue-detail-row[hidden] { display: none; }
   .muted { color: var(--muted); font-size: 12px; margin-top: 2px; }
   .badge { display: inline-block; border: 1px solid #d1d5db; border-radius: 999px; padding: 1px 7px; font-size: 12px; background: #f9fafb; margin-right: 4px; white-space: nowrap; }
   .badge.hot { border-color: #fb923c; background: #ffedd5; color: #9a3412; }
@@ -495,10 +487,6 @@ const html = `<!doctype html>
   button.copied { border-color: #16a34a; color: #166534; background: #dcfce7; }
   .workflow-panel { display: grid; grid-template-columns: minmax(220px, 300px) minmax(0, 1fr); gap: 14px; border: 1px solid #dbeafe; border-radius: 8px; background: #ffffff; padding: 10px; }
   .workflow-primary { display: flex; flex-direction: column; align-items: flex-start; gap: 6px; min-width: 0; }
-  .detail-section { width: 100%; border-bottom: 1px solid #e2e8f0; padding-bottom: 8px; margin-bottom: 2px; }
-  .detail-section strong { display: block; margin-bottom: 5px; font-size: 12px; color: #334155; }
-  .existing-work-detail { display: grid; gap: 6px; }
-  .details-toggle[aria-expanded="true"] { border-color: #0284c7; color: #075985; background: #e0f2fe; }
   .primary-action { border-color: #0284c7; background: #0284c7; color: #ffffff; font-weight: 600; }
   .primary-action:hover { background: #0369a1; }
   .terminal-output { width: 100%; max-height: 300px; overflow: auto; margin: 4px 0 0; padding: 10px; border-radius: 7px; background: #0f172a; color: #dbeafe; font: 12px/1.45 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; white-space: pre-wrap; }
@@ -570,7 +558,7 @@ const html = `<!doctype html>
 </div>
 <div class="table-wrap">
 <table>
-<thead><tr><th>Flag</th><th>Sentry</th><th>Project</th><th>Title</th><th>Status</th><th>Count</th><th>Assignee</th><th>Source</th><th>Details</th></tr></thead>
+<thead><tr><th>Flag</th><th>Sentry</th><th>Project</th><th>Title</th><th>Status</th><th>Count</th><th>Assignee</th><th>Source</th><th>Existing work</th><th>Actions</th></tr></thead>
 <tbody>${rowsHtml}</tbody>
 </table>
 </div>
@@ -687,18 +675,6 @@ const issueRowFromTarget = (target) => {
   if (!row) return null;
   if (row.classList.contains('issue-detail-row')) return row;
   return document.querySelector('tr.issue-detail-row[data-issue-id="' + CSS.escape(row.dataset.issueId) + '"]') || row;
-};
-
-const toggleDetails = (button) => {
-  const row = button.closest('tr.issue-row[data-issue-id]');
-  if (!row) return;
-  const detail = document.querySelector('tr.issue-detail-row[data-issue-id="' + CSS.escape(row.dataset.issueId) + '"]');
-  if (!detail) return;
-  const expanded = button.getAttribute('aria-expanded') === 'true';
-  button.setAttribute('aria-expanded', String(!expanded));
-  button.textContent = expanded ? 'Details' : 'Hide details';
-  detail.hidden = expanded;
-  detail.style.display = expanded ? 'none' : '';
 };
 
 const renderStatus = () => {
@@ -1041,9 +1017,7 @@ const applyFilters = () => {
     const text = (row.textContent + ' ' + (detail?.textContent || '')).toLowerCase();
     const visible = (!query || text.includes(query)) && (!statusFilter || status === statusFilter);
     row.style.display = visible ? '' : 'none';
-    if (detail) {
-      detail.style.display = visible && !detail.hidden ? '' : 'none';
-    }
+    if (detail) detail.style.display = visible ? '' : 'none';
   }
 };
 
@@ -1052,12 +1026,6 @@ document.addEventListener('click', async (event) => {
   if (claudeButton) {
     const row = issueRowFromTarget(claudeButton);
     await askClaude(row, decodePrompt(claudeButton.dataset.promptBase64 || ''));
-    return;
-  }
-
-  const detailsButton = event.target.closest('button.details-toggle');
-  if (detailsButton) {
-    toggleDetails(detailsButton);
     return;
   }
 
