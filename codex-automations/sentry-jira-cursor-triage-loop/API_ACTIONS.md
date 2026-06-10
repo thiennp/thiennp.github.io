@@ -56,7 +56,7 @@ triage-api-actions.sh issue-list-html \
   --jira-bitbucket /tmp/path/to/jira-bitbucket-snapshot.json
 ```
 
-Generated HTML is a local artifact and contains no token values. It filters out Sentry issues that already have a Sentry assignee other than Thien Nguyen; unassigned issues and issues assigned to Thien remain visible.
+Generated HTML is a local artifact and contains no token values. It filters out Sentry issues that already have a Sentry assignee other than Thien Nguyen; unassigned issues and issues assigned to Thien remain visible. Each row includes a `Copy prompt` button that copies a sanitized Claude CLI analysis prompt plus a Codex request for safe Cursor delegation.
 
 ## Read-Only Source Actions
 
