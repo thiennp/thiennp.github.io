@@ -106,6 +106,7 @@ if (snapshot.status !== 'complete') {
 
 const jiraIssues = snapshot.jira?.issues || [];
 const jiraBySummary = new Map(jiraIssues.map((issue) => [String(issue.summary || '').trim(), issue]));
+const pullRequests = snapshot.bitbucket?.pullRequests || [];
 const priorityIds = new Set(['6708782936', '7430161619']);
 const OWN_ASSIGNEE_NAME = 'thien nguyen';
 
@@ -121,6 +122,7 @@ const scriptJson = (value) => JSON.stringify(value).replace(/</g, '\\u003c');
 
 const badge = (text, className = '') => `<span class="badge ${className}">${escapeHtml(text)}</span>`;
 const issueAssignee = (issue) => issue.assignedTo?.name || issue.assignedTo?.email || '';
+const isOwnAssignee = (value) => String(value || '').trim().toLowerCase() === OWN_ASSIGNEE_NAME;
 const issueProject = (issue) => issue.project?.slug || issue.project?.name || issue.project || '';
 const repoForProject = (project) => ({
   energymodule: {
@@ -147,17 +149,33 @@ const isAssignedToOtherPerson = (issue) => {
   const assignee = issueAssignee(issue).trim().toLowerCase();
   return assignee !== '' && assignee !== OWN_ASSIGNEE_NAME;
 };
+const prSearchText = (pr) => [
+  pr.title,
+  pr.source?.branch,
+  pr.source?.repository,
+  pr.destination?.branch,
+].filter(Boolean).join(' ').toLowerCase();
+const matchingPrsForRow = (issue, jira) => {
+  const exactTerms = [
+    issue.shortId,
+    issue.id,
+    jira?.key,
+  ].filter(Boolean).map((value) => String(value).toLowerCase());
+  if (exactTerms.length === 0) return [];
+  return pullRequests.filter((pr) => exactTerms.some((term) => prSearchText(pr).includes(term)));
+};
 
 const allUnionItems = sentry.unionItems || [];
 const filteredOutAssignedToOthers = allUnionItems.filter(isAssignedToOtherPerson);
 
 const rows = allUnionItems.filter((issue) => !isAssignedToOtherPerson(issue)).map((issue) => {
   const jira = jiraBySummary.get(String(issue.title || '').trim());
+  const prs = matchingPrsForRow(issue, jira);
   const isPriority =
     priorityIds.has(issue.id) ||
     issue.substatus === 'regressed' ||
     (issue.sourceKeys || []).includes('B');
-  return { ...issue, jira, isPriority };
+  return { ...issue, jira, prs, isPriority };
 }).sort((a, b) => (
   Number(b.isPriority) - Number(a.isPriority) ||
   Number(b.count || 0) - Number(a.count || 0) ||
@@ -281,22 +299,41 @@ const composeClaudePrompt = (row) => {
 };
 
 const actions = [
-  ['assign-to-me', 'Assign to me', 'Verify source scope, then assign this Sentry issue to Thien Nguyen using the safe Sentry helper or Chrome only if API assignment is unavailable.'],
   ['create-jira', 'Create JIRA', 'Run duplicate and idempotency checks, dry-run Sentry Jira create/link, then create/link Jira only through the verified helper with required confirmation flags.'],
   ['review-pr', 'Review PR', 'Find the Thien-authored Bitbucket PR for this issue, verify exact PR state, review comments/Sonar if needed, then decide whether Codex PR follow-up or Cursor delegation is required.'],
   ['jira-status-change', 'JIRA Ticket status change', 'Verify Jira status and Sentry state, then transition the mounted Jira ticket only when the workflow rules allow it.'],
 ];
 
-const actionButtons = actions.map(([action, label, description]) =>
-  `<button type="button" class="action-button" data-action="${escapeHtml(action)}" title="${escapeHtml(description)}">${escapeHtml(label)}</button>`
-).join('');
+const rowActionButtons = (row) => {
+  const rowActions = [];
+  if (!isOwnAssignee(issueAssignee(row))) {
+    rowActions.push(['assign-to-me', 'Assign to me', 'Verify source scope, then assign this Sentry issue to Thien Nguyen using the safe Sentry helper or Chrome only if API assignment is unavailable.']);
+  }
+  rowActions.push(...actions);
+  return rowActions.map(([action, label, description]) =>
+    `<button type="button" class="action-button" data-action="${escapeHtml(action)}" title="${escapeHtml(description)}">${escapeHtml(label)}</button>`
+  ).join('');
+};
+
+const renderExistingWork = (row) => {
+  const jira = row.jira;
+  const prs = row.prs || [];
+  if (!jira && prs.length === 0) return '<span class="muted">none found in API snapshots</span>';
+  const parts = [];
+  if (jira) {
+    parts.push(`<div><strong>Jira</strong> <a href="${escapeHtml(jira.browseUrl)}">${escapeHtml(jira.key)}</a><div class="muted">${escapeHtml(jira.status)} / ${escapeHtml(jira.assignee?.displayName || 'unassigned')}</div></div>`);
+  }
+  if (prs.length > 0) {
+    parts.push(...prs.map((pr) => `<div><strong>PR</strong> <a href="${escapeHtml(pr.links?.html || '#')}">#${escapeHtml(pr.id)}</a> ${badge(pr.state || 'unknown')}<div class="muted">${escapeHtml(pr.title || '')}</div></div>`));
+  }
+  return parts.join('');
+};
 
 const rowsHtml = rows.map((row) => {
   const source = (row.sourceKeys || []).join(',');
   const assignee = issueAssignee(row) || 'unassigned';
   const project = issueProject(row);
   const jira = row.jira;
-  const prompt = composePrompt(row);
   const claudePrompt = composeClaudePrompt(row);
   return `<tr class="${row.isPriority ? 'priority' : ''}" data-issue-id="${escapeHtml(row.id)}">
     <td>${row.isPriority ? badge('priority', 'hot') : ''}</td>
@@ -307,7 +344,7 @@ const rowsHtml = rows.map((row) => {
     <td class="num">${escapeHtml(row.count)}</td>
     <td>${escapeHtml(assignee)}</td>
     <td>${escapeHtml(source)}</td>
-    <td>${jira ? `<a href="${escapeHtml(jira.browseUrl)}">${escapeHtml(jira.key)}</a><div class="muted">${escapeHtml(jira.status)} / ${escapeHtml(jira.assignee?.displayName || '')}</div>` : '<span class="muted">none in assigned snapshot</span>'}</td>
+    <td>${renderExistingWork(row)}</td>
     <td>
       <div class="status-cell">
         <span class="row-status status-not-started">not started</span>
@@ -322,12 +359,11 @@ const rowsHtml = rows.map((row) => {
       </div>
     </td>
     <td>
-      <div class="action-strip">${actionButtons}</div>
+      <div class="action-strip">${rowActionButtons(row)}</div>
       <div class="muted requested-action"></div>
     </td>
     <td>
-      <button type="button" class="ask-claude" data-prompt-base64="${encodePrompt(claudePrompt)}">Ask Claude</button>
-      <button type="button" class="copy-prompt" data-prompt-base64="${encodePrompt(prompt)}">Copy prompt</button>
+      <button type="button" class="ask-claude primary-action" data-prompt-base64="${encodePrompt(claudePrompt)}">Fix it</button>
       <div class="muted claude-result"></div>
     </td>
   </tr>`;
@@ -472,7 +508,7 @@ const html = `<!doctype html>
 </div>
 <div class="table-wrap">
 <table>
-<thead><tr><th>Flag</th><th>Sentry</th><th>Project</th><th>Title</th><th>Status</th><th>Count</th><th>Assignee</th><th>Source</th><th>Jira match</th><th>Local status</th><th>Actions</th><th>Prompt</th></tr></thead>
+<thead><tr><th>Flag</th><th>Sentry</th><th>Project</th><th>Title</th><th>Status</th><th>Count</th><th>Assignee</th><th>Source</th><th>Existing work</th><th>Local status</th><th>Actions</th><th>Fix</th></tr></thead>
 <tbody>${rowsHtml}</tbody>
 </table>
 </div>
@@ -777,31 +813,6 @@ document.addEventListener('click', async (event) => {
     return;
   }
 
-  const button = event.target.closest('button.copy-prompt');
-  if (!button) return;
-  const prompt = decodePrompt(button.dataset.promptBase64 || '');
-  const original = button.textContent;
-  try {
-    await navigator.clipboard.writeText(prompt);
-    button.textContent = 'Copied';
-    button.classList.add('copied');
-  } catch (error) {
-    const area = document.createElement('textarea');
-    area.value = prompt;
-    area.style.position = 'fixed';
-    area.style.left = '-9999px';
-    document.body.appendChild(area);
-    area.focus();
-    area.select();
-    document.execCommand('copy');
-    area.remove();
-    button.textContent = 'Copied';
-    button.classList.add('copied');
-  }
-  window.setTimeout(() => {
-    button.textContent = original;
-    button.classList.remove('copied');
-  }, 1600);
 });
 
 document.getElementById('searchBox').addEventListener('input', applyFilters);
