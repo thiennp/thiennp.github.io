@@ -10,9 +10,9 @@ All automations should log meaningful workflow steps through the browser page at
 | `automation-improvement-review-loop` | Automation improvement review loop | heartbeat | ACTIVE | [automation.toml](automation-improvement-review-loop/automation.toml) |
 | `check24-package-audit-extractor` | CHECK24 package audit extractor | cron | PAUSED | [automation.toml](check24-package-audit-extractor/automation.toml) |
 | `continue-nrg-readme-sweep` | Continue NRG README sweep | heartbeat | PAUSED | [automation.toml](continue-nrg-readme-sweep/automation.toml) |
-| `fix-slack-security-dependency-threads` | Daily-vulnerabilities-fix | cron | ACTIVE | [automation.toml](fix-slack-security-dependency-threads/automation.toml) |
+| `fix-slack-security-dependency-threads` | Daily-vulnerabilities-fix | cron | PAUSED | [automation.toml](fix-slack-security-dependency-threads/automation.toml) |
 | `hourly-bitbucket-dependency-pr-cleanup` | 15-minute assigned Bitbucket PR review | cron | ACTIVE | [automation.toml](hourly-bitbucket-dependency-pr-cleanup/automation.toml) |
 | `hourly-sentry-jira-bugfix-workflow` | Hourly Sentry Jira Bugfix Workflow | cron | ACTIVE | [automation.toml](hourly-sentry-jira-bugfix-workflow/automation.toml) |
 | `sentry-chrome-tab-snapshot` | Sentry Chrome Tab Snapshot | heartbeat | PAUSED | [automation.toml](sentry-chrome-tab-snapshot/automation.toml) |
-| `sentry-jira-cursor-triage-loop` | Sentry Jira Cursor Triage Loop | heartbeat | ACTIVE | [automation.toml](sentry-jira-cursor-triage-loop/automation.toml) |
+| `sentry-jira-cursor-triage-loop` | Sentry Jira Cursor Triage Loop | heartbeat | PAUSED | [automation.toml](sentry-jira-cursor-triage-loop/automation.toml) |
 | `sync-codex-automations-to-thiennp-github-io` | Sync Codex automations to thiennp.github.io | cron | ACTIVE | [automation.toml](sync-codex-automations-to-thiennp-github-io/automation.toml) |
