@@ -351,6 +351,7 @@ const rowsHtml = rows.map((row) => {
   const assignee = issueAssignee(row) || 'unassigned';
   const project = issueProject(row);
   const jira = row.jira;
+  const handoffPrompt = composePrompt(row);
   const claudePrompt = composeClaudePrompt(row);
   return `<tr class="issue-row ${row.isPriority ? 'priority' : ''}" data-issue-id="${escapeHtml(row.id)}">
     <td>${row.isPriority ? badge('priority', 'hot') : ''}</td>
@@ -371,6 +372,7 @@ const rowsHtml = rows.map((row) => {
       <div class="workflow-panel">
         <div class="workflow-primary">
           <button type="button" class="ask-claude primary-action" data-prompt-base64="${encodePrompt(claudePrompt)}">Fix it</button>
+          <button type="button" class="copy-prompt" data-prompt-base64="${encodePrompt(handoffPrompt)}">Copy prompt</button>
           <div class="muted claude-result"></div>
           <div class="muted requested-action"></div>
         </div>
@@ -901,6 +903,41 @@ const askClaude = async (row, prompt) => {
   }
 };
 
+const copyPrompt = async (row, prompt, button) => {
+  await navigator.clipboard.writeText(prompt);
+  const original = button.textContent;
+  button.textContent = 'Copied';
+  button.classList.add('copied');
+  window.setTimeout(() => {
+    button.textContent = original;
+    button.classList.remove('copied');
+  }, 1200);
+  const issueId = row.dataset.issueId;
+  const previous = issueStatus.issues[issueId] || {};
+  const timelineEvent = makeTimelineEvent({
+    actor: 'Codex',
+    phase: 'handoff',
+    status: 'info',
+    title: 'Prompt copied',
+    message: 'Full Cursor/Codex handoff prompt copied to clipboard.',
+  });
+  const entry = {
+    ...previous,
+    id: issueId,
+    status: normalizeStatus(previous.status),
+    message: previous.message || 'Prompt copied',
+    requestedAction: previous.requestedAction || '',
+    requestedJiraKey: previous.requestedJiraKey || '',
+    timeline: mergeTimeline(previous.timeline, [timelineEvent]),
+    timelineEvent,
+    updatedAt: new Date().toISOString(),
+  };
+  issueStatus.issues[issueId] = entry;
+  saveLocalStatus();
+  renderStatus();
+  await postStatusEntry(entry);
+};
+
 const loadStatus = async () => {
   const local = loadLocalStatus();
   if (!remotePollingPaused) {
@@ -950,6 +987,13 @@ document.addEventListener('click', async (event) => {
   if (claudeButton) {
     const row = issueRowFromTarget(claudeButton);
     await askClaude(row, decodePrompt(claudeButton.dataset.promptBase64 || ''));
+    return;
+  }
+
+  const copyButton = event.target.closest('button.copy-prompt');
+  if (copyButton) {
+    const row = issueRowFromTarget(copyButton);
+    await copyPrompt(row, decodePrompt(copyButton.dataset.promptBase64 || ''), copyButton);
     return;
   }
 
