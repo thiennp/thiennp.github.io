@@ -299,20 +299,27 @@ const composeClaudePrompt = (row) => {
 };
 
 const actions = [
-  ['create-jira', 'Create JIRA', 'Run duplicate and idempotency checks, dry-run Sentry Jira create/link, then create/link Jira only through the verified helper with required confirmation flags.'],
-  ['review-pr', 'Review PR', 'Find the Thien-authored Bitbucket PR for this issue, verify exact PR state, review comments/Sonar if needed, then decide whether Codex PR follow-up or Cursor delegation is required.'],
   ['jira-status-change', 'JIRA Ticket status change', 'Verify Jira status and Sentry state, then transition the mounted Jira ticket only when the workflow rules allow it.'],
 ];
 
 const rowActionButtons = (row) => {
-  const rowActions = [];
+  const parts = [];
   if (!isOwnAssignee(issueAssignee(row))) {
-    rowActions.push(['assign-to-me', 'Assign to me', 'Verify source scope, then assign this Sentry issue to Thien Nguyen using the safe Sentry helper or Chrome only if API assignment is unavailable.']);
+    parts.push('<button type="button" class="action-button" data-action="assign-to-me" title="Verify source scope, then assign this Sentry issue to Thien Nguyen using the safe Sentry helper or Chrome only if API assignment is unavailable.">Assign to me</button>');
   }
-  rowActions.push(...actions);
-  return rowActions.map(([action, label, description]) =>
+  if (!row.jira) {
+    parts.push('<button type="button" class="action-button" data-action="create-jira" title="Run duplicate and idempotency checks, dry-run Sentry Jira create/link, then create/link Jira only through the verified helper with required confirmation flags.">Create JIRA</button>');
+  }
+  const pr = (row.prs || [])[0];
+  if (pr?.links?.html) {
+    parts.push(`<a class="action-button" href="${escapeHtml(pr.links.html)}" target="_blank" rel="noreferrer" title="Open matched Bitbucket PR #${escapeHtml(pr.id)} directly">Review PR</a>`);
+  } else {
+    parts.push('<button type="button" class="action-button" data-action="review-pr" title="Find the Thien-authored Bitbucket PR for this issue, verify exact PR state, review comments/Sonar if needed, then decide whether Codex PR follow-up or Cursor delegation is required.">Review PR</button>');
+  }
+  parts.push(...actions.map(([action, label, description]) =>
     `<button type="button" class="action-button" data-action="${escapeHtml(action)}" title="${escapeHtml(description)}">${escapeHtml(label)}</button>`
-  ).join('');
+  ));
+  return parts.join('');
 };
 
 const renderExistingWork = (row) => {
@@ -452,7 +459,7 @@ const html = `<!doctype html>
   .status-cell { min-width: 220px; }
   .status-actions { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 6px; }
   .action-strip { display: flex; flex-wrap: wrap; gap: 4px; min-width: 250px; }
-  .action-button { border-color: #7dd3fc; color: #075985; background: #f0f9ff; }
+  .action-button { border-color: #7dd3fc; color: #075985; background: #f0f9ff; text-decoration: none; display: inline-block; }
   .action-button:hover { background: #e0f2fe; }
   .status-message { width: 100%; border: 1px solid var(--line); border-radius: 6px; padding: 5px 7px; margin-top: 6px; font-size: 12px; }
   .row-status { display: inline-block; border-radius: 999px; padding: 2px 8px; font-size: 12px; border: 1px solid #cbd5e1; background: #f8fafc; }
