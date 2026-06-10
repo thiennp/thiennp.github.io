@@ -25,7 +25,7 @@ const usage = () => {
 Commands:
   serve [--port 8797] [--host 127.0.0.1] [--dir artifacts]
       Serve the generated issue app and expose /api/status.
-  set --issue-id ID --status STATUS [--message TEXT] [--action ACTION] [--status-file PATH]
+  set --issue-id ID --status STATUS [--message TEXT] [--action ACTION] [--event-title TEXT] [--event-actor TEXT] [--status-file PATH]
       Update the sidecar status JSON without starting a server.
   get [--status-file PATH]
       Print the current status JSON.
@@ -61,7 +61,12 @@ const readJson = (file) => {
   if (!fs.existsSync(file)) {
     return { generatedAt: new Date().toISOString(), issues: {} };
   }
-  return JSON.parse(fs.readFileSync(file, 'utf8'));
+  try {
+    const raw = fs.readFileSync(file, 'utf8').trim();
+    return raw ? JSON.parse(raw) : { generatedAt: new Date().toISOString(), issues: {} };
+  } catch {
+    return { generatedAt: new Date().toISOString(), recoveredFromInvalidStatusFileAt: new Date().toISOString(), issues: {} };
+  }
 };
 
 const writeJsonAtomic = (file, data) => {
@@ -71,11 +76,45 @@ const writeJsonAtomic = (file, data) => {
   fs.renameSync(tmp, file);
 };
 
-const updateStatus = ({ statusFile, issueId, status, message, action, requestedJiraKey }) => {
+const mergeTimeline = (...timelines) => {
+  const byId = new Map();
+  for (const timeline of timelines) {
+    for (const event of Array.isArray(timeline) ? timeline : []) {
+      const id = event.id || [event.at, event.actor, event.title, event.message].filter(Boolean).join('|');
+      if (!id || byId.has(id)) continue;
+      byId.set(id, { ...event, id });
+    }
+  }
+  return [...byId.values()].sort((a, b) => {
+    const aTime = Date.parse(a.at || a.updatedAt || '') || 0;
+    const bTime = Date.parse(b.at || b.updatedAt || '') || 0;
+    return aTime - bTime;
+  });
+};
+
+const makeTimelineEvent = ({ actor = 'Codex', phase = 'status', status = 'info', title, message }) => {
+  const at = new Date().toISOString();
+  return {
+    id: `${at}-${Math.random().toString(36).slice(2)}`,
+    at,
+    actor,
+    phase,
+    status,
+    title: title || phase || status,
+    message: message || '',
+  };
+};
+
+const updateStatus = ({ statusFile, issueId, status, message, action, requestedJiraKey, timelineEvent }) => {
   if (!issueId) throw new Error('--issue-id is required');
   const data = readJson(statusFile);
   data.issues ||= {};
   const previous = data.issues[issueId] || { id: issueId };
+  const event = timelineEvent || makeTimelineEvent({
+    status: normalizeStatus(status),
+    title: `Status changed to ${normalizeStatus(status)}`,
+    message: message ?? previous.message ?? '',
+  });
   data.issues[issueId] = {
     ...previous,
     id: issueId,
@@ -83,6 +122,7 @@ const updateStatus = ({ statusFile, issueId, status, message, action, requestedJ
     message: message ?? previous.message ?? '',
     requestedAction: action ?? previous.requestedAction ?? '',
     requestedJiraKey: requestedJiraKey ?? previous.requestedJiraKey ?? '',
+    timeline: mergeTimeline(previous.timeline, [event]),
     updatedAt: new Date().toISOString(),
   };
   data.lastUpdated = data.issues[issueId].updatedAt;
@@ -95,10 +135,19 @@ const updateClaudeResult = ({ statusFile, issueId, result }) => {
   const data = readJson(statusFile);
   data.issues ||= {};
   const previous = data.issues[issueId] || { id: issueId, status: 'not-started' };
+  const message = result.warning || result.output || result.error || '';
+  const event = makeTimelineEvent({
+    actor: 'Claude',
+    phase: 'analysis',
+    status: result.status || 'finished',
+    title: `Claude analysis ${result.status || 'finished'}`,
+    message: message.slice(0, 1000),
+  });
   data.issues[issueId] = {
     ...previous,
     id: issueId,
     claude: result,
+    timeline: mergeTimeline(previous.timeline, [event]),
     updatedAt: new Date().toISOString(),
   };
   data.lastUpdated = data.issues[issueId].updatedAt;
@@ -231,7 +280,17 @@ if (command === 'set') {
   const status = takeOption('--status', null);
   const message = takeOption('--message', '');
   const action = takeOption('--action', null);
-  const data = updateStatus({ statusFile, issueId, status, message, action });
+  const eventTitle = takeOption('--event-title', null);
+  const eventActor = takeOption('--event-actor', 'Codex');
+  const eventPhase = takeOption('--event-phase', 'status');
+  const timelineEvent = eventTitle ? makeTimelineEvent({
+    actor: eventActor,
+    phase: eventPhase,
+    status: status || 'info',
+    title: eventTitle,
+    message,
+  }) : null;
+  const data = updateStatus({ statusFile, issueId, status, message, action, timelineEvent });
   console.log(JSON.stringify({
     statusFile,
     issueId,
@@ -273,6 +332,13 @@ if (command === 'set') {
             message: body.message || '',
             action: body.action || body.requestedAction || '',
             requestedJiraKey: body.requestedJiraKey || '',
+            timelineEvent: body.timelineEvent || (body.eventTitle ? makeTimelineEvent({
+              actor: body.eventActor || 'Codex',
+              phase: body.eventPhase || 'status',
+              status: body.status || 'info',
+              title: body.eventTitle,
+              message: body.message || '',
+            }) : null),
           });
           sendJson(response, 200, data);
           return;

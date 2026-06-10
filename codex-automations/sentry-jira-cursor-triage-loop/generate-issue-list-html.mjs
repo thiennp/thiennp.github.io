@@ -367,6 +367,10 @@ const rowsHtml = rows.map((row) => {
         </div>
         <input class="status-message" type="text" placeholder="Optional status note" />
         <div class="muted row-note"></div>
+        <details class="timeline-details">
+          <summary>Action history</summary>
+          <ol class="action-timeline"></ol>
+        </details>
       </div>
     </td>
     <td>
@@ -390,6 +394,8 @@ const statusSeed = {
     updatedAt: null,
     message: '',
     requestedAction: '',
+    requestedJiraKey: '',
+    timeline: [],
   }])),
 };
 if (fs.existsSync(statusOutPath)) {
@@ -404,6 +410,8 @@ if (fs.existsSync(statusOutPath)) {
         updatedAt: old.updatedAt || null,
         message: old.message || '',
         requestedAction: old.requestedAction || '',
+        requestedJiraKey: old.requestedJiraKey || '',
+        timeline: Array.isArray(old.timeline) ? old.timeline : [],
       }];
     }));
     statusSeed.previousGeneratedAt = existing.generatedAt || existing.previousGeneratedAt || null;
@@ -471,6 +479,13 @@ const html = `<!doctype html>
   .status-working { border-color: #f59e0b; background: #fef3c7; color: #92400e; }
   .status-blocked { border-color: #ef4444; background: #fee2e2; color: #991b1b; }
   .status-done { border-color: #22c55e; background: #dcfce7; color: #166534; }
+  .timeline-details { margin-top: 8px; }
+  .timeline-details summary { color: #475569; cursor: pointer; font-size: 12px; }
+  .action-timeline { margin: 6px 0 0; padding-left: 18px; max-height: 180px; overflow: auto; }
+  .action-timeline li { margin: 0 0 7px; padding-left: 2px; color: #334155; }
+  .timeline-title { display: block; font-size: 12px; font-weight: 600; }
+  .timeline-meta { display: block; color: var(--muted); font-size: 11px; }
+  .timeline-message { display: block; color: #475569; font-size: 12px; }
   .server-state { color: #bae6fd; font-size: 12px; margin-top: 8px; }
   a { color: var(--accent); text-decoration: none; }
   a:hover { text-decoration: underline; }
@@ -553,6 +568,37 @@ const formatTime = (value) => {
   return Number.isNaN(date.getTime()) ? value : date.toLocaleString();
 };
 
+const escapeText = (value) => String(value ?? '');
+
+const mergeTimeline = (...timelines) => {
+  const byId = new Map();
+  for (const timeline of timelines) {
+    for (const event of Array.isArray(timeline) ? timeline : []) {
+      const id = event.id || [event.at, event.actor, event.title, event.message].filter(Boolean).join('|');
+      if (!id || byId.has(id)) continue;
+      byId.set(id, { ...event, id });
+    }
+  }
+  return [...byId.values()].sort((a, b) => {
+    const aTime = Date.parse(a.at || a.updatedAt || '') || 0;
+    const bTime = Date.parse(b.at || b.updatedAt || '') || 0;
+    return aTime - bTime;
+  });
+};
+
+const makeTimelineEvent = ({ actor = 'Codex', phase = 'manual', status = 'info', title, message }) => {
+  const at = new Date().toISOString();
+  return {
+    id: at + '-' + Math.random().toString(36).slice(2),
+    at,
+    actor,
+    phase,
+    status,
+    title,
+    message,
+  };
+};
+
 const saveLocalStatus = () => {
   localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(issueStatus));
 };
@@ -575,6 +621,8 @@ const mergeStatus = (remote, local) => {
       updatedAt: null,
       message: '',
       requestedAction: '',
+      requestedJiraKey: '',
+      timeline: [],
     };
     const remoteIssue = remote?.issues?.[issue.id] || {};
     const localIssue = local?.issues?.[issue.id] || {};
@@ -585,6 +633,7 @@ const mergeStatus = (remote, local) => {
       ...(remoteTime >= localTime ? localIssue : remoteIssue),
       ...(remoteTime >= localTime ? remoteIssue : localIssue),
     };
+    merged.issues[issue.id].timeline = mergeTimeline(remoteIssue.timeline, localIssue.timeline);
     merged.issues[issue.id].status = normalizeStatus(merged.issues[issue.id].status);
   }
   return merged;
@@ -607,6 +656,7 @@ const renderStatus = () => {
     const messageInput = row.querySelector('.status-message');
     const claudeResult = row.querySelector('.claude-result');
     const requestedAction = row.querySelector('.requested-action');
+    const timeline = row.querySelector('.action-timeline');
     row.classList.toggle('is-active', normalized === 'working' || normalized === 'selected');
     label.className = 'row-status status-' + normalized;
     label.textContent = statusLabel(normalized);
@@ -625,6 +675,30 @@ const renderStatus = () => {
     } else {
       claudeResult.textContent = '';
       claudeResult.removeAttribute('title');
+    }
+    timeline.replaceChildren();
+    const events = Array.isArray(status.timeline) ? status.timeline : [];
+    if (events.length === 0) {
+      const empty = document.createElement('li');
+      empty.className = 'muted';
+      empty.textContent = 'No actions recorded yet.';
+      timeline.append(empty);
+    } else {
+      for (const event of events.slice(-20).reverse()) {
+        const item = document.createElement('li');
+        const title = document.createElement('span');
+        const meta = document.createElement('span');
+        const message = document.createElement('span');
+        title.className = 'timeline-title';
+        meta.className = 'timeline-meta';
+        message.className = 'timeline-message';
+        title.textContent = escapeText(event.title || event.phase || event.status || 'Action');
+        meta.textContent = [event.actor, event.status, formatTime(event.at || event.updatedAt)].filter(Boolean).join(' - ');
+        message.textContent = escapeText(event.message || '');
+        item.append(title, meta);
+        if (message.textContent) item.append(message);
+        timeline.append(item);
+      }
     }
     if (normalized === 'working' || normalized === 'selected' || normalized === 'blocked') {
       const issue = APP_DATA.issues.find((entry) => entry.id === issueId);
@@ -651,19 +725,7 @@ const renderStatus = () => {
   applyFilters();
 };
 
-const setIssueStatus = async (issueId, status, message = '') => {
-  const previous = issueStatus.issues[issueId] || {};
-  const entry = {
-    ...previous,
-    id: issueId,
-    status: normalizeStatus(status),
-    message,
-    requestedAction: previous.requestedAction || '',
-    updatedAt: new Date().toISOString(),
-  };
-  issueStatus.issues[issueId] = entry;
-  saveLocalStatus();
-  renderStatus();
+const postStatusEntry = async (entry) => {
   try {
     const response = await fetch('/api/status', {
       method: 'POST',
@@ -676,13 +738,39 @@ const setIssueStatus = async (issueId, status, message = '') => {
       issueStatus = mergeStatus(await response.json(), loadLocalStatus());
       document.getElementById('serverState').textContent = 'Status source: local API + browser cache';
       renderStatus();
-      return;
+      return true;
     }
     throw new Error('POST failed');
   } catch {
     remoteFailureCount += 1;
     document.getElementById('serverState').textContent = 'Status source: browser cache only. Start issue-list-status-server.mjs for Codex API updates.';
+    return false;
   }
+};
+
+const setIssueStatus = async (issueId, status, message = '') => {
+  const previous = issueStatus.issues[issueId] || {};
+  const timelineEvent = makeTimelineEvent({
+    status: normalizeStatus(status),
+    phase: 'status',
+    title: 'Status changed to ' + statusLabel(normalizeStatus(status)),
+    message,
+  });
+  const entry = {
+    ...previous,
+    id: issueId,
+    status: normalizeStatus(status),
+    message,
+    requestedAction: previous.requestedAction || '',
+    requestedJiraKey: previous.requestedJiraKey || '',
+    timeline: mergeTimeline(previous.timeline, [timelineEvent]),
+    timelineEvent,
+    updatedAt: new Date().toISOString(),
+  };
+  issueStatus.issues[issueId] = entry;
+  saveLocalStatus();
+  renderStatus();
+  await postStatusEntry(entry);
 };
 
 const requestIssueAction = async (row, action) => {
@@ -702,31 +790,28 @@ const requestIssueAction = async (row, action) => {
   }
   const messageInput = row.querySelector('.status-message');
   const message = messageInput.value.trim() || 'Requested action: ' + label + (requestedJiraKey ? ' ' + requestedJiraKey : '');
+  const previous = issueStatus.issues[issueId] || {};
+  const timelineEvent = makeTimelineEvent({
+    status: 'selected',
+    phase: 'request',
+    title: label + ' requested',
+    message,
+  });
   const entry = {
-    ...(issueStatus.issues[issueId] || {}),
+    ...previous,
     id: issueId,
     status: 'selected',
     message,
     requestedAction: action,
     requestedJiraKey,
+    timeline: mergeTimeline(previous.timeline, [timelineEvent]),
+    timelineEvent,
     updatedAt: new Date().toISOString(),
   };
   issueStatus.issues[issueId] = entry;
   saveLocalStatus();
   renderStatus();
-  try {
-    const response = await fetch('/api/status', {
-      method: 'POST',
-      headers: { 'content-type': 'application/json' },
-      body: JSON.stringify(entry),
-    });
-    if (!response.ok) throw new Error('POST failed');
-    issueStatus = mergeStatus(await response.json(), loadLocalStatus());
-    document.getElementById('serverState').textContent = 'Status source: local API + browser cache';
-    renderStatus();
-  } catch {
-    document.getElementById('serverState').textContent = 'Status source: browser cache only. Start issue-list-status-server.mjs for Codex API updates.';
-  }
+  await postStatusEntry(entry);
 };
 
 const askClaude = async (row, prompt) => {
@@ -755,6 +840,7 @@ const askClaude = async (row, prompt) => {
         status: 'selected',
         message: claude.warning || 'Claude degraded; continue with Codex local inspection and Cursor agreement',
         requestedAction: issueStatus.issues[issueId]?.requestedAction || '',
+        requestedJiraKey: issueStatus.issues[issueId]?.requestedJiraKey || '',
         updatedAt: new Date().toISOString(),
       };
     }
