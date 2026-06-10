@@ -2,7 +2,7 @@
 import http from 'node:http';
 import fs from 'node:fs';
 import path from 'node:path';
-import { spawn } from 'node:child_process';
+import { spawn, spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -10,6 +10,7 @@ const DEFAULT_ARTIFACT_DIR = path.join(__dirname, 'artifacts');
 const DEFAULT_STATUS = path.join(DEFAULT_ARTIFACT_DIR, 'current-sentry-issue-status.json');
 const DEFAULT_HTML = path.join(DEFAULT_ARTIFACT_DIR, 'current-sentry-issue-list.html');
 const DEFAULT_RUN_LOG_DIR = path.join(DEFAULT_ARTIFACT_DIR, 'issue-runs');
+const ISSUE_LIST_GENERATOR = path.join(__dirname, 'generate-issue-list-html.mjs');
 const SAFE_DELEGATE = path.join(__dirname, 'safe-delegate-cli.mjs');
 const CLAUDE_TIMEOUT_MS = 120_000;
 const ALLOWED_REPO_ROOTS = [
@@ -423,6 +424,42 @@ const contentType = (file) => {
   return 'application/octet-stream';
 };
 
+const rebuildIssueList = ({ dir, statusFile }) => {
+  const outPath = path.join(dir, path.basename(DEFAULT_HTML));
+  const snapshotDir = path.join('/tmp', `sentry-triage-html-reload-${new Date().toISOString().replace(/[-:]/g, '').replace(/\.\d{3}Z$/, 'Z')}`);
+  const result = spawnSync(process.execPath, [
+    ISSUE_LIST_GENERATOR,
+    '--fresh',
+    '--out',
+    outPath,
+    '--status-out',
+    statusFile,
+    '--snapshot-dir',
+    snapshotDir,
+  ], {
+    cwd: __dirname,
+    encoding: 'utf8',
+    maxBuffer: 10 * 1024 * 1024,
+    env: process.env,
+  });
+  if (result.status !== 0) {
+    throw new Error((result.stderr || result.stdout || `Generator exited with ${result.status}`).trim());
+  }
+  let parsed = null;
+  try {
+    parsed = JSON.parse(result.stdout);
+  } catch {
+    parsed = { stdout: result.stdout.trim() };
+  }
+  return {
+    ...parsed,
+    html: outPath,
+    statusFile,
+    snapshotDir,
+    rebuiltAt: new Date().toISOString(),
+  };
+};
+
 if (command === 'set') {
   const statusFile = takeOption('--status-file', DEFAULT_STATUS);
   const issueId = takeOption('--issue-id', null);
@@ -492,6 +529,15 @@ if (command === 'set') {
           sendJson(response, 200, data);
           return;
         }
+      }
+      if (url.pathname === '/api/rebuild') {
+        if (request.method !== 'POST') {
+          sendJson(response, 405, { error: 'Method not allowed' });
+          return;
+        }
+        const result = rebuildIssueList({ dir, statusFile });
+        sendJson(response, 200, result);
+        return;
       }
       if (url.pathname === '/api/run-log') {
         const issueId = url.searchParams.get('issueId');

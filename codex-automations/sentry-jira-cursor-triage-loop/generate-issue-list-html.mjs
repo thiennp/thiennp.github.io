@@ -1055,10 +1055,33 @@ document.addEventListener('click', async (event) => {
 
 document.getElementById('searchBox').addEventListener('input', applyFilters);
 document.getElementById('statusFilter').addEventListener('change', applyFilters);
-document.getElementById('reloadStatus').addEventListener('click', () => {
+document.getElementById('reloadStatus').addEventListener('click', async () => {
+  const button = document.getElementById('reloadStatus');
+  const original = button.textContent;
+  button.disabled = true;
+  button.textContent = 'Reloading...';
+  document.getElementById('serverState').textContent = 'Rebuilding issue list from latest API snapshots...';
+  document.querySelector('tbody').replaceChildren();
   remoteFailureCount = 0;
   remotePollingPaused = false;
-  loadStatus();
+  issueStatus = { issues: {} };
+  saveLocalStatus();
+  try {
+    const response = await fetch('/api/rebuild', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ fresh: true }),
+    });
+    const data = await response.json().catch(() => ({}));
+    if (!response.ok) throw new Error(data.error || 'Rebuild failed');
+    const nextUrl = new URL(window.location.href);
+    nextUrl.searchParams.set('reloadedAt', Date.now().toString());
+    window.location.href = nextUrl.toString();
+  } catch (error) {
+    button.disabled = false;
+    button.textContent = original;
+    document.getElementById('serverState').textContent = 'Rebuild failed: ' + error.message + '. Use the local status server, not file://, for full reload.';
+  }
 });
 window.setInterval(loadStatus, 10000);
 loadStatus();
