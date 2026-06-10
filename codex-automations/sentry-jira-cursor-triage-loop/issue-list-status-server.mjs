@@ -321,6 +321,64 @@ const runClaude = (prompt) => new Promise((resolve) => {
   });
 });
 
+const runClaudeStream = ({ prompt, onEvent }) => new Promise((resolve) => {
+  const startedAt = new Date().toISOString();
+  const cwd = extractClaudeCwd(prompt);
+  const child = spawn(process.execPath, [
+    SAFE_DELEGATE,
+    '--',
+    'claude',
+    '--print',
+    '--permission-mode',
+    'dontAsk',
+    '--allowedTools=Read,Glob,Grep,LS',
+    `--add-dir=${cwd}`,
+    prompt,
+  ], {
+    cwd,
+    env: process.env,
+    stdio: ['ignore', 'pipe', 'pipe'],
+  });
+  let stdout = '';
+  let stderr = '';
+  const timer = setTimeout(() => {
+    child.kill('SIGTERM');
+  }, CLAUDE_TIMEOUT_MS);
+  child.stdout.on('data', (chunk) => {
+    const text = chunk.toString();
+    stdout += text;
+    onEvent?.({ type: 'stdout', text });
+  });
+  child.stderr.on('data', (chunk) => {
+    const text = chunk.toString();
+    stderr += text;
+    onEvent?.({ type: 'stderr', text });
+  });
+  child.on('error', (error) => {
+    clearTimeout(timer);
+    onEvent?.({ type: 'error', text: error.message });
+    resolve({
+      status: 'error',
+      startedAt,
+      finishedAt: new Date().toISOString(),
+      error: error.message,
+      cwd,
+    });
+  });
+  child.on('close', (code, signal) => {
+    clearTimeout(timer);
+    const classified = classifyClaudeResult({ code, signal, stdout, stderr });
+    resolve({
+      ...classified,
+      startedAt,
+      finishedAt: new Date().toISOString(),
+      cwd,
+      exitCode: code,
+      signal,
+    });
+  });
+});
+
 const readBodyJson = (request) => new Promise((resolve, reject) => {
   let body = '';
   request.setEncoding('utf8');
@@ -350,6 +408,11 @@ const sendJson = (response, statusCode, data) => {
     'access-control-allow-headers': 'content-type',
   });
   response.end(JSON.stringify(data, null, 2));
+};
+
+const sendSse = (response, event, data) => {
+  response.write(`event: ${event}\n`);
+  response.write(`data: ${JSON.stringify(data)}\n\n`);
 };
 
 const contentType = (file) => {
@@ -434,6 +497,37 @@ if (command === 'set') {
         const issueId = url.searchParams.get('issueId');
         if (!issueId) throw new Error('issueId is required');
         sendJson(response, 200, readRunLog(statusFile, issueId));
+        return;
+      }
+      if (url.pathname === '/api/claude-stream') {
+        if (request.method !== 'POST') {
+          sendJson(response, 405, { error: 'Method not allowed' });
+          return;
+        }
+        const body = await readBodyJson(request);
+        if (!body.issueId && !body.id) throw new Error('issueId is required');
+        if (!body.prompt || typeof body.prompt !== 'string') throw new Error('prompt is required');
+        const issueId = body.issueId || body.id;
+        response.writeHead(200, {
+          'content-type': 'text/event-stream; charset=utf-8',
+          'cache-control': 'no-store',
+          connection: 'keep-alive',
+          'access-control-allow-origin': '*',
+        });
+        updateStatus({
+          statusFile,
+          issueId,
+          status: 'working',
+          message: 'Running Claude analysis',
+        });
+        sendSse(response, 'start', { issueId, message: 'Claude started' });
+        const result = await runClaudeStream({
+          prompt: body.prompt,
+          onEvent: (event) => sendSse(response, event.type, { issueId, text: event.text }),
+        });
+        const data = updateClaudeResult({ statusFile, issueId, result });
+        sendSse(response, 'done', { issueId, claude: result, status: data });
+        response.end();
         return;
       }
       if (url.pathname === '/api/claude') {

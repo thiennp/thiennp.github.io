@@ -375,6 +375,7 @@ const rowsHtml = rows.map((row) => {
           <button type="button" class="copy-prompt" data-prompt-base64="${encodePrompt(handoffPrompt)}">Copy prompt</button>
           <div class="muted claude-result"></div>
           <div class="muted requested-action"></div>
+          <pre class="terminal-output" aria-label="Live terminal output"></pre>
         </div>
       <div class="status-cell">
         <span class="row-status status-not-started">not started</span>
@@ -488,6 +489,8 @@ const html = `<!doctype html>
   .workflow-primary { display: flex; flex-direction: column; align-items: flex-start; gap: 6px; min-width: 0; }
   .primary-action { border-color: #0284c7; background: #0284c7; color: #ffffff; font-weight: 600; }
   .primary-action:hover { background: #0369a1; }
+  .terminal-output { width: 100%; max-height: 300px; overflow: auto; margin: 4px 0 0; padding: 10px; border-radius: 7px; background: #0f172a; color: #dbeafe; font: 12px/1.45 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; white-space: pre-wrap; }
+  .terminal-output:empty { display: none; }
   .status-cell { min-width: 220px; }
   .status-actions { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 6px; }
   .action-strip { display: flex; flex-wrap: wrap; gap: 4px; min-width: 250px; }
@@ -856,19 +859,55 @@ const askClaude = async (row, prompt) => {
   const issueId = row.dataset.issueId;
   const button = row.querySelector('button.ask-claude');
   const result = row.querySelector('.claude-result');
+  const terminal = row.querySelector('.terminal-output');
   const original = button.textContent;
   button.disabled = true;
   button.textContent = 'Claude running...';
   result.textContent = 'Running Claude analysis through local safe wrapper.';
+  terminal.textContent = '$ claude --print ...\n';
   await setIssueStatus(issueId, 'working', 'Running Claude analysis');
   try {
-    const response = await fetch('/api/claude', {
+    const response = await fetch('/api/claude-stream', {
       method: 'POST',
       headers: { 'content-type': 'application/json' },
       body: JSON.stringify({ issueId, prompt }),
     });
-    const data = await response.json();
-    if (!response.ok) throw new Error(data.error || 'Claude request failed');
+    if (!response.ok) {
+      const data = await response.json().catch(() => ({}));
+      throw new Error(data.error || 'Claude request failed');
+    }
+    if (!response.body) throw new Error('Streaming response unavailable');
+    const reader = response.body.getReader();
+    const decoder = new TextDecoder();
+    let buffer = '';
+    let data = null;
+    const handleEvent = (raw) => {
+      const lines = raw.split('\n');
+      const eventName = (lines.find((line) => line.startsWith('event:')) || 'event: message').slice(6).trim();
+      const dataLine = lines.find((line) => line.startsWith('data:'));
+      if (!dataLine) return;
+      const payload = JSON.parse(dataLine.slice(5).trim());
+      if (eventName === 'stdout' || eventName === 'stderr' || eventName === 'error') {
+        terminal.textContent += payload.text || '';
+        terminal.scrollTop = terminal.scrollHeight;
+      } else if (eventName === 'start') {
+        terminal.textContent += (payload.message || 'started') + '\n';
+      } else if (eventName === 'done') {
+        data = payload;
+      }
+    };
+    while (true) {
+      const { value, done } = await reader.read();
+      if (done) break;
+      buffer += decoder.decode(value, { stream: true });
+      const events = buffer.split('\n\n');
+      buffer = events.pop() || '';
+      for (const eventText of events) {
+        if (eventText.trim()) handleEvent(eventText);
+      }
+    }
+    if (buffer.trim()) handleEvent(buffer);
+    if (!data) throw new Error('Claude stream ended without final status');
     issueStatus = mergeStatus(data.status, loadLocalStatus());
     const claude = data.claude || {};
     if (claude.status === 'degraded') {
