@@ -71,7 +71,7 @@ const writeJsonAtomic = (file, data) => {
   fs.renameSync(tmp, file);
 };
 
-const updateStatus = ({ statusFile, issueId, status, message, action }) => {
+const updateStatus = ({ statusFile, issueId, status, message, action, requestedJiraKey }) => {
   if (!issueId) throw new Error('--issue-id is required');
   const data = readJson(statusFile);
   data.issues ||= {};
@@ -82,6 +82,7 @@ const updateStatus = ({ statusFile, issueId, status, message, action }) => {
     status: normalizeStatus(status),
     message: message ?? previous.message ?? '',
     requestedAction: action ?? previous.requestedAction ?? '',
+    requestedJiraKey: requestedJiraKey ?? previous.requestedJiraKey ?? '',
     updatedAt: new Date().toISOString(),
   };
   data.lastUpdated = data.issues[issueId].updatedAt;
@@ -271,6 +272,7 @@ if (command === 'set') {
             status: body.status,
             message: body.message || '',
             action: body.action || body.requestedAction || '',
+            requestedJiraKey: body.requestedJiraKey || '',
           });
           sendJson(response, 200, data);
           return;

@@ -311,7 +311,9 @@ const rowActionButtons = (row) => {
     parts.push('<button type="button" class="action-button" data-action="create-jira" title="Run duplicate and idempotency checks, dry-run Sentry Jira create/link, then create/link Jira only through the verified helper with required confirmation flags.">Create JIRA</button>');
   } else if (row.jira.browseUrl) {
     parts.push(`<a class="action-button" href="${escapeHtml(row.jira.browseUrl)}" target="_blank" rel="noreferrer" title="Open matched Jira ticket ${escapeHtml(row.jira.key || '')} directly">View JIRA</a>`);
+    parts.push('<button type="button" class="action-button warning-action" data-action="unlink-jira" title="Request Codex to verify the mounted Jira is outdated, then unlink only the Sentry-to-Jira mount through the verified safe path.">Unlink outdated JIRA</button>');
   }
+  parts.push('<button type="button" class="action-button" data-action="link-existing-jira" title="Enter an existing Jira key. Codex will verify it describes this Sentry issue before linking it through the safe helper.">Link existing JIRA</button>');
   const pr = (row.prs || [])[0];
   if (pr?.links?.html) {
     parts.push(`<a class="action-button" href="${escapeHtml(pr.links.html)}" target="_blank" rel="noreferrer" title="Open matched Bitbucket PR #${escapeHtml(pr.id)} directly">Review PR</a>`);
@@ -609,7 +611,9 @@ const renderStatus = () => {
     label.className = 'row-status status-' + normalized;
     label.textContent = statusLabel(normalized);
     note.textContent = status.updatedAt ? 'Updated ' + formatTime(status.updatedAt) + (status.message ? ' - ' + status.message : '') : (status.message || '');
-    requestedAction.textContent = status.requestedAction ? 'Requested: ' + status.requestedAction : '';
+    requestedAction.textContent = status.requestedAction
+      ? 'Requested: ' + status.requestedAction + (status.requestedJiraKey ? ' (' + status.requestedJiraKey + ')' : '')
+      : '';
     if (document.activeElement !== messageInput && messageInput.value !== (status.message || '')) {
       messageInput.value = status.message || '';
     }
@@ -686,17 +690,25 @@ const requestIssueAction = async (row, action) => {
   const label = ({
     'assign-to-me': 'Assign to me',
     'create-jira': 'Create JIRA',
+    'unlink-jira': 'Unlink outdated JIRA',
+    'link-existing-jira': 'Link existing JIRA',
     'review-pr': 'Review PR',
     'jira-status-change': 'JIRA Ticket status change',
   })[action] || action;
+  let requestedJiraKey = '';
+  if (action === 'link-existing-jira') {
+    requestedJiraKey = (window.prompt('Existing Jira key to verify and link, for example PRE-1234') || '').trim().toUpperCase();
+    if (!requestedJiraKey) return;
+  }
   const messageInput = row.querySelector('.status-message');
-  const message = messageInput.value.trim() || 'Requested action: ' + label;
+  const message = messageInput.value.trim() || 'Requested action: ' + label + (requestedJiraKey ? ' ' + requestedJiraKey : '');
   const entry = {
     ...(issueStatus.issues[issueId] || {}),
     id: issueId,
     status: 'selected',
     message,
     requestedAction: action,
+    requestedJiraKey,
     updatedAt: new Date().toISOString(),
   };
   issueStatus.issues[issueId] = entry;
