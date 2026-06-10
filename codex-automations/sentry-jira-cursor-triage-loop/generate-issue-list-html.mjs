@@ -264,6 +264,17 @@ const composeClaudePrompt = (row) => {
   ].join('\n');
 };
 
+const actions = [
+  ['assign-to-me', 'Assign to me', 'Verify source scope, then assign this Sentry issue to Thien Nguyen using the safe Sentry helper or Chrome only if API assignment is unavailable.'],
+  ['create-jira', 'Create JIRA', 'Run duplicate and idempotency checks, dry-run Sentry Jira create/link, then create/link Jira only through the verified helper with required confirmation flags.'],
+  ['review-pr', 'Review PR', 'Find the Thien-authored Bitbucket PR for this issue, verify exact PR state, review comments/Sonar if needed, then decide whether Codex PR follow-up or Cursor delegation is required.'],
+  ['jira-status-change', 'JIRA Ticket status change', 'Verify Jira status and Sentry state, then transition the mounted Jira ticket only when the workflow rules allow it.'],
+];
+
+const actionButtons = actions.map(([action, label, description]) =>
+  `<button type="button" class="action-button" data-action="${escapeHtml(action)}" title="${escapeHtml(description)}">${escapeHtml(label)}</button>`
+).join('');
+
 const rowsHtml = rows.map((row) => {
   const source = (row.sourceKeys || []).join(',');
   const assignee = issueAssignee(row) || 'unassigned';
@@ -295,6 +306,10 @@ const rowsHtml = rows.map((row) => {
       </div>
     </td>
     <td>
+      <div class="action-strip">${actionButtons}</div>
+      <div class="muted requested-action"></div>
+    </td>
+    <td>
       <button type="button" class="ask-claude" data-prompt-base64="${encodePrompt(claudePrompt)}">Ask Claude</button>
       <button type="button" class="copy-prompt" data-prompt-base64="${encodePrompt(prompt)}">Copy prompt</button>
       <div class="muted claude-result"></div>
@@ -311,6 +326,7 @@ const statusSeed = {
     status: 'not-started',
     updatedAt: null,
     message: '',
+    requestedAction: '',
   }])),
 };
 if (fs.existsSync(statusOutPath)) {
@@ -324,6 +340,7 @@ if (fs.existsSync(statusOutPath)) {
         status: old.status || 'not-started',
         updatedAt: old.updatedAt || null,
         message: old.message || '',
+        requestedAction: old.requestedAction || '',
       }];
     }));
     statusSeed.previousGeneratedAt = existing.generatedAt || existing.previousGeneratedAt || null;
@@ -382,6 +399,9 @@ const html = `<!doctype html>
   button.copied { border-color: #16a34a; color: #166534; background: #dcfce7; }
   .status-cell { min-width: 220px; }
   .status-actions { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 6px; }
+  .action-strip { display: flex; flex-wrap: wrap; gap: 4px; min-width: 250px; }
+  .action-button { border-color: #7dd3fc; color: #075985; background: #f0f9ff; }
+  .action-button:hover { background: #e0f2fe; }
   .status-message { width: 100%; border: 1px solid var(--line); border-radius: 6px; padding: 5px 7px; margin-top: 6px; font-size: 12px; }
   .row-status { display: inline-block; border-radius: 999px; padding: 2px 8px; font-size: 12px; border: 1px solid #cbd5e1; background: #f8fafc; }
   .status-selected { border-color: #38bdf8; background: #e0f2fe; color: #075985; }
@@ -436,7 +456,7 @@ const html = `<!doctype html>
 </div>
 <div class="table-wrap">
 <table>
-<thead><tr><th>Flag</th><th>Sentry</th><th>Project</th><th>Title</th><th>Status</th><th>Count</th><th>Assignee</th><th>Source</th><th>Jira match</th><th>Local status</th><th>Prompt</th></tr></thead>
+<thead><tr><th>Flag</th><th>Sentry</th><th>Project</th><th>Title</th><th>Status</th><th>Count</th><th>Assignee</th><th>Source</th><th>Jira match</th><th>Local status</th><th>Actions</th><th>Prompt</th></tr></thead>
 <tbody>${rowsHtml}</tbody>
 </table>
 </div>
@@ -491,6 +511,7 @@ const mergeStatus = (remote, local) => {
       status: 'not-started',
       updatedAt: null,
       message: '',
+      requestedAction: '',
     };
     const remoteIssue = remote?.issues?.[issue.id] || {};
     const localIssue = local?.issues?.[issue.id] || {};
@@ -522,10 +543,12 @@ const renderStatus = () => {
     const note = row.querySelector('.row-note');
     const messageInput = row.querySelector('.status-message');
     const claudeResult = row.querySelector('.claude-result');
+    const requestedAction = row.querySelector('.requested-action');
     row.classList.toggle('is-active', normalized === 'working' || normalized === 'selected');
     label.className = 'row-status status-' + normalized;
     label.textContent = statusLabel(normalized);
     note.textContent = status.updatedAt ? 'Updated ' + formatTime(status.updatedAt) + (status.message ? ' - ' + status.message : '') : (status.message || '');
+    requestedAction.textContent = status.requestedAction ? 'Requested: ' + status.requestedAction : '';
     if (document.activeElement !== messageInput && messageInput.value !== (status.message || '')) {
       messageInput.value = status.message || '';
     }
@@ -563,11 +586,13 @@ const renderStatus = () => {
 };
 
 const setIssueStatus = async (issueId, status, message = '') => {
+  const previous = issueStatus.issues[issueId] || {};
   const entry = {
-    ...(issueStatus.issues[issueId] || {}),
+    ...previous,
     id: issueId,
     status: normalizeStatus(status),
     message,
+    requestedAction: previous.requestedAction || '',
     updatedAt: new Date().toISOString(),
   };
   issueStatus.issues[issueId] = entry;
@@ -590,6 +615,42 @@ const setIssueStatus = async (issueId, status, message = '') => {
     throw new Error('POST failed');
   } catch {
     remoteFailureCount += 1;
+    document.getElementById('serverState').textContent = 'Status source: browser cache only. Start issue-list-status-server.mjs for Codex API updates.';
+  }
+};
+
+const requestIssueAction = async (row, action) => {
+  const issueId = row.dataset.issueId;
+  const label = ({
+    'assign-to-me': 'Assign to me',
+    'create-jira': 'Create JIRA',
+    'review-pr': 'Review PR',
+    'jira-status-change': 'JIRA Ticket status change',
+  })[action] || action;
+  const messageInput = row.querySelector('.status-message');
+  const message = messageInput.value.trim() || 'Requested action: ' + label;
+  const entry = {
+    ...(issueStatus.issues[issueId] || {}),
+    id: issueId,
+    status: 'selected',
+    message,
+    requestedAction: action,
+    updatedAt: new Date().toISOString(),
+  };
+  issueStatus.issues[issueId] = entry;
+  saveLocalStatus();
+  renderStatus();
+  try {
+    const response = await fetch('/api/status', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify(entry),
+    });
+    if (!response.ok) throw new Error('POST failed');
+    issueStatus = mergeStatus(await response.json(), loadLocalStatus());
+    document.getElementById('serverState').textContent = 'Status source: local API + browser cache';
+    renderStatus();
+  } catch {
     document.getElementById('serverState').textContent = 'Status source: browser cache only. Start issue-list-status-server.mjs for Codex API updates.';
   }
 };
@@ -678,6 +739,13 @@ document.addEventListener('click', async (event) => {
     const row = statusButton.closest('tr[data-issue-id]');
     const message = row.querySelector('.status-message').value.trim();
     await setIssueStatus(row.dataset.issueId, statusButton.dataset.status, message);
+    return;
+  }
+
+  const actionButton = event.target.closest('button.action-button');
+  if (actionButton) {
+    const row = actionButton.closest('tr[data-issue-id]');
+    await requestIssueAction(row, actionButton.dataset.action);
     return;
   }
 

@@ -18,7 +18,7 @@ const usage = () => {
 Commands:
   serve [--port 8797] [--host 127.0.0.1] [--dir artifacts]
       Serve the generated issue app and expose /api/status.
-  set --issue-id ID --status STATUS [--message TEXT] [--status-file PATH]
+  set --issue-id ID --status STATUS [--message TEXT] [--action ACTION] [--status-file PATH]
       Update the sidecar status JSON without starting a server.
   get [--status-file PATH]
       Print the current status JSON.
@@ -64,7 +64,7 @@ const writeJsonAtomic = (file, data) => {
   fs.renameSync(tmp, file);
 };
 
-const updateStatus = ({ statusFile, issueId, status, message }) => {
+const updateStatus = ({ statusFile, issueId, status, message, action }) => {
   if (!issueId) throw new Error('--issue-id is required');
   const data = readJson(statusFile);
   data.issues ||= {};
@@ -74,6 +74,7 @@ const updateStatus = ({ statusFile, issueId, status, message }) => {
     id: issueId,
     status: normalizeStatus(status),
     message: message ?? previous.message ?? '',
+    requestedAction: action ?? previous.requestedAction ?? '',
     updatedAt: new Date().toISOString(),
   };
   data.lastUpdated = data.issues[issueId].updatedAt;
@@ -183,7 +184,8 @@ if (command === 'set') {
   const issueId = takeOption('--issue-id', null);
   const status = takeOption('--status', null);
   const message = takeOption('--message', '');
-  const data = updateStatus({ statusFile, issueId, status, message });
+  const action = takeOption('--action', null);
+  const data = updateStatus({ statusFile, issueId, status, message, action });
   console.log(JSON.stringify({
     statusFile,
     issueId,
@@ -223,6 +225,7 @@ if (command === 'set') {
             issueId: body.issueId || body.id,
             status: body.status,
             message: body.message || '',
+            action: body.action || body.requestedAction || '',
           });
           sendJson(response, 200, data);
           return;
