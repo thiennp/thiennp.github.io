@@ -177,9 +177,10 @@ const composePrompt = (row) => {
   const lines = [
     'Use this sanitized Sentry/Jira evidence to delegate a bug fix to Cursor. Do not browse unless the API evidence is insufficient. Do not hand-write the bug fix in Codex.',
     '',
-    'First, use Claude CLI for local root-cause analysis if available:',
+    'First, use Claude CLI for local codebase reasoning if available:',
     "claude <<'EOF'",
-    'Summarize the likely root cause in 2-4 sentences for a developer fixing this Sentry issue. Use only this sanitized evidence:',
+    'You are doing local-only bug triage before Cursor changes code. Read the mapped repository files relevant to this Sentry issue, then produce a concise advisory for Codex and Cursor.',
+    'Do not browse. Do not use credentials. Use only this sanitized issue evidence plus local repository files.',
     `Sentry key: ${row.shortId}`,
     `Sentry issue id: ${row.id}`,
     `Sentry URL: ${row.permalink}`,
@@ -193,6 +194,14 @@ const composePrompt = (row) => {
     `Jira key: ${jira?.key || '(none mounted in assigned snapshot)'}`,
     `Jira status: ${jira?.status || '(unknown)'}`,
     `Jira URL: ${jira?.browseUrl || '(none)'}`,
+    `Repo: ${repo.repo}`,
+    `Repo path: ${repo.repoPath}`,
+    '',
+    'Return:',
+    '1. likely root cause',
+    '2. repository files/functions that should be inspected or changed',
+    '3. confidence and missing evidence',
+    '4. suggested Cursor implementation strategy',
     'EOF',
     '',
     'Then give Codex this request:',
@@ -209,6 +218,12 @@ const composePrompt = (row) => {
     '- Use API-first verification and duplicate/idempotency checks.',
     '- If no matching Jira exists, create/link via the verified Sentry Jira helper only after dry-run and confirmation gates.',
     '- If Jira is Done/Closed while Sentry is unresolved/regressed, reopen to In Progress before Cursor delegation.',
+    '- Before Cursor changes code, prepare an isolated worktree or branch from the latest refreshed base: fetch origin, prefer origin/release when it exists, else origin/main, else origin/master. Do not fix from a stale branch.',
+    '- Ask Claude to reason over the local codebase first. Codex must compare Claude reasoning with the Cursor plan before allowing implementation.',
+    '- Ask Cursor to first explain whether it agrees with Claude/Codex root-cause reasoning. If Cursor disagrees, Codex should have Claude and Cursor compare evidence until there is a single accepted plan, or record a clear fallback decision.',
+    '- If Claude reaches a limit, errors, or returns unusable output, Cursor may proceed using Codex-reviewed API/local evidence. Record that Claude was unavailable.',
+    '- If Cursor reaches a limit, errors, or cannot accept the task, Claude/Codex may decide the next investigation step, but Codex must not hand-roll bug-code changes.',
+    '- If both Claude and Cursor fail, stop with a blocker and the exact failing tool/output summary.',
     '- Cursor owns bug-code changes. Codex must not hand-roll the fix.',
     '- Use cursor-agent --model auto through safe-delegate-cli / triage-api-actions.sh delegate-cursor.',
     '- After Cursor returns, inspect .pipeline artifacts and run lightweight verification.',
@@ -218,10 +233,12 @@ const composePrompt = (row) => {
 
 const composeClaudePrompt = (row) => {
   const project = issueProject(row);
+  const repo = repoForProject(project);
   const jira = row.jira;
   return [
-    'Summarize the likely root cause in 2-4 sentences for a developer fixing this Sentry issue.',
-    'Use only this sanitized evidence. Do not browse. Do not use credentials.',
+    'You are doing local-only bug triage before Cursor changes code.',
+    'Read the mapped repository files relevant to this Sentry issue if the repo path exists. Do not browse. Do not use credentials.',
+    'Use only this sanitized evidence plus local repository files.',
     '',
     `Sentry key: ${row.shortId}`,
     `Sentry issue id: ${row.id}`,
@@ -236,6 +253,14 @@ const composeClaudePrompt = (row) => {
     `Jira key: ${jira?.key || '(none mounted in assigned snapshot)'}`,
     `Jira status: ${jira?.status || '(unknown)'}`,
     `Jira URL: ${jira?.browseUrl || '(none)'}`,
+    `Repo: ${repo.repo}`,
+    `Repo path: ${repo.repoPath}`,
+    '',
+    'Return:',
+    '1. likely root cause',
+    '2. repository files/functions that should be inspected or changed',
+    '3. whether Cursor should proceed and what plan it should follow',
+    '4. confidence and missing evidence',
   ].join('\n');
 };
 
