@@ -174,12 +174,17 @@ const composePrompt = (row) => {
   const project = issueProject(row);
   const repo = repoForProject(project);
   const jira = row.jira;
+  const safeShortId = String(row.shortId || row.id).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+  const worktreeName = `sentry-${safeShortId}-${row.id}`;
+  const worktreePath = `${repo.repoPath}/../worktrees/${repo.repo}-${worktreeName}`;
+  const branchName = `codex/${repo.repo}-${worktreeName}`;
   const lines = [
     'Use this sanitized Sentry/Jira evidence to delegate a bug fix to Cursor. Do not browse unless the API evidence is insufficient. Do not hand-write the bug fix in Codex.',
     '',
     'First, use Claude CLI for local codebase reasoning if available:',
     "claude <<'EOF'",
     'You are doing local-only bug triage before Cursor changes code. Read the mapped repository files relevant to this Sentry issue, then produce a concise advisory for Codex and Cursor.',
+    'You are being started from the mapped repository with explicit read-only file tools. Do not claim missing filesystem permission unless the read tools actually fail.',
     'Do not browse. Do not use credentials. Use only this sanitized issue evidence plus local repository files.',
     'If you cannot read the repository, do not stop at a generic permission warning. Return repoReadStatus=unavailable, give the best Sentry-only hypothesis, and list exact files/search terms Codex should inspect before Cursor implementation.',
     `Sentry key: ${row.shortId}`,
@@ -215,12 +220,17 @@ const composePrompt = (row) => {
     `Sentry status: ${row.status} / ${row.substatus}`,
     `Repo: ${repo.repo}`,
     `Repo path: ${repo.repoPath}`,
+    `Required worktree path: ${worktreePath}`,
+    `Required branch name: ${branchName}`,
     `Jira: ${jira?.key || '(create or verify Jira mount first)'} ${jira?.browseUrl || ''}`.trim(),
     'Requirements:',
     '- Use API-first verification and duplicate/idempotency checks.',
     '- If no matching Jira exists, create/link via the verified Sentry Jira helper only after dry-run and confirmation gates.',
     '- If Jira is Done/Closed while Sentry is unresolved/regressed, reopen to In Progress before Cursor delegation.',
-    '- Before Cursor changes code, prepare an isolated worktree or branch from the latest refreshed base: fetch origin, prefer origin/release when it exists, else origin/main, else origin/master. Do not fix from a stale branch.',
+    `- Before Cursor changes code, create or reuse a dedicated git worktree for this exact issue at ${worktreePath} on branch ${branchName}. Do not work directly in ${repo.repoPath}.`,
+    '- The worktree base must be freshly resolved: fetch origin, prefer origin/release when it exists, else origin/main, else origin/master. Create the issue branch from that refreshed base. Do not fix from a stale branch.',
+    '- Multiple issues in the same repo must use separate worktrees and branches, one per Sentry issue id, so they can run in parallel without clobbering each other.',
+    '- Run Claude and Cursor from the issue worktree once it exists. Pass only sanitized evidence and local repo paths; do not pass tokens or ~/.env.',
     '- Ask Claude to reason over the local codebase first. Codex must compare Claude reasoning with the Cursor plan before allowing implementation.',
     '- Ask Cursor to first explain whether it agrees with Claude/Codex root-cause reasoning. If Cursor disagrees, Codex should have Claude and Cursor compare evidence until there is a single accepted plan, or record a clear fallback decision.',
     '- If Claude reaches a limit, errors, or returns unusable output, Cursor may proceed using Codex-reviewed API/local evidence. Record that Claude was unavailable.',
@@ -241,6 +251,7 @@ const composeClaudePrompt = (row) => {
   return [
     'You are doing local-only bug triage before Cursor changes code.',
     'Read the mapped repository files relevant to this Sentry issue if the repo path exists. Do not browse. Do not use credentials.',
+    'You are being started from the mapped repository with explicit read-only file tools. Do not claim missing filesystem permission unless the read tools actually fail.',
     'Use only this sanitized evidence plus local repository files.',
     'If you cannot read the repository, do not stop at a generic permission warning. Return repoReadStatus=unavailable, give the best Sentry-only hypothesis, and list exact files/search terms Codex should inspect before Cursor implementation.',
     '',

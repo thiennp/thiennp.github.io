@@ -136,7 +136,17 @@ const classifyClaudeResult = ({ code, signal, stdout, stderr }) => {
 const runClaude = (prompt) => new Promise((resolve) => {
   const startedAt = new Date().toISOString();
   const cwd = extractClaudeCwd(prompt);
-  const child = spawn(process.execPath, [SAFE_DELEGATE, '--', 'claude', '--print', prompt], {
+  const child = spawn(process.execPath, [
+    SAFE_DELEGATE,
+    '--',
+    'claude',
+    '--print',
+    '--permission-mode',
+    'dontAsk',
+    '--allowedTools=Read,Glob,Grep,LS',
+    `--add-dir=${cwd}`,
+    prompt,
+  ], {
     cwd,
     env: process.env,
     stdio: ['ignore', 'pipe', 'pipe'],

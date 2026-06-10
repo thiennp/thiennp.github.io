@@ -59,7 +59,8 @@ triage-api-actions.sh issue-list-html \
 Generated HTML is a local artifact and contains no token values. It filters out Sentry issues that already have a Sentry assignee other than Thien Nguyen; unassigned issues and issues assigned to Thien remain visible. Each row includes:
 
 - local status controls: `selected`, `working`, `blocked`, and `done`
-- an `Ask Claude` button that sends sanitized row evidence to the local status server, which invokes Claude CLI through `safe-delegate-cli.mjs`
+- action request buttons for `Assign to me`, `Create JIRA`, `Review PR`, and `JIRA Ticket status change`; these record requested intent in the local status API and do not directly mutate Sentry/Jira
+- an `Ask Claude` button that sends sanitized row evidence to the local status server, which invokes Claude CLI through `safe-delegate-cli.mjs` from the mapped repo path with explicit read-only file tools
 - a `Copy prompt` button that copies a sanitized Claude CLI analysis prompt plus a Codex request for safe Cursor delegation
 - a sidecar status file at `artifacts/current-sentry-issue-status.json`
 
@@ -91,7 +92,7 @@ curl -sS -X POST http://127.0.0.1:8797/api/claude \
   -d '{"issueId":"6708782936","prompt":"Summarize this sanitized issue evidence..."}'
 ```
 
-Claude receives only the sanitized prompt from the generated row. The server runs Claude through `safe-delegate-cli.mjs`, so token-like environment variables are scrubbed.
+Claude receives only the sanitized prompt from the generated row. The server runs Claude through `safe-delegate-cli.mjs`, so token-like environment variables are scrubbed. The server starts Claude in the mapped repo directory when it is one of the known safe repo paths, passes `--add-dir <repo>`, and grants read-only tools (`Read`, `Glob`, `Grep`, `LS`). If Claude still cannot read the repo, treat the result as degraded analysis and continue with Codex local inspection plus Cursor plan agreement rather than stopping.
 
 If the server is not running, status changes made in the page still persist in browser localStorage. Codex can also update the sidecar JSON directly:
 
@@ -213,6 +214,8 @@ triage-api-actions.sh delegate-claude ...
 
 The wrapper uses `safe-delegate-cli.mjs`, which strips Sentry/Jira/Bitbucket token-like environment variables before starting the child CLI.
 It also does not pass `SSH_AUTH_SOCK` by default, so delegated agents cannot silently reuse the local SSH agent for git pushes.
+
+Every Cursor bug-fix delegation must use a dedicated worktree and branch per Sentry issue. Fetch origin first, choose the refreshed base in this order: `origin/release`, `origin/main`, `origin/master`, then create or reuse an issue-specific worktree outside the main repo checkout. Use branch names shaped like `codex/<repo>-sentry-<short-id>-<issue-id>`. Do not run Cursor bug-code fixes directly in the main repo path; this keeps multiple issues in the same repository isolated and parallelizable.
 
 ## Chrome Still Required
 
