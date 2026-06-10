@@ -2,12 +2,15 @@
 import http from 'node:http';
 import fs from 'node:fs';
 import path from 'node:path';
+import { spawn } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const DEFAULT_ARTIFACT_DIR = path.join(__dirname, 'artifacts');
 const DEFAULT_STATUS = path.join(DEFAULT_ARTIFACT_DIR, 'current-sentry-issue-status.json');
 const DEFAULT_HTML = path.join(DEFAULT_ARTIFACT_DIR, 'current-sentry-issue-list.html');
+const SAFE_DELEGATE = path.join(__dirname, 'safe-delegate-cli.mjs');
+const CLAUDE_TIMEOUT_MS = 120_000;
 
 const usage = () => {
   console.log(`Usage: issue-list-status-server.mjs <command> [options]
@@ -77,6 +80,64 @@ const updateStatus = ({ statusFile, issueId, status, message }) => {
   writeJsonAtomic(statusFile, data);
   return data;
 };
+
+const updateClaudeResult = ({ statusFile, issueId, result }) => {
+  if (!issueId) throw new Error('issueId is required');
+  const data = readJson(statusFile);
+  data.issues ||= {};
+  const previous = data.issues[issueId] || { id: issueId, status: 'not-started' };
+  data.issues[issueId] = {
+    ...previous,
+    id: issueId,
+    claude: result,
+    updatedAt: new Date().toISOString(),
+  };
+  data.lastUpdated = data.issues[issueId].updatedAt;
+  writeJsonAtomic(statusFile, data);
+  return data;
+};
+
+const runClaude = (prompt) => new Promise((resolve) => {
+  const startedAt = new Date().toISOString();
+  const child = spawn(process.execPath, [SAFE_DELEGATE, '--', 'claude', '--print', prompt], {
+    cwd: __dirname,
+    env: process.env,
+    stdio: ['ignore', 'pipe', 'pipe'],
+  });
+  let stdout = '';
+  let stderr = '';
+  const timer = setTimeout(() => {
+    child.kill('SIGTERM');
+  }, CLAUDE_TIMEOUT_MS);
+  child.stdout.on('data', (chunk) => {
+    stdout += chunk;
+  });
+  child.stderr.on('data', (chunk) => {
+    stderr += chunk;
+  });
+  child.on('error', (error) => {
+    clearTimeout(timer);
+    resolve({
+      status: 'error',
+      startedAt,
+      finishedAt: new Date().toISOString(),
+      error: error.message,
+    });
+  });
+  child.on('close', (code, signal) => {
+    clearTimeout(timer);
+    const timedOut = signal === 'SIGTERM';
+    resolve({
+      status: code === 0 && !timedOut ? 'success' : (timedOut ? 'timeout' : 'error'),
+      startedAt,
+      finishedAt: new Date().toISOString(),
+      exitCode: code,
+      signal,
+      output: stdout.trim(),
+      error: stderr.trim(),
+    });
+  });
+});
 
 const readBodyJson = (request) => new Promise((resolve, reject) => {
   let body = '';
@@ -166,6 +227,30 @@ if (command === 'set') {
           sendJson(response, 200, data);
           return;
         }
+      }
+      if (url.pathname === '/api/claude') {
+        if (request.method !== 'POST') {
+          sendJson(response, 405, { error: 'Method not allowed' });
+          return;
+        }
+        const body = await readBodyJson(request);
+        if (!body.issueId && !body.id) throw new Error('issueId is required');
+        if (!body.prompt || typeof body.prompt !== 'string') throw new Error('prompt is required');
+        const issueId = body.issueId || body.id;
+        updateStatus({
+          statusFile,
+          issueId,
+          status: 'working',
+          message: 'Running Claude analysis',
+        });
+        const result = await runClaude(body.prompt);
+        const data = updateClaudeResult({ statusFile, issueId, result });
+        sendJson(response, 200, {
+          issueId,
+          claude: result,
+          status: data,
+        });
+        return;
       }
 
       const requested = url.pathname === '/' ? path.basename(DEFAULT_HTML) : decodeURIComponent(url.pathname.slice(1));

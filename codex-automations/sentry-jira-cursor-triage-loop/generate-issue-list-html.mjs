@@ -216,12 +216,36 @@ const composePrompt = (row) => {
   return lines.join('\n');
 };
 
+const composeClaudePrompt = (row) => {
+  const project = issueProject(row);
+  const jira = row.jira;
+  return [
+    'Summarize the likely root cause in 2-4 sentences for a developer fixing this Sentry issue.',
+    'Use only this sanitized evidence. Do not browse. Do not use credentials.',
+    '',
+    `Sentry key: ${row.shortId}`,
+    `Sentry issue id: ${row.id}`,
+    `Sentry URL: ${row.permalink}`,
+    `Project: ${project}`,
+    `Title: ${row.title}`,
+    `Culprit: ${row.culprit || '(not provided)'}`,
+    `Status: ${row.status} / ${row.substatus}`,
+    `Event count: ${row.count}`,
+    `Assignee: ${issueAssignee(row) || 'unassigned'}`,
+    `Sources: ${(row.sourceKeys || []).join(',') || '(none)'}`,
+    `Jira key: ${jira?.key || '(none mounted in assigned snapshot)'}`,
+    `Jira status: ${jira?.status || '(unknown)'}`,
+    `Jira URL: ${jira?.browseUrl || '(none)'}`,
+  ].join('\n');
+};
+
 const rowsHtml = rows.map((row) => {
   const source = (row.sourceKeys || []).join(',');
   const assignee = issueAssignee(row) || 'unassigned';
   const project = issueProject(row);
   const jira = row.jira;
   const prompt = composePrompt(row);
+  const claudePrompt = composeClaudePrompt(row);
   return `<tr class="${row.isPriority ? 'priority' : ''}" data-issue-id="${escapeHtml(row.id)}">
     <td>${row.isPriority ? badge('priority', 'hot') : ''}</td>
     <td><a href="${escapeHtml(row.permalink)}">${escapeHtml(row.shortId)}</a><div class="muted">${escapeHtml(row.id)}</div></td>
@@ -245,7 +269,11 @@ const rowsHtml = rows.map((row) => {
         <div class="muted row-note"></div>
       </div>
     </td>
-    <td><button type="button" class="copy-prompt" data-prompt-base64="${encodePrompt(prompt)}">Copy prompt</button></td>
+    <td>
+      <button type="button" class="ask-claude" data-prompt-base64="${encodePrompt(claudePrompt)}">Ask Claude</button>
+      <button type="button" class="copy-prompt" data-prompt-base64="${encodePrompt(prompt)}">Copy prompt</button>
+      <div class="muted claude-result"></div>
+    </td>
   </tr>`;
 }).join('\n');
 
@@ -468,12 +496,21 @@ const renderStatus = () => {
     const label = row.querySelector('.row-status');
     const note = row.querySelector('.row-note');
     const messageInput = row.querySelector('.status-message');
+    const claudeResult = row.querySelector('.claude-result');
     row.classList.toggle('is-active', normalized === 'working' || normalized === 'selected');
     label.className = 'row-status status-' + normalized;
     label.textContent = statusLabel(normalized);
     note.textContent = status.updatedAt ? 'Updated ' + formatTime(status.updatedAt) + (status.message ? ' - ' + status.message : '') : (status.message || '');
     if (document.activeElement !== messageInput && messageInput.value !== (status.message || '')) {
       messageInput.value = status.message || '';
+    }
+    if (status.claude?.status) {
+      const summary = status.claude.output || status.claude.error || '';
+      claudeResult.textContent = 'Claude ' + status.claude.status + (summary ? ': ' + summary.slice(0, 240) : '');
+      claudeResult.title = summary;
+    } else {
+      claudeResult.textContent = '';
+      claudeResult.removeAttribute('title');
     }
     if (normalized === 'working' || normalized === 'selected' || normalized === 'blocked') {
       const issue = APP_DATA.issues.find((entry) => entry.id === issueId);
@@ -532,6 +569,35 @@ const setIssueStatus = async (issueId, status, message = '') => {
   }
 };
 
+const askClaude = async (row, prompt) => {
+  const issueId = row.dataset.issueId;
+  const button = row.querySelector('button.ask-claude');
+  const result = row.querySelector('.claude-result');
+  const original = button.textContent;
+  button.disabled = true;
+  button.textContent = 'Claude running...';
+  result.textContent = 'Running Claude analysis through local safe wrapper.';
+  await setIssueStatus(issueId, 'working', 'Running Claude analysis');
+  try {
+    const response = await fetch('/api/claude', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ issueId, prompt }),
+    });
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.error || 'Claude request failed');
+    issueStatus = mergeStatus(data.status, loadLocalStatus());
+    saveLocalStatus();
+    renderStatus();
+  } catch (error) {
+    result.textContent = 'Claude unavailable: ' + error.message;
+    await setIssueStatus(issueId, 'blocked', 'Claude unavailable: ' + error.message);
+  } finally {
+    button.disabled = false;
+    button.textContent = original;
+  }
+};
+
 const loadStatus = async () => {
   const local = loadLocalStatus();
   if (!remotePollingPaused) {
@@ -575,6 +641,13 @@ const applyFilters = () => {
 };
 
 document.addEventListener('click', async (event) => {
+  const claudeButton = event.target.closest('button.ask-claude');
+  if (claudeButton) {
+    const row = claudeButton.closest('tr[data-issue-id]');
+    await askClaude(row, decodePrompt(claudeButton.dataset.promptBase64 || ''));
+    return;
+  }
+
   const statusButton = event.target.closest('button.status-button');
   if (statusButton) {
     const row = statusButton.closest('tr[data-issue-id]');

@@ -59,6 +59,7 @@ triage-api-actions.sh issue-list-html \
 Generated HTML is a local artifact and contains no token values. It filters out Sentry issues that already have a Sentry assignee other than Thien Nguyen; unassigned issues and issues assigned to Thien remain visible. Each row includes:
 
 - local status controls: `selected`, `working`, `blocked`, and `done`
+- an `Ask Claude` button that sends sanitized row evidence to the local status server, which invokes Claude CLI through `safe-delegate-cli.mjs`
 - a `Copy prompt` button that copies a sanitized Claude CLI analysis prompt plus a Codex request for safe Cursor delegation
 - a sidecar status file at `artifacts/current-sentry-issue-status.json`
 
@@ -81,6 +82,16 @@ curl -sS -X POST http://127.0.0.1:8797/api/status \
   -H 'content-type: application/json' \
   -d '{"issueId":"6708782936","status":"working","message":"Creating Cursor handoff"}'
 ```
+
+The local app can also ask Claude directly through the same server:
+
+```bash
+curl -sS -X POST http://127.0.0.1:8797/api/claude \
+  -H 'content-type: application/json' \
+  -d '{"issueId":"6708782936","prompt":"Summarize this sanitized issue evidence..."}'
+```
+
+Claude receives only the sanitized prompt from the generated row. The server runs Claude through `safe-delegate-cli.mjs`, so token-like environment variables are scrubbed.
 
 If the server is not running, status changes made in the page still persist in browser localStorage. Codex can also update the sidecar JSON directly:
 
