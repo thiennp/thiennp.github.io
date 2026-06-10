@@ -11,6 +11,13 @@ const DEFAULT_STATUS = path.join(DEFAULT_ARTIFACT_DIR, 'current-sentry-issue-sta
 const DEFAULT_HTML = path.join(DEFAULT_ARTIFACT_DIR, 'current-sentry-issue-list.html');
 const SAFE_DELEGATE = path.join(__dirname, 'safe-delegate-cli.mjs');
 const CLAUDE_TIMEOUT_MS = 120_000;
+const ALLOWED_REPO_ROOTS = [
+  '/Users/thien.nguyen/enrg-energymodule',
+  '/Users/thien.nguyen/enrg-web-frontend',
+  '/Users/thien.nguyen/enrg-energycenter-rev',
+  '/Users/thien.nguyen/enrg-tarifvergleich',
+  __dirname,
+];
 
 const usage = () => {
   console.log(`Usage: issue-list-status-server.mjs <command> [options]
@@ -98,10 +105,39 @@ const updateClaudeResult = ({ statusFile, issueId, result }) => {
   return data;
 };
 
+const extractClaudeCwd = (prompt) => {
+  const match = String(prompt).match(/^Repo path:\s*(.+)$/m);
+  if (!match) return __dirname;
+  const candidate = match[1].trim();
+  if (!candidate || candidate.startsWith('(')) return __dirname;
+  const resolved = path.resolve(candidate);
+  const allowed = ALLOWED_REPO_ROOTS.some((root) => resolved === root || resolved.startsWith(`${root}${path.sep}`));
+  if (!allowed || !fs.existsSync(resolved) || !fs.statSync(resolved).isDirectory()) return __dirname;
+  return resolved;
+};
+
+const classifyClaudeResult = ({ code, signal, stdout, stderr }) => {
+  const timedOut = signal === 'SIGTERM';
+  const output = stdout.trim();
+  const error = stderr.trim();
+  if (timedOut) return { status: 'timeout', output, error };
+  if (code !== 0) return { status: 'error', output, error };
+  if (/don'?t have filesystem permission|permission to read|access denied|not allowed to read/i.test(`${output}\n${error}`)) {
+    return {
+      status: 'degraded',
+      output,
+      error,
+      warning: 'Claude could not read the mapped repository. Continue with Codex local inspection and Cursor plan agreement.',
+    };
+  }
+  return { status: 'success', output, error };
+};
+
 const runClaude = (prompt) => new Promise((resolve) => {
   const startedAt = new Date().toISOString();
+  const cwd = extractClaudeCwd(prompt);
   const child = spawn(process.execPath, [SAFE_DELEGATE, '--', 'claude', '--print', prompt], {
-    cwd: __dirname,
+    cwd,
     env: process.env,
     stdio: ['ignore', 'pipe', 'pipe'],
   });
@@ -127,15 +163,14 @@ const runClaude = (prompt) => new Promise((resolve) => {
   });
   child.on('close', (code, signal) => {
     clearTimeout(timer);
-    const timedOut = signal === 'SIGTERM';
+    const classified = classifyClaudeResult({ code, signal, stdout, stderr });
     resolve({
-      status: code === 0 && !timedOut ? 'success' : (timedOut ? 'timeout' : 'error'),
+      ...classified,
       startedAt,
       finishedAt: new Date().toISOString(),
+      cwd,
       exitCode: code,
       signal,
-      output: stdout.trim(),
-      error: stderr.trim(),
     });
   });
 });

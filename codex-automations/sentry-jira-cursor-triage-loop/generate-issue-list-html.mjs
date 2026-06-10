@@ -181,6 +181,7 @@ const composePrompt = (row) => {
     "claude <<'EOF'",
     'You are doing local-only bug triage before Cursor changes code. Read the mapped repository files relevant to this Sentry issue, then produce a concise advisory for Codex and Cursor.',
     'Do not browse. Do not use credentials. Use only this sanitized issue evidence plus local repository files.',
+    'If you cannot read the repository, do not stop at a generic permission warning. Return repoReadStatus=unavailable, give the best Sentry-only hypothesis, and list exact files/search terms Codex should inspect before Cursor implementation.',
     `Sentry key: ${row.shortId}`,
     `Sentry issue id: ${row.id}`,
     `Sentry URL: ${row.permalink}`,
@@ -202,6 +203,7 @@ const composePrompt = (row) => {
     '2. repository files/functions that should be inspected or changed',
     '3. confidence and missing evidence',
     '4. suggested Cursor implementation strategy',
+    '5. repoReadStatus=read|unavailable and concrete fallback next step',
     'EOF',
     '',
     'Then give Codex this request:',
@@ -222,6 +224,7 @@ const composePrompt = (row) => {
     '- Ask Claude to reason over the local codebase first. Codex must compare Claude reasoning with the Cursor plan before allowing implementation.',
     '- Ask Cursor to first explain whether it agrees with Claude/Codex root-cause reasoning. If Cursor disagrees, Codex should have Claude and Cursor compare evidence until there is a single accepted plan, or record a clear fallback decision.',
     '- If Claude reaches a limit, errors, or returns unusable output, Cursor may proceed using Codex-reviewed API/local evidence. Record that Claude was unavailable.',
+    '- If Claude cannot read the repository but returns Sentry-only analysis, Codex must inspect the local repo directly using the suggested files/search terms, then ask Cursor for plan agreement before implementation.',
     '- If Cursor reaches a limit, errors, or cannot accept the task, Claude/Codex may decide the next investigation step, but Codex must not hand-roll bug-code changes.',
     '- If both Claude and Cursor fail, stop with a blocker and the exact failing tool/output summary.',
     '- Cursor owns bug-code changes. Codex must not hand-roll the fix.',
@@ -239,6 +242,7 @@ const composeClaudePrompt = (row) => {
     'You are doing local-only bug triage before Cursor changes code.',
     'Read the mapped repository files relevant to this Sentry issue if the repo path exists. Do not browse. Do not use credentials.',
     'Use only this sanitized evidence plus local repository files.',
+    'If you cannot read the repository, do not stop at a generic permission warning. Return repoReadStatus=unavailable, give the best Sentry-only hypothesis, and list exact files/search terms Codex should inspect before Cursor implementation.',
     '',
     `Sentry key: ${row.shortId}`,
     `Sentry issue id: ${row.id}`,
@@ -261,6 +265,7 @@ const composeClaudePrompt = (row) => {
     '2. repository files/functions that should be inspected or changed',
     '3. whether Cursor should proceed and what plan it should follow',
     '4. confidence and missing evidence',
+    '5. repoReadStatus=read|unavailable and concrete fallback next step',
   ].join('\n');
 };
 
@@ -554,7 +559,8 @@ const renderStatus = () => {
     }
     if (status.claude?.status) {
       const summary = status.claude.output || status.claude.error || '';
-      claudeResult.textContent = 'Claude ' + status.claude.status + (summary ? ': ' + summary.slice(0, 240) : '');
+      const label = status.claude.status === 'degraded' ? 'Claude degraded' : 'Claude ' + status.claude.status;
+      claudeResult.textContent = label + (summary ? ': ' + summary.slice(0, 240) : '');
       claudeResult.title = summary;
     } else {
       claudeResult.textContent = '';
@@ -673,6 +679,17 @@ const askClaude = async (row, prompt) => {
     const data = await response.json();
     if (!response.ok) throw new Error(data.error || 'Claude request failed');
     issueStatus = mergeStatus(data.status, loadLocalStatus());
+    const claude = data.claude || {};
+    if (claude.status === 'degraded') {
+      issueStatus.issues[issueId] = {
+        ...(issueStatus.issues[issueId] || {}),
+        id: issueId,
+        status: 'selected',
+        message: claude.warning || 'Claude degraded; continue with Codex local inspection and Cursor agreement',
+        requestedAction: issueStatus.issues[issueId]?.requestedAction || '',
+        updatedAt: new Date().toISOString(),
+      };
+    }
     saveLocalStatus();
     renderStatus();
   } catch (error) {
