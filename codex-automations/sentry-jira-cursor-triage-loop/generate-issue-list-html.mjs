@@ -205,6 +205,8 @@ const composePrompt = (row) => {
     'You are being started from the mapped repository with explicit read-only file tools. Do not claim missing filesystem permission unless the read tools actually fail.',
     'Do not browse. Do not use credentials. Use only this sanitized issue evidence plus local repository files.',
     'If you cannot read the repository, do not stop at a generic permission warning. Return repoReadStatus=unavailable, give the best Sentry-only hypothesis, and list exact files/search terms Codex should inspect before Cursor implementation.',
+    'Do not stop at "known noise", browser extension, crawler, iOS WebView, or Chrome Mobile iOS unless you can cite concrete evidence from this issue payload. If you think it is external noise, still return recommendation=codex_validate_noise and list the exact evidence Codex must verify before skipping.',
+    'Do not mark the issue solved. Claude is advisory only; Cursor/Codex must validate before any skip, Jira action, or fix delegation.',
     `Sentry key: ${row.shortId}`,
     `Sentry issue id: ${row.id}`,
     `Sentry URL: ${row.permalink}`,
@@ -222,11 +224,12 @@ const composePrompt = (row) => {
     `Repo path: ${repo.repoPath}`,
     '',
     'Return:',
-    '1. likely root cause',
-    '2. repository files/functions that should be inspected or changed',
-    '3. confidence and missing evidence',
-    '4. suggested Cursor implementation strategy',
-    '5. repoReadStatus=read|unavailable and concrete fallback next step',
+    '1. recommendation=delegate_to_cursor|codex_validate_noise|needs_more_evidence|skip_with_evidence',
+    '2. likely root cause',
+    '3. repository files/functions that should be inspected or changed',
+    '4. confidence and missing evidence',
+    '5. suggested Cursor implementation strategy or exact Codex validation steps',
+    '6. repoReadStatus=read|unavailable and concrete fallback next step',
     'EOF',
     '',
     'Then give Codex this request:',
@@ -272,6 +275,8 @@ const composeClaudePrompt = (row) => {
     'You are being started from the mapped repository with explicit read-only file tools. Do not claim missing filesystem permission unless the read tools actually fail.',
     'Use only this sanitized evidence plus local repository files.',
     'If you cannot read the repository, do not stop at a generic permission warning. Return repoReadStatus=unavailable, give the best Sentry-only hypothesis, and list exact files/search terms Codex should inspect before Cursor implementation.',
+    'Do not stop at "known noise", browser extension, crawler, iOS WebView, or Chrome Mobile iOS unless you can cite concrete evidence from this issue payload. If you think it is external noise, still return recommendation=codex_validate_noise and list the exact evidence Codex must verify before skipping.',
+    'Do not mark the issue solved. Claude is advisory only; Cursor/Codex must validate before any skip, Jira action, or fix delegation.',
     '',
     `Sentry key: ${row.shortId}`,
     `Sentry issue id: ${row.id}`,
@@ -290,11 +295,12 @@ const composeClaudePrompt = (row) => {
     `Repo path: ${repo.repoPath}`,
     '',
     'Return:',
-    '1. likely root cause',
-    '2. repository files/functions that should be inspected or changed',
-    '3. whether Cursor should proceed and what plan it should follow',
-    '4. confidence and missing evidence',
-    '5. repoReadStatus=read|unavailable and concrete fallback next step',
+    '1. recommendation=delegate_to_cursor|codex_validate_noise|needs_more_evidence|skip_with_evidence',
+    '2. likely root cause',
+    '3. repository files/functions that should be inspected or changed',
+    '4. whether Cursor should proceed and what plan it should follow',
+    '5. confidence and missing evidence',
+    '6. repoReadStatus=read|unavailable and concrete fallback next step',
   ].join('\n');
 };
 
@@ -690,7 +696,11 @@ const renderStatus = () => {
     }
     if (status.claude?.status) {
       const summary = status.claude.output || status.claude.error || '';
-      const label = status.claude.status === 'degraded' ? 'Claude degraded' : 'Claude ' + status.claude.status;
+      const label = status.claude.status === 'degraded'
+        ? 'Claude degraded'
+        : status.claude.status === 'needs-validation'
+          ? 'Claude needs Codex validation'
+          : 'Claude ' + status.claude.status;
       claudeResult.textContent = label + (summary ? ': ' + summary.slice(0, 240) : '');
       claudeResult.title = summary;
     } else {
@@ -861,6 +871,16 @@ const askClaude = async (row, prompt) => {
         status: 'selected',
         message: claude.warning || 'Claude degraded; continue with Codex local inspection and Cursor agreement',
         requestedAction: issueStatus.issues[issueId]?.requestedAction || '',
+        requestedJiraKey: issueStatus.issues[issueId]?.requestedJiraKey || '',
+        updatedAt: new Date().toISOString(),
+      };
+    } else if (claude.status === 'needs-validation') {
+      issueStatus.issues[issueId] = {
+        ...(issueStatus.issues[issueId] || {}),
+        id: issueId,
+        status: 'selected',
+        message: claude.warning || 'Claude says likely external/noise; Codex must validate Sentry evidence before skipping',
+        requestedAction: 'codex-validate-noise',
         requestedJiraKey: issueStatus.issues[issueId]?.requestedJiraKey || '',
         updatedAt: new Date().toISOString(),
       };

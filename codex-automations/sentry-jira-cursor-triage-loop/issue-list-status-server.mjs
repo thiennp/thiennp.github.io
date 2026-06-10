@@ -172,6 +172,14 @@ const classifyClaudeResult = ({ code, signal, stdout, stderr }) => {
   const error = stderr.trim();
   if (timedOut) return { status: 'timeout', output, error };
   if (code !== 0) return { status: 'error', output, error };
+  if (/known noise|google'?s ios|chrome mobile ios|ios in-app browser|browser extension|external noise|crawler/i.test(`${output}\n${error}`)) {
+    return {
+      status: 'needs-validation',
+      output,
+      error,
+      warning: 'Claude classified this as likely external/noise. Codex must validate Sentry evidence before skipping or delegating.',
+    };
+  }
   if (/don'?t have filesystem permission|permission to read|access denied|not allowed to read/i.test(`${output}\n${error}`)) {
     return {
       status: 'degraded',
