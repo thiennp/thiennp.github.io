@@ -101,6 +101,7 @@ if (snapshot.status !== 'complete') {
 const jiraIssues = snapshot.jira?.issues || [];
 const jiraBySummary = new Map(jiraIssues.map((issue) => [String(issue.summary || '').trim(), issue]));
 const priorityIds = new Set(['6708782936', '7430161619']);
+const OWN_ASSIGNEE_NAME = 'thien nguyen';
 
 const escapeHtml = (value) => String(value ?? '').replace(/[&<>"']/g, (char) => ({
   '&': '&amp;',
@@ -113,8 +114,15 @@ const escapeHtml = (value) => String(value ?? '').replace(/[&<>"']/g, (char) => 
 const badge = (text, className = '') => `<span class="badge ${className}">${escapeHtml(text)}</span>`;
 const issueAssignee = (issue) => issue.assignedTo?.name || issue.assignedTo?.email || '';
 const issueProject = (issue) => issue.project?.slug || issue.project?.name || issue.project || '';
+const isAssignedToOtherPerson = (issue) => {
+  const assignee = issueAssignee(issue).trim().toLowerCase();
+  return assignee !== '' && assignee !== OWN_ASSIGNEE_NAME;
+};
 
-const rows = (sentry.unionItems || []).map((issue) => {
+const allUnionItems = sentry.unionItems || [];
+const filteredOutAssignedToOthers = allUnionItems.filter(isAssignedToOtherPerson);
+
+const rows = allUnionItems.filter((issue) => !isAssignedToOtherPerson(issue)).map((issue) => {
   const jira = jiraBySummary.get(String(issue.title || '').trim());
   const isPriority =
     priorityIds.has(issue.id) ||
@@ -129,6 +137,7 @@ const rows = (sentry.unionItems || []).map((issue) => {
 
 const priorityCount = rows.filter((row) => row.isPriority).length;
 const regressedCount = rows.filter((row) => row.substatus === 'regressed').length;
+const visibleCount = rows.length;
 const sourceACount = sentry.sources?.A?.count ?? '';
 const sourceBCount = sentry.sources?.B?.count ?? '';
 const bitbucketCount = snapshot.bitbucket?.count ?? snapshot.bitbucket?.pullRequests?.length ?? 0;
@@ -178,9 +187,11 @@ const html = `<!doctype html>
 <body>
 <h1>Sentry Triage Issue List</h1>
 <div class="muted">Generated ${escapeHtml(new Date().toISOString())} from sanitized API snapshots. No local live report or Jenkins data used.</div>
+<div class="muted">Filter: showing unassigned issues and issues assigned to Thien Nguyen. Hidden issues assigned to other people: ${escapeHtml(filteredOutAssignedToOthers.length)}.</div>
 <div class="muted">Sentry evidence: ${escapeHtml(sentryPath)}<br />Jira/Bitbucket evidence: ${escapeHtml(jiraBitbucketPath)}</div>
 <div class="summary">
   <div class="card"><strong>${escapeHtml(sentry.unionCount)}</strong><span>Total union issues</span></div>
+  <div class="card"><strong>${escapeHtml(visibleCount)}</strong><span>Visible after filter</span></div>
   <div class="card"><strong>${escapeHtml(sourceACount)}</strong><span>Source A</span></div>
   <div class="card"><strong>${escapeHtml(sourceBCount)}</strong><span>Source B</span></div>
   <div class="card"><strong>${escapeHtml(priorityCount)}</strong><span>Priority rows</span></div>
@@ -202,6 +213,8 @@ console.log(JSON.stringify({
   sentry: sentryPath,
   jiraBitbucket: jiraBitbucketPath,
   unionCount: sentry.unionCount,
+  visibleCount,
+  filteredOutAssignedToOthers: filteredOutAssignedToOthers.length,
   priorityCount,
   regressedCount,
 }, null, 2));
