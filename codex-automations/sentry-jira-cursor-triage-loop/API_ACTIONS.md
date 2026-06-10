@@ -56,7 +56,46 @@ triage-api-actions.sh issue-list-html \
   --jira-bitbucket /tmp/path/to/jira-bitbucket-snapshot.json
 ```
 
-Generated HTML is a local artifact and contains no token values. It filters out Sentry issues that already have a Sentry assignee other than Thien Nguyen; unassigned issues and issues assigned to Thien remain visible. Each row includes a `Copy prompt` button that copies a sanitized Claude CLI analysis prompt plus a Codex request for safe Cursor delegation.
+Generated HTML is a local artifact and contains no token values. It filters out Sentry issues that already have a Sentry assignee other than Thien Nguyen; unassigned issues and issues assigned to Thien remain visible. Each row includes:
+
+- local status controls: `selected`, `working`, `blocked`, and `done`
+- a `Copy prompt` button that copies a sanitized Claude CLI analysis prompt plus a Codex request for safe Cursor delegation
+- a sidecar status file at `artifacts/current-sentry-issue-status.json`
+
+To let Codex update the page through a local API, start the local issue app server:
+
+```bash
+triage-api-actions.sh issue-list-status-server --port 8797
+```
+
+Open:
+
+```text
+http://127.0.0.1:8797/
+```
+
+Codex can then update issue status with a local API call:
+
+```bash
+curl -sS -X POST http://127.0.0.1:8797/api/status \
+  -H 'content-type: application/json' \
+  -d '{"issueId":"6708782936","status":"working","message":"Creating Cursor handoff"}'
+```
+
+If the server is not running, status changes made in the page still persist in browser localStorage. Codex can also update the sidecar JSON directly:
+
+```bash
+triage-api-actions.sh issue-list-status-set \
+  --issue-id 6708782936 \
+  --status working \
+  --message "Creating Cursor handoff"
+```
+
+To read current local status without the server:
+
+```bash
+triage-api-actions.sh issue-list-status-get
+```
 
 ## Read-Only Source Actions
 

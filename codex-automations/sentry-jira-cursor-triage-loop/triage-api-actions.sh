@@ -7,6 +7,7 @@ JIRA_BB="${SCRIPT_DIR}/jira-bitbucket-snapshot.mjs"
 SENTRY_JIRA="${SCRIPT_DIR}/sentry-jira-integration.mjs"
 SAFE_DELEGATE="${SCRIPT_DIR}/safe-delegate-cli.mjs"
 ISSUE_LIST_HTML="${SCRIPT_DIR}/generate-issue-list-html.mjs"
+ISSUE_STATUS_SERVER="${SCRIPT_DIR}/issue-list-status-server.mjs"
 
 usage() {
   cat <<'EOF'
@@ -25,6 +26,12 @@ Read-only source actions:
       Fetch Jira + Bitbucket in one call.
   issue-list-html [--fresh] [--sentry PATH] [--jira-bitbucket PATH] [--out PATH]
       Generate a sanitized HTML issue list from API snapshots.
+  issue-list-status-server [--port 8797] [--host 127.0.0.1]
+      Serve the generated issue app and expose /api/status for Codex status updates.
+  issue-list-status-set --issue-id ID --status STATUS [--message TEXT]
+      Update the generated issue status sidecar JSON without starting the server.
+  issue-list-status-get
+      Print the generated issue status sidecar JSON.
 
 Sentry Jira integration actions:
   sentry-jira-inspect --issue-id ID
@@ -189,6 +196,18 @@ case "$action" in
   issue-list-html)
     require_node_script "$ISSUE_LIST_HTML"
     node "$ISSUE_LIST_HTML" "$@"
+    ;;
+  issue-list-status-server)
+    require_node_script "$ISSUE_STATUS_SERVER"
+    node "$ISSUE_STATUS_SERVER" serve "$@"
+    ;;
+  issue-list-status-set)
+    require_node_script "$ISSUE_STATUS_SERVER"
+    node "$ISSUE_STATUS_SERVER" set "$@"
+    ;;
+  issue-list-status-get)
+    require_node_script "$ISSUE_STATUS_SERVER"
+    node "$ISSUE_STATUS_SERVER" get "$@"
     ;;
   sentry-jira-inspect)
     require_node_script "$SENTRY_JIRA"
