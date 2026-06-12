@@ -37,6 +37,7 @@ const sentryIssueTrackingSettleMs = Number(process.env.SENTRY_TRIAGE_SENTRY_ISSU
 const jiraUiActionTimeoutMs = Number(process.env.SENTRY_TRIAGE_JIRA_UI_ACTION_TIMEOUT_MS || 60000);
 const sentryIssueTrackingActionTimeoutMs = Number(process.env.SENTRY_TRIAGE_SENTRY_ISSUE_TRACKING_ACTION_TIMEOUT_MS || 60000);
 const uiActionPollMs = Number(process.env.SENTRY_TRIAGE_UI_ACTION_POLL_MS || 1000);
+const standaloneMode = /^(1|true|yes)$/i.test(String(process.env.SENTRY_TRIAGE_STANDALONE || '0'));
 const source = 'sentry-chrome-tab-snapshot-detail-scan';
 const EXIT = {
   SUCCESS: 0,
@@ -262,7 +263,13 @@ async function assignJiraTicketIfUnassigned(ticket) {
     return {type: 'assign', key: normalized?.key || '', status: 'skipped'};
   }
   if (jiraDryRun) {
-    return {type: 'assign', key: normalized.key, status: 'dry-run', message: 'Would assign through the Jira page UI if currently unassigned.'};
+    return {
+      type: 'assign',
+      key: normalized.key,
+      status: 'dry-run',
+      assignee: 'Thien Nguyen',
+      message: 'Would assign through the Jira page UI if currently unassigned.',
+    };
   }
   if (!jiraAssignViaChrome) {
     return {
@@ -1386,6 +1393,9 @@ function resolveJiraOwnerViaChrome(ticket, actions = []) {
     return {ok: false, status: 'blocked', message: 'Cannot resolve Jira owner for an invalid Jira ticket.'};
   }
   const ownerHint = jiraOwnerNameFromActions(normalized, actions);
+  if (jiraDryRun && ownerHint) {
+    return {ok: true, key: normalized.key, ownerName: ownerHint, ownerHint, source: 'jira-dry-run-action'};
+  }
   navigateActiveTab(normalized.url || jiraUrl(normalized.key));
   const pageState = waitForUrlFragment(normalized.key, jiraUiActionTimeoutMs);
   if (!String(pageState.url || '').includes(normalized.key)) {
@@ -1696,6 +1706,9 @@ async function getJson(url) {
 }
 
 async function getReport() {
+  if (standaloneMode) {
+    return {};
+  }
   return getJson(reportApi);
 }
 
@@ -1716,6 +1729,9 @@ function workflowNeighbor(row) {
 }
 
 async function signalWorkflow(row, index, total, message, status = 'active', scanRequestId = randomUUID(), context = {}) {
+  if (standaloneMode) {
+    return null;
+  }
   const id = issueIdFrom(row.issueId || row.issueUrl);
   const key = firstShortId(row, id);
   const previous = workflowNeighbor(context.previousRow);
@@ -1827,13 +1843,8 @@ function patchSentryItem(item, id, tickets, checkedAt, detailState, row, jiraAct
 }
 
 async function updateReport(row, detailState, checkedAt, results, index, total, ensuredTickets = [], jiraActions = []) {
-  const report = await getReport();
   const id = issueIdFrom(row.issueId || row.issueUrl);
   const tickets = mergeTickets(rowTickets(row), detailState.tickets, ensuredTickets);
-  const patchItem = (item) => patchSentryItem(item, id, tickets, checkedAt, detailState, row, jiraActions);
-  const lastFeed = report.lastSentryFeedSnapshot && typeof report.lastSentryFeedSnapshot === 'object'
-    ? report.lastSentryFeedSnapshot
-    : {};
   const nextResults = [...results];
   const existingIndex = nextResults.findIndex((item) => item.issueId === id);
   const result = {
@@ -1858,6 +1869,16 @@ async function updateReport(row, detailState, checkedAt, results, index, total, 
   if (existingIndex >= 0) nextResults[existingIndex] = result;
   else nextResults.push(result);
 
+  if (standaloneMode) {
+    return nextResults;
+  }
+
+  const report = await getReport();
+  const patchItem = (item) => patchSentryItem(item, id, tickets, checkedAt, detailState, row, jiraActions);
+  const lastFeed = report.lastSentryFeedSnapshot && typeof report.lastSentryFeedSnapshot === 'object'
+    ? report.lastSentryFeedSnapshot
+    : {};
+
   const next = {
     ...report,
     lastUpdated: checkedAt,
@@ -1873,6 +1894,7 @@ async function updateReport(row, detailState, checkedAt, results, index, total, 
       checkedAt,
       status: index + 1 >= total ? 'complete' : 'running',
       source,
+      standaloneMode,
       scanLimit,
       totalIssueCount: total,
       checkedIssueCount: index + 1,
@@ -2063,30 +2085,32 @@ const assignedJiraIssueCount = results.flatMap((item) => item.jiraActions || [])
 const sentryIssueTrackingLinkedCount = results.flatMap((item) => item.jiraActions || []).filter((action) => action.type === 'sentry-issue-tracking-link' && action.status === 'attached').length;
 const sentryAssigneeSyncedCount = results.flatMap((item) => item.jiraActions || []).filter((action) => action.type === 'sentry-assignee-sync' && ['assigned', 'already-assigned'].includes(action.status)).length;
 const blockedJiraActionCount = results.flatMap((item) => item.jiraActions || []).filter((action) => action.status === 'blocked').length;
-await postJson(workflowApi, {
-  status: authAbort || uiAckAbort || jiraActionAbort || errors ? 'blocked' : 'success',
-  step: `${results.length}/${rows.length}`,
-  title: authAbort
-    ? 'Sentry Jira link scan auth blocked'
-    : uiAckAbort
-      ? 'Sentry Jira link scan UI sync blocked'
-      : jiraActionAbort
-        ? 'Sentry Jira link scan action blocked'
-        : 'Sentry Jira link scan complete',
-  message: authAbort
-    ? `${authAbort.message} The scan stopped before writing a false no-ticket result.`
-    : uiAckAbort
-      ? `${uiAckAbort.message} The scan stopped so the next issue is not opened before the app reflects the current action.`
-      : jiraActionAbort
-        ? jiraActionAbort.message
-        : `Checked ${rows.length} visible Sentry issue(s); found Jira tickets for ${foundIssueCount}; created Jira tickets: ${createdJiraIssueCount}; assigned Jira tickets: ${assignedJiraIssueCount}; linked Jira tickets in Sentry Issue Tracking: ${sentryIssueTrackingLinkedCount}; synced Sentry assignees to Jira owners: ${sentryAssigneeSyncedCount}; scan errors: ${errors}.`,
-  phase: 'jira-link-scan',
-  sentryIssueId: authAbort || uiAckAbort || jiraActionAbort ? issueIdFrom((authAbort || uiAckAbort || jiraActionAbort).row?.issueId || (authAbort || uiAckAbort || jiraActionAbort).row?.issueUrl) : undefined,
-  sentryKey: authAbort || uiAckAbort || jiraActionAbort ? firstShortId((authAbort || uiAckAbort || jiraActionAbort).row, issueIdFrom((authAbort || uiAckAbort || jiraActionAbort).row?.issueId || (authAbort || uiAckAbort || jiraActionAbort).row?.issueUrl)) : undefined,
-  url: authAbort ? authAbort.detailState?.url || canonicalIssueUrl(authAbort.row?.issueUrl) : (uiAckAbort || jiraActionAbort ? canonicalIssueUrl((uiAckAbort || jiraActionAbort).row?.issueUrl) : undefined),
-  source,
-  updatedAt: finishedAt,
-}).catch((error) => log(`WORKFLOW_COMPLETE_WARNING: ${error.message}`));
+if (!standaloneMode) {
+  await postJson(workflowApi, {
+    status: authAbort || uiAckAbort || jiraActionAbort || errors ? 'blocked' : 'success',
+    step: `${results.length}/${rows.length}`,
+    title: authAbort
+      ? 'Sentry Jira link scan auth blocked'
+      : uiAckAbort
+        ? 'Sentry Jira link scan UI sync blocked'
+        : jiraActionAbort
+          ? 'Sentry Jira link scan action blocked'
+          : 'Sentry Jira link scan complete',
+    message: authAbort
+      ? `${authAbort.message} The scan stopped before writing a false no-ticket result.`
+      : uiAckAbort
+        ? `${uiAckAbort.message} The scan stopped so the next issue is not opened before the app reflects the current action.`
+        : jiraActionAbort
+          ? jiraActionAbort.message
+          : `Checked ${rows.length} visible Sentry issue(s); found Jira tickets for ${foundIssueCount}; created Jira tickets: ${createdJiraIssueCount}; assigned Jira tickets: ${assignedJiraIssueCount}; linked Jira tickets in Sentry Issue Tracking: ${sentryIssueTrackingLinkedCount}; synced Sentry assignees to Jira owners: ${sentryAssigneeSyncedCount}; scan errors: ${errors}.`,
+    phase: 'jira-link-scan',
+    sentryIssueId: authAbort || uiAckAbort || jiraActionAbort ? issueIdFrom((authAbort || uiAckAbort || jiraActionAbort).row?.issueId || (authAbort || uiAckAbort || jiraActionAbort).row?.issueUrl) : undefined,
+    sentryKey: authAbort || uiAckAbort || jiraActionAbort ? firstShortId((authAbort || uiAckAbort || jiraActionAbort).row, issueIdFrom((authAbort || uiAckAbort || jiraActionAbort).row?.issueId || (authAbort || uiAckAbort || jiraActionAbort).row?.issueUrl)) : undefined,
+    url: authAbort ? authAbort.detailState?.url || canonicalIssueUrl(authAbort.row?.issueUrl) : (uiAckAbort || jiraActionAbort ? canonicalIssueUrl((uiAckAbort || jiraActionAbort).row?.issueUrl) : undefined),
+    source,
+    updatedAt: finishedAt,
+  }).catch((error) => log(`WORKFLOW_COMPLETE_WARNING: ${error.message}`));
+}
 
 writeStatus({
   ok: !authAbort && !uiAckAbort && !jiraActionAbort && errors === 0,
@@ -2104,6 +2128,7 @@ writeStatus({
   jiraDryRun,
   jiraAssignViaChrome,
   sentryAttachJiraTickets,
+  standaloneMode,
   jiraUiActionTimeoutMs,
   sentryIssueTrackingActionTimeoutMs,
   jiraProjectKey,
@@ -2157,6 +2182,7 @@ console.log(JSON.stringify({
   jiraDryRun,
   jiraAssignViaChrome,
   sentryAttachJiraTickets,
+  standaloneMode,
   jiraUiActionTimeoutMs,
   sentryIssueTrackingActionTimeoutMs,
   jiraPreflight,

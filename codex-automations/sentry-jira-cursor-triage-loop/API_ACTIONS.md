@@ -12,6 +12,10 @@ Run API-first actions through:
 
 The wrapper calls the underlying Node helpers and keeps mutation commands explicit. It reads credentials only through the helper scripts from `~/.env` or the current process environment. Never print, paste, log, or delegate token values.
 
+## Chrome Fallback on 403
+
+When any Sentry, Jira, Bitbucket, or Sentry-Jira integration API/connector call returns HTTP 403 or another permission block, fall back to authenticated Google Chrome whenever Chrome can verify the source or perform the needed visual check/mutation safely. Do not stop on API 403 alone. Stop only if Chrome authentication/profile/session is also unavailable, or if the remaining action has no safe Chrome path.
+
 ## Fresh Sentry Source
 
 For every round, collect Sentry evidence fresh from the current run. Do not read old report state as Sentry source data.
@@ -55,7 +59,7 @@ This verifies:
 - Jira assigned PRE snapshot through `JIRA_API_TOKEN` and `EMAIL`
 - Bitbucket PR inventory through `BB_API_TOKEN`
 
-If this passes, do not use Chrome for these read-only source-list/status reads unless the user explicitly asked for the Chrome Sentry snapshot script. If Sentry fails but Jira/Bitbucket succeed, run the Chrome snapshot script for Sentry and continue with that fresh same-round Sentry evidence.
+If this passes, do not use Chrome for these read-only source-list/status reads unless the user explicitly asked for the Chrome Sentry snapshot script. If Sentry fails with 403 or another permission block but Chrome is authenticated, run the Chrome snapshot script for Sentry and continue with that fresh same-round Sentry evidence.
 
 ## HTML Issue List
 
@@ -242,13 +246,24 @@ Every Cursor bug-fix delegation must use a dedicated worktree and branch per Sen
 
 ## Chrome Still Required
 
-Prefer API actions above for read-only source and status checks. Chrome is still required for:
+Prefer API actions above for read-only source and status checks when they succeed. Chrome is the required fallback for:
 
+- Sentry, Jira, Bitbucket, or Sentry-Jira integration API/connector 403 or permission blocks when the same source/action can be verified or completed through authenticated Chrome
 - Sentry or Jira UI-only evidence when API metadata is insufficient
 - Sentry unlink operations unless an API unlink endpoint has been separately verified; this playbook verifies inspect/create/link only
 - Jira transitions if no safe connector/API transition path has been verified
 - Bitbucket review/comment/activity details not present in the API snapshot
 - Sonar, staging, and production smoke checks when visual validation is required
+
+When Sentry Jira integration API inspect/create/link is blocked by 403, use the Chrome detail scanner in standalone mode so it does not depend on retired `localhost:8766` UI acknowledgements:
+
+```bash
+SENTRY_TRIAGE_STANDALONE=1 \
+  /Users/thien.nguyen/thiennp.github.io/codex-automations/sentry-chrome-tab-snapshot/scan-issue-jira-links.mjs \
+  /Users/thien.nguyen/thiennp.github.io/codex-automations/sentry-chrome-tab-snapshot.json
+```
+
+For verification without mutations, add `SENTRY_TRIAGE_JIRA_DRY_RUN=1` and optionally `SENTRY_ISSUE_JIRA_SCAN_LIMIT=1`.
 
 Chrome is not required for browser-hook reporting. Use the Codex in-app browser for `https://thiennp.github.io/report/` when possible; if no callable in-app browser tool is available, report that limitation explicitly.
 
