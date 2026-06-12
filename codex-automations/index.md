@@ -6,7 +6,7 @@ All automations should first run `/Users/thien.nguyen/thiennp.github.io/agent-re
 
 | Automation ID | Name | Type | Status | File |
 | --- | --- | --- | --- | --- |
-| `agent-report-server-guard` | Agent Report server guard | cron | ACTIVE | [automation.toml](agent-report-server-guard/automation.toml) |
+| `agent-report-server-guard` | Agent Report server guard | cron | PAUSED | [automation.toml](agent-report-server-guard/automation.toml) |
 | `check24-package-audit-extractor` | CHECK24 package audit extractor | cron | PAUSED | [automation.toml](check24-package-audit-extractor/automation.toml) |
 | `continue-nrg-readme-sweep` | Continue NRG README sweep | heartbeat | PAUSED | [automation.toml](continue-nrg-readme-sweep/automation.toml) |
 | `fix-slack-security-dependency-threads` | Daily-vulnerabilities-fix | cron | PAUSED | [automation.toml](fix-slack-security-dependency-threads/automation.toml) |
