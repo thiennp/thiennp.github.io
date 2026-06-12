@@ -5,6 +5,6 @@ name = "Continue NRG README sweep"
 prompt = "Continue the NRG Jira/MR documentation sweep in /Users/thiennguyen/nrg-core from the next unresolved ticket. Open Jira/MR links visibly in Google Chrome, reusing the existing Chrome tab for this sweep whenever the previous Jira/MR page is no longer needed instead of opening new tabs. Identify related code, update or add nearest README documentation with business/non-functional rationale and README navigation links, then validate with git diff --check and README local-link resolution. Do not stage or commit unless explicitly requested."
 status = "PAUSED"
 rrule = "FREQ=MINUTELY;INTERVAL=10"
-target_thread_id = "019e43e1-8090-74f3-8b1f-7d70bb09b86e"
+target_thread_id = "019ebba4-dae4-76b3-8f5d-9e6beae0d155"
 created_at = 1779268110368
-updated_at = 1780904132778
+updated_at = 1781264628103
