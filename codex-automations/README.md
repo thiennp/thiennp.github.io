@@ -1,8 +1,8 @@
 # Codex Automations
 
-Portable two-way sync copies of Codex automations shared between `~/.codex/automations` and this repository.
+Portable sync copies of the active Codex automation definitions shared between `~/.codex/automations` and this repository.
 
-These files are intended for reference and restoration on another device. The sync flow treats either side as a recoverable source: if an automation exists only locally or only in the repo, the missing side should be repopulated rather than deleted. The files may contain local paths and workflow instructions, but should not contain secrets, cookies, passwords, OTPs, passkey material, or raw credentials.
+These files are intended for reference and restoration on another device. The files may contain local paths and workflow instructions, but should not contain secrets, cookies, passwords, OTPs, passkey material, or raw credentials.
 
 The public site navigation includes an `Automations` link to `codex-automations/`, and the automation index links directly to every exported definition.
 
@@ -27,13 +27,10 @@ AGENT_REPORT_WS=ws://localhost:3100/stream npm run send -- --automation-name "<a
 
 ## Automations
 
-- `agent-report-server-guard` - Agent Report server guard: cron automation that checks every 30 minutes and starts the Agent Report server if it is down.
-- `check24-package-audit-extractor` - CHECK24 package audit extractor: cron automation for rechecking the Power package-audit dashboard and exporting details to `~/sec.check24.de.json`.
 - `continue-nrg-readme-sweep` - Continue NRG README sweep: heartbeat automation to continue the NRG Jira/MR documentation sweep.
 - `fix-slack-security-dependency-threads` - Daily-vulnerabilities-fix: cron automation for daily security dashboard scan/fix + Jira/PR tracking.
 - `hourly-bitbucket-dependency-pr-cleanup` - 15-minute assigned Bitbucket PR review: 15-minute review automation for Bitbucket pull requests assigned to or requiring review from Thien Nguyen.
 - `sentry-jira-cursor-triage-loop` - Sentry Jira Cursor Triage Loop: heartbeat automation for Sentry triage + Jira ticket creation workflow.
-- `sync-codex-automations-to-thiennp-github-io` - Sync Codex automations to thiennp.github.io: cron automation that keeps local and exported automation definitions synchronized in both directions.
 
 ## Layout
 
