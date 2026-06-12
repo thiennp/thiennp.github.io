@@ -31,7 +31,7 @@ AGENT_REPORT_WS=ws://localhost:3100/stream npm run send -- --automation-name "<a
 - `check24-package-audit-extractor` - CHECK24 package audit extractor: cron automation for rechecking the Power package-audit dashboard and exporting details to `~/sec.check24.de.json`.
 - `continue-nrg-readme-sweep` - Continue NRG README sweep: heartbeat automation to continue the NRG Jira/MR documentation sweep.
 - `fix-slack-security-dependency-threads` - Daily-vulnerabilities-fix: cron automation for daily security dashboard scan/fix + Jira/PR tracking.
-- `hourly-bitbucket-dependency-pr-cleanup` - Hourly assigned Bitbucket PR review: hourly review automation for Bitbucket pull requests assigned to or requiring review from Thien Nguyen.
+- `hourly-bitbucket-dependency-pr-cleanup` - 15-minute assigned Bitbucket PR review: 15-minute review automation for Bitbucket pull requests assigned to or requiring review from Thien Nguyen.
 - `sentry-jira-cursor-triage-loop` - Sentry Jira Cursor Triage Loop: heartbeat automation for Sentry triage + Jira ticket creation workflow.
 - `sync-codex-automations-to-thiennp-github-io` - Sync Codex automations to thiennp.github.io: cron automation that keeps local and exported automation definitions synchronized in both directions.
 

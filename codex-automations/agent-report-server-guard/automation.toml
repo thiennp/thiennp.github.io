@@ -5,8 +5,8 @@ name = "Agent Report server guard"
 prompt = """
 Check whether the Agent Report server is running on http://localhost:3100/.
 
-Run this exact command from the local machine in `/Users/thien.nguyen/thiennp.github.io/agent-report`:
-`AGENT_REPORT_SEND_STATUS=changes /Users/thien.nguyen/thiennp.github.io/agent-report/scripts/ensure-agent-report-server.sh`
+Run this exact command from the local machine in `/Users/thiennguyen/thiennp.github.io/agent-report`:
+`AGENT_REPORT_SEND_STATUS=changes /Users/thiennguyen/thiennp.github.io/agent-report/scripts/ensure-agent-report-server.sh`
 
 Flow and ownership:
 - Codex owns this automation run: read the automation memory first, run the guard command, inspect only the evidence needed to classify the result, update memory, and return a concise status.
@@ -20,10 +20,10 @@ Flow and ownership:
 Classification:
 - If the command exits 0 and the fresh autostart log entry says the server was already running, report `already healthy`.
 - If the command exits 0 and the fresh autostart log entry says the server started, report `started`.
-- If the command exits nonzero, report `blocked`; inspect `/Users/thien.nguyen/thiennp.github.io/agent-report/logs/autostart.log`, and when useful check port 3100/listener and `http://localhost:3100/` to identify the blocker.
+- If the command exits nonzero, report `blocked`; inspect `/Users/thiennguyen/thiennp.github.io/agent-report/logs/autostart.log`, and when useful check port 3100/listener and `http://localhost:3100/` to identify the blocker.
 
 Final report:
-Keep the result concise. Include whether the server was `already healthy`, `started`, or `blocked`, and include `/Users/thien.nguyen/thiennp.github.io/agent-report/logs/autostart.log` when useful.
+Keep the result concise. Include whether the server was `already healthy`, `started`, or `blocked`, and include `/Users/thiennguyen/thiennp.github.io/agent-report/logs/autostart.log` when useful.
 """
 status = "ACTIVE"
 rrule = "FREQ=MINUTELY;INTERVAL=30"

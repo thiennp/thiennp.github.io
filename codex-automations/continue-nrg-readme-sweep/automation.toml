@@ -7,4 +7,4 @@ status = "PAUSED"
 rrule = "FREQ=MINUTELY;INTERVAL=10"
 target_thread_id = "019e43e1-8090-74f3-8b1f-7d70bb09b86e"
 created_at = 1779268110368
-updated_at = 1780046182474
+updated_at = 1780904132778
