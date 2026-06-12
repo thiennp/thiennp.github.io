@@ -388,13 +388,28 @@ function scoreWindows(root, profiles, windows) {
   });
 }
 
-function focusTab(windowIndex, tabIndex) {
+function focusTab(windowIndex, tabIndex, tabId = '', url = '') {
   runJxa(`
 const chrome = Application('Google Chrome');
 chrome.activate();
 const w = chrome.windows()[${windowIndex - 1}];
+const expectedTabId = ${JSON.stringify(String(tabId || ''))};
+const expectedUrl = ${JSON.stringify(String(url || ''))};
+const tabs = w.tabs();
+let nextIndex = Number(${JSON.stringify(Number(tabIndex) || 0)});
+if (expectedTabId) {
+  const byId = tabs.findIndex(t => String(t.id()) === expectedTabId);
+  if (byId >= 0) nextIndex = byId + 1;
+}
+if (expectedUrl) {
+  const byUrl = tabs.findIndex(t => String(t.url()) === expectedUrl);
+  if (byUrl >= 0) nextIndex = byUrl + 1;
+}
+if (!Number.isFinite(nextIndex) || nextIndex < 1 || nextIndex > tabs.length) {
+  throw new Error('Target tab is no longer available in Chrome window ' + ${JSON.stringify(windowIndex)} + '.');
+}
 w.index = 1;
-w.activeTabIndex = ${tabIndex};
+w.activeTabIndex = nextIndex;
 'focused';
 `);
 }
@@ -646,7 +661,7 @@ for (const window of initialWindows.filter(item => targetWindows.includes(item.w
 if (exact) {
   action = 'reused';
   selected = exact;
-  focusTab(exact.windowIndex, exact.tabIndex);
+  focusTab(exact.windowIndex, exact.tabIndex, exact.tabId, TARGET_URL);
 } else {
   action = 'opened';
   openTargetInWindow(targetWindows[0]);
@@ -732,7 +747,7 @@ const openedWindows = sanitizeWindows(finalWindows, finalMatches);
 if (selected) {
   const targetWindow = finalWindows.find(window => finalMatches.find(match => match.windowIndex === window.windowIndex)?.isTargetProfileWindow && window.tabs.some(tab => tab.url === TARGET_URL));
   const targetTab = targetWindow?.tabs.find(tab => tab.url === TARGET_URL);
-  if (targetWindow && targetTab) focusTab(targetWindow.windowIndex, targetTab.tabIndex);
+  if (targetWindow && targetTab) focusTab(targetWindow.windowIndex, targetTab.tabIndex, targetTab.id, TARGET_URL);
 }
 
 const full = {

@@ -567,9 +567,20 @@ function waitForUrlFragment(fragment, timeoutMs = pageTimeoutMs) {
 function extractJiraAssigneeState(ticketKey) {
   const js = `(() => {
     const clean = value => String(value || '').replace(/\\s+/g, ' ').trim();
+    const visible = element => {
+      if (!element) return false;
+      const rect = element.getBoundingClientRect();
+      return Boolean((rect.width || rect.height || element.getClientRects().length) && getComputedStyle(element).visibility !== 'hidden');
+    };
+    const compact = element => {
+      const rect = element.getBoundingClientRect();
+      const text = clean(element.innerText || element.textContent || '');
+      return text.length <= 500 && rect.width <= 900 && rect.height <= 260;
+    };
     const assigneeField =
       document.querySelector('[data-testid="issue.issue-view-layout.issue-view-assignee-field.assignee"], [data-test-id="issue.issue-view-layout.issue-view-assignee-field.assignee"]') ||
       [...document.querySelectorAll('[data-testid], [data-test-id], section, div')]
+        .filter(node => visible(node) && compact(node))
         .find(node => /assignee/i.test((node.getAttribute('data-testid') || node.getAttribute('data-test-id') || '') + ' ' + clean(node.innerText).slice(0, 300)));
     const assigneeText = clean(assigneeField ? assigneeField.innerText : '');
     const body = clean(document.body ? document.body.innerText : '');
@@ -615,6 +626,21 @@ function clickJiraAssignToMeControl() {
       const rect = element.getBoundingClientRect();
       return Boolean((rect.width || rect.height || element.getClientRects().length) && getComputedStyle(element).visibility !== 'hidden');
     };
+    const compactControl = element => {
+      const rect = element.getBoundingClientRect();
+      const text = clean(element.innerText || element.textContent || '');
+      return text.length <= 220 && rect.width <= 700 && rect.height <= 180;
+    };
+    const isInteractive = element => {
+      const tag = element.tagName.toLowerCase();
+      return tag === 'button' ||
+        tag === 'a' ||
+        ['button', 'option', 'menuitem', 'combobox'].includes(element.getAttribute('role') || '') ||
+        element.hasAttribute('aria-label') ||
+        element.hasAttribute('title') ||
+        element.hasAttribute('data-testid') ||
+        element.hasAttribute('data-test-id');
+    };
     const click = element => {
       element.scrollIntoView({block: 'center', inline: 'nearest'});
       element.dispatchEvent(new MouseEvent('mouseover', {bubbles: true, cancelable: true, view: window}));
@@ -628,9 +654,9 @@ function clickJiraAssignToMeControl() {
       element.getAttribute('data-testid'),
       element.getAttribute('data-test-id')
     ].filter(Boolean).join(' '));
-    const controls = [...document.querySelectorAll('button, [role="button"], [role="option"], [role="menuitem"], [data-testid], [data-test-id], span, div')]
-      .filter(visible);
-    const direct = controls.find(element => /assign to me/i.test(textFor(element)));
+    const controls = [...document.querySelectorAll('button, a, [role="button"], [role="option"], [role="menuitem"], [role="combobox"], [aria-label], [title], [data-testid], [data-test-id]')]
+      .filter(element => visible(element) && compactControl(element) && isInteractive(element));
+    const direct = controls.find(element => /^assign to me$/i.test(textFor(element)) || /\\bassign to me\\b/i.test(element.getAttribute('aria-label') || element.getAttribute('title') || ''));
     if (direct) {
       click(direct);
       return JSON.stringify({ok: true, clicked: 'assign-to-me', text: textFor(direct).slice(0, 200)});
@@ -642,7 +668,7 @@ function clickJiraAssignToMeControl() {
     }
     const assigneeField =
       document.querySelector('[data-testid="issue.issue-view-layout.issue-view-assignee-field.assignee"], [data-test-id="issue.issue-view-layout.issue-view-assignee-field.assignee"]') ||
-      controls.find(element => /assignee/i.test(textFor(element)));
+      controls.find(element => /assignee/i.test(textFor(element)) && compactControl(element));
     if (assigneeField) {
       click(assigneeField);
       return JSON.stringify({ok: true, clicked: 'assignee-field', text: textFor(assigneeField).slice(0, 200)});
