@@ -11,6 +11,11 @@ codex-automations/reports/
 codex-automations/lighthouse-artifacts/
 codex-automations/sentry-jira-cursor-triage-loop/artifacts/
 codex-automations/sentry-jira-cursor-triage-loop/handoffs/
+codex-automations/hourly-bitbucket-dependency-pr-cleanup/report-app/.next/
+codex-automations/hourly-bitbucket-dependency-pr-cleanup/report-app/node_modules/
+codex-automations/hourly-bitbucket-dependency-pr-cleanup/state/
+/$CODEX_HOME/
+/undefined/
 
 # Generated Codex skill bundles and runtime cache folders
 agents/.codex/skills/.system/

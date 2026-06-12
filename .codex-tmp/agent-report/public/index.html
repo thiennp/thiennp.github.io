@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Agent Report</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <main class="app-shell">
+      <section class="report-panel" aria-labelledby="page-title">
+        <header class="report-header">
+          <div>
+            <p class="eyebrow">Live terminal feed</p>
+            <h1 id="page-title">Agent Report</h1>
+          </div>
+          <div class="header-actions">
+            <button type="button" class="danger-button danger-button-strong" id="cleanup-all">
+              Cleanup everything
+            </button>
+            <div class="connection-pill" id="connection-status" role="status">Connecting</div>
+          </div>
+        </header>
+
+        <div class="summary-bar" aria-label="Report summary">
+          <div>
+            <span class="summary-value" id="message-count">0</span>
+            <span class="summary-label">Messages</span>
+          </div>
+          <div>
+            <span class="summary-value" id="latest-source">-</span>
+            <span class="summary-label">Latest source</span>
+          </div>
+          <div>
+            <span class="summary-value" id="latest-automation">-</span>
+            <span class="summary-label">Latest automation</span>
+          </div>
+        </div>
+
+        <details class="instructions-disclosure">
+          <summary>
+            <span class="instructions-summary-title">Instructions</span>
+            <span class="instructions-summary-copy">Send reports and automation updates</span>
+          </summary>
+
+          <div class="send-instructions" aria-label="Send report instructions">
+            <div>
+              <h2>Send a report</h2>
+              <p>
+                Run this from the app folder. Use <strong>--automation-name</strong> for the
+                automation, <strong>--title</strong> for the headline, <strong>--status</strong>
+                for the colored chip, and the quoted text as the message.
+              </p>
+              <p class="instruction-note">Status examples: success, warning, error, running, pending, info.</p>
+              <p class="instruction-note">Direct WebSocket JSON can send automationName, title, status, and text.</p>
+            </div>
+            <code id="send-command"></code>
+          </div>
+
+          <section class="automation-contract" aria-labelledby="automation-contract-title">
+            <div>
+              <h2 id="automation-contract-title">Automation reporting contract</h2>
+              <p>
+                Tell every automation to report start, major step completion, blockers,
+                and final state to this page.
+              </p>
+            </div>
+            <div class="contract-details">
+              <p>
+                Always send <strong>automationName</strong>, <strong>title</strong>,
+                <strong>status</strong>, and <strong>text</strong>. Keep
+                <strong>source</strong> as terminal or browser.
+              </p>
+              <p>
+                When any item finishes, report it immediately before moving on:
+                ticket, PR, vulnerability, listing, persona review, file sync,
+                subagent assignment, scan row, or other discrete work item.
+              </p>
+              <p>
+                At startup, run
+                <strong>AGENT_REPORT_HOST=127.0.0.1 AGENT_REPORT_SEND_STATUS=0 scripts/ensure-agent-report-server.sh</strong>,
+                then send the automation's own start message.
+              </p>
+              <code>
+                cd /Users/thiennguyen/thiennp.github.io/agent-report &amp;&amp;
+                AGENT_REPORT_WS=ws://127.0.0.1:3100/stream npm run send --
+                --automation-name "&lt;automation name&gt;" --title "&lt;step title&gt;"
+                --status &lt;running|success|warning|blocked|error|pending|info&gt;
+                "&lt;concise update&gt;"
+              </code>
+            </div>
+          </section>
+        </details>
+
+        <details class="forward-disclosure">
+          <summary>
+            <span class="forward-summary-title">Forward reports</span>
+            <span class="forward-summary-copy">Add WebSocket targets for mirrored updates</span>
+          </summary>
+
+          <section class="forward-panel" aria-labelledby="forward-title">
+            <div class="forward-copy">
+              <h2 id="forward-title">Forward reports</h2>
+              <p>Add another WebSocket port or URL to receive new and edited report messages.</p>
+            </div>
+            <div class="forward-controls">
+              <form class="forward-form" id="forward-form">
+                <label class="sr-only" for="forward-target">WebSocket port or URL</label>
+                <input
+                  id="forward-target"
+                  name="forwardTarget"
+                  inputmode="url"
+                  placeholder="3200 or ws://localhost:3200/stream"
+                  autocomplete="off"
+                />
+                <button type="submit" class="primary-button">Add</button>
+              </form>
+              <p class="forward-status" id="forward-status" role="status"></p>
+              <ul class="forward-list" id="forward-target-list" aria-label="Forward targets"></ul>
+            </div>
+          </section>
+        </details>
+
+        <ol class="message-list" id="message-list" aria-live="polite"></ol>
+      </section>
+    </main>
+
+    <script src="/app.js" type="module"></script>
+  </body>
+</html>
