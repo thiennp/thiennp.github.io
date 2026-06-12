@@ -12,9 +12,32 @@ Run API-first actions through:
 
 The wrapper calls the underlying Node helpers and keeps mutation commands explicit. It reads credentials only through the helper scripts from `~/.env` or the current process environment. Never print, paste, log, or delegate token values.
 
+## Fresh Sentry Source
+
+For every round, collect Sentry evidence fresh from the current run. Do not read old report state as Sentry source data.
+
+Preferred fresh Sentry source paths:
+
+```bash
+# Chrome profile snapshot. This writes fresh full + compact JSON from the live Sentry issue list.
+/Users/thien.nguyen/thiennp.github.io/codex-automations/sentry-chrome-tab-snapshot/snapshot.sh
+
+# API union, when the token has sufficient permission.
+triage-api-actions.sh sentry-union --out /tmp/sentry-source-union.json
+```
+
+The Chrome snapshot output is authoritative when the Sentry API union is unavailable or when the user asks to use the Chrome Sentry script. Its JSON outputs are:
+
+```text
+/Users/thien.nguyen/thiennp.github.io/codex-automations/sentry-chrome-tab-snapshot.json
+/Users/thien.nguyen/thiennp.github.io/codex-automations/sentry-chrome-tab-snapshot/snapshot-compact.json
+```
+
+The restored Chrome snapshot script only attempts legacy `http://127.0.0.1:8766/` sync when explicitly enabled with `SENTRY_CHROME_RUN_LEGACY_8766_SYNC=1`; that sync is not a data source and must not block a round.
+
 ## Retired Dependencies
 
-Do not use or require the old local live report app at `http://127.0.0.1:8766/`.
+Do not use or require the old local live report app at `http://127.0.0.1:8766/` as automation state or source data.
 Do not read or write `/Users/thien.nguyen/Desktop/Sentry Triage History/report-data.json` as automation state.
 Do not create Jenkins blockers or require Jenkins PR/release/build checks.
 
@@ -32,7 +55,7 @@ This verifies:
 - Jira assigned PRE snapshot through `JIRA_API_TOKEN` and `EMAIL`
 - Bitbucket PR inventory through `BB_API_TOKEN`
 
-If this passes, do not use Chrome for these read-only source-list/status reads.
+If this passes, do not use Chrome for these read-only source-list/status reads unless the user explicitly asked for the Chrome Sentry snapshot script. If Sentry fails but Jira/Bitbucket succeed, run the Chrome snapshot script for Sentry and continue with that fresh same-round Sentry evidence.
 
 ## HTML Issue List
 

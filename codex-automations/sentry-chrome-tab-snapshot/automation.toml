@@ -1,0 +1,25 @@
+version = 1
+id = "sentry-chrome-tab-snapshot"
+kind = "heartbeat"
+name = "Sentry Chrome Tab Snapshot"
+prompt = """
+Run /Users/thien.nguyen/thiennp.github.io/codex-automations/sentry-chrome-tab-snapshot/snapshot.sh first. The script is the source of truth for fresh Sentry issue-list data: it verifies the local Google Chrome profile signed in as thien.nguyen.check24@gmail.com, reuses or opens the exact target Sentry list URL, focuses the verified-profile tab, extracts visible Sentry rows from the live DOM, writes the full and compact JSON atomically, validates both JSON files, and leaves Chrome open.
+
+Target Sentry URL: https://check24-energie.sentry.io/issues/?project=-1&query=is%3Aunresolved&referrer=issue-list&sort=freq&statsPeriod=24h
+
+Authoritative outputs:
+- /Users/thien.nguyen/thiennp.github.io/codex-automations/sentry-chrome-tab-snapshot.json
+- /Users/thien.nguyen/thiennp.github.io/codex-automations/sentry-chrome-tab-snapshot/snapshot-compact.json
+- /Users/thien.nguyen/thiennp.github.io/codex-automations/sentry-chrome-tab-snapshot/snapshot-last.stderr.log
+
+Do not use http://localhost:8766/ or /Users/thien.nguyen/Desktop/Sentry Triage History/report-data.json as Sentry source data. The old localhost:8766 report sync is optional legacy UI decoration only; if it fails, report the warning but treat the freshly written JSON as authoritative. Do not require, start, validate, or block on localhost:8766.
+
+The legacy detail scanner scan-issue-jira-links.mjs depends on the retired localhost:8766 UI acknowledgement API and must not run by default. Run it only if explicitly instructed or if SENTRY_CHROME_RUN_LEGACY_8766_DETAIL_SCAN=1 is intentionally set for a legacy UI test. Normal Jira/Sentry triage should use the fresh snapshot JSON plus Jira/Sentry/Bitbucket API or connector evidence gathered in the same run.
+
+Retry snapshot exit codes 3 and 4 up to two additional times with 15s then 30s backoff. Do not retry exit codes 1, 2, or 5. On success or blocker, read and summarize the compact JSON and stderr/status files, report whether the tab was reused/opened, verified-profile tab count, saved row count, output paths, optional legacy sync warning if present, and blockers. Redact auth/session material.
+"""
+status = "PAUSED"
+rrule = "FREQ=MINUTELY;INTERVAL=30"
+target_thread_id = "019e96e3-2e4b-7b40-98b9-48a320c17e69"
+created_at = 1780648115511
+updated_at = 1781266760442
