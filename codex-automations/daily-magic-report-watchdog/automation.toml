@@ -1,0 +1,22 @@
+version = 1
+id = "daily-magic-report-watchdog"
+kind = "heartbeat"
+name = "Daily Magic Report Watchdog"
+prompt = """
+Run the Daily Magic reporting watchdog in dry-run mode first:
+
+node /Users/thien.nguyen/thiennp.github.io/codex-automations/daily-magic-report-watchdog/watchdog.mjs --once --dry-run
+
+If the dry-run output is coherent, run it continuously:
+
+node /Users/thien.nguyen/thiennp.github.io/codex-automations/daily-magic-report-watchdog/watchdog.mjs --dry-run
+
+Only enable live reminders after Thien Nguyen explicitly asks for active nudges:
+
+node /Users/thien.nguyen/thiennp.github.io/codex-automations/daily-magic-report-watchdog/watchdog.mjs --send-reminders
+
+The watchdog observes /thien/api/content and /thien/ws, detects agents with stale or incomplete reporting, and sends reminder work-status.update messages only to existing Daily Magic action threads with explicit owner.name.
+"""
+status = "PAUSED"
+rrule = "FREQ=MINUTELY;INTERVAL=5"
+

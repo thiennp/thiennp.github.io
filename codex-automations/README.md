@@ -28,6 +28,7 @@ AGENT_REPORT_WS=ws://localhost:3100/stream npm run send -- --automation-name "<a
 ## Automations
 
 - `continue-nrg-readme-sweep` - Continue NRG README sweep: heartbeat automation to continue the NRG Jira/MR documentation sweep.
+- `daily-magic-report-watchdog` - Daily Magic Report Watchdog: heartbeat automation that observes running Daily Magic agents and flags stale or incomplete reporting.
 - `fix-slack-security-dependency-threads` - Daily-vulnerabilities-fix: cron automation for daily security dashboard scan/fix + Jira/PR tracking.
 - `hourly-bitbucket-dependency-pr-cleanup` - 15-minute assigned Bitbucket PR review: 15-minute review automation for Bitbucket pull requests assigned to or requiring review from Thien Nguyen.
 - `sentry-jira-cursor-triage-loop` - Sentry Jira Cursor Triage Loop: heartbeat automation for Sentry triage + Jira ticket creation workflow.
