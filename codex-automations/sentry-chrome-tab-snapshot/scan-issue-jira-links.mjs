@@ -32,6 +32,7 @@ const jiraCreateMissing = !/^(0|false|no)$/i.test(String(process.env.SENTRY_TRIA
 const jiraDryRun = /^(1|true|yes)$/i.test(String(process.env.SENTRY_TRIAGE_JIRA_DRY_RUN || '0'));
 const jiraAssignViaChrome = !/^(0|false|no)$/i.test(String(process.env.SENTRY_TRIAGE_JIRA_ASSIGN_VIA_CHROME || '1'));
 const sentryAttachJiraTickets = !/^(0|false|no)$/i.test(String(process.env.SENTRY_TRIAGE_ATTACH_JIRA_TO_SENTRY || '1'));
+const sentrySyncAssignee = !/^(0|false|no)$/i.test(String(process.env.SENTRY_TRIAGE_SYNC_SENTRY_ASSIGNEE || '1'));
 const jiraUiSettleMs = Number(process.env.SENTRY_TRIAGE_JIRA_UI_SETTLE_MS || 1200);
 const sentryIssueTrackingSettleMs = Number(process.env.SENTRY_TRIAGE_SENTRY_ISSUE_TRACKING_SETTLE_MS || 1500);
 const jiraUiActionTimeoutMs = Number(process.env.SENTRY_TRIAGE_JIRA_UI_ACTION_TIMEOUT_MS || 60000);
@@ -2032,7 +2033,7 @@ try {
       detailState = sentryLinkEnsure.detailState;
       const linkActions = [...jiraEnsure.actions, ...sentryLinkEnsure.actions];
       const visibleIssueTrackingTickets = issueTrackingTicketsFromState(detailState, jiraEnsure.tickets);
-      const sentryAssigneeEnsure = linkActions.some((action) => action.status === 'blocked')
+      const sentryAssigneeEnsure = !sentrySyncAssignee || linkActions.some((action) => action.status === 'blocked')
         ? {actions: []}
         : ensureSentryAssigneeForJiraOwner(visibleIssueTrackingTickets, linkActions, url);
       navigateActiveTab(url);
@@ -2154,6 +2155,7 @@ writeStatus({
   jiraDryRun,
   jiraAssignViaChrome,
   sentryAttachJiraTickets,
+  sentrySyncAssignee,
   standaloneMode,
   jiraUiActionTimeoutMs,
   sentryIssueTrackingActionTimeoutMs,
