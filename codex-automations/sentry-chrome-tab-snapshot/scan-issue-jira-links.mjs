@@ -1593,16 +1593,28 @@ function selectSentryAssigneeOption(ownerName) {
       .filter(item => item.text.toLowerCase().includes(owner.toLowerCase()));
     const optionMap = new Map();
     for (const item of rawCandidates) {
-      const option = item.element.closest('[role="option"], [role="menuitem"], button, [role="button"], [data-testid], [data-test-id]') || item.element;
+      const option = item.element.closest('[role="option"], [role="menuitem"], button, [role="button"]')
+        || item.element.closest('[data-testid], [data-test-id]')
+        || item.element;
       if (!visible(option)) continue;
       if (!optionMap.has(option)) optionMap.set(option, {element: option, text: textFor(option) || item.text});
     }
-    const candidates = [...optionMap.values()].filter(item => item.text.toLowerCase().includes(owner.toLowerCase()));
+    let candidates = [...optionMap.values()].filter(item => item.text.toLowerCase().includes(owner.toLowerCase()));
     if (!candidates.length) {
       return JSON.stringify({ok: false, reason: 'No matching Sentry assignee option found', owner, visibleOptions: rawCandidates.map(item => item.text).slice(0, 10)});
     }
     if (candidates.length > 1) {
-      return JSON.stringify({ok: false, reason: 'Multiple matching Sentry assignee options found', owner, visibleOptions: candidates.map(item => item.text).slice(0, 10), matchCount: candidates.length});
+      const roleOptions = candidates.filter(item => ['option', 'menuitem'].includes(item.element.getAttribute('role')));
+      if (roleOptions.length === 1) {
+        candidates = roleOptions;
+      } else {
+        const exactOptions = candidates.filter(item => item.text === owner || item.text === owner + ' (You)');
+        if (exactOptions.length === 1) {
+          candidates = exactOptions;
+        } else {
+          return JSON.stringify({ok: false, reason: 'Multiple matching Sentry assignee options found', owner, visibleOptions: candidates.map(item => item.text).slice(0, 10), matchCount: candidates.length});
+        }
+      }
     }
     const option = candidates[0];
     option.element.scrollIntoView({block: 'center', inline: 'nearest'});
