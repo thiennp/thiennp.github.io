@@ -13,6 +13,21 @@ When Thien says `check PR` in the context of Daily-vulnerabilities-fix or securi
 9. If Jenkins or Bitbucket pipeline logs are blocked by login/session, do not guess. Report the exact access blocker and leave the PR unmerged unless explicit approval and unrelated-failure evidence are already available.
 10. Report every repo/PR outcome through Daily Magic and in the chat: merged, already merged, waiting for approval, failed-related-fixed, failed-unrelated-merged, or blocked.
 
+Security dependency PR freshness and install-sync gate:
+
+- Immediately before final verification, push, PR creation/update, or any PR-ready/report-ready claim, fetch the target branch and remote security branch, then rebase the security branch onto the latest target branch.
+- Record the target branch name, latest target SHA, security branch SHA before/after rebase, and `git merge-base --is-ancestor <latest-target-sha> HEAD` evidence.
+- If rebase is needed and fails, or freshness cannot be proven, stop as `Block`; do not push or report ready.
+- For every npm/package-lock security dependency change, run the repository/package's actual clean-install command from the package directory that owns the changed lockfile.
+- Prefer the command used by Jenkins, package scripts, repo docs, or pipeline config; for npm lockfiles this must include `npm ci` unless the repo documents a stricter equivalent.
+- `npm audit` is not a substitute for clean install.
+- Treat `package.json` and `package-lock.json`/`npm-shrinkwrap.json` drift as a hard gate.
+- If clean install fails with lockfile sync errors such as missing packages in the lockfile, changed dependency specs, or npm `EUSAGE`, block the PR-ready path and fix/regenerate the lockfile from the latest target branch before retrying.
+- Do not bypass lockfile-sync errors as a local-only validation gap.
+- Before any push, force-push, PR creation/update, merge-ready claim, or Daily Magic/Jira/PR-ready report, spawn an independent read-only verifier subagent.
+- The verifier must check branch freshness evidence and clean-install evidence from the exact changed package path, confirm package manifest and lockfile sync, and return a pass/block handoff.
+- The main agent may push or report PR-ready only after the verifier handoff explicitly says branch freshness and install-sync gates passed.
+
 Before creating or updating any security dependency PR, inspect the actual code, package manifests, and lockfile dependency paths first. Then ensure the PR description includes a human-readable `Risk and impact` section with:
 
 - `Risk level`: the practical risk of the dependency/lockfile change in plain language.

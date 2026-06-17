@@ -9,3 +9,39 @@ Short meaning: check all automation-created security dependency PRs, merge appro
 For all security dependency PRs, inspect the actual code, package manifests, and lockfile dependency paths before writing the description. The PR description must include a plain-language `Risk and impact` section with short separate bullet lines and bold topic labels: `Risk level`, `Affected area`, `Change risk`, `QA needed`, and `If not changed`. Make the real impact clear: runtime, package consumer, build, test, Storybook, lint, or publish/install only. Avoid vague wording and never make reviewers guess from package names alone. Do not include `Possible side effect`, `Security impact`, `Operational impact`, or rollback unless Thien explicitly asks for it.
 
 If `QA needed` identifies real product or package-consumer QA, the automation must push the security changes to staging, comment in the PR with the QA reason and exact test target, mention `@Michael Wiesner` in the Jira ticket with the staging target and PR link, move the Jira ticket to `Test`, and report all four actions in Daily Magic.
+
+## Helper Package Audits
+
+For every repository verification or remediation, also inspect first-party helper package areas rooted at `.cursor/`, `cli/`, and `rag/`.
+
+- If a helper area contains `package.json` together with `package-lock.json`, `npm-shrinkwrap.json`, or `pnpm-lock.yaml`, run the matching audit for that manifest.
+- Use npm audit for `package-lock.json` or `npm-shrinkwrap.json`.
+- Use pnpm audit for `pnpm-lock.yaml`.
+- Exclude `node_modules`, build outputs, caches, vendored third-party code, and generated folders.
+- If `package.json` exists without a supported lockfile, record it as discovered but not audited unless the repo already has a safe lockfile-less audit policy.
+- If multiple supported lockfiles exist in the same helper package, report the ambiguity and do not guess unless repo conventions clearly identify the active package manager.
+- Treat scanner-reported helper vulnerabilities as in-scope security dependency work even when the package-audit board row points at a different manifest.
+- Fix only actionable dependency vulnerabilities needed to make the helper audit pass, preserving the helper package manager and lockfile.
+- Record every helper manifest audit status, fix, skipped reason, and verification evidence in Jira, PR notes, Daily Magic, memory, and final output.
+
+## PR-Ready Install-Sync Gate
+
+Before any security dependency branch is pushed, PR is opened or updated, Jira is moved to `In Code Review`, or Daily Magic reports `wait_for_review`:
+
+- Fetch the target branch and rebase or recreate the security branch on the latest target branch.
+- Run the repo's real clean-install validation for every changed package manifest.
+- For npm locks, run `npm ci --ignore-scripts --dry-run` with the repo's documented flags and registry config.
+- For pnpm locks, run the repo's frozen-lockfile install check when supported.
+- For Composer locks, run the repo's dry-run install check.
+- Do not rely on `npm audit`, `pnpm audit`, `composer audit`, or OSV alone.
+- If `package.json` and the lockfile are out of sync, fix the lockfile and rerun the install-sync check before push/report.
+- If clean install is blocked by a known pre-existing repo issue, prove it by running the same command on the fresh target branch and record that evidence in the PR, Jira, Daily Magic, memory, and final output.
+- Use a separate read-only verifier subagent before push or PR-ready reporting. The verifier must check branch freshness, changed manifests, clean-install evidence, scanner evidence, and PR risk text.
+
+## Repository Fix Delegation
+
+Delegate each actionable repository fix to its own bounded Repository Fix Agent subagent, so independent repos can progress in parallel.
+
+- One repo-fix subagent owns exactly one repository, one target branch, one security issue batch, and one isolated worktree/file set.
+- The main agent remains the only actor allowed to push, force-push, create/update PRs, transition Jira, comment in Jira or Bitbucket, write automation memory, or report final state.
+- Before any push or PR-ready report, use a separate read-only verifier subagent for that repo's branch freshness and install-sync gate.
