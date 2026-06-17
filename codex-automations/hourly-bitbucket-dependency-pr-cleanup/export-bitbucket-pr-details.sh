@@ -49,14 +49,18 @@ if (windows.length === 0) {
   throw new Error("Google Chrome has no open windows.");
 }
 const link = $link_json;
-const tab = windows[0].tabs().find((candidate) => !String(candidate.url() || "").startsWith("http://127.0.0.1:3100/")) || windows[0].activeTab();
+const tab = chrome.windows[0].activeTab();
 tab.url = link;
 JXA
     run_jxa_file "$nav_script" >/dev/null
     sleep "$WAIT_SECONDS"
     cat > "$extract_script" <<JXA
 const chrome = Application("Google Chrome");
-const tab = chrome.windows()[0].tabs().find((candidate) => !String(candidate.url() || "").startsWith("http://127.0.0.1:3100/")) || chrome.windows()[0].activeTab();
+const windows = chrome.windows();
+if (windows.length === 0) {
+  throw new Error("Google Chrome has no open windows.");
+}
+const tab = chrome.windows[0].activeTab();
 const extractor = $extractor_json;
 tab.execute({ javascript: extractor });
 JXA

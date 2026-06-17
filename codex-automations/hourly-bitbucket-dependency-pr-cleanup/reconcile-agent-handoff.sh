@@ -38,7 +38,17 @@ jq -c '.pull_requests[]' "$PR_DETAILS_PATH" > "$tmp_dir/prs.ndjson"
 : > "$tmp_dir/records.ndjson"
 
 while IFS= read -r pr_json; do
-  jira_keys="$(printf '%s\n' "$pr_json" | jq -c '([(.title // ""), (.description // ""), (.activity_preview // "")] | join("\n")) as $text | [$text | scan("[A-Z][A-Z0-9]+-[0-9]+")] | unique')"
+  jira_keys="$(printf '%s\n' "$pr_json" | jq -c '
+    def explicit_jira_keys:
+      [(.description // "") | scan("https?://[^[:space:]]+/browse/([A-Z][A-Z0-9]+-[0-9]+)")]
+      | map(.[0]);
+    def branch_or_title_keys:
+      [
+        ((.source_branch // "") | capture("^(?<key>[A-Z][A-Z0-9]+-[0-9]+)$").key?),
+        ((.title // "") | capture("(?<key>\\b[A-Z][A-Z0-9]+-[0-9]+\\b)").key?)
+      ]
+      | map(select(. != null));
+    (explicit_jira_keys + branch_or_title_keys) | unique')"
 
   jira_found="$(jq -c --argjson keys "$jira_keys" '
     [ $keys[] as $key
