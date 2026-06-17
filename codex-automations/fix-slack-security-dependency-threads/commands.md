@@ -45,3 +45,14 @@ Delegate each actionable repository fix to its own bounded Repository Fix Agent 
 - One repo-fix subagent owns exactly one repository, one target branch, one security issue batch, and one isolated worktree/file set.
 - The main agent remains the only actor allowed to push, force-push, create/update PRs, transition Jira, comment in Jira or Bitbucket, write automation memory, or report final state.
 - Before any push or PR-ready report, use a separate read-only verifier subagent for that repo's branch freshness and install-sync gate.
+
+## Package Audit Board Monitor
+
+Before any final status, final chat answer, memory summary, or goal completion, spawn a read-only Package Audit Board Monitor subagent.
+
+- The monitor must reopen `https://sec.check24.de/package-audit?slug=power&vulnerabilityCountsSearch=critical%2Chigh%2Cmedium%2Clow`.
+- It must extract the current visible rows from the live authenticated board.
+- It must compare live board rows against Jira, Bitbucket, and scanner outcomes.
+- It may return `PASS` only when every visible row is either gone from the board after recheck, explicitly blocked with fresh evidence, or intentionally still visible with a clear stale/recheck-needed explanation.
+- The main agent must not say all vulnerabilities are done unless this monitor confirms the live package-audit board matches that statement.
+- If the board still shows fixed repos, trigger the board `Recheck` action when available, rerun extraction, and report the board-visible state honestly.
