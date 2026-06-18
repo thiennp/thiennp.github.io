@@ -12,9 +12,9 @@ Run API-first actions through:
 
 The wrapper calls the underlying Node helpers and keeps mutation commands explicit. It reads credentials only through the helper scripts from `~/.env` or the current process environment. Never print, paste, log, or delegate token values.
 
-## Chrome Fallback on 403
+## Browser Fallback on 403
 
-When any Sentry, Jira, Bitbucket, or Sentry-Jira integration API/connector call returns HTTP 403 or another permission block, fall back to authenticated Google Chrome whenever Chrome can verify the source or perform the needed visual check/mutation safely. Do not stop on API 403 alone. Stop only if Chrome authentication/profile/session is also unavailable, or if the remaining action has no safe Chrome path.
+When any Sentry, Jira, Bitbucket, or Sentry-Jira integration API/connector call returns HTTP 403 or another permission block, fall back to an authenticated browser whenever that browser can verify the source or perform the needed visual check/mutation safely. Prefer Firefox when a verified Firefox-capable control path exists. If the only verified helper for the required source/action is still Chrome-based, use that Chrome compatibility helper and report it. Do not stop on API 403 alone. Stop only if no safe authenticated browser path is available.
 
 ## Fresh Sentry Source
 
@@ -23,21 +23,25 @@ For every round, collect Sentry evidence fresh from the current run. Do not read
 Preferred fresh Sentry source paths:
 
 ```bash
-# Chrome profile snapshot. This writes fresh full + compact JSON from the live Sentry issue list.
+# Chrome compatibility snapshot. This writes fresh full + compact JSON from the live Sentry issue list.
 /Users/thien.nguyen/thiennp.github.io/codex-automations/sentry-chrome-tab-snapshot/snapshot.sh
 
 # API union, when the token has sufficient permission.
 triage-api-actions.sh sentry-union --out /tmp/sentry-source-union.json
 ```
 
-The Chrome snapshot output is authoritative when the Sentry API union is unavailable or when the user asks to use the Chrome Sentry script. Its JSON outputs are:
+The compatibility snapshot output is authoritative when the Sentry API union is unavailable and no verified Firefox-capable source helper exists, or when the user asks to use the Sentry info script. Its JSON outputs are:
 
 ```text
 /Users/thien.nguyen/thiennp.github.io/codex-automations/sentry-chrome-tab-snapshot.json
 /Users/thien.nguyen/thiennp.github.io/codex-automations/sentry-chrome-tab-snapshot/snapshot-compact.json
 ```
 
-The restored Chrome snapshot script only attempts legacy `http://127.0.0.1:8766/` sync when explicitly enabled with `SENTRY_CHROME_RUN_LEGACY_8766_SYNC=1`; that sync is not a data source and must not block a round.
+The restored Chrome compatibility snapshot script only attempts legacy `http://127.0.0.1:8766/` sync when explicitly enabled with `SENTRY_CHROME_RUN_LEGACY_8766_SYNC=1`; that sync is not a data source and must not block a round.
+
+## Sentry Environment Policy
+
+Only production Sentry issues are eligible for Jira creation/linking or implementation. If a Sentry issue is from staging, dev, int, test, or any non-production environment, resolve it in Sentry directly, do not create or link Jira, do not delegate implementation, and move on.
 
 ## Retired Dependencies
 
@@ -45,7 +49,7 @@ Do not use or require the old local live report app at `http://127.0.0.1:8766/` 
 Do not read or write `/Users/thien.nguyen/Desktop/Sentry Triage History/report-data.json` as automation state.
 Do not create Jenkins blockers or require Jenkins PR/release/build checks.
 
-Progress reporting still goes to `https://thiennp.github.io/report/`. Prefer the Codex in-app browser for that reporting page when an in-app browser control tool is exposed in the thread. If no in-app browser control is available and Chrome JavaScript automation is unavailable, record `reportHookWarning` in the heartbeat final instead of claiming the dashboard was updated. Google Chrome remains for external visual checks/mutations only.
+Progress reporting goes to the Daily Magic WebSocket `/thien/ws` only. Do not use report-page browser hooks, browser globals, or HTTP POSTs as the agent reporting path. If Daily Magic WebSocket reporting fails, include `reportWebSocketWarning` in the final response and continue when safe.
 
 ## Fast Connectivity Check
 
@@ -59,7 +63,7 @@ This verifies:
 - Jira assigned PRE snapshot through `JIRA_API_TOKEN` and `EMAIL`
 - Bitbucket PR inventory through `BB_API_TOKEN`
 
-If this passes, do not use Chrome for these read-only source-list/status reads unless the user explicitly asked for the Chrome Sentry snapshot script. If Sentry fails with 403 or another permission block but Chrome is authenticated, run the Chrome snapshot script for Sentry and continue with that fresh same-round Sentry evidence.
+If this passes, do not use a browser for these read-only source-list/status reads unless the user explicitly asked for the Sentry info script. If Sentry fails with 403 or another permission block, prefer a verified Firefox-capable source helper. If none exists and Chrome is authenticated, run the Chrome compatibility snapshot script for Sentry and continue with that fresh same-round Sentry evidence.
 
 ## HTML Issue List
 
@@ -244,18 +248,18 @@ It also does not pass `SSH_AUTH_SOCK` by default, so delegated agents cannot sil
 
 Every Cursor bug-fix delegation must use a dedicated worktree and branch per Sentry issue. Fetch origin first, choose the refreshed base in this order: `origin/release`, `origin/main`, `origin/master`, then create or reuse an issue-specific worktree outside the main repo checkout. Use branch names shaped like `codex/<repo>-sentry-<short-id>-<issue-id>`. Do not run Cursor bug-code fixes directly in the main repo path; this keeps multiple issues in the same repository isolated and parallelizable.
 
-## Chrome Still Required
+## Browser Fallback Still Required
 
-Prefer API actions above for read-only source and status checks when they succeed. Chrome is the required fallback for:
+Prefer API actions above for read-only source and status checks when they succeed. Browser fallback is still required for:
 
-- Sentry, Jira, Bitbucket, or Sentry-Jira integration API/connector 403 or permission blocks when the same source/action can be verified or completed through authenticated Chrome
+- Sentry, Jira, Bitbucket, or Sentry-Jira integration API/connector 403 or permission blocks when the same source/action can be verified or completed through an authenticated browser. Prefer Firefox where a verified Firefox-capable control path exists; otherwise use Chrome compatibility helpers and report the fallback.
 - Sentry or Jira UI-only evidence when API metadata is insufficient
 - Sentry unlink operations unless an API unlink endpoint has been separately verified; this playbook verifies inspect/create/link only
 - Jira transitions if no safe connector/API transition path has been verified
 - Bitbucket review/comment/activity details not present in the API snapshot
 - Sonar, staging, and production smoke checks when visual validation is required
 
-When Sentry Jira integration API inspect/create/link is blocked by 403, use the Chrome detail scanner in standalone mode so it does not depend on retired `localhost:8766` UI acknowledgements:
+When Sentry Jira integration API inspect/create/link is blocked by 403 and no verified Firefox-capable helper exists, use the Chrome compatibility detail scanner in standalone mode so it does not depend on retired `localhost:8766` UI acknowledgements:
 
 ```bash
 SENTRY_TRIAGE_STANDALONE=1 \
@@ -265,7 +269,7 @@ SENTRY_TRIAGE_STANDALONE=1 \
 
 For verification without mutations, add `SENTRY_TRIAGE_JIRA_DRY_RUN=1` and optionally `SENTRY_ISSUE_JIRA_SCAN_LIMIT=1`.
 
-Chrome is not required for browser-hook reporting. Use the Codex in-app browser for `https://thiennp.github.io/report/` when possible; if no callable in-app browser tool is available, report that limitation explicitly.
+Chrome is not required for reporting. Use Daily Magic WebSocket reporting through `/thien/ws`; if reporting fails, include `reportWebSocketWarning` in the final response.
 
 ## Do Not Guess
 
@@ -274,4 +278,4 @@ Chrome is not required for browser-hook reporting. Use the Codex in-app browser 
 - Do not report `sentry-jira-create-dry-run` or `sentry-jira-link-dry-run` as completed mutations. They intentionally do not change Sentry/Jira.
 - Do not use `duplicateOf`, `duplicatePre`, `coveredByPre`, or `groupedIntoPre` without verified same-round evidence.
 - Do not hand-roll bug-code fixes; prepare Cursor handoff and delegate through the safe wrapper.
-- Do not treat API source-list success as proof that Chrome-only UI actions are available.
+- Do not treat API source-list success as proof that browser-only UI actions are available.

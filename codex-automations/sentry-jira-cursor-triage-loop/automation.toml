@@ -3,7 +3,7 @@ id = "sentry-jira-cursor-triage-loop"
 kind = "heartbeat"
 name = "Sentry Jira Cursor Triage Loop"
 prompt = """
-Continue the Check24 Energie Sentry/Jira/PR triage loop using fresh same-round source evidence, API-first verification for non-browser actions, Google Chrome fallback for any API/connector 403 or permission block, Google Chrome for external visual checks or mutations, and Daily Magic WebSocket reporting through /thien/ws.
+Continue the Check24 Energie Sentry/Jira/PR triage loop using fresh same-round source evidence, API-first verification for non-browser actions, Firefox-preferred browser fallback for any API/connector 403 or permission block, Firefox-preferred external visual checks or mutations, and Daily Magic WebSocket reporting through /thien/ws.
 
 Global rules:
 - Follow /Users/thien.nguyen/.codex/AGENTS.md for Daily Magic reporting payloads and shared Jira duplicate-check/fingerprint rules.
@@ -11,42 +11,44 @@ Global rules:
 - Do not read, write, rebuild, validate, or depend on /Users/thien.nguyen/Desktop/Sentry Triage History/report-data.json as automation state.
 - Remove Jenkins from the workflow. Do not require Jenkins PR, staging, release, build, activation, or production checks.
 - Daily Magic progress reporting goes to /thien/ws over WebSocket. Send work-status.update for status changes and agent.heartbeat every 60 seconds while online. If reporting fails, include reportWebSocketWarning in the final response and continue when safe.
-- External source pages that still need visual inspection or mutation must use Google Chrome, not the in-app browser.
+- External source pages that still need visual inspection or mutation should use Firefox when a verified Firefox-capable control path exists. Do not use the in-app browser for authenticated external Sentry, Jira, Bitbucket, Sonar, staging, or production mutations/checks.
+- Existing helper scripts under `sentry-chrome-tab-snapshot/` are still Chrome-based compatibility helpers. Use them only when the required source/action has no verified Firefox-capable helper yet, and explicitly report that Chrome compatibility fallback was used.
 
-Fresh source and Chrome fallback policy:
+Fresh source and browser fallback policy:
 - Always collect Sentry data fresh in the current run. Never use stale live-report rows, localhost:8766 state, old report-data fields, or previous report snapshots as Sentry source evidence.
 - Before guessing endpoints or browser fallbacks, read /Users/thien.nguyen/thiennp.github.io/codex-automations/sentry-jira-cursor-triage-loop/API_ACTIONS.md.
 - Prefer /Users/thien.nguyen/thiennp.github.io/codex-automations/sentry-jira-cursor-triage-loop/triage-api-actions.sh for verified non-browser actions.
-- Any Sentry, Jira, Bitbucket, or Sentry-Jira integration API/connector 403 or permission block must fall back to authenticated Google Chrome when Chrome can verify the source or perform the remaining visual check/mutation safely. Do not stop on 403 alone unless Chrome auth/session/profile is also unavailable or the action has no safe Chrome path.
+- Any Sentry, Jira, Bitbucket, or Sentry-Jira integration API/connector 403 or permission block must fall back to an authenticated browser when the browser can verify the source or perform the remaining visual check/mutation safely. Prefer Firefox when a verified Firefox-capable control path exists. If the only verified helper for the required action is still Chrome-based, use that Chrome compatibility helper and report it. Do not stop on 403 alone unless no authenticated safe browser path is available.
 - Start each round with triage-api-actions.sh check-all when possible. If Sentry API succeeds completely, it is authoritative for the Sentry source set. If Sentry API is permission-blocked/incomplete or the user asks for the Sentry info script, run /Users/thien.nguyen/thiennp.github.io/codex-automations/sentry-chrome-tab-snapshot/snapshot.sh and use its freshly written JSON files as the authoritative Sentry source for that round:
   /Users/thien.nguyen/thiennp.github.io/codex-automations/sentry-chrome-tab-snapshot.json
   /Users/thien.nguyen/thiennp.github.io/codex-automations/sentry-chrome-tab-snapshot/snapshot-compact.json
 - The Chrome snapshot script may attempt an optional legacy sync to localhost:8766. Ignore sync failure for data decisions. Do not run legacy 8766 detail scanning unless explicitly instructed.
-- Jira assigned PRE statuses/details/descriptions/transitions: prefer Jira API script and Atlassian connector. On 403/permission blocks or insufficient evidence, use Google Chrome.
-- Bitbucket PR inventory/state: prefer API script. On 403/permission blocks or insufficient evidence, use Google Chrome.
-- Sentry Jira mount inspect/create/link: prefer sentry-jira-integration helper. On 403/permission blocks, use Google Chrome for Sentry Issue Tracking verification and safe link/create UI work. Use `SENTRY_TRIAGE_STANDALONE=1 /Users/thien.nguyen/thiennp.github.io/codex-automations/sentry-chrome-tab-snapshot/scan-issue-jira-links.mjs /Users/thien.nguyen/thiennp.github.io/codex-automations/sentry-chrome-tab-snapshot.json` so the Chrome detail scanner does not depend on retired localhost:8766 UI acknowledgements. Chrome remains required for unlink until a safe API unlink path is separately verified.
+- Sentry issue environment policy: only production Sentry issues are eligible for Jira creation/linking or implementation. For staging, dev, int, test, or any non-production environment, resolve the Sentry issue directly and do not create/link Jira or delegate implementation.
+- Jira assigned PRE statuses/details/descriptions/transitions: prefer Jira API script and Atlassian connector. On 403/permission blocks or insufficient evidence, use Firefox when a verified Firefox-capable path exists; otherwise use the existing Chrome compatibility helper/UI path and report that fallback.
+- Bitbucket PR inventory/state: prefer API script. On 403/permission blocks or insufficient evidence, use Firefox when a verified Firefox-capable path exists; otherwise use the existing Chrome compatibility helper/UI path and report that fallback.
+- Sentry Jira mount inspect/create/link: prefer sentry-jira-integration helper. On 403/permission blocks, use Firefox for Sentry Issue Tracking verification and safe link/create UI work when a verified Firefox-capable helper exists. Until such a helper is available, use the existing Chrome compatibility scanner/UI path: `SENTRY_TRIAGE_STANDALONE=1 /Users/thien.nguyen/thiennp.github.io/codex-automations/sentry-chrome-tab-snapshot/scan-issue-jira-links.mjs /Users/thien.nguyen/thiennp.github.io/codex-automations/sentry-chrome-tab-snapshot.json` so the detail scanner does not depend on retired localhost:8766 UI acknowledgements. Unlink remains browser-only until a safe API unlink path is separately verified.
 
 Workflow:
-1. Report start to Daily Magic, then collect fresh Sentry/Jira/Bitbucket evidence. Sentry may come from complete API union or the fresh Chrome snapshot script. Jira/Bitbucket should come from API/connector snapshots or Chrome fallback when API/connector is blocked.
+1. Report start to Daily Magic, then collect fresh Sentry/Jira/Bitbucket evidence. Sentry may come from complete API union or the fresh compatibility snapshot script. Jira/Bitbucket should come from API/connector snapshots or browser fallback when API/connector is blocked.
 2. Build the same-round Sentry set from the current run only. Treat items absent from the same-round set as out of scope.
-3. Reconcile Jira and Bitbucket state from API/connector snapshots or Chrome fallback. Keep blockers scoped to their source and never create Jenkins blockers.
+3. Reconcile Jira and Bitbucket state from API/connector snapshots or browser fallback. Keep blockers scoped to their source and never create Jenkins blockers.
 4. For unresolved/regressed in-scope items, collect same-round Sentry/Jira/PR evidence. Invoke Claude advisory only for read-only analysis when useful; record claudeAiUnavailable if unavailable.
-5. For each in-scope item and active PRE/duplicate/grouped relationship, verify Sentry side and Jira side using API/connector first, then Chrome on 403/permission block or insufficient evidence.
-6. For Sentry Jira mount actions, inspect current Sentry Jira integration links by API first. If API/helper is 403-blocked, verify and mutate through authenticated Chrome using Sentry Issue Tracking and Jira UI. If no matching Jira exists and duplicate/idempotency checks pass, dry-run or prepare create first when the helper supports it; otherwise use Chrome create/link only after same-round duplicate checks and visible confirmation.
+5. For each in-scope production item and active PRE/duplicate/grouped relationship, verify Sentry side and Jira side using API/connector first, then browser fallback on 403/permission block or insufficient evidence.
+6. For Sentry Jira mount actions, inspect current Sentry Jira integration links by API first. If API/helper is 403-blocked, verify and mutate through authenticated browser UI using Sentry Issue Tracking and Jira UI. Prefer Firefox when verified; otherwise use Chrome compatibility helpers only after same-round duplicate checks and visible confirmation.
 7. For open Thien-authored PRs, refresh/rebase/push only when allowed by source evidence and repository rules. For merged/declined prior fixes on regressed items, prepare a new Cursor handoff rather than mutating old PR state.
 8. Write Cursor handoff JSON under /Users/thien.nguyen/Desktop/Sentry Triage History/cursor-handoffs/ only when writable; otherwise use /Users/thien.nguyen/thiennp.github.io/codex-automations/sentry-jira-cursor-triage-loop/handoffs/ and mention the fallback. Delegate bug-code fixes to Cursor via the safe wrapper; Codex must not hand-roll bug-fix code.
-9. Perform staging/Sonar/production checks only when still required. Use Chrome where visual validation is required. Jenkins is skipped by design.
+9. Perform Sonar/staging/production checks only when still required. Prefer Firefox where visual validation is required and verified; otherwise use Chrome compatibility fallback and report it. Jenkins is skipped by design.
 10. Final gate: the round is complete when fresh source reconciliation, required mount verification/actions, remaining PR/staging/Sonar/production checks, Cursor delegation review, and Daily Magic reporting attempts have completed or a true hard blocker has been recorded.
 
 Hard blockers:
-- Missing/invalid/permission-blocked token/API access only when no safe authenticated Chrome fallback is available for the required source/action.
-- Google Chrome auth/SSO/login/passkey/client-certificate/session failure on a required Chrome fallback, visual check, or mutation.
-- Contradictory Sentry/Jira/PR evidence that remains unresolved after API/connector and required Chrome checks.
+- Missing/invalid/permission-blocked token/API access only when no safe authenticated browser fallback is available for the required source/action.
+- Browser auth/SSO/login/passkey/client-certificate/session failure on a required Firefox-preferred or Chrome-compatibility fallback, visual check, or mutation.
+- Contradictory Sentry/Jira/PR evidence that remains unresolved after API/connector and required browser checks.
 - Filesystem write failure for a required handoff/artifact after fallback path attempts.
 - Cursor unavailable/timed out before accepting a required bug-code fix; record blocked for that item and do not hand-roll code.
 
 Final response requirements:
-- State current step, just-completed step, next intended step, paused/not paused, source evidence used, whether Chrome is still needed, and reportWebSocketWarning when Daily Magic WebSocket reporting could not be performed.
+- State current step, just-completed step, next intended step, paused/not paused, source evidence used, whether Firefox or Chrome compatibility fallback is still needed, and reportWebSocketWarning when Daily Magic WebSocket reporting could not be performed.
 - If blocked, include exact source/system, URL when applicable, attempts made, why unsafe to continue, needed Thien action, and next step after unblock.
 - If not blocked, say the automation is not paused and whether it is ready for the next heartbeat or continuing with remaining item work.
 """

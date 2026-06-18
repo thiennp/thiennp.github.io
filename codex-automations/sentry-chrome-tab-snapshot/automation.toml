@@ -1,9 +1,9 @@
 version = 1
 id = "sentry-chrome-tab-snapshot"
 kind = "heartbeat"
-name = "Sentry Chrome Tab Snapshot"
+name = "Sentry Chrome Compatibility Snapshot"
 prompt = """
-Run /Users/thien.nguyen/thiennp.github.io/codex-automations/sentry-chrome-tab-snapshot/snapshot.sh first. The script is the source of truth for fresh Sentry issue-list data: it verifies the local Google Chrome profile signed in as thien.nguyen.check24@gmail.com, reuses or opens the exact target Sentry list URL, focuses the verified-profile tab, extracts visible Sentry rows from the live DOM, writes the full and compact JSON atomically, validates both JSON files, and leaves Chrome open.
+Run /Users/thien.nguyen/thiennp.github.io/codex-automations/sentry-chrome-tab-snapshot/snapshot.sh only when Sentry API is blocked/incomplete and no verified Firefox-capable Sentry snapshot helper is available. The main Sentry triage automation prefers Firefox for authenticated browser fallback when supported, but this compatibility script is still Chrome-based because it verifies the local Google Chrome profile signed in as thien.nguyen.check24@gmail.com, reuses or opens the exact target Sentry list URL, focuses the verified-profile tab, extracts visible Sentry rows from the live DOM, writes the full and compact JSON atomically, validates both JSON files, and leaves Chrome open.
 
 Target Sentry URL: https://check24-energie.sentry.io/issues/?project=-1&query=is%3Aunresolved&referrer=issue-list&sort=freq&statsPeriod=24h
 
