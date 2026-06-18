@@ -248,6 +248,8 @@ It also does not pass `SSH_AUTH_SOCK` by default, so delegated agents cannot sil
 
 Every Cursor bug-fix delegation must use a dedicated worktree and branch per Sentry issue. Fetch origin first, choose the refreshed base in this order: `origin/release`, `origin/main`, `origin/master`, then create or reuse an issue-specific worktree outside the main repo checkout. Use branch names shaped like `codex/<repo>-sentry-<short-id>-<issue-id>`. Do not run Cursor bug-code fixes directly in the main repo path; this keeps multiple issues in the same repository isolated and parallelizable.
 
+Before opening or updating a Bitbucket PR, fetch the intended destination branch again and rebase the issue branch onto that exact destination (`release`, `main`, or `master` as shown by the PR form/API). Rerun the relevant verification after the rebase. Never create the PR from a branch whose base was only inferred from an older checkout or from a different target branch. If local hooks require unavailable Docker, record that blocker in the report and use a one-command hook override only after equivalent focused checks have passed.
+
 ## Browser Fallback Still Required
 
 Prefer API actions above for read-only source and status checks when they succeed. Browser fallback is still required for:
