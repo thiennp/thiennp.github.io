@@ -56,3 +56,11 @@ Before any final status, final chat answer, memory summary, or goal completion, 
 - It may return `PASS` only when every visible row is either gone from the board after recheck, explicitly blocked with fresh evidence, or intentionally still visible with a clear stale/recheck-needed explanation.
 - The main agent must not say all vulnerabilities are done unless this monitor confirms the live package-audit board matches that statement.
 - If the board still shows fixed repos, trigger the board `Recheck` action when available, rerun extraction, and report the board-visible state honestly.
+
+## Daily Magic Report Payload Guard
+
+Before sending any `agent.action` to Daily Magic, validate that the `category` and `subcategory` are accepted by the current reporting protocol.
+
+- Use exact Jira subcategory names from the protocol, for example `Transition workflow` instead of invented variants such as `Transition issue`.
+- If Daily Magic returns `agent.request.rejected`, do not assume the report landed. Fix the payload, resend it, and record the rejected field in the run notes.
+- Treat this as a required reporting guard before final status so the dashboard does not miss completed Jira, Bitbucket, or blocker actions.
