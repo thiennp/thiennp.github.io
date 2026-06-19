@@ -10,6 +10,14 @@ For all security dependency PRs, inspect the actual code, package manifests, and
 
 If `QA needed` identifies real product or package-consumer QA, the automation must push the security changes to staging, comment in the PR with the QA reason and exact test target, mention `@Michael Wiesner` in the Jira ticket with the staging target and PR link, move the Jira ticket to `Test`, and report all four actions in Daily Magic.
 
+## Jira Ticket Description Improvement
+
+After creating any Jira ticket, open the newly created issue in Jira UI when a browser session is available and look for the `Improve description` button.
+
+- If the button is found, click it, review the generated description, and save/apply it only when it preserves the concrete security facts: repo, branch, manifest path, package, vulnerable/fixed versions, advisory ids, scanner source, real risk, and verification plan.
+- If the button is missing or Jira UI is unavailable, record that evidence in Jira/Daily Magic/memory/final output when relevant and continue.
+- Missing `Improve description` is not a blocker; losing security evidence is a blocker and must be corrected before the ticket is considered ready.
+
 ## Helper Package Audits
 
 For every repository verification or remediation, also inspect first-party helper package areas rooted at `.cursor/`, `cli/`, and `rag/`.
