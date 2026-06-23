@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1080" height="1920" viewBox="0 0 1080 1920">
+<defs><linearGradient id="bg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff8e6"/><stop offset="1" stop-color="#eef8ff"/></linearGradient><filter id="shadow" x="-25%" y="-25%" width="150%" height="150%"><feDropShadow dx="0" dy="24" stdDeviation="22" flood-color="#263036" flood-opacity="0.18"/></filter></defs>
+<rect width="1080" height="1920" fill="url(#bg)"/><circle cx="160" cy="470" r="345" fill="#f7c45e" opacity=".94"/><circle cx="950" cy="710" r="315" fill="#7cc5d9" opacity=".9"/>
+<g filter="url(#shadow)"><rect x="80" y="80" width="70" height="70" rx="21" fill="#fff"/><text x="115" y="129" text-anchor="middle" font-size="42" font-weight="900" fill="#e14f6f" font-family="Inter, Arial, sans-serif">W</text></g><text x="170" y="128" font-size="42" font-weight="850" fill="#15272d" font-family="Inter, Arial, sans-serif">Wishees</text>
+<g filter="url(#shadow)"><rect x="180" y="430" width="205" height="205" rx="32" fill="#e14f6f" transform="rotate(-8 282 532)"/><text x="282" y="562" text-anchor="middle" font-size="80" font-weight="900" fill="#fff" font-family="Inter, Arial, sans-serif">B</text><rect x="440" y="320" width="205" height="205" rx="32" fill="#2c9d8f" transform="rotate(5 542 422)"/><text x="542" y="452" text-anchor="middle" font-size="80" font-weight="900" fill="#fff" font-family="Inter, Arial, sans-serif">D</text><rect x="700" y="470" width="205" height="205" rx="32" fill="#4267b2" transform="rotate(9 802 572)"/><text x="802" y="602" text-anchor="middle" font-size="80" font-weight="900" fill="#fff" font-family="Inter, Arial, sans-serif">Y</text></g>
+<text x="80" y="1015" text-anchor="start" font-size="34" font-weight="800" fill="#e14f6f" font-family="Inter, Arial, sans-serif">Birthday wishlists</text>
+<text x="80" y="1150" text-anchor="start" font-size="88" font-weight="880" fill="#15272d" font-family="Inter, Arial, sans-serif">Gift guessing</text>
+<text x="80" y="1242" text-anchor="start" font-size="88" font-weight="880" fill="#15272d" font-family="Inter, Arial, sans-serif">is optional</text>
+<text x="80" y="1535" text-anchor="start" font-size="40" font-weight="620" fill="#33494f" font-family="Inter, Arial, sans-serif">Make one simple wishlist and</text>
+<text x="80" y="1585" text-anchor="start" font-size="40" font-weight="620" fill="#33494f" font-family="Inter, Arial, sans-serif">share the link before the party.</text>
+<g filter="url(#shadow)"><rect x="80" y="1735" width="298" height="76" rx="38" fill="#fff"/></g><text x="116" y="1786" font-size="36" font-weight="850" fill="#15272d" font-family="Inter, Arial, sans-serif">Wishees.com</text>
+</svg>

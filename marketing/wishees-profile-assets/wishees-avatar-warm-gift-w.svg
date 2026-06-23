@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="800" viewBox="0 0 800 800">
+  <defs>
+    <linearGradient id="bg" x1="90" y1="70" x2="720" y2="760" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#fff7eb"/>
+      <stop offset="0.45" stop-color="#f9c9c5"/>
+      <stop offset="1" stop-color="#8b2a8f"/>
+    </linearGradient>
+    <linearGradient id="ribbon" x1="160" y1="145" x2="690" y2="610" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#ffffff" stop-opacity="0.82"/>
+      <stop offset="1" stop-color="#ffe6b3" stop-opacity="0.68"/>
+    </linearGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="18" stdDeviation="16" flood-color="#4b164e" flood-opacity="0.28"/>
+    </filter>
+  </defs>
+  <rect width="800" height="800" fill="url(#bg)"/>
+  <path d="M122 266h556v88H122z" fill="url(#ribbon)" opacity="0.64"/>
+  <path d="M356 104h88v592h-88z" fill="url(#ribbon)" opacity="0.5"/>
+  <circle cx="400" cy="400" r="310" fill="#ffffff" opacity="0.1"/>
+  <text x="400" y="530" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="415" font-weight="800" fill="#ffffff" filter="url(#shadow)">W</text>
+</svg>

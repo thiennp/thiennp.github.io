@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="1500" viewBox="0 0 1000 1500">
+<defs><linearGradient id="bg-wedding" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff5e6"/><stop offset="1" stop-color="#eaf5f1"/></linearGradient><filter id="shadow-wedding" x="-20%" y="-20%" width="140%" height="140%"><feDropShadow dx="0" dy="22" stdDeviation="22" flood-color="#263036" flood-opacity="0.18"/></filter><filter id="shadow-gift" x="-20%" y="-20%" width="140%" height="140%"><feDropShadow dx="0" dy="20" stdDeviation="20" flood-color="#263036" flood-opacity="0.16"/></filter></defs>
+<rect width="1000" height="1500" fill="url(#bg-wedding)"/><circle cx="170" cy="480" r="310" fill="#f7cfc0" opacity="0.95"/><circle cx="840" cy="590" r="250" fill="#9ac6b2" opacity="0.92"/>
+<g filter="url(#shadow-wedding)"><rect x="72" y="64" width="58" height="58" rx="18" fill="#ffffff"/><text x="101" y="105" text-anchor="middle" font-size="34" font-weight="900" fill="#e14f6f" font-family="Inter, Arial, sans-serif">W</text></g><text x="148" y="105" font-size="34" font-weight="800" fill="#15272d" font-family="Inter, Arial, sans-serif">Wishees</text>
+<g filter="url(#shadow-wedding)"><rect x="110" y="425" width="430" height="230" rx="34" fill="#ffffff" opacity="0.92" transform="rotate(-5 325 540)"/><rect x="585" y="570" width="320" height="190" rx="34" fill="#ffffff" opacity="0.92" transform="rotate(7 745 665)"/><circle cx="500" cy="390" r="105" fill="none" stroke="#d2a84f" stroke-width="28"/><circle cx="543" cy="333" r="30" fill="#f7e9af" stroke="#d2a84f" stroke-width="10"/></g>
+<text x="72" y="890" font-size="30" font-weight="750" fill="#e14f6f" font-family="Inter, Arial, sans-serif">Wedding wishlist ideas</text>
+<text x="72" y="965" font-size="66" font-weight="850" fill="#15272d" font-family="Inter, Arial, sans-serif">A simple gift list</text>
+<text x="72" y="1039" font-size="66" font-weight="850" fill="#15272d" font-family="Inter, Arial, sans-serif">for</text>
+<text x="72" y="1113" font-size="66" font-weight="850" fill="#15272d" font-family="Inter, Arial, sans-serif">registry-adjacent</text>
+<text x="72" y="1187" font-size="66" font-weight="850" fill="#15272d" font-family="Inter, Arial, sans-serif">moments</text>
+<text x="72" y="1258" font-size="32" font-weight="570" fill="#33494f" font-family="Inter, Arial, sans-serif">Share one lightweight wishlist for</text>
+<text x="72" y="1297" font-size="32" font-weight="570" fill="#33494f" font-family="Inter, Arial, sans-serif">family gifts and small</text>
+<text x="72" y="1336" font-size="32" font-weight="570" fill="#33494f" font-family="Inter, Arial, sans-serif">registry-adjacent ideas.</text>
+<g filter="url(#shadow-wedding)"><rect x="72" y="1378" width="251" height="64" rx="32" fill="#ffffff"/></g><text x="102" y="1420" font-size="31" font-weight="800" fill="#15272d" font-family="Inter, Arial, sans-serif">Wishees.com</text>
+</svg>

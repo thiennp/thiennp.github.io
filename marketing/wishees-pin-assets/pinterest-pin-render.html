@@ -1,0 +1,428 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Wishees Pinterest Pin Assets</title>
+  <style>
+    :root {
+      color-scheme: light;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: #eef3f7;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      padding: 24px;
+      display: grid;
+      gap: 32px;
+    }
+
+    .pin {
+      position: relative;
+      width: 1000px;
+      height: 1500px;
+      overflow: hidden;
+      background: #fffaf2;
+      color: #15272d;
+    }
+
+    .brand {
+      position: absolute;
+      top: 64px;
+      left: 72px;
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      font-size: 34px;
+      font-weight: 800;
+      letter-spacing: 0;
+      z-index: 5;
+    }
+
+    .mark {
+      width: 58px;
+      height: 58px;
+      border-radius: 18px;
+      display: grid;
+      place-items: center;
+      background: #ffffff;
+      color: #e14f6f;
+      box-shadow: 0 18px 45px rgba(54, 35, 26, 0.16);
+      font-weight: 900;
+    }
+
+    .content {
+      position: absolute;
+      inset: auto 72px 78px 72px;
+      z-index: 5;
+    }
+
+    .eyebrow {
+      margin: 0 0 22px;
+      font-size: 30px;
+      font-weight: 750;
+      color: #e14f6f;
+    }
+
+    h1 {
+      margin: 0;
+      max-width: 790px;
+      font-size: 92px;
+      line-height: 0.98;
+      letter-spacing: 0;
+    }
+
+    .sub {
+      margin: 34px 0 0;
+      max-width: 760px;
+      font-size: 39px;
+      line-height: 1.18;
+      color: #33494f;
+      font-weight: 570;
+    }
+
+    .url {
+      margin: 52px 0 0;
+      display: inline-flex;
+      align-items: center;
+      min-height: 64px;
+      padding: 0 30px;
+      border-radius: 999px;
+      background: #ffffff;
+      color: #15272d;
+      box-shadow: 0 20px 50px rgba(54, 35, 26, 0.16);
+      font-size: 31px;
+      font-weight: 800;
+    }
+
+    .shape {
+      position: absolute;
+      border-radius: 999px;
+      opacity: 0.95;
+    }
+
+    .card {
+      position: absolute;
+      background: rgba(255, 255, 255, 0.92);
+      border: 2px solid rgba(255, 255, 255, 0.95);
+      border-radius: 34px;
+      box-shadow: 0 28px 70px rgba(54, 35, 26, 0.14);
+      z-index: 3;
+    }
+
+    .gift {
+      position: absolute;
+      z-index: 2;
+      border-radius: 24px;
+      box-shadow: 0 24px 56px rgba(36, 45, 50, 0.16);
+    }
+
+    .gift::before,
+    .gift::after {
+      content: "";
+      position: absolute;
+      background: rgba(255, 255, 255, 0.84);
+    }
+
+    .gift::before {
+      left: 42%;
+      top: 0;
+      width: 16%;
+      height: 100%;
+    }
+
+    .gift::after {
+      left: 0;
+      top: 42%;
+      width: 100%;
+      height: 16%;
+    }
+
+    .wedding {
+      background: linear-gradient(180deg, #fff5e6 0%, #eaf5f1 100%);
+    }
+
+    .wedding .shape.a {
+      width: 640px;
+      height: 640px;
+      left: -150px;
+      top: 190px;
+      background: #f7cfc0;
+    }
+
+    .wedding .shape.b {
+      width: 520px;
+      height: 520px;
+      right: -160px;
+      top: 310px;
+      background: #9ac6b2;
+    }
+
+    .wedding .card.one {
+      width: 430px;
+      height: 230px;
+      left: 110px;
+      top: 430px;
+      transform: rotate(-5deg);
+    }
+
+    .wedding .card.two {
+      width: 350px;
+      height: 190px;
+      right: 105px;
+      top: 585px;
+      transform: rotate(7deg);
+    }
+
+    .wedding .ring {
+      position: absolute;
+      width: 210px;
+      height: 210px;
+      left: 395px;
+      top: 295px;
+      border: 28px solid #d2a84f;
+      border-radius: 50%;
+      z-index: 4;
+      box-shadow: 0 20px 48px rgba(72, 54, 21, 0.18);
+    }
+
+    .baby {
+      background: linear-gradient(180deg, #f5fbff 0%, #fff3f5 100%);
+    }
+
+    .baby .shape.a {
+      width: 560px;
+      height: 560px;
+      left: -110px;
+      top: 225px;
+      background: #a9d7e8;
+    }
+
+    .baby .shape.b {
+      width: 430px;
+      height: 430px;
+      right: -90px;
+      top: 390px;
+      background: #f5becb;
+    }
+
+    .baby .gift.one {
+      width: 280px;
+      height: 240px;
+      left: 150px;
+      top: 460px;
+      background: #7dbad2;
+      transform: rotate(-7deg);
+    }
+
+    .baby .gift.two {
+      width: 240px;
+      height: 220px;
+      right: 175px;
+      top: 555px;
+      background: #f08ca5;
+      transform: rotate(6deg);
+    }
+
+    .baby .moon {
+      position: absolute;
+      width: 210px;
+      height: 210px;
+      left: 405px;
+      top: 275px;
+      border-radius: 50%;
+      background: #fff4a8;
+      z-index: 3;
+      box-shadow: 38px 4px 0 #f5fbff;
+    }
+
+    .kids {
+      background: linear-gradient(180deg, #fff8e6 0%, #eef8ff 100%);
+    }
+
+    .kids .shape.a {
+      width: 530px;
+      height: 530px;
+      left: -120px;
+      top: 255px;
+      background: #f7c45e;
+    }
+
+    .kids .shape.b {
+      width: 460px;
+      height: 460px;
+      right: -115px;
+      top: 365px;
+      background: #7cc5d9;
+    }
+
+    .kids .block {
+      position: absolute;
+      width: 188px;
+      height: 188px;
+      border-radius: 26px;
+      z-index: 3;
+      display: grid;
+      place-items: center;
+      color: #ffffff;
+      font-size: 70px;
+      font-weight: 900;
+      box-shadow: 0 24px 58px rgba(43, 51, 56, 0.16);
+    }
+
+    .kids .block.a {
+      left: 155px;
+      top: 475px;
+      background: #e14f6f;
+      transform: rotate(-8deg);
+    }
+
+    .kids .block.b {
+      left: 385px;
+      top: 330px;
+      background: #2c9d8f;
+      transform: rotate(5deg);
+    }
+
+    .kids .block.c {
+      right: 155px;
+      top: 530px;
+      background: #4267b2;
+      transform: rotate(9deg);
+    }
+
+    .creator {
+      background: linear-gradient(180deg, #eef7f5 0%, #fff6ec 100%);
+    }
+
+    .creator .shape.a {
+      width: 620px;
+      height: 620px;
+      left: -170px;
+      top: 210px;
+      background: #8fcab9;
+    }
+
+    .creator .shape.b {
+      width: 470px;
+      height: 470px;
+      right: -120px;
+      top: 375px;
+      background: #f3b46f;
+    }
+
+    .creator .laptop {
+      position: absolute;
+      left: 180px;
+      top: 400px;
+      width: 640px;
+      height: 350px;
+      border-radius: 34px;
+      background: #23353a;
+      z-index: 3;
+      box-shadow: 0 30px 72px rgba(43, 51, 56, 0.22);
+    }
+
+    .creator .screen {
+      position: absolute;
+      inset: 34px;
+      border-radius: 20px;
+      background: #ffffff;
+    }
+
+    .creator .line {
+      position: absolute;
+      left: 68px;
+      height: 26px;
+      border-radius: 999px;
+      background: #d9e8e4;
+    }
+
+    .creator .line.a {
+      top: 78px;
+      width: 350px;
+    }
+
+    .creator .line.b {
+      top: 132px;
+      width: 460px;
+    }
+
+    .creator .line.c {
+      top: 186px;
+      width: 280px;
+      background: #f1c994;
+    }
+  </style>
+</head>
+<body>
+  <section id="wedding" class="pin wedding">
+    <div class="brand"><span class="mark">W</span>Wishees</div>
+    <div class="shape a"></div>
+    <div class="shape b"></div>
+    <div class="card one"></div>
+    <div class="card two"></div>
+    <div class="ring"></div>
+    <div class="content">
+      <p class="eyebrow">Wedding wishlist ideas</p>
+      <h1>A simple gift list for registry-adjacent moments</h1>
+      <p class="sub">Share one lightweight wishlist for family gifts, small ideas, and moments outside the main registry.</p>
+      <div class="url">Wishees.com</div>
+    </div>
+  </section>
+
+  <section id="baby" class="pin baby">
+    <div class="brand"><span class="mark">W</span>Wishees</div>
+    <div class="shape a"></div>
+    <div class="shape b"></div>
+    <div class="moon"></div>
+    <div class="gift one"></div>
+    <div class="gift two"></div>
+    <div class="content">
+      <p class="eyebrow">Baby shower wishlist</p>
+      <h1>Share newborn essentials in one easy list</h1>
+      <p class="sub">Books, diapers, nursery basics, and help for new parents can live in one simple Wishees link.</p>
+      <div class="url">Wishees.com</div>
+    </div>
+  </section>
+
+  <section id="kids" class="pin kids">
+    <div class="brand"><span class="mark">W</span>Wishees</div>
+    <div class="shape a"></div>
+    <div class="shape b"></div>
+    <div class="block a">B</div>
+    <div class="block b">D</div>
+    <div class="block c">Y</div>
+    <div class="content">
+      <p class="eyebrow">Kids birthday wishlist</p>
+      <h1>Help family pick gifts without guessing</h1>
+      <p class="sub">Create a simple birthday wishlist for toys, books, and ideas that actually fit.</p>
+      <div class="url">Wishees.com</div>
+    </div>
+  </section>
+
+  <section id="creator" class="pin creator">
+    <div class="brand"><span class="mark">W</span>Wishees</div>
+    <div class="shape a"></div>
+    <div class="shape b"></div>
+    <div class="laptop">
+      <div class="screen">
+        <div class="line a"></div>
+        <div class="line b"></div>
+        <div class="line c"></div>
+      </div>
+    </div>
+    <div class="content">
+      <p class="eyebrow">For gift guide creators</p>
+      <h1>A shareable wishlist layer</h1>
+      <p class="sub">Give readers a gift-list moment. Your marketplace affiliate tags stay yours where supported.</p>
+      <div class="url">Wishees.com/affiliate</div>
+    </div>
+  </section>
+</body>
+</html>

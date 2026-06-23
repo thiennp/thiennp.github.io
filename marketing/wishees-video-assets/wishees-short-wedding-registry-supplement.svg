@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1080" height="1920" viewBox="0 0 1080 1920">
+<defs><linearGradient id="bg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff5e6"/><stop offset="1" stop-color="#eaf5f1"/></linearGradient><filter id="shadow" x="-25%" y="-25%" width="150%" height="150%"><feDropShadow dx="0" dy="24" stdDeviation="22" flood-color="#263036" flood-opacity="0.18"/></filter></defs>
+<rect width="1080" height="1920" fill="url(#bg)"/>
+<circle cx="160" cy="470" r="345" fill="#f7cfc0" opacity=".94"/>
+<circle cx="950" cy="710" r="315" fill="#9ac6b2" opacity=".9"/>
+<g filter="url(#shadow)"><rect x="80" y="80" width="70" height="70" rx="21" fill="#fff"/><text x="115" y="129" text-anchor="middle" font-size="42" font-weight="900" fill="#e14f6f" font-family="Inter, Arial, sans-serif">W</text></g>
+<text x="170" y="128" font-size="42" font-weight="850" fill="#15272d" font-family="Inter, Arial, sans-serif">Wishees</text>
+<g filter="url(#shadow)">
+  <rect x="130" y="505" width="460" height="240" rx="38" fill="#fff" opacity=".92" transform="rotate(-6 360 625)"/>
+  <rect x="610" y="635" width="330" height="205" rx="38" fill="#fff" opacity=".92" transform="rotate(7 775 738)"/>
+  <circle cx="540" cy="420" r="124" fill="none" stroke="#d2a84f" stroke-width="32"/>
+  <circle cx="592" cy="352" r="36" fill="#f7e9af" stroke="#d2a84f" stroke-width="12"/>
+</g>
+<text x="80" y="1015" font-size="34" font-weight="800" fill="#e14f6f" font-family="Inter, Arial, sans-serif">Wedding wishlists</text>
+<text x="80" y="1150" font-size="78" font-weight="880" fill="#15272d" font-family="Inter, Arial, sans-serif">Not every gift</text>
+<text x="80" y="1234" font-size="78" font-weight="880" fill="#15272d" font-family="Inter, Arial, sans-serif">idea belongs in</text>
+<text x="80" y="1318" font-size="78" font-weight="880" fill="#15272d" font-family="Inter, Arial, sans-serif">a full registry</text>
+<text x="80" y="1538" font-size="40" font-weight="620" fill="#33494f" font-family="Inter, Arial, sans-serif">Use Wishees as a lightweight</text>
+<text x="80" y="1588" font-size="40" font-weight="620" fill="#33494f" font-family="Inter, Arial, sans-serif">list for smaller wedding gift</text>
+<text x="80" y="1638" font-size="40" font-weight="620" fill="#33494f" font-family="Inter, Arial, sans-serif">moments.</text>
+<g filter="url(#shadow)"><rect x="80" y="1735" width="318" height="76" rx="38" fill="#fff"/></g>
+<text x="116" y="1786" font-size="36" font-weight="850" fill="#15272d" font-family="Inter, Arial, sans-serif">Wishees.com</text>
+</svg>

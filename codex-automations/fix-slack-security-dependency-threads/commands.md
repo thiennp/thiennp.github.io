@@ -10,6 +10,24 @@ For all security dependency PRs, inspect the actual code, package manifests, and
 
 If `QA needed` identifies real product or package-consumer QA, the automation must push the security changes to staging, comment in the PR with the QA reason and exact test target, mention `@Michael Wiesner` in the Jira ticket with the staging target and PR link, move the Jira ticket to `Test`, and report all four actions in Daily Magic.
 
+## Protected Branch Push Guard
+
+For Daily-vulnerabilities-fix security dependency work, never push hotfixes or dependency fixes directly to `release`, `master`, `main`, `integration`, `staging`, or production/shared branches unless Thien explicitly says to push directly to that branch in the current request.
+
+- Default flow is Jira ticket, branch named exactly as the Jira key, verification, push that ticket branch, create or update the Bitbucket PR in Chrome, assign Jens Bachmann and Aleksandar Jaksic, and wait for review.
+- If a request says `hotfix`, `urgent`, `release branch`, or `fix now` without explicit direct-push approval, treat the named branch as the PR target branch, not the push destination.
+- Before every push, run a read-only Protected Branch Push Guard: verify the current branch, target branch, and push refspec. Block the push if the destination is a protected/shared branch and there is no explicit current-turn approval from Thien.
+- Report a blocked direct-push attempt in Daily Magic with the repository, intended target branch, current branch, and the safe next action.
+
+## Vendor-Synced Repository Exclusions
+
+Exclude `enrglib-cella-client` from automatic Daily-vulnerabilities-fix dependency remediation.
+
+- Reason: PR feedback on `PRE-4587` / Bitbucket PR #10 says this repository is a fork of a Holding vendor package and is synced automatically every day via Jenkins.
+- Do not create automatic Jira tickets, branches, commits, pushes, or PRs for `enrglib-cella-client` unless Thien explicitly overrides this exclusion in the current request.
+- If `enrglib-cella-client` appears on the package-audit board, report it as vendor-sync-owned/excluded and recommend fixing the upstream Holding vendor package or Jenkins sync source.
+- Record the board row, advisory IDs, affected lockfile, and exclusion reason in Daily Magic instead of treating it as an actionable repo-local dependency fix.
+
 ## Jira Ticket Description Improvement
 
 After creating any Jira ticket, open the newly created issue in Jira UI when a browser session is available and look for the `Improve description` button.

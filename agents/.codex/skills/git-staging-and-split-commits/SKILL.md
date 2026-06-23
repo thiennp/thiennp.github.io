@@ -23,6 +23,19 @@ When work mixes **`.cursor/`** with **`frontend/src/**`** (or other app paths), 
 - Use separate commit messages (e.g. **`POST-<n>:`** for app, **`00000:`** for cursor-only) per team rules in **`.cursor/rules/commit-workflow.mdc`**.
 - After commits that change **`frontend/`** application code, run **`npm run test-update`** in **`frontend/`** per **`.cursor/rules/task-verification.mdc`** (and stage coverage if your team commits it).
 
+## 3. `enrg-cms-rev` staging visibility
+
+When an Energy task touches `enrg-cms-rev`, especially CMS wireframe/template output, pushing to `staging` is not always enough for the change to appear in downstream staging pages.
+
+After pushing the `enrg-cms-rev` change to `staging` and letting Jenkins deploy/activate CMS staging:
+
+- Run the CMS wireframe import in the CMS GUI: `https://cms-rev.energie.check24-test.de/admin/check24/wireframe/import`
+- Verify the CMS staging page directly, for example `https://cms-rev.energie.check24-test.de/strom`
+- If the change must appear in emod/static frontend output, run the Backoffice CMS import/versioning page: `https://admin.energie.check24-test.de/cms/versioning.html`
+- Re-check the consumer staging URL after the BO import, for example under `https://www.check24-test.de/` or `https://energie.check24-test.de/`
+
+Context from prior CMS guidance: the wireframe import downloads wireframes from holding and applies replacement processing; BO import is needed when the same rendered CMS output must become visible in emod.
+
 ## Related
 
 - **`.cursor/rules/git-workflow.mdc`** - SCOPE separation for commits
