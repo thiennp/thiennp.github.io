@@ -1,4 +1,5 @@
 version = 1
+# Monitor rules are mirrored in `MONITOR_SUBAGENTS.md`; this includes `single-tab-bitbucket-state-monitor` for sequential live Bitbucket state checks on Chrome.
 id = "hourly-bitbucket-dependency-pr-cleanup"
 kind = "cron"
 name = "15-minute assigned Bitbucket PR review"
