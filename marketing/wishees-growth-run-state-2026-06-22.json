@@ -53,6 +53,7 @@
     "facebook_health_post_queue": "wishees-facebook-health-post-queue-2026-06-23.csv",
     "facebook_health_publish_console": "wishees-facebook-health-publish-console-2026-06-23.html",
     "charity_org_wish_safety_and_growth": "wishees-charity-org-wish-safety-and-growth-2026-06-23.md",
+    "share_loop_growth_brief": "wishees-share-loop-growth-brief-2026-06-23.md",
     "photo_led_pinterest_test_brief": "wishees-photo-led-pinterest-test-brief-2026-06-22.md",
     "photo_video_creative_style_guide": "wishees-photo-video-creative-style-guide-2026-06-22.md",
     "facebook_vn_en_channel_plan": "wishees-facebook-vn-en-channel-plan-2026-06-22.md",
@@ -174,6 +175,7 @@
     "facebook_health_ready_posts": 3,
     "facebook_health_needs_gemini_posts": 3,
     "charity_org_wish_safety_rule_ready": true,
+    "share_loop_growth_brief_ready": true,
     "content_bank_days_ready": 14,
     "new_enriched_pinterest_assets_ready": 3,
     "new_enriched_mp4_shorts_ready": 4,
@@ -735,7 +737,7 @@
   "facebook_health_content_2026_06_23": {
     "date": "2026-06-23",
     "status": "ready",
-    "goal": "Make the Facebook page feel like an active Wishees page for Vietnamese-first gift moments, not an abandoned legacy page.",
+    "goal": "Make the Facebook page feel active and drive one measurable action: create one occasion wishlist and share the link.",
     "content_plan": "wishees-facebook-health-content-plan-2026-06-23.md",
     "post_queue": "wishees-facebook-health-post-queue-2026-06-23.csv",
     "publish_console": "wishees-facebook-health-publish-console-2026-06-23.html",
@@ -753,12 +755,53 @@
       "Post D - Creator / favorite things",
       "Post F - Community gift list"
     ],
-    "decision": "focus_facebook_until_page_looks_healthy",
-    "next": "Publish Post A as the next Facebook health post, then Post B after measurement or at least one day. Generate Post C/D assets in Gemini one by one using the prompt queue."
+    "decision": "focus_facebook_on_share_loop_activation",
+    "next": "Publish Post A as the next Facebook health post, then watch the growth dashboard for shares created, links opened, connections, and gift reservations within 24 hours. If shares stay 0, fix onboarding/share CTA before scaling outreach."
   },
-  "charity_org_wish_safety_2026_06_23": {
-    "date": "2026-06-23",
-    "status": "rule_recorded",
+    "share_loop_growth_diagnosis_2026_06_23": {
+        "date": "2026-06-23",
+        "status": "recorded",
+        "source": "Growth dashboard side-chat summary",
+        "numbers": {
+      "homepage_wish_starts_30d": 21,
+      "signups_completed_30d": 12,
+      "first_wishes_saved_30d": 8,
+      "share_links_created_30d": 5,
+      "share_links_opened_30d": 14,
+      "connections_created_30d": 2,
+      "current_week_shares": 0,
+      "current_week_link_opens": 1,
+      "current_week_connections": 0,
+      "current_week_gift_reservations": 0
+    },
+    "diagnosis": "Users can start/create wishes, but too few create and share links. This week the share loop is nearly dead.",
+    "growth_rule": "Facebook should drive one action only: create one birthday/family wishlist and share the link. Do not push affiliate, marketplace, or browsing right now.",
+    "product_direction": "After signup/first wish, guide users through add 3 wishes -> create share link -> copy/share to family or friends.",
+        "artifact": "wishees-share-loop-growth-brief-2026-06-23.md",
+        "next": "Publish Facebook intro/birthday post with share-link CTA, then measure share links created and links opened within 24 hours. If shares remain 0, prioritize onboarding/share CTA fixes."
+    },
+    "facebook_og_share_image_2026_06_23": {
+        "date": "2026-06-23",
+        "status": "implemented_locally_pending_deploy",
+        "source": "Generated in user's Gemini account in Chrome and saved by user.",
+        "asset": "wishees-share-preview-assets/wishees-og-birthday-share-loop-gemini-2026-06-23.png",
+        "original_user_path": "/Users/thien.nguyen/Gemini_Generated_Image_nbgt9cnbgt9cnbgt.png",
+        "dimensions": "2848x1504",
+        "quality_assessment": "Strong Facebook/Open Graph candidate: warm realistic Vietnamese gift moment, clear share-loop headline, visible Wishees.com brand line, and much better trust/conversion fit than the generic default logo/app-card link preview.",
+        "live_metadata_check": "2026-06-23 check of https://www.wishees.com/?lang=vi still returns og:image and twitter:image as https://www.wishees.com/assets/wishees/og-default.png with 1200x630 dimensions.",
+        "implementation_prompt": "wishees-og-share-image-cursor-prompt-2026-06-23.md",
+        "local_repo": "/Users/thien.nguyen/codex-worktrees/chords",
+        "production_asset": "public/assets/wishees/og-share-loop-birthday.jpg",
+        "production_asset_dimensions": "1200x630",
+        "production_asset_size": "131 KB",
+        "code_change": "Updated wisheesDefaultOpenGraphImagePath and Open Graph alt copy so homepage, structured data, affiliate metadata, and fallback public metadata use the new image path.",
+        "verification": "Production build passed: pnpm build. Focused metadata tests passed: pnpm vitest run src/app/wishees-root-metadata.test.ts src/app/wishees-canonical-site.test.ts src/app/wishees-structured-data-json-ld.test.ts. Typecheck passed after moving stale generated .next/types from June 10 aside: pnpm tsc --noEmit -p tsconfig.audit.json. Built output contains /assets/wishees/og-share-loop-birthday.jpg.",
+        "decision": "deploy_website_og_image_and_use_media_first_on_facebook_until_live",
+        "next": "Deploy the chords worktree change, then refresh Facebook Sharing Debugger for https://www.wishees.com/ and https://www.wishees.com/?lang=vi. Until deployed and re-scraped, Facebook posts should upload lifestyle media first and remove automatic link previews."
+    },
+    "charity_org_wish_safety_2026_06_23": {
+        "date": "2026-06-23",
+        "status": "rule_recorded",
     "trigger": "Side-chat question asked whether to create wishes for a famous organization such as UNICEF and add payment details.",
     "decision": "Do not create charity/organization wishes or payment destinations on behalf of any organization without explicit authorization and verified payment ownership.",
     "safe_growth_angle": "Use organizer-created community gift lists first: parents, teachers, local groups, or verified organizations. Public copy must clearly identify the organizer and avoid false endorsement.",

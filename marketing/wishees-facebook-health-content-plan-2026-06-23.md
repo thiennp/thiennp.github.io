@@ -1,10 +1,36 @@
 # Wishees Facebook Health Content Plan - 2026-06-23
 
-Goal: make `https://www.facebook.com/wisheescom/` feel like an active Wishees page for Vietnamese-first gift moments, not an abandoned/legacy page.
+Goal: make `https://www.facebook.com/wisheescom/` feel like an active Wishees page and drive one measurable action: create one occasion wishlist and share the link.
 
 Primary audience: Vietnamese speakers first; English support only when it helps.
 
-Content rule: post warm, realistic gift moments. Do not over-explain the product. Make each post answer one normal gift problem.
+Content rule: post warm, realistic gift moments. Do not over-explain the product. Make each post answer one normal gift problem and push one CTA: create a wishlist, add a few wishes, share the link.
+
+Share-preview rule: the current default `wishees.com` Facebook link preview looks too generic and weak for conversion. Until the website Open Graph image is replaced, Facebook posts should upload the Gemini/lifestyle media first and use the Wishees URL in the caption only. Do not rely on Facebook's automatic logo/app-card preview as the main visual.
+
+Website OG image candidate:
+
+- `wishees-share-preview-assets/wishees-og-birthday-share-loop-gemini-2026-06-23.png`
+
+Implementation handoff:
+
+- `wishees-og-share-image-cursor-prompt-2026-06-23.md`
+
+## Current Growth Dashboard Diagnosis
+
+Wishees has some onboarding activity, but the share loop is weak:
+
+- 21 homepage wish starts
+- 12 signups completed
+- 8 first wishes saved
+- only 5 share links created
+- 14 share links opened
+- 2 connections created
+- current week: 0 shares, 1 link open, 0 connections, 0 gift reservations
+
+So Facebook should not push affiliate, marketplace, or browsing right now. It should push:
+
+> Create one birthday/family wishlist and share the link.
 
 ## Health Definition
 
@@ -32,17 +58,17 @@ Caption:
 ```text
 Sinh nhật tới mà ai cũng hỏi: "Muốn quà gì?"
 
-Tạo một wishlist Wishees, gom những món bạn thích vào một link, rồi chia sẻ cho bạn bè và gia đình. Người tặng đỡ phải đoán, người nhận cũng vui hơn.
+Tạo một wishlist Wishees, thêm vài món bạn thích, rồi chia sẻ link cho bạn bè và gia đình. Người tặng đỡ phải đoán, người nhận cũng vui hơn.
 
 One simple wishlist link for birthdays, family gifts, and the little moments people remember.
 
-Tạo wishlist tại https://www.wishees.com/?lang=vi
+Tạo wishlist và chia sẻ link tại https://www.wishees.com/?lang=vi
 ```
 
 Comment to pin under the post:
 
 ```text
-Bạn có thể dùng Wishees cho sinh nhật, baby shower, cưới, quà gia đình hoặc bất kỳ dịp nào cần một wishlist dễ chia sẻ.
+Bắt đầu đơn giản: tạo một wishlist, thêm 3 món, rồi gửi link cho người thân hoặc nhóm bạn.
 ```
 
 Why this helps page health:
@@ -62,11 +88,11 @@ Caption:
 ```text
 Baby shower dễ hơn khi mọi món cần thiết nằm trong một wishlist: tã, sách, khăn, đồ sơ sinh và những món giúp bố mẹ mới.
 
-Một link để khách mời chọn quà nhanh hơn, đỡ mua trùng, đỡ hỏi đi hỏi lại.
+Thêm vài món cần thiết, tạo link chia sẻ, rồi gửi cho khách mời để mọi người chọn quà nhanh hơn, đỡ mua trùng, đỡ hỏi đi hỏi lại.
 
 Baby shower wishlist made easy.
 
-Tạo wishlist tại https://www.wishees.com/?lang=vi
+Tạo wishlist và chia sẻ link tại https://www.wishees.com/?lang=vi
 ```
 
 Why this helps page health:
@@ -90,9 +116,9 @@ Team bạn thân mỗi lần góp quà sinh nhật:
 "Ai mua trước?"
 "Có bị trùng không?"
 
-Một wishlist giúp cả nhóm chốt nhanh hơn. Người nhận vẫn có món đúng ý, người tặng đỡ rối.
+Một wishlist giúp cả nhóm chốt nhanh hơn. Thêm vài món, tạo link chia sẻ, rồi gửi vào group chat.
 
-Tạo wishlist tại https://www.wishees.com/?lang=vi
+Tạo wishlist và chia sẻ link tại https://www.wishees.com/?lang=vi
 ```
 
 Why this helps page health:
@@ -111,9 +137,9 @@ Caption:
 ```text
 Nếu bạn hay được hỏi "link sản phẩm đâu?" hoặc "món này mua ở đâu?", hãy gom những món bạn thích vào một wishlist.
 
-Wishees giúp bạn chia sẻ một list gọn hơn cho sinh nhật, holiday gift guide, đồ dùng gia đình hoặc những món bạn thật sự recommend.
+Wishees giúp bạn chia sẻ một list gọn hơn cho sinh nhật, holiday gift guide, đồ dùng gia đình hoặc những món bạn thật sự recommend. Tạo list xong, hãy gửi link để người khác thật sự dùng được.
 
-Tạo wishlist tại https://www.wishees.com/?lang=vi
+Tạo wishlist và chia sẻ link tại https://www.wishees.com/?lang=vi
 ```
 
 Why this helps page health:
@@ -132,11 +158,11 @@ Caption:
 ```text
 Không phải ý tưởng quà cưới nào cũng cần nằm trong registry chính.
 
-Wishees có thể là một wishlist nhẹ nhàng cho quà nhỏ, quà gia đình, hoặc những món muốn chia sẻ riêng với bạn bè thân.
+Wishees có thể là một wishlist nhẹ nhàng cho quà nhỏ, quà gia đình, hoặc những món muốn chia sẻ riêng với bạn bè thân. Tạo list, thêm vài món, rồi gửi link.
 
 A simple wishlist next to your registry.
 
-Tạo wishlist tại https://www.wishees.com/?lang=vi
+Tạo wishlist và chia sẻ link tại https://www.wishees.com/?lang=vi
 ```
 
 Why this helps page health:
@@ -161,7 +187,7 @@ Phụ huynh có thể gom quà lớp học. Cô giáo có thể chia sẻ đồ 
 
 Điều quan trọng: người tổ chức rõ ràng, mục đích rõ ràng, và một link dễ chia sẻ cho mọi người.
 
-Tạo wishlist tại https://www.wishees.com/?lang=vi
+Tạo wishlist và chia sẻ link tại https://www.wishees.com/?lang=vi
 ```
 
 Why this helps page health:
@@ -219,4 +245,6 @@ After each post, record:
 - Whether Vietnamese comments/questions appear.
 - Whether Wishees statistics move: shares created, link opened, connections, gift reservations.
 
-Do not judge a post only by views. A healthy page needs recognizable identity and repeated useful use cases before conversion improves.
+Do not judge a post by views. The next success metric is share-loop movement: new wishes, share links created, link opens, connections, and gift reservations.
+
+If Facebook creates views but shares stay 0, fix product onboarding/share CTA before scaling outreach or publishing more creator-facing posts.
