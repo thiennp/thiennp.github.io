@@ -61,6 +61,76 @@ Use this ratio unless a platform has a clear reason to do otherwise:
 
 The page should feel helpful first. Partner recruitment should feel like the natural next step for creators who already make gift, deal, review, family, home, baby, or holiday content.
 
+## Short-Video Creative System
+
+Research basis:
+- TikTok says strong creative should grab attention within seconds, build emotion through relatable storytelling, and motivate action; it also recommends native-feeling, human, fast-paced vertical content with captions.
+- Meta recommends showing the brand/key message in the first 3 seconds and keeping short video concise, often 6-15 seconds for ads.
+- Pinterest says the first 6 seconds matter, videos should use clear hooks, strong covers, concise captions, and "show, don't tell"; Pinterest also favors inspiration-to-action content because people use it with shopping/planning intent.
+- Pinterest Idea content should have a beginning, middle, and end and can work through personal stories, process, knowledge, or community.
+- YouTube Shorts should be treated as discovery content: post consistently, link viewers deeper, interact with comments, and review analytics.
+
+Implication for Wishees:
+- Static "pretty gift moment" videos are not enough.
+- Each short video needs a small story, a visible problem, a twist or payoff, and one simple next action.
+- Humor should be observational, not forced. The joke should come from real gift-giving friction: group chats, duplicate gifts, awkward "what do you want?" questions, forgotten birthdays, and creators with scattered product picks.
+- The CTA should be soft and specific: "make one wishlist before people ask" or "turn one gift guide into a shareable list."
+
+Default short-video structure:
+
+```text
+0-2s: Pattern break or problem
+2-5s: Specific relatable moment
+5-8s: Twist, tiny joke, or reveal
+8-12s: Wishees solution shown visually
+12-15s: One action: create/share a wishlist or view partner program
+```
+
+Approved short-video formats:
+
+1. Problem twist:
+   - Setup: "Everyone asks what I want."
+   - Twist: the person sends a 14-message explanation, then realizes a wishlist link would have done it.
+   - CTA: create one list before the questions start.
+
+2. Duplicate-gift comedy:
+   - Setup: three friends proudly bring the same gift.
+   - Twist: all three say "I thought nobody else would get this."
+   - CTA: use a shared wishlist for group gift moments.
+
+3. Creator angle:
+   - Setup: a creator has gift picks scattered across notes, screenshots, and old posts.
+   - Twist: "This was supposed to be a gift guide, not an archaeological dig."
+   - CTA: turn picks into a Wishees list.
+
+4. Parent/family angle:
+   - Setup: family group chat asks what the child wants.
+   - Twist: parent starts typing a long answer, then deletes it and sends the wishlist link.
+   - CTA: make a kids/family list.
+
+5. Partner recruitment angle:
+   - Setup: creator already posts product picks.
+   - Twist: "Your audience saved the post, then lost it."
+   - CTA: give the picks a shareable wishlist home.
+
+Creative rules:
+- Use 9:16 vertical for TikTok, Reels, Shorts.
+- Make the first frame understandable with sound off.
+- Add on-screen captions in platform editors, not embedded in Gemini output, so language can be adapted per platform.
+- Keep most videos 8-15 seconds. Use 20-30 seconds only for creator/partner explainers.
+- Use one idea per video.
+- Do not make the whole channel feel like a recruitment ad. Let useful gift stories create trust first.
+- Create at least 3 hook variants for each video before posting if platform draft tools allow it.
+- If AI-generated media looks uncanny, use it as a background/cover only or regenerate. Do not publish distorted hands, unreadable fake UI closeups, strange faces, or obvious stock-ad staging.
+
+Short-video success metrics:
+- First 3-second hold rate where available.
+- Average watch time / completion rate.
+- Saves and shares, not only likes.
+- Profile visits.
+- Link clicks to Wishees.
+- Wish starts, signups, share links created, and partner-program visits.
+
 ## Delegation Plan
 
 The lead agent is **Codex Lead**. Codex Lead owns final judgment, browser actions, account safety, and the publish tracker. Subagents support preparation and verification so the run does not stop when one platform blocks.
@@ -90,6 +160,8 @@ Responsibilities:
 - Use Gemini Pro prompts from this runbook to generate high-quality, text-free visuals and videos.
 - Prioritize realistic, warm, premium lifestyle media.
 - Generate more assets than the minimum so each platform has choice.
+- Generate story-led short-video variants, not only atmospheric clips.
+- For each short-video concept, create one clean base video plus 2 alternate hook/first-frame options when possible.
 - Avoid embedded text, fake readable UI, distorted hands/faces, watermarks, or brand misuse.
 - Export/save assets with clear filenames:
   - `wishees-fb-vn-{theme}-{date}`
@@ -99,7 +171,8 @@ Responsibilities:
 
 Outputs:
 - At least 12 usable images if Gemini allows it.
-- At least 4 usable vertical videos or slideshow-ready image sets if video is blocked.
+- At least 6 usable vertical videos or slideshow-ready image sets if video is blocked.
+- At least 12 short hook/caption variants for platform-native text overlays.
 - A reject list for bad assets, so they are not accidentally posted.
 
 ### Agent 3: Content Librarian
@@ -350,49 +423,60 @@ https://www.wishees.com/affiliate/program?lang=en&country=US&ref=instagram-us-pa
 
 ### TikTok / Reels / Shorts, US Market
 
-Short Video Script 1, relatable birthday:
+Short Video Script 1, birthday problem twist:
 
 ```text
-Visual: someone staring at a birthday text thread, then a phone beside cake/wrapped gift.
-On-screen text 1: Everyone asks: "What do you want?"
-On-screen text 2: I always forget until they ask.
-On-screen text 3: So I made a small wishlist.
-On-screen text 4: Much easier.
+Visual: person receives the "what do you want?" birthday text, starts typing a long answer, deletes it, then sends one wishlist link. Cut to cake and a gift that actually fits.
+On-screen text 1: The birthday question arrived.
+On-screen text 2: I almost wrote an essay.
+On-screen text 3: Sent one wishlist instead.
+On-screen text 4: Much better.
 Caption: I should have done this before every birthday. Wishees.com #wishlist #birthdaygifts #giftideas
 Link: https://www.wishees.com/?lang=en&country=US&ref=tiktok-us-birthday-natural
 ```
 
-Short Video Script 2, baby shower:
+Short Video Script 2, duplicate gift comedy:
 
 ```text
-Visual: baby shower table with a few duplicated gifts, then a calmer phone/list moment.
-On-screen text 1: Baby shower gifts get chaotic fast.
-On-screen text 2: The useful ideas need a home.
-On-screen text 3: Put them in a wishlist.
+Visual: baby shower or birthday table. Three people arrive with very similar gifts. Quick awkward smile. Cut to someone making a wishlist for the next event.
+On-screen text 1: They all brought the same thing.
+On-screen text 2: Everyone meant well.
+On-screen text 3: Next time: shared wishlist.
 Caption: For the practical gifts, the sweet gifts, and the "please not duplicates" gifts. #babyshowergifts #wishlist #giftideas
 Link: https://www.wishees.com/?lang=en&country=US&ref=tiktok-us-baby-natural
 ```
 
-Short Video Script 3, creator soft:
+Short Video Script 3, creator scattered picks:
 
 ```text
-Visual: creator filming gift products, checking an old gift guide, then saving items into a clean list.
-On-screen text 1: You already picked the gifts.
-On-screen text 2: Give the list somewhere to live.
-On-screen text 3: Your audience can use it later.
+Visual: creator scrolling through screenshots, notes, old posts, and product tabs. Tiny joke moment: too many tabs. Then the same picks become one simple list.
+On-screen text 1: Your gift guide is in 9 places.
+On-screen text 2: Notes. Screenshots. Old posts.
+On-screen text 3: Give the picks one home.
 Caption: For creators with gift guides, product picks, and seasonal lists. Affiliate eligibility depends on marketplace rules. #giftguide #creatorbusiness #wishlist
 Link: https://www.wishees.com/affiliate/program?lang=en&country=US&ref=tiktok-us-creator-soft
 ```
 
-Short Video Script 4, holiday:
+Short Video Script 4, family group chat:
 
 ```text
-Visual: cozy holiday table, small gifts, phone on sofa/table.
-On-screen text 1: Holiday gift texts start early.
-On-screen text 2: "What should we get them?"
-On-screen text 3: Make a list before December chaos.
+Visual: family group chat keeps asking for gift ideas. Parent starts replying one by one, then sends one wishlist link. Cut to calm coffee/table moment.
+On-screen text 1: The family group chat started.
+On-screen text 2: "What does she want?"
+On-screen text 3: One list. One link.
 Caption: Future you will be glad the gift ideas are already somewhere. #holidaygifts #wishlist #giftideas
 Link: https://www.wishees.com/?lang=en&country=US&ref=tiktok-us-holiday-natural
+```
+
+Short Video Script 5, partner recruitment soft:
+
+```text
+Visual: creator posts a nice gift idea, then later tries to find it again in their own feed. Cut to a clean wishlist page with themed picks.
+On-screen text 1: Your audience saved the post.
+On-screen text 2: Then lost it.
+On-screen text 3: Put the picks in a wishlist.
+Caption: If you already make gift guides, Wishees can make them easier to use. Affiliate eligibility depends on marketplace rules. #giftguide #affiliatecreator #wishlist
+Link: https://www.wishees.com/affiliate/program?lang=en&country=US&ref=tiktok-us-partner-story
 ```
 
 ### Pinterest, US Market
@@ -530,8 +614,12 @@ Create these assets:
 4. Pinterest US birthday gift guide image, vertical, no text.
 5. Pinterest US baby shower gift guide image, vertical, no text.
 6. Pinterest US wedding extra gift list image, vertical, no text.
-7. TikTok/YouTube Short video 1: birthday wishlist, vertical 9:16, no embedded text if possible.
-8. TikTok/YouTube Short video 2: baby shower or family gift list, vertical 9:16, no embedded text if possible.
+7. Short video 1: birthday problem twist, vertical 9:16, no embedded text.
+8. Short video 2: duplicate gift comedy, vertical 9:16, no embedded text.
+9. Short video 3: creator scattered picks, vertical 9:16, no embedded text.
+10. Short video 4: family group chat, vertical 9:16, no embedded text.
+11. Short video 5: partner recruitment soft story, vertical 9:16, no embedded text.
+12. Backup slideshow set: 5 vertical stills that can become TikTok/Reels/Shorts/Pinterest videos if Gemini video is blocked.
 
 Gemini prompt for Facebook Vietnamese image:
 
@@ -557,16 +645,40 @@ Gemini prompt for US wedding/registry supplement image:
 Create a realistic premium lifestyle photo for Wishees, no text, no logo, no watermark. US wedding gift planning scene, elegant table with small wrapped gifts, flowers, a phone showing an unreadable wishlist-like screen, warm natural light, tasteful and realistic, not luxury advertising, vertical 2:3 for Pinterest.
 ```
 
-Gemini prompt for vertical birthday short video:
+Gemini prompt for short video 1, birthday problem twist:
 
 ```text
-Create a realistic 8 to 12 second vertical video for Wishees, no logo, no watermark, no embedded text. Scene: a person receives a birthday gift after sharing a simple wishlist link, friends smiling, phone briefly visible with an unreadable wishlist-like screen, wrapped gift and cake visible. Warm realistic lifestyle, natural motion, premium social media style, US audience, 9:16.
+Create a realistic 10 to 14 second vertical video for Wishees, no logo, no watermark, no embedded text, no readable UI. US audience. Story: a person gets a birthday text message asking what they want, starts typing a long reply, pauses, deletes it, then sends one simple wishlist link. Cut to friends at a small birthday cake and one thoughtful wrapped gift. Tone: warm, lightly funny, realistic, premium social media style, natural handheld motion, not glossy advertising, 9:16.
 ```
 
-Gemini prompt for vertical baby/family short video:
+Gemini prompt for short video 2, duplicate gift comedy:
 
 ```text
-Create a realistic 8 to 12 second vertical video for Wishees, no logo, no watermark, no embedded text. Scene: family or friends choosing a baby shower or family gift from a shared wishlist on a phone, gift box and baby/family items visible, warm daylight, authentic emotion, premium social media style, US audience, 9:16.
+Create a realistic 8 to 12 second vertical video for Wishees, no logo, no watermark, no embedded text, no readable UI. US audience. Story: a small baby shower or birthday table. Three friends arrive with nearly identical wrapped gifts and exchange an awkward friendly smile. Quick cut to someone calmly making a shared wishlist on a phone for the next event. Tone: human, lightly funny, warm, not slapstick, premium but natural, 9:16.
+```
+
+Gemini prompt for short video 3, creator scattered picks:
+
+```text
+Create a realistic 12 to 16 second vertical video for Wishees, no logo, no watermark, no embedded text, no readable UI. US creator audience. Story: a lifestyle/gift creator sits at a desk with too many open tabs, notes, screenshots, and product ideas scattered across devices. They look mildly overwhelmed, then organize the same gift picks into one simple wishlist-like page on a phone. Tone: relatable, slightly humorous, creator-workflow focused, natural lighting, premium social media style, 9:16.
+```
+
+Gemini prompt for short video 4, family group chat:
+
+```text
+Create a realistic 10 to 14 second vertical video for Wishees, no logo, no watermark, no embedded text, no readable UI. US family audience. Story: a parent receives multiple family group chat notifications asking what a child wants for an upcoming birthday or holiday. The parent starts to reply, stops, sends one wishlist link, then relaxes with coffee while small wrapped gifts sit nearby. Tone: warm, practical, lightly funny, realistic home setting, 9:16.
+```
+
+Gemini prompt for short video 5, partner recruitment soft story:
+
+```text
+Create a realistic 12 to 18 second vertical video for Wishees, no logo, no watermark, no embedded text, no readable UI. US creator and affiliate audience. Story: a creator posts or films several gift products, then later scrolls through old posts and screenshots trying to find the same recommendations. They organize the picks into one clean wishlist-like page and look relieved. Tone: useful, human, slightly funny, not salesy, premium social media style, 9:16.
+```
+
+Gemini prompt for backup slideshow stills:
+
+```text
+Create five realistic vertical 9:16 lifestyle images for Wishees, no logo, no watermark, no embedded text, no readable UI. Theme: gift-giving friction becomes simple through a shared wishlist. Include: birthday question moment, duplicate gift moment, family group chat moment, creator gift-guide desk moment, and final calm wishlist/share moment. Warm authentic photography, realistic people, natural light, premium but not stock-photo staged.
 ```
 
 If Gemini blocks video generation:
@@ -655,18 +767,18 @@ If Instagram blocks posting:
 
 ### Hour 4: TikTok, US Market
 
-Objective: one simple US-facing video about the gift-guessing problem.
+Objective: publish or draft one story-led US-facing video about gift-giving friction. Use humor or a twist; do not upload a plain lifestyle clip unless no better option exists.
 
-Task 4.1: Upload birthday wishlist video.
+Task 4.1: Upload the strongest video from scripts 1-4.
 
-Video: Gemini birthday short, 9:16.
+Default first choice: birthday problem twist. If the first frame is weak, use duplicate gift comedy instead.
 
 Suggested on-screen text using TikTok editor:
 
 ```text
-"What do you want?"
-I always forget until someone asks.
-So I made a small wishlist.
+The birthday question arrived.
+I almost wrote an essay.
+Sent one wishlist instead.
 ```
 
 Caption:
@@ -686,7 +798,7 @@ Task 4.2: If upload succeeds and account health looks normal, prepare second dra
 Draft caption:
 
 ```text
-Gift lists are not just for weddings. I would use one for baby showers, birthdays, holidays, and the family group chat. #wishlist #giftideas #babyshowergifts
+They all meant well. They also all brought the same gift. A shared wishlist would have helped. #wishlist #giftideas #babyshowergifts
 ```
 
 If TikTok blocks:
@@ -696,14 +808,14 @@ If TikTok blocks:
 
 ### Hour 5: YouTube Shorts, US Market
 
-Objective: reuse the best vertical video for search-friendly US discovery.
+Objective: reuse the best story-led vertical video for search-friendly US discovery.
 
 Task 5.1: Upload the birthday wishlist short.
 
 Title:
 
 ```text
-I Made A Birthday Wishlist Before Anyone Asked
+I Almost Wrote A Birthday Gift Essay
 ```
 
 Description:
@@ -711,7 +823,7 @@ Description:
 ```text
 The hardest birthday text is always: "What do you want?"
 
-This is a small way to answer before the question comes up.
+This is the simpler answer: make one small wishlist and share the link.
 
 Start here:
 https://www.wishees.com/?lang=en&country=US&ref=youtube-shorts-us-gift-loop
@@ -730,13 +842,13 @@ Task 5.2: If upload and account health are good, schedule or draft baby/family s
 Title:
 
 ```text
-A Baby Shower Wishlist For The Useful Stuff Too
+When Everyone Brings The Same Baby Shower Gift
 ```
 
 Description:
 
 ```text
-Baby shower gifts can be cute and useful. A small Wishees list keeps both kinds of ideas in one place.
+Everyone meant well. A small Wishees list helps people choose without duplicating the same gift.
 
 https://www.wishees.com/?lang=en&country=US&ref=youtube-shorts-us-baby-gift-loop
 ```
