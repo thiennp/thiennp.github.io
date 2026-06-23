@@ -6,3 +6,4 @@ prefix_rule(pattern=["node", "-e", "const fs=require('fs');const path=require('p
 prefix_rule(pattern=["~/.thien-agent-reporting/report.sh", "queue", "status", "{\"status\":\"in_progress\",\"phase\":\"verify-thread\",\"title\":\"Verify PRE-0000 Jira fix thread\",\"message\":\"Checking the existing Daily Magic thread and content before claiming follow-up work.\",\"category\":\"JIRA\",\"threadId\":\"thread-action-2026-06-19T05-28-38-100Z\",\"actionId\":\"action-2026-06-19T05-28-38-100Z\",\"owner\":{\"name\":\"Thien Nguyen\"},\"appName\":\"Codex\",\"runId\":\"codex-pre-0000-20260619\"}"], decision="allow")
 prefix_rule(pattern=["~/.thien-agent-reporting/report.sh", "content"], decision="allow")
 prefix_rule(pattern=["~/.thien-agent-reporting/report.sh", "thread-get", "thread-action-2026-06-19T05-28-38-100Z"], decision="allow")
+prefix_rule(pattern=["git", "ls-remote"], decision="allow")
