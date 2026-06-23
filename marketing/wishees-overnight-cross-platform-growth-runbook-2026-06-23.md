@@ -2,11 +2,15 @@
 
 Date: 2026-06-23
 
-Goal: keep Wishees pages active, trustworthy, and conversion-focused for at least one 8-hour working block, with enough prewritten content that the operator does not need to stop and rethink.
+Goal: make Wishees pages look rich, credible, and worth engaging with for at least one 8-hour working block, with enough prewritten gift/wishlist content that the operator does not need to stop and rethink.
 
-Primary conversion goal: get people to create a gift wishlist, add a few wishes, and share one link.
+Primary business goal: recruit creators, bloggers, gift-guide publishers, deal curators, and affiliate partners who can turn their gift/product content into Wishees wishlists.
 
-Secondary goal: recruit creators/affiliates only with conservative, valid wording. Wishees preserves affiliate links or tags where supported, but commission eligibility, exclusions, tracking, and payout are controlled by each marketplace or affiliate program. Wishees does not guarantee commission.
+Primary content goal: make people understand the gift problem, enjoy the content, and see Wishees as a useful gift-list layer before they feel recruited.
+
+Secondary conversion goal: get normal users to create a gift wishlist, add a few wishes, and share one link. This supports partner recruitment by proving the product loop is useful.
+
+Partner compliance position: recruit creators/affiliates only with conservative, valid wording. Wishees preserves affiliate links or tags where supported, but commission eligibility, exclusions, tracking, and payout are controlled by each marketplace or affiliate program. Wishees does not guarantee commission.
 
 Audience split:
 - Facebook page: Vietnamese audience for now.
@@ -21,6 +25,460 @@ Hard rules:
 - Respect platform limits, reviews, 2FA, CAPTCHA, and account safety prompts.
 - If a platform blocks an action, log the blocker, switch to another task, and revisit later.
 - Do not post to Daily Magic.
+- Do not let any page remain thin. If a platform has only 1-2 visible Wishees posts, prioritize safe profile enrichment, drafts, boards/playlists, and high-quality creative preparation before pushing hard outreach.
+- Do not wait to invent content during execution. Use the copy and prompts in this runbook first.
+- Do not try to bypass platform safety systems. Use normal platform-native flows, normal review timing, and reasonable posting volume.
+
+## Execution Priority
+
+1. Build a rich creative library with Gemini Pro.
+2. Fill each channel with polished gift-intent content so a visitor feels the page is alive and useful before seeing a partner pitch.
+3. Recruit partners naturally, especially US creators outside Facebook and Vietnamese Shopee/content creators on Facebook.
+4. Use user-wishlist posts, gift examples, and creator examples as proof and context; only every few posts should be a direct partner CTA.
+5. Reply to warm email leads before sending new cold outreach.
+6. If blocked anywhere, switch tasks immediately and revisit later.
+
+## Rich Page Standard
+
+Before considering a page "ready for partner recruitment," aim for:
+
+- Facebook: at least 4 recent Vietnamese posts: 3 useful gift/wishlist posts and 1 soft Shopee/creator post.
+- Instagram: at least 6 polished US-market posts/Reels/drafts: 4 gift-life posts, 1 creator example, 1 partner invitation.
+- TikTok: at least 3 US-market videos or drafts: 2 relatable gift-problem videos and 1 creator/gift-guide angle.
+- YouTube: at least 2 Shorts and a channel description/link that explain Wishees simply: one gift-problem short and one creator/gift-guide short.
+- Pinterest: at least 5 boards and 15 pins/drafts around US gift-intent searches: mostly useful gift ideas, with only a few creator/affiliate pins.
+- Email: warm replies handled, plus a small targeted partner outreach queue.
+
+If publishing limits or platform trust are uncertain, create drafts and assets instead of forcing public volume.
+
+## Natural Content Mix
+
+Use this ratio unless a platform has a clear reason to do otherwise:
+
+- 70% useful gift/wishlist content: relatable gift problems, occasion ideas, examples, mini-guides, visual inspiration.
+- 20% creator examples: show how a blogger, reviewer, parent creator, deal curator, or gift-guide publisher could use Wishees.
+- 10% direct partner recruitment: explicit "work with Wishees" or affiliate-program CTA.
+
+The page should feel helpful first. Partner recruitment should feel like the natural next step for creators who already make gift, deal, review, family, home, baby, or holiday content.
+
+## Delegation Plan
+
+The lead agent is **Codex Lead**. Codex Lead owns final judgment, browser actions, account safety, and the publish tracker. Subagents support preparation and verification so the run does not stop when one platform blocks.
+
+### Agent 1: Codex Lead
+
+Role: browser operator and final decision owner.
+
+Responsibilities:
+- Use the active approved browser sessions for Facebook, Instagram, TikTok, YouTube, Pinterest, Gemini, and growth@wishees.com.
+- Publish only from the approved copy bank unless Thien gives a new direction.
+- Stop on security checks, CAPTCHA, 2FA, or account-risk prompts.
+- Switch tasks instead of waiting when a platform blocks.
+- Keep the run aligned with the natural content mix.
+- Make sure the page does not look like a pure recruitment billboard.
+
+Outputs:
+- Published posts, pins, shorts, comments, or drafts.
+- Screenshot/note for each blocker.
+- Final status list: done, draft, blocked, revisit time.
+
+### Agent 2: Gemini Creative Producer
+
+Role: creative generation assistant.
+
+Responsibilities:
+- Use Gemini Pro prompts from this runbook to generate high-quality, text-free visuals and videos.
+- Prioritize realistic, warm, premium lifestyle media.
+- Generate more assets than the minimum so each platform has choice.
+- Avoid embedded text, fake readable UI, distorted hands/faces, watermarks, or brand misuse.
+- Export/save assets with clear filenames:
+  - `wishees-fb-vn-{theme}-{date}`
+  - `wishees-ig-us-{theme}-{date}`
+  - `wishees-pin-us-{theme}-{date}`
+  - `wishees-short-us-{theme}-{date}`
+
+Outputs:
+- At least 12 usable images if Gemini allows it.
+- At least 4 usable vertical videos or slideshow-ready image sets if video is blocked.
+- A reject list for bad assets, so they are not accidentally posted.
+
+### Agent 3: Content Librarian
+
+Role: content packaging and platform adaptation.
+
+Responsibilities:
+- Match each asset to the correct platform and post copy.
+- Keep Facebook Vietnamese-only for now.
+- Keep Instagram, TikTok, YouTube, Pinterest, and email US-market first.
+- Adapt captions for native platform style without changing compliance meaning.
+- Prepare draft queues when publishing is blocked.
+
+Outputs:
+- Platform-ready rows:
+  - asset filename
+  - post/caption text
+  - destination URL
+  - hashtags
+  - publish/draft status
+
+### Agent 4: Partner Outreach Manager
+
+Role: email and partner pipeline.
+
+Responsibilities:
+- Check growth@wishees.com for warm replies first.
+- Reply to interested creators before sending new outreach.
+- Prepare only small, targeted outreach batches.
+- Keep messaging natural: gift-guide/wishlist usefulness first, partner opportunity second.
+- Include affiliate compliance language when discussing creator/affiliate use.
+
+Outputs:
+- Reply drafts or sent replies.
+- New outreach queue, if legitimate contacts are available.
+- Lead status: warm, replied, needs rate, declined, blocked, follow-up later.
+
+### Agent 5: Platform Health Checker
+
+Role: quality assurance and page-health review.
+
+Responsibilities:
+- Verify that each public page looks credible after posting.
+- Check that links open the intended Wishees page.
+- Check that previews/images are not ugly, broken, cropped badly, or off-language.
+- Confirm content mix is not too recruitment-heavy.
+- Watch for accidental risky claims about guaranteed commission.
+
+Outputs:
+- Quick review notes per platform.
+- Fix list for broken links, ugly previews, missing profile info, or risky copy.
+
+### Agent 6: Metrics Recorder
+
+Role: growth dashboard and performance log.
+
+Responsibilities:
+- Check the Wishees growth dashboard at the start and end of the run.
+- Record the useful metrics:
+  - affiliate-program visits
+  - homepage visits
+  - wish starts
+  - signups
+  - first wishes saved
+  - share links created
+  - share links opened
+  - connections
+  - reservations
+- Connect platform activity to tracking links where possible.
+
+Outputs:
+- Before/after metric summary.
+- Recommended next-day focus.
+
+If only one agent is available, Codex Lead performs all roles sequentially in this order:
+1. Gemini Creative Producer
+2. Content Librarian
+3. Facebook publishing
+4. Instagram/TikTok/YouTube/Pinterest publishing
+5. Partner Outreach Manager
+6. Platform Health Checker
+7. Metrics Recorder
+
+## Ready Content Bank
+
+Use these posts before inventing new copy during execution.
+
+### Facebook, Vietnamese, Natural Mix
+
+Facebook VN Post 1, useful gift moment:
+
+```text
+Không phải lúc nào người tặng cũng biết nên mua gì.
+
+Một wishlist nhỏ giúp mọi thứ dễ hơn:
+- thêm vài món bạn thích
+- ghi đúng dịp
+- gửi một link cho bạn bè hoặc gia đình
+
+Người tặng đỡ đoán. Người nhận cũng vui hơn.
+
+Tạo wishlist:
+https://www.wishees.com/?lang=vi&ref=facebook-vn-gift-loop-1
+```
+
+Facebook VN Post 2, example-based:
+
+```text
+Một wishlist không cần dài.
+
+Ví dụ cho sinh nhật:
+- một món bạn thật sự thích
+- một món hữu ích
+- một món nhỏ, dễ mua
+- một món đúng ngân sách
+
+Chỉ vậy là người tặng đã dễ chọn hơn rất nhiều.
+
+Tạo wishlist:
+https://www.wishees.com/?lang=vi&ref=facebook-vn-gift-loop-2
+```
+
+Facebook VN Post 3, creator soft angle:
+
+```text
+Nếu bạn hay chia sẻ đồ mẹ & bé, decor, gia dụng, quà tặng hoặc deal hay, thử biến các món đó thành một wishlist theo dịp.
+
+Ví dụ:
+- quà sinh nhật cho bé
+- wishlist tân gia
+- quà cho mẹ
+- đồ decor phòng nhỏ
+
+Một danh sách rõ dịp thường dễ chia sẻ hơn một bài review rời rạc.
+
+Tìm hiểu Wishees:
+https://www.wishees.com/?lang=vi&ref=facebook-vn-creator-soft
+```
+
+Facebook VN Post 4, direct but conservative partner CTA:
+
+```text
+Bạn làm nội dung Shopee Affiliate, review quà tặng hoặc chia sẻ deal?
+
+Wishees giúp bạn gom các món phù hợp thành một wishlist theo dịp và chia sẻ bằng một link.
+
+Affiliate links hoặc tags có thể được giữ lại ở nơi được hỗ trợ. Điều kiện hoa hồng, tracking và thanh toán phụ thuộc vào từng nền tảng affiliate. Wishees không đảm bảo hoa hồng.
+
+Tìm hiểu chương trình đối tác:
+https://www.wishees.com/affiliate/program?lang=vi&country=VN&ref=facebook-vn-partner-natural
+```
+
+### Instagram, US Market, Natural Mix
+
+Instagram US Post 1, birthday:
+
+```text
+Birthday gifts are easier when there is one clear list.
+
+Add a few gift ideas. Share one link. Let people choose without guessing.
+
+Create a Wishees wishlist:
+https://www.wishees.com/?lang=en&country=US&ref=instagram-us-birthday-natural
+
+#wishlist #birthdaygifts #giftideas #familygifts #wishees
+```
+
+Instagram US Post 2, baby shower:
+
+```text
+Baby shower gifts can get messy fast.
+
+A simple wishlist helps people see what would actually be useful, thoughtful, and easy to buy.
+
+Create one list. Share one link.
+
+https://www.wishees.com/?lang=en&country=US&ref=instagram-us-baby-natural
+
+#babyshowergifts #wishlist #giftideas #newparents #wishees
+```
+
+Instagram US Post 3, housewarming:
+
+```text
+Housewarming gifts are better when they fit the home.
+
+Use a wishlist for the practical things, the pretty things, and the small things people can choose from.
+
+One link makes it easier.
+
+https://www.wishees.com/?lang=en&country=US&ref=instagram-us-housewarming-natural
+
+#housewarminggifts #wishlist #giftideas #homegifts #wishees
+```
+
+Instagram US Post 4, creator soft example:
+
+```text
+If you already make gift guides, Wishees gives those picks a place to live.
+
+Turn "best birthday gifts" or "baby shower favorites" into one shareable wishlist your audience can actually use.
+
+https://www.wishees.com/affiliate/program?lang=en&country=US&ref=instagram-us-creator-soft
+
+#giftguide #creatorbusiness #affiliatecreator #wishlist #wishees
+```
+
+Instagram US Post 5, relatable:
+
+```text
+"What do you want?"
+
+The question is kind. The answer is usually hard.
+
+Make a small wishlist before the next birthday, holiday, baby shower, or family gift moment.
+
+https://www.wishees.com/?lang=en&country=US&ref=instagram-us-what-do-you-want
+
+#wishlist #giftideas #birthdaygifts #holidaygifts #wishees
+```
+
+Instagram US Post 6, partner direct but natural:
+
+```text
+For creators who already share gift picks:
+
+Wishees helps package your product ideas into gift-intent wishlists people can save, share, and use.
+
+Affiliate links or tags may be preserved where supported. Commission eligibility depends on each marketplace or affiliate program.
+
+Partner with Wishees:
+https://www.wishees.com/affiliate/program?lang=en&country=US&ref=instagram-us-partner-natural
+
+#giftguide #affiliatecreator #contentcreator #wishlist #wishees
+```
+
+### TikTok / Reels / Shorts, US Market
+
+Short Video Script 1, relatable birthday:
+
+```text
+Visual: birthday cake, wrapped gift, phone on table.
+On-screen text 1: Everyone asks: "What do you want?"
+On-screen text 2: Make one wishlist.
+On-screen text 3: Share one link.
+On-screen text 4: Less guessing. Better gifts.
+Caption: Birthday gifts are easier with one shared wishlist. Create yours at Wishees.com. #wishlist #birthdaygifts #giftideas
+Link: https://www.wishees.com/?lang=en&country=US&ref=tiktok-us-birthday-natural
+```
+
+Short Video Script 2, baby shower:
+
+```text
+Visual: baby shower table, useful gifts, phone with unreadable wishlist-like screen.
+On-screen text 1: Baby shower gifts should be useful.
+On-screen text 2: Put the real ideas in one list.
+On-screen text 3: Share it before people ask.
+Caption: A simple baby shower wishlist helps everyone choose with confidence. #babyshowergifts #wishlist #giftideas
+Link: https://www.wishees.com/?lang=en&country=US&ref=tiktok-us-baby-natural
+```
+
+Short Video Script 3, creator soft:
+
+```text
+Visual: creator filming gift products, then arranging them into a clean list.
+On-screen text 1: Make gift guides?
+On-screen text 2: Turn your picks into one wishlist.
+On-screen text 3: Easier for your audience to use.
+Caption: Creators can turn gift picks into shareable wishlists with Wishees. Affiliate eligibility depends on marketplace rules. #giftguide #creatorbusiness #wishlist
+Link: https://www.wishees.com/affiliate/program?lang=en&country=US&ref=tiktok-us-creator-soft
+```
+
+Short Video Script 4, holiday:
+
+```text
+Visual: cozy holiday table, small gifts, phone on sofa/table.
+On-screen text 1: Holiday gift planning gets easier.
+On-screen text 2: Add ideas once.
+On-screen text 3: Share one link.
+Caption: One wishlist link for holiday gift ideas, family gifts, and the moments people remember. #holidaygifts #wishlist #giftideas
+Link: https://www.wishees.com/?lang=en&country=US&ref=tiktok-us-holiday-natural
+```
+
+### Pinterest, US Market
+
+Pin 1:
+
+```text
+Title: Birthday Wishlist Ideas You Can Share With One Link
+Description: Create a simple birthday wishlist on Wishees, add a few gift ideas, and share one link with friends or family. Less guessing for gift-givers, better gifts for the person celebrating.
+Destination: https://www.wishees.com/?lang=en&country=US&ref=pinterest-us-birthday-natural
+```
+
+Pin 2:
+
+```text
+Title: Baby Shower Wishlist Ideas For Useful Gifts
+Description: A simple baby shower wishlist helps friends and family choose gifts that are actually useful. Add ideas, share one link, and make the gift moment easier.
+Destination: https://www.wishees.com/?lang=en&country=US&ref=pinterest-us-baby-natural
+```
+
+Pin 3:
+
+```text
+Title: Housewarming Gift Wishlist For A New Home
+Description: Collect practical, personal, and budget-friendly housewarming gift ideas into one Wishees wishlist link.
+Destination: https://www.wishees.com/?lang=en&country=US&ref=pinterest-us-housewarming-natural
+```
+
+Pin 4:
+
+```text
+Title: Turn Gift Guide Picks Into A Shareable Wishlist
+Description: If you create gift guides or product roundups, Wishees helps package your picks into one wishlist your audience can use. Affiliate links or tags may be preserved where supported, but eligibility depends on each program.
+Destination: https://www.wishees.com/affiliate/program?lang=en&country=US&ref=pinterest-us-creator-soft
+```
+
+Pin 5:
+
+```text
+Title: Family Gift List Ideas For Birthdays And Holidays
+Description: Make family gifting less chaotic with one wishlist link for birthdays, holidays, and special moments.
+Destination: https://www.wishees.com/?lang=en&country=US&ref=pinterest-us-family-natural
+```
+
+Pin 6:
+
+```text
+Title: A Lightweight Wishlist For Extra Wedding Gift Ideas
+Description: Wishees can supplement a formal registry with extra gift ideas, thoughtful picks, and budget-friendly options in one shareable list.
+Destination: https://www.wishees.com/?lang=en&country=US&ref=pinterest-us-wedding-natural
+```
+
+### Email, US Market, Natural Partner Recruitment
+
+Use email for direct partner recruitment, but keep the tone natural and specific to the creator's content.
+
+Soft outreach:
+
+```text
+Subject: Gift guide idea for {siteName}
+
+Hi {firstName},
+
+I found your gift/deal content and thought Wishees could fit a small, useful test.
+
+Wishees helps turn product picks into one shareable wishlist link. It works especially well for birthday gifts, baby shower ideas, housewarming gifts, holiday picks, and family gift lists.
+
+If you already have gift-guide content, the angle could be simple: turn one existing guide into a wishlist people can actually use.
+
+Affiliate links or tags may be preserved where supported, but commission eligibility, tracking, and payout are controlled by each marketplace or affiliate program.
+
+Would you be open to a lightweight collaboration around one gift-list theme?
+
+Best,
+Wishees
+```
+
+Warmer reply when a creator asks for budget:
+
+```text
+Subject: Re: Wishees collaboration
+
+Hi {firstName},
+
+Thanks for asking.
+
+For the first test, we are looking for a lightweight collaboration rather than a large campaign. The goal is to see whether Wishees fits naturally with your gift guides, product picks, or family gifting content.
+
+Could you share your usual rates for:
+- one blog mention or gift-guide placement
+- one social post or story
+- a small package if you offer one
+
+Wishees is a wishlist tool: creators can organize gift ideas into one shareable list. Affiliate eligibility depends on each marketplace or program's own rules, so we keep the messaging focused on useful gift discovery rather than guaranteed commission.
+
+Best,
+Wishees
+```
 
 ## 8-Hour Execution Schedule
 
@@ -671,4 +1129,3 @@ The night is successful if at least these are completed:
 - Three Pinterest US pins.
 - Warm email replies handled.
 - Dashboard checked and next-day queue prepared.
-
