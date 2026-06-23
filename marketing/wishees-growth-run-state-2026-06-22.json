@@ -52,6 +52,7 @@
     "facebook_health_content_plan": "wishees-facebook-health-content-plan-2026-06-23.md",
     "facebook_health_post_queue": "wishees-facebook-health-post-queue-2026-06-23.csv",
     "facebook_health_publish_console": "wishees-facebook-health-publish-console-2026-06-23.html",
+    "charity_org_wish_safety_and_growth": "wishees-charity-org-wish-safety-and-growth-2026-06-23.md",
     "photo_led_pinterest_test_brief": "wishees-photo-led-pinterest-test-brief-2026-06-22.md",
     "photo_video_creative_style_guide": "wishees-photo-video-creative-style-guide-2026-06-22.md",
     "facebook_vn_en_channel_plan": "wishees-facebook-vn-en-channel-plan-2026-06-22.md",
@@ -171,7 +172,8 @@
     "gemini_prompt_queue_ready": true,
     "facebook_health_content_plan_ready": true,
     "facebook_health_ready_posts": 3,
-    "facebook_health_needs_gemini_posts": 2,
+    "facebook_health_needs_gemini_posts": 3,
+    "charity_org_wish_safety_rule_ready": true,
     "content_bank_days_ready": 14,
     "new_enriched_pinterest_assets_ready": 3,
     "new_enriched_mp4_shorts_ready": 4,
@@ -748,10 +750,21 @@
     ],
     "needs_gemini": [
       "Post C - Group gift",
-      "Post D - Creator / favorite things"
+      "Post D - Creator / favorite things",
+      "Post F - Community gift list"
     ],
     "decision": "focus_facebook_until_page_looks_healthy",
     "next": "Publish Post A as the next Facebook health post, then Post B after measurement or at least one day. Generate Post C/D assets in Gemini one by one using the prompt queue."
+  },
+  "charity_org_wish_safety_2026_06_23": {
+    "date": "2026-06-23",
+    "status": "rule_recorded",
+    "trigger": "Side-chat question asked whether to create wishes for a famous organization such as UNICEF and add payment details.",
+    "decision": "Do not create charity/organization wishes or payment destinations on behalf of any organization without explicit authorization and verified payment ownership.",
+    "safe_growth_angle": "Use organizer-created community gift lists first: parents, teachers, local groups, or verified organizations. Public copy must clearly identify the organizer and avoid false endorsement.",
+    "artifact": "wishees-charity-org-wish-safety-and-growth-2026-06-23.md",
+    "facebook_application": "Added Post F - Community Gift List to the Facebook health plan, but it should run only after normal gift posts are visible.",
+    "next": "Continue Facebook health with birthday/baby-shower/group-gift content first. Test community gift list later with generic organizer language, not UNICEF/orphanage/poor-people framing."
   },
   "daily_run_sheet_refresh_2026_06_23": {
     "date": "2026-06-23",

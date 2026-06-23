@@ -144,6 +144,32 @@ Why this helps page health:
 - Positions Wishees alongside existing tools, not as a replacement.
 - Useful for people who already know registry behavior.
 
+### Post F - Community Gift List
+
+Use only after normal gift moments are visible on the page. Do not name UNICEF, orphanages, famous charities, or vulnerable groups unless there is explicit authorization and payment ownership is verified.
+
+Asset:
+
+- Generate in Gemini from `wishees-charity-org-wish-safety-and-growth-2026-06-23.md`.
+
+Caption:
+
+```text
+Một wishlist không chỉ dùng cho sinh nhật.
+
+Phụ huynh có thể gom quà lớp học. Cô giáo có thể chia sẻ đồ dùng cần thiết. Một nhóm bạn có thể tạo list cho một dịp chung.
+
+Điều quan trọng: người tổ chức rõ ràng, mục đích rõ ràng, và một link dễ chia sẻ cho mọi người.
+
+Tạo wishlist tại https://www.wishees.com/?lang=vi
+```
+
+Why this helps page health:
+
+- Expands Wishees from personal gifts to organizer-led gift moments.
+- Keeps the charity/community angle safe by avoiding false endorsement or payment ambiguity.
+- Prepares future nonprofit/creator outreach without impersonating anyone.
+
 ## Weekly Cadence
 
 Post 3 to 4 times per week for the first two weeks:
@@ -153,6 +179,7 @@ Post 3 to 4 times per week for the first two weeks:
 - Day 4 or 5: Post C group gift.
 - Day 6 or 7: Post D creator/favorite things.
 - Week 2: repeat occasion mix with wedding, family gifts, class gifts, and another birthday angle.
+- Community gift list can enter after at least three normal gift posts are visible.
 
 Do not post more than once per day until the page looks stable and reactions are measurable.
 
