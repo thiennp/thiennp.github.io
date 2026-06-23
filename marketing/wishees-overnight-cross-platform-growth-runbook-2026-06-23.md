@@ -187,45 +187,51 @@ If only one agent is available, Codex Lead performs all roles sequentially in th
 
 Use these posts before inventing new copy during execution.
 
+Writing style:
+- Keep it slightly imperfect and specific.
+- Avoid sounding like a SaaS landing page.
+- Do not repeat the same CTA in every post.
+- Use small human moments: kids' birthdays, a friend moving house, a cousin asking for ideas, a creator turning an old gift guide into something useful.
+- Prefer one plain sentence over a polished slogan.
+
 ### Facebook, Vietnamese, Natural Mix
 
 Facebook VN Post 1, useful gift moment:
 
 ```text
-Không phải lúc nào người tặng cũng biết nên mua gì.
+Có những dịp người ta muốn tặng quà thật lòng, nhưng lại không biết bắt đầu từ đâu.
 
-Một wishlist nhỏ giúp mọi thứ dễ hơn:
-- thêm vài món bạn thích
-- ghi đúng dịp
-- gửi một link cho bạn bè hoặc gia đình
+Sinh nhật, tân gia, quà cho bé, quà cho mẹ... nếu có sẵn vài gợi ý thì mọi thứ nhẹ hơn nhiều.
 
-Người tặng đỡ đoán. Người nhận cũng vui hơn.
+Wishees giúp bạn gom vài món vào một wishlist rồi gửi cho người cần xem.
 
-Tạo wishlist:
+Thử tạo một list nhỏ ở đây:
 https://www.wishees.com/?lang=vi&ref=facebook-vn-gift-loop-1
 ```
 
 Facebook VN Post 2, example-based:
 
 ```text
-Một wishlist không cần dài.
+Một wishlist tốt không cần phải nhiều món.
 
 Ví dụ cho sinh nhật:
-- một món bạn thật sự thích
-- một món hữu ích
-- một món nhỏ, dễ mua
+- một món mình thật sự thích
+- một món dùng được hằng ngày
+- một món nhỏ nhỏ cho người muốn tặng nhẹ
 - một món đúng ngân sách
 
-Chỉ vậy là người tặng đã dễ chọn hơn rất nhiều.
+Nhiều khi chỉ cần vậy là người tặng đã đỡ hỏi đi hỏi lại rồi.
 
-Tạo wishlist:
+Tạo thử một wishlist:
 https://www.wishees.com/?lang=vi&ref=facebook-vn-gift-loop-2
 ```
 
 Facebook VN Post 3, creator soft angle:
 
 ```text
-Nếu bạn hay chia sẻ đồ mẹ & bé, decor, gia dụng, quà tặng hoặc deal hay, thử biến các món đó thành một wishlist theo dịp.
+Nếu bạn hay review đồ mẹ & bé, decor, gia dụng, quà tặng hoặc deal hay, có một cách làm nội dung gọn hơn:
+
+gom các món đó thành wishlist theo dịp.
 
 Ví dụ:
 - quà sinh nhật cho bé
@@ -233,22 +239,22 @@ Ví dụ:
 - quà cho mẹ
 - đồ decor phòng nhỏ
 
-Một danh sách rõ dịp thường dễ chia sẻ hơn một bài review rời rạc.
+Một list rõ ngữ cảnh thường dễ gửi cho người khác hơn một loạt bài rời rạc.
 
-Tìm hiểu Wishees:
+Xem thử Wishees:
 https://www.wishees.com/?lang=vi&ref=facebook-vn-creator-soft
 ```
 
 Facebook VN Post 4, direct but conservative partner CTA:
 
 ```text
-Bạn làm nội dung Shopee Affiliate, review quà tặng hoặc chia sẻ deal?
+Bạn làm nội dung Shopee Affiliate, review đồ hữu ích hoặc hay chia sẻ deal quà tặng?
 
-Wishees giúp bạn gom các món phù hợp thành một wishlist theo dịp và chia sẻ bằng một link.
+Wishees có thể giúp bạn biến các món đã chọn thành wishlist theo dịp: sinh nhật, mẹ & bé, tân gia, cưới, quà gia đình.
 
-Affiliate links hoặc tags có thể được giữ lại ở nơi được hỗ trợ. Điều kiện hoa hồng, tracking và thanh toán phụ thuộc vào từng nền tảng affiliate. Wishees không đảm bảo hoa hồng.
+Affiliate links hoặc tags có thể được giữ lại ở nơi được hỗ trợ. Điều kiện hoa hồng, tracking và thanh toán vẫn phụ thuộc từng nền tảng affiliate. Wishees không đảm bảo hoa hồng.
 
-Tìm hiểu chương trình đối tác:
+Nếu bạn muốn thử một hướng nội dung wishlist:
 https://www.wishees.com/affiliate/program?lang=vi&country=VN&ref=facebook-vn-partner-natural
 ```
 
@@ -257,11 +263,13 @@ https://www.wishees.com/affiliate/program?lang=vi&country=VN&ref=facebook-vn-par
 Instagram US Post 1, birthday:
 
 ```text
-Birthday gifts are easier when there is one clear list.
+The hardest part of birthday gifts is not buying the gift.
 
-Add a few gift ideas. Share one link. Let people choose without guessing.
+It is figuring out what someone would actually want.
 
-Create a Wishees wishlist:
+Wishees is for making a small, useful list before the texts start coming in.
+
+Try it for the next birthday:
 https://www.wishees.com/?lang=en&country=US&ref=instagram-us-birthday-natural
 
 #wishlist #birthdaygifts #giftideas #familygifts #wishees
@@ -270,11 +278,12 @@ https://www.wishees.com/?lang=en&country=US&ref=instagram-us-birthday-natural
 Instagram US Post 2, baby shower:
 
 ```text
-Baby shower gifts can get messy fast.
+Baby shower lists are where "cute" and "actually useful" need to meet.
 
-A simple wishlist helps people see what would actually be useful, thoughtful, and easy to buy.
+Use Wishees for the things people keep asking about:
+the practical stuff, the sweet stuff, the "please not five of the same thing" stuff.
 
-Create one list. Share one link.
+Start a small list:
 
 https://www.wishees.com/?lang=en&country=US&ref=instagram-us-baby-natural
 
@@ -284,11 +293,12 @@ https://www.wishees.com/?lang=en&country=US&ref=instagram-us-baby-natural
 Instagram US Post 3, housewarming:
 
 ```text
-Housewarming gifts are better when they fit the home.
+A friend moves into a new place and everyone asks what to bring.
 
-Use a wishlist for the practical things, the pretty things, and the small things people can choose from.
+Instead of guessing candles again, make a list:
+something useful, something cozy, something they would not buy for themselves yet.
 
-One link makes it easier.
+Wishees keeps those ideas in one place.
 
 https://www.wishees.com/?lang=en&country=US&ref=instagram-us-housewarming-natural
 
@@ -298,9 +308,9 @@ https://www.wishees.com/?lang=en&country=US&ref=instagram-us-housewarming-natura
 Instagram US Post 4, creator soft example:
 
 ```text
-If you already make gift guides, Wishees gives those picks a place to live.
+If you already made a gift guide, you probably did the hard part.
 
-Turn "best birthday gifts" or "baby shower favorites" into one shareable wishlist your audience can actually use.
+Wishees is a way to turn those picks into a list your audience can save, share, or come back to when they are ready to buy.
 
 https://www.wishees.com/affiliate/program?lang=en&country=US&ref=instagram-us-creator-soft
 
@@ -312,9 +322,9 @@ Instagram US Post 5, relatable:
 ```text
 "What do you want?"
 
-The question is kind. The answer is usually hard.
+Nice question. Somehow impossible to answer on the spot.
 
-Make a small wishlist before the next birthday, holiday, baby shower, or family gift moment.
+Make the list before someone asks.
 
 https://www.wishees.com/?lang=en&country=US&ref=instagram-us-what-do-you-want
 
@@ -324,13 +334,15 @@ https://www.wishees.com/?lang=en&country=US&ref=instagram-us-what-do-you-want
 Instagram US Post 6, partner direct but natural:
 
 ```text
-For creators who already share gift picks:
+For creators who already share gift picks, product roundups, or "things I actually use" posts:
 
-Wishees helps package your product ideas into gift-intent wishlists people can save, share, and use.
+Wishees can turn those picks into occasion-based wishlists.
 
-Affiliate links or tags may be preserved where supported. Commission eligibility depends on each marketplace or affiliate program.
+Good for birthdays, baby showers, housewarming, holidays, and family gift lists.
 
-Partner with Wishees:
+Affiliate links or tags may be preserved where supported. Commission eligibility depends on each marketplace or affiliate program, not Wishees.
+
+Partner info:
 https://www.wishees.com/affiliate/program?lang=en&country=US&ref=instagram-us-partner-natural
 
 #giftguide #affiliatecreator #contentcreator #wishlist #wishees
@@ -341,34 +353,34 @@ https://www.wishees.com/affiliate/program?lang=en&country=US&ref=instagram-us-pa
 Short Video Script 1, relatable birthday:
 
 ```text
-Visual: birthday cake, wrapped gift, phone on table.
+Visual: someone staring at a birthday text thread, then a phone beside cake/wrapped gift.
 On-screen text 1: Everyone asks: "What do you want?"
-On-screen text 2: Make one wishlist.
-On-screen text 3: Share one link.
-On-screen text 4: Less guessing. Better gifts.
-Caption: Birthday gifts are easier with one shared wishlist. Create yours at Wishees.com. #wishlist #birthdaygifts #giftideas
+On-screen text 2: I always forget until they ask.
+On-screen text 3: So I made a small wishlist.
+On-screen text 4: Much easier.
+Caption: I should have done this before every birthday. Wishees.com #wishlist #birthdaygifts #giftideas
 Link: https://www.wishees.com/?lang=en&country=US&ref=tiktok-us-birthday-natural
 ```
 
 Short Video Script 2, baby shower:
 
 ```text
-Visual: baby shower table, useful gifts, phone with unreadable wishlist-like screen.
-On-screen text 1: Baby shower gifts should be useful.
-On-screen text 2: Put the real ideas in one list.
-On-screen text 3: Share it before people ask.
-Caption: A simple baby shower wishlist helps everyone choose with confidence. #babyshowergifts #wishlist #giftideas
+Visual: baby shower table with a few duplicated gifts, then a calmer phone/list moment.
+On-screen text 1: Baby shower gifts get chaotic fast.
+On-screen text 2: The useful ideas need a home.
+On-screen text 3: Put them in a wishlist.
+Caption: For the practical gifts, the sweet gifts, and the "please not duplicates" gifts. #babyshowergifts #wishlist #giftideas
 Link: https://www.wishees.com/?lang=en&country=US&ref=tiktok-us-baby-natural
 ```
 
 Short Video Script 3, creator soft:
 
 ```text
-Visual: creator filming gift products, then arranging them into a clean list.
-On-screen text 1: Make gift guides?
-On-screen text 2: Turn your picks into one wishlist.
-On-screen text 3: Easier for your audience to use.
-Caption: Creators can turn gift picks into shareable wishlists with Wishees. Affiliate eligibility depends on marketplace rules. #giftguide #creatorbusiness #wishlist
+Visual: creator filming gift products, checking an old gift guide, then saving items into a clean list.
+On-screen text 1: You already picked the gifts.
+On-screen text 2: Give the list somewhere to live.
+On-screen text 3: Your audience can use it later.
+Caption: For creators with gift guides, product picks, and seasonal lists. Affiliate eligibility depends on marketplace rules. #giftguide #creatorbusiness #wishlist
 Link: https://www.wishees.com/affiliate/program?lang=en&country=US&ref=tiktok-us-creator-soft
 ```
 
@@ -376,10 +388,10 @@ Short Video Script 4, holiday:
 
 ```text
 Visual: cozy holiday table, small gifts, phone on sofa/table.
-On-screen text 1: Holiday gift planning gets easier.
-On-screen text 2: Add ideas once.
-On-screen text 3: Share one link.
-Caption: One wishlist link for holiday gift ideas, family gifts, and the moments people remember. #holidaygifts #wishlist #giftideas
+On-screen text 1: Holiday gift texts start early.
+On-screen text 2: "What should we get them?"
+On-screen text 3: Make a list before December chaos.
+Caption: Future you will be glad the gift ideas are already somewhere. #holidaygifts #wishlist #giftideas
 Link: https://www.wishees.com/?lang=en&country=US&ref=tiktok-us-holiday-natural
 ```
 
@@ -388,48 +400,48 @@ Link: https://www.wishees.com/?lang=en&country=US&ref=tiktok-us-holiday-natural
 Pin 1:
 
 ```text
-Title: Birthday Wishlist Ideas You Can Share With One Link
-Description: Create a simple birthday wishlist on Wishees, add a few gift ideas, and share one link with friends or family. Less guessing for gift-givers, better gifts for the person celebrating.
+Title: Birthday Wishlist Ideas Before Everyone Starts Asking
+Description: Save a few birthday gift ideas in Wishees so friends and family have somewhere to start. Useful, personal, and easier than answering the same text five times.
 Destination: https://www.wishees.com/?lang=en&country=US&ref=pinterest-us-birthday-natural
 ```
 
 Pin 2:
 
 ```text
-Title: Baby Shower Wishlist Ideas For Useful Gifts
-Description: A simple baby shower wishlist helps friends and family choose gifts that are actually useful. Add ideas, share one link, and make the gift moment easier.
+Title: Baby Shower Wishlist Ideas That Are Actually Useful
+Description: Keep the practical baby shower gift ideas in one place, from everyday basics to sweet little extras. A Wishees list makes it easier for people to choose.
 Destination: https://www.wishees.com/?lang=en&country=US&ref=pinterest-us-baby-natural
 ```
 
 Pin 3:
 
 ```text
-Title: Housewarming Gift Wishlist For A New Home
-Description: Collect practical, personal, and budget-friendly housewarming gift ideas into one Wishees wishlist link.
+Title: Housewarming Gift Ideas For A New Place
+Description: A small housewarming wishlist for the useful things, cozy things, and budget-friendly gifts that fit a new home.
 Destination: https://www.wishees.com/?lang=en&country=US&ref=pinterest-us-housewarming-natural
 ```
 
 Pin 4:
 
 ```text
-Title: Turn Gift Guide Picks Into A Shareable Wishlist
-Description: If you create gift guides or product roundups, Wishees helps package your picks into one wishlist your audience can use. Affiliate links or tags may be preserved where supported, but eligibility depends on each program.
+Title: Turn Gift Guide Picks Into A Wishlist People Can Use
+Description: If you already create gift guides or product roundups, Wishees can give those picks a cleaner home. Affiliate links or tags may be preserved where supported; eligibility depends on each program.
 Destination: https://www.wishees.com/affiliate/program?lang=en&country=US&ref=pinterest-us-creator-soft
 ```
 
 Pin 5:
 
 ```text
-Title: Family Gift List Ideas For Birthdays And Holidays
-Description: Make family gifting less chaotic with one wishlist link for birthdays, holidays, and special moments.
+Title: Family Gift List Ideas For The Next Birthday Or Holiday
+Description: Keep gift ideas for kids, parents, siblings, and holidays in a Wishees list so the family chat has fewer "any ideas?" messages.
 Destination: https://www.wishees.com/?lang=en&country=US&ref=pinterest-us-family-natural
 ```
 
 Pin 6:
 
 ```text
-Title: A Lightweight Wishlist For Extra Wedding Gift Ideas
-Description: Wishees can supplement a formal registry with extra gift ideas, thoughtful picks, and budget-friendly options in one shareable list.
+Title: Extra Wedding Gift Ideas Outside The Main Registry
+Description: Use Wishees for the thoughtful extras, budget-friendly ideas, or personal picks that do not quite belong on the formal registry.
 Destination: https://www.wishees.com/?lang=en&country=US&ref=pinterest-us-wedding-natural
 ```
 
@@ -440,19 +452,19 @@ Use email for direct partner recruitment, but keep the tone natural and specific
 Soft outreach:
 
 ```text
-Subject: Gift guide idea for {siteName}
+Subject: quick gift guide idea for {siteName}
 
 Hi {firstName},
 
-I found your gift/deal content and thought Wishees could fit a small, useful test.
+I came across your gift/deal content and had a simple idea that might fit what you already do.
 
-Wishees helps turn product picks into one shareable wishlist link. It works especially well for birthday gifts, baby shower ideas, housewarming gifts, holiday picks, and family gift lists.
+Wishees lets you turn product picks into a wishlist around a real occasion: birthday gifts, baby shower ideas, housewarming, holiday picks, family gift lists.
 
-If you already have gift-guide content, the angle could be simple: turn one existing guide into a wishlist people can actually use.
+So instead of only a post or article, your audience has a list they can come back to when they are ready to choose a gift.
 
-Affiliate links or tags may be preserved where supported, but commission eligibility, tracking, and payout are controlled by each marketplace or affiliate program.
+If you already use affiliate links, those links or tags may be preserved where supported. Commission eligibility, tracking, and payout still depend on each marketplace or affiliate program.
 
-Would you be open to a lightweight collaboration around one gift-list theme?
+Would you be open to testing one gift-list theme with us?
 
 Best,
 Wishees
@@ -465,16 +477,22 @@ Subject: Re: Wishees collaboration
 
 Hi {firstName},
 
-Thanks for asking.
+Thanks for asking. Makes sense to talk budget before we go too far.
 
-For the first test, we are looking for a lightweight collaboration rather than a large campaign. The goal is to see whether Wishees fits naturally with your gift guides, product picks, or family gifting content.
+For the first test, we are thinking small: one clear gift-list angle, not a big campaign.
 
-Could you share your usual rates for:
+Something like:
+- birthday gifts for kids
+- baby shower favorites
+- housewarming gifts
+- holiday picks under a budget
+
+Could you send your usual rates for:
 - one blog mention or gift-guide placement
 - one social post or story
 - a small package if you offer one
 
-Wishees is a wishlist tool: creators can organize gift ideas into one shareable list. Affiliate eligibility depends on each marketplace or program's own rules, so we keep the messaging focused on useful gift discovery rather than guaranteed commission.
+Wishees is a wishlist tool, so we keep the message focused on useful gift discovery. Affiliate eligibility depends on each marketplace or program's own rules; we do not want to overpromise that part.
 
 Best,
 Wishees
@@ -608,47 +626,20 @@ Task 3.1: Publish image post 1, birthday wishlist.
 
 Asset: US birthday square image.
 
-Caption:
-
-```text
-Birthday gifts get easier when there is one clear list.
-
-Create a Wishees wishlist, add a few gift ideas, and share one link with friends or family.
-
-Less guessing for gift-givers. Better moments for everyone.
-
-Create your wishlist:
-https://www.wishees.com/?lang=en&country=US&ref=instagram-us-gift-loop
-
-#wishlist #birthdaygifts #giftideas #familygifts #wishees
-```
+Caption: use `Instagram US Post 1, birthday` from the Ready Content Bank.
 
 Task 3.2: Publish image post 2 only if account health looks normal.
 
 Asset: US baby shower square image.
 
-Caption:
-
-```text
-Baby shower, birthday, housewarming, holiday gifts.
-
-One wishlist link can make the gift conversation simpler.
-
-Add what would actually help. Share the list. Let people choose with confidence.
-
-Start here:
-https://www.wishees.com/?lang=en&country=US&ref=instagram-us-baby-gift-loop
-
-#babyshowergifts #wishlist #giftregistry #giftideas #wishees
-```
+Caption: use `Instagram US Post 2, baby shower` from the Ready Content Bank.
 
 Task 3.3: Story draft if posting is available.
 
 Story text overlay:
 
 ```text
-One wishlist link.
-Less gift guessing.
+Make the gift list before people ask.
 ```
 
 Story link sticker:
@@ -673,20 +664,15 @@ Video: Gemini birthday short, 9:16.
 Suggested on-screen text using TikTok editor:
 
 ```text
-When everyone asks:
-“What do you want?”
-```
-
-Second text card:
-
-```text
-Send one wishlist link.
+"What do you want?"
+I always forget until someone asks.
+So I made a small wishlist.
 ```
 
 Caption:
 
 ```text
-Birthday gifts are easier with one shared wishlist. Create yours at Wishees.com. #wishlist #birthdaygifts #giftideas #familygifts
+I should have done this before every birthday. Wishees.com #wishlist #birthdaygifts #giftideas
 ```
 
 Link in bio if editable:
@@ -700,7 +686,7 @@ Task 4.2: If upload succeeds and account health looks normal, prepare second dra
 Draft caption:
 
 ```text
-Gift lists are not just for weddings. Use one for birthdays, baby showers, holidays, and family gifts. #wishlist #giftideas #babyshowergifts
+Gift lists are not just for weddings. I would use one for baby showers, birthdays, holidays, and the family group chat. #wishlist #giftideas #babyshowergifts
 ```
 
 If TikTok blocks:
@@ -717,15 +703,15 @@ Task 5.1: Upload the birthday wishlist short.
 Title:
 
 ```text
-One Wishlist Link for Birthday Gifts
+I Made A Birthday Wishlist Before Anyone Asked
 ```
 
 Description:
 
 ```text
-Make birthday gifts easier with one simple wishlist link.
+The hardest birthday text is always: "What do you want?"
 
-Create a Wishees wishlist, add a few gift ideas, and share it with friends or family.
+This is a small way to answer before the question comes up.
 
 Start here:
 https://www.wishees.com/?lang=en&country=US&ref=youtube-shorts-us-gift-loop
@@ -744,17 +730,14 @@ Task 5.2: If upload and account health are good, schedule or draft baby/family s
 Title:
 
 ```text
-A Simple Wishlist for Baby Shower Gifts
+A Baby Shower Wishlist For The Useful Stuff Too
 ```
 
 Description:
 
 ```text
-Create a shared wishlist for baby shower gifts, family gifts, birthdays, and holidays.
+Baby shower gifts can be cute and useful. A small Wishees list keeps both kinds of ideas in one place.
 
-Wishees helps you collect gift ideas and share one link.
-
-Start here:
 https://www.wishees.com/?lang=en&country=US&ref=youtube-shorts-us-baby-gift-loop
 ```
 
@@ -778,13 +761,13 @@ Task 6.1: Pin 1, birthday.
 Pin title:
 
 ```text
-Birthday Wishlist Ideas You Can Share With One Link
+Birthday Wishlist Ideas Before Everyone Starts Asking
 ```
 
 Pin description:
 
 ```text
-Create a simple birthday wishlist on Wishees, add a few gift ideas, and share one link with friends or family. Less guessing for gift-givers, better gifts for the person celebrating.
+Save a few birthday gift ideas in Wishees so friends and family have somewhere to start. Useful, personal, and easier than answering the same text five times.
 ```
 
 Destination:
@@ -798,13 +781,13 @@ Task 6.2: Pin 2, baby shower.
 Pin title:
 
 ```text
-Simple Baby Shower Wishlist For Useful Gifts
+Baby Shower Wishlist Ideas That Are Actually Useful
 ```
 
 Pin description:
 
 ```text
-Use Wishees to collect baby shower gift ideas into one shareable wishlist. Add helpful items, share one link, and make gift planning easier for friends and family.
+Keep the practical baby shower gift ideas in one place, from everyday basics to sweet little extras. A Wishees list makes it easier for people to choose.
 ```
 
 Destination:
@@ -818,13 +801,13 @@ Task 6.3: Pin 3, wedding supplement.
 Pin title:
 
 ```text
-A Lightweight Wedding Gift List For Extra Ideas
+Extra Wedding Gift Ideas Outside The Main Registry
 ```
 
 Pin description:
 
 ```text
-Wishees can be a simple supplement to a formal registry. Collect extra gift ideas, thoughtful picks, or budget-friendly options into one wishlist link.
+Use Wishees for the thoughtful extras, budget-friendly ideas, or personal picks that do not quite belong on the formal registry.
 ```
 
 Destination:
@@ -838,13 +821,13 @@ Task 6.4: Pin 4 only if account health looks normal, creator gift picks.
 Pin title:
 
 ```text
-Turn Gift Picks Into A Shareable Wishlist
+Turn Gift Guide Picks Into A Wishlist People Can Use
 ```
 
 Pin description:
 
 ```text
-Creators can organize gift ideas into a Wishees wishlist and share one clean link. Affiliate links or tags may be preserved where supported, but commission eligibility depends on each marketplace or affiliate program.
+If you already create gift guides or product roundups, Wishees can give those picks a cleaner home. Affiliate links or tags may be preserved where supported; eligibility depends on each program.
 ```
 
 Destination:
@@ -877,16 +860,22 @@ Subject: Re: Wishees collaboration
 
 Hi Stacey,
 
-Thanks for asking.
+Thanks for asking. Makes sense to talk budget before we go too far.
 
-For the first test, we are looking for a lightweight collaboration rather than a large campaign. The goal is to see whether Wishees fits naturally with gift guides, birthday lists, family gifting, or creator product picks.
+For the first test, we are thinking small: one clear gift-list angle, not a big campaign.
 
-Could you share your usual rates for:
+Something like:
+- birthday gifts for kids
+- baby shower favorites
+- housewarming gifts
+- holiday picks under a budget
+
+Could you send your usual rates for:
 - one blog mention or gift-guide placement
 - one social post or story
 - a small package if you offer one
 
-Wishees is a wishlist tool: creators can organize gift ideas into one shareable list. Affiliate eligibility depends on each marketplace or program's own rules, so we keep the messaging focused on useful gift discovery rather than guaranteed commission.
+Wishees is a wishlist tool, so we keep the message focused on useful gift discovery. Affiliate eligibility depends on each marketplace or program's own rules; we do not want to overpromise that part.
 
 Best,
 Wishees
@@ -899,11 +888,11 @@ Subject: Re: Wishees
 
 Hi {firstName},
 
-Wishees is a simple wishlist tool for gift moments.
+Wishees is a small tool for gift moments.
 
-You can create a list for a birthday, baby shower, holiday, family gift list, or creator gift guide, add a few products or ideas, and share one link with your audience.
+You can make a list for a birthday, baby shower, holiday, family gift list, or creator gift guide, then send people to that list instead of making them hunt through old posts.
 
-For creators, Wishees is useful when you already make gift guides, product picks, or deal content and want to package those ideas into a list people can actually use.
+For creators, the useful part is taking gift picks you already have and giving them a cleaner place to live.
 
 Affiliate links or tags may be preserved where supported, but each marketplace or affiliate program controls eligibility, tracking, and payout. Wishees does not guarantee commission.
 
@@ -918,18 +907,18 @@ Subject: Re: Wishees collaboration
 
 Hi {firstName},
 
-That sounds like a good fit.
+That sounds like it could fit.
 
-The easiest first test is one gift-focused Wishees list around a clear occasion, for example:
+The easiest first test is probably one list around a clear occasion, for example:
 - birthday gifts for kids
 - baby shower gift ideas
 - gifts for moms
 - housewarming gifts
 - holiday gifts under a budget
 
-If you already have product picks or affiliate links you like, you can turn them into one shareable wishlist. Wishees can preserve affiliate links or tags where supported, but commission eligibility and payout always depend on the marketplace or affiliate program.
+If you already have product picks or affiliate links you like, we can shape them into a Wishees list. Wishees can preserve affiliate links or tags where supported, but commission eligibility and payout always depend on the marketplace or affiliate program.
 
-If you send your preferred gift category and your rate for a small test post or mention, we can suggest a simple angle.
+If you send your preferred gift category and your rate for a small test post or mention, we can suggest a first angle.
 
 Best,
 Wishees
@@ -953,15 +942,15 @@ Task 7.2: Small batch outreach, only if legitimate contacts are already availabl
 US creator outreach subject options:
 
 ```text
-Gift guide idea for {siteName}
+quick gift guide idea for {siteName}
 ```
 
 ```text
-Simple wishlist angle for your gift picks
+wishlist angle for your gift picks
 ```
 
 ```text
-Turning gift picks into one shareable list
+turning one gift guide into a list
 ```
 
 US creator outreach body:
@@ -969,13 +958,15 @@ US creator outreach body:
 ```text
 Hi {firstName},
 
-I found your gift/deal content and thought Wishees could fit a small test.
+I came across your gift/deal content and had a simple idea that might fit what you already do.
 
-Wishees lets creators turn gift ideas into one shareable wishlist link. It works especially well for birthday gifts, baby shower ideas, housewarming gifts, holiday picks, and family gift lists.
+Wishees lets you turn product picks into a wishlist around a real occasion: birthday gifts, baby shower ideas, housewarming, holiday picks, family gift lists.
 
-If you already use affiliate links, Wishees can help organize those picks into a gift-intent list. Affiliate links or tags may be preserved where supported, but commission eligibility, tracking, and payout are controlled by each marketplace or affiliate program.
+So instead of only a post or article, your audience has a list they can come back to when they are ready to choose a gift.
 
-Would you be open to a lightweight collaboration or mention around one gift-list theme?
+If you already use affiliate links, those links or tags may be preserved where supported. Commission eligibility, tracking, and payout still depend on each marketplace or affiliate program.
+
+Would you be open to testing one gift-list theme with us?
 
 Best,
 Wishees
@@ -1015,14 +1006,17 @@ Task 8.3: Prepare next-day content queue.
 Next-day Facebook Vietnamese post:
 
 ```text
-Một wishlist tốt không cần dài.
+Một wishlist tốt không cần dài đâu.
 
 Chỉ cần 3-5 món thật sự phù hợp:
-- món bạn thích
-- món bạn cần
-- món đúng ngân sách
+- một món mình thích
+- một món mình cần
+- một món nhỏ, dễ mua
+- một món đúng ngân sách
 
-Tạo wishlist Wishees rồi chia sẻ một link:
+Có sẵn vài gợi ý như vậy là người tặng đã dễ chọn hơn nhiều.
+
+Tạo thử ở đây:
 https://www.wishees.com/?lang=vi&ref=facebook-vn-3-wishes
 ```
 
@@ -1035,8 +1029,9 @@ Start with 3 to 5 ideas:
 - something useful
 - something personal
 - something at an easy budget
+- something you would not mind getting twice
 
-Then share one link.
+That is already enough to help people stop guessing.
 
 https://www.wishees.com/?lang=en&country=US&ref=instagram-us-3-wishes
 
@@ -1046,9 +1041,9 @@ https://www.wishees.com/?lang=en&country=US&ref=instagram-us-3-wishes
 Next-day Pinterest pin:
 
 ```text
-Title: Start A Gift Wishlist With 3 Simple Ideas
+Title: Start A Gift Wishlist With A Few Real Ideas
 
-Description: A useful wishlist does not need dozens of products. Start with 3 to 5 thoughtful gift ideas, share one Wishees link, and make gifting easier for friends and family.
+Description: A useful wishlist does not need dozens of products. Start with a few real gift ideas: useful, personal, budget-friendly, or something the person would not buy for themselves.
 
 Destination: https://www.wishees.com/?lang=en&country=US&ref=pinterest-us-3-wishes
 ```
