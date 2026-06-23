@@ -16,7 +16,7 @@
     "guardz": "^1.12.3",
     "guardz-generator": "^1.12.4",
     "node-fetch": "^3.3.2",
-    "nodemailer": "^8.0.5",
+    "nodemailer": "^9.0.1",
     "prettier": "^3.8.3"
   },
   "devDependencies": {

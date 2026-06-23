@@ -11,7 +11,7 @@ app.use(express.json());
 app.use(express.static('../')); // Serve static files from parent directory
 
 // Email configuration
-const transporter = nodemailer.createTransporter({
+const transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
         user: 'nguyenphongthien@gmail.com', // Your email
