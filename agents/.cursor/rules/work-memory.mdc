@@ -1,0 +1,37 @@
+---
+description: Cross-project work memory — consult before tasks; log after big tasks; avoid repeating past mistakes
+alwaysApply: true
+---
+
+# Work Memory (Cross-Project)
+
+Canonical store (all projects):
+
+`/Users/thien.nguyen/thiennp.github.io/agents/work-memory/`
+
+## Before any substantive task
+
+1. Read `INDEX.md`
+2. Read `mistakes/INDEX.md` (always)
+3. Open only matching entries (by project/tags/keywords)
+4. Apply relevant **Do / Don't** before acting
+
+Skip only for pure meta chat (thanks, status, short clarification with no implementation).
+
+## After a big enough task
+
+A task is "big enough" if it took multiple steps, hit a blocker, changed process/tooling, or could fail the same way again.
+
+1. Add or update one entry per [SCHEMA.md](../../work-memory/SCHEMA.md)
+2. Refresh category `INDEX.md` + root `INDEX.md` + `tags/INDEX.md`
+3. Double-check you are not repeating a pinned mistake
+
+Commands: `/work-memory-recall`, `/work-memory-log`, `/work-memory-finish-check`  
+Skill: `work-memory`
+
+## Hard rules
+
+- No secrets in memory files
+- Prefer short, indexed Markdown over chat dumps
+- Project-local rules still win for that repo’s code standards
+- Product Knowledge Base / per-repo RAG are separate; do not replace them
