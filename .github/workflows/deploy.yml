@@ -21,6 +21,7 @@ jobs:
         working-directory: automation-report
         run: |
           npm ci
+          npm audit --audit-level=high
           npm run build:pages
       - name: Verify report export exists
         run: test -f report/index.html

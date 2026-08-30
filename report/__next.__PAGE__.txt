@@ -1,9 +1,18 @@
 1:"$Sreact.fragment"
-2:I[47257,["/report/_next/static/chunks/158myu8e_yme3.js"],"ClientPageRoot"]
-3:I[31713,["/report/_next/static/chunks/158myu8e_yme3.js","/report/_next/static/chunks/1zu7cworvtm9i.js"],"default"]
-6:I[97367,["/report/_next/static/chunks/158myu8e_yme3.js"],"OutletBoundary"]
+2:I[47257,["/report/_next/static/chunks/3fntmmi971322.js"],"ClientPageRoot"]
+3:I[31713,["/report/_next/static/chunks/3fntmmi971322.js","/report/_next/static/chunks/1zu7cworvtm9i.js"],"default"]
+6:I[97367,["/report/_next/static/chunks/3fntmmi971322.js"],"OutletBoundary"]
 7:"$Sreact.suspense"
-0:{"rsc":["$","$1","c",{"children":[["$","$L2",null,{"Component":"$3","serverProvidedParams":{"searchParams":{},"params":{},"promises":["$@4","$@5"]}}],[["$","script","script-0",{"src":"/report/_next/static/chunks/1zu7cworvtm9i.js","async":true}]],["$","$L6",null,{"children":["$","$7",null,{"name":"Next.MetadataOutlet","children":"$@8"}]}]]}],"isPartial":false,"staleTime":300,"varyParams":null,"buildId":"WVHO__2kHjdkDH_c6RhdH"}
+b:I[97367,["/report/_next/static/chunks/3fntmmi971322.js"],"ViewportBoundary"]
+c:I[97367,["/report/_next/static/chunks/3fntmmi971322.js"],"MetadataBoundary"]
+a:X
+0:{"buildId":"BFgRrT6Xwp_Z-X9qZIl4b","data":[{"rsc":["$","$1","c",{"children":[["$","$L2",null,{"Component":"$3","serverProvidedParams":{"searchParams":{},"params":{},"promises":["$@4","$@5"]}}],[["$","script","script-0",{"src":"/report/_next/static/chunks/1zu7cworvtm9i.js","async":true}]],["$","$L6",null,{"children":["$","$7",null,{"name":"Next.MetadataOutlet","children":"$@8"}]}]]}],"isPartial":"$@9","staleTime":"$a","varyParams":null},{"rsc":["$","$1","h",{"children":[null,["$","$Lb",null,{"children":[["$","meta","0",{"charSet":"utf-8"}],["$","meta","1",{"name":"viewport","content":"width=device-width, initial-scale=1"}]]}],["$","div",null,{"hidden":true,"children":["$","$Lc",null,{"children":["$","$7",null,{"name":"Next.Metadata","children":[["$","title","0",{"children":"Work Status Dashboard"}],["$","meta","1",{"name":"description","content":"Live dashboard for agent work status, sessions, and automation activity"}]]}]}]}],null]}],"isPartial":"$@d","staleTime":"$a","varyParams":null}],"isUpgradeableISRFallback":false,"a":"$@e","rootVaryParams":null,"needsRuntimeRequest":"$@f"}
 4:{}
-5:"$0:rsc:props:children:0:props:serverProvidedParams:params"
+5:"$0:data:0:rsc:props:children:0:props:serverProvidedParams:params"
 8:null
+f:true
+a:300
+a:C
+e:0
+d:"$undefined"
+9:"$undefined"
