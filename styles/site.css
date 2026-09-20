@@ -143,6 +143,16 @@ a { color: var(--link); }
   color: var(--ink);
 }
 
+.hero p.eyebrow {
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--accent-soft);
+  margin: 0 0 14px;
+}
+
 .hero p.tagline {
   font-size: 17px;
   color: var(--muted);
@@ -173,6 +183,13 @@ h2.section-title {
   margin: 0 0 20px;
   padding-bottom: 8px;
   border-bottom: 1px solid var(--rule);
+}
+
+.section-note {
+  color: var(--muted);
+  font-size: 14px;
+  font-style: italic;
+  margin: -8px 0 22px;
 }
 
 /* ---------- Buttons ---------- */
@@ -242,11 +259,33 @@ h2.section-title {
 .card:hover { border-color: var(--accent-soft); }
 
 .card h3.card-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
   font-family: "Fraunces", Georgia, serif;
   font-weight: 600;
   font-size: 22px;
   color: var(--ink);
   margin: 0 0 12px;
+}
+
+.card-title .card-icon {
+  flex: none;
+  width: 26px;
+  height: 26px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+img.card-icon {
+  object-fit: contain;
+}
+
+span.card-icon svg {
+  width: 100%;
+  height: 100%;
+  color: var(--accent);
 }
 
 .card p.card-desc {
@@ -460,19 +499,17 @@ ul.bullets li::marker { color: var(--rule); }
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--accent);
+  color: var(--ink-soft);
+  transition: color 0.15s ease;
 }
 
 .contact-icon svg {
-  width: 17px;
-  height: 17px;
+  width: 16px;
+  height: 16px;
 }
 
-.contact-icon .contact-mono {
-  font-family: "IBM Plex Mono", ui-monospace, monospace;
-  font-size: 11.5px;
-  font-weight: 600;
-  letter-spacing: 0.02em;
+.contact-item:hover .contact-icon {
+  color: var(--hover-color, var(--accent));
 }
 
 .contact-details h4 {
