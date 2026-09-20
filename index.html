@@ -63,9 +63,10 @@
         <section class="section" id="about" aria-labelledby="about-heading">
             <h2 class="section-title" id="about-heading">About Me</h2>
             <div class="prose-card">
-                <p style="margin:0;">
-                    I&rsquo;m a lead software engineer and architect based in Munich, currently leading application architecture and AI-native tooling at CHECK24. My path here wasn&rsquo;t a straight line &mdash; gifted-track mathematics in high school, then a decade split between founding and running my own software company and shipping production code across frontend, full-stack, and now agentic AI systems. I care about the same thing at every scale: building things that actually work, and being able to prove it, not just claim it. Outside my day job, I build and maintain real, live products solo &mdash; the Guardz TypeScript ecosystem, Agent Witch, and Wishees.
+                <p style="margin:0 0 20px;">
+                    I&rsquo;m a software engineer and architect based in Munich, currently leading application architecture and AI-native tooling at CHECK24. My path here wasn&rsquo;t a straight line &mdash; gifted-track mathematics in high school, then a decade split between founding and running my own software company and shipping production code across frontend, full-stack, and now agentic AI systems. I&rsquo;m still learning as I go, but the thing I try hardest to get right is building things that genuinely work, not just things that sound good on paper. Outside my day job, I tinker on and maintain a few real, live products on my own time &mdash; the Guardz TypeScript ecosystem, Agent Witch, and Wishees.
                 </p>
+                <button type="button" class="btn" onclick="openLetsTalkModal()">Let&rsquo;s Talk</button>
             </div>
         </section>
 
@@ -172,29 +173,6 @@
             </article>
         </section>
 
-        <section class="section" id="lets-talk" aria-labelledby="lets-talk-heading">
-            <h2 class="section-title" id="lets-talk-heading">Let&rsquo;s Talk</h2>
-            <p class="card-desc" style="max-width:640px;">
-                I genuinely enjoy chatting about technical and AI topics &mdash; architecture decisions, agentic systems, TypeScript, whatever&rsquo;s on your mind. And if you&rsquo;re an engineer or architect stuck on a problem with your project, I&rsquo;m happy to look at it and talk through a solution with you, free of charge. Send me a message below and I&rsquo;ll reply by email.
-            </p>
-
-            <form class="card" id="chatForm" onsubmit="return sendChatMessage(event)">
-                <div class="form-group">
-                    <label for="chatTopic">Topic</label>
-                    <input type="text" id="chatTopic" name="topic" placeholder="e.g. Agentic workflow architecture" required>
-                </div>
-                <div class="form-group">
-                    <label for="chatMessage">Message</label>
-                    <textarea id="chatMessage" name="message" placeholder="What's on your mind, or what are you stuck on?" required></textarea>
-                </div>
-                <div class="form-group">
-                    <label for="chatEmail">Your email (so I can reply)</label>
-                    <input type="email" id="chatEmail" name="email" placeholder="you@example.com" required>
-                </div>
-                <button type="submit" class="btn">Send Message</button>
-                <p class="section-note" style="margin:12px 0 0;">This opens your own email client with the message pre-filled &mdash; nothing is collected or sent from this page itself.</p>
-            </form>
-        </section>
 
         <section class="section" id="development-philosophy" aria-labelledby="development-philosophy-heading">
             <h2 class="section-title" id="development-philosophy-heading">Development Philosophy</h2>
@@ -213,7 +191,57 @@
         </section>
     </main>
 
+    <div class="modal-overlay" id="letsTalkOverlay" hidden onclick="if (event.target === this) closeLetsTalkModal()">
+        <div class="modal" role="dialog" aria-modal="true" aria-labelledby="letsTalkTitle">
+            <button type="button" class="modal-close" onclick="closeLetsTalkModal()" aria-label="Close">&times;</button>
+            <h2 class="section-title" id="letsTalkTitle">Let&rsquo;s Talk</h2>
+            <p class="card-desc">
+                I genuinely enjoy chatting about technical and AI topics &mdash; architecture decisions, agentic systems, TypeScript, whatever&rsquo;s on your mind. And if you&rsquo;re an engineer or architect stuck on a problem with your project, I&rsquo;m happy to look at it and talk through a solution with you, free of charge. Send me a message below and I&rsquo;ll reply by email.
+            </p>
+
+            <form id="chatForm" onsubmit="return sendChatMessage(event)">
+                <div class="form-group">
+                    <label for="chatTopic">Topic</label>
+                    <input type="text" id="chatTopic" name="topic" placeholder="e.g. Agentic workflow architecture" required>
+                </div>
+                <div class="form-group">
+                    <label for="chatMessage">Message</label>
+                    <textarea id="chatMessage" name="message" placeholder="What's on your mind, or what are you stuck on?" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="chatEmail">Your email (so I can reply)</label>
+                    <input type="email" id="chatEmail" name="email" placeholder="you@example.com" required>
+                </div>
+                <button type="submit" class="btn">Send Message</button>
+                <p class="section-note" style="margin:12px 0 0;">This opens your own email client with the message pre-filled &mdash; nothing is collected or sent from this page itself.</p>
+            </form>
+        </div>
+    </div>
+
     <script>
+        let lastFocusedElement = null;
+
+        function openLetsTalkModal() {
+            lastFocusedElement = document.activeElement;
+            const overlay = document.getElementById('letsTalkOverlay');
+            overlay.hidden = false;
+            document.body.style.overflow = 'hidden';
+            document.getElementById('chatTopic').focus();
+            document.addEventListener('keydown', handleLetsTalkKeydown);
+        }
+
+        function closeLetsTalkModal() {
+            const overlay = document.getElementById('letsTalkOverlay');
+            overlay.hidden = true;
+            document.body.style.overflow = '';
+            document.removeEventListener('keydown', handleLetsTalkKeydown);
+            if (lastFocusedElement) lastFocusedElement.focus();
+        }
+
+        function handleLetsTalkKeydown(event) {
+            if (event.key === 'Escape') closeLetsTalkModal();
+        }
+
         function sendChatMessage(event) {
             event.preventDefault();
             const topic = document.getElementById('chatTopic').value.trim();
