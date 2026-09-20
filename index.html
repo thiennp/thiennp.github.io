@@ -3,11 +3,38 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Thien Nguyen — Software Engineer</title>
-<meta name="description" content="Thien Nguyen — Lead Software Engineer & Architect. Projects: Wishees, Guardz Ecosystem, AI Bot Agent, Structure Validation.">
+<title>Thien Nguyen — Lead Software Engineer &amp; Agentic AI Architect</title>
+<meta name="description" content="Thien Nguyen — Lead Software Engineer, Software Architect &amp; Agentic AI Architect. Featured projects: Wishees, Guardz Ecosystem, Agent Witch, Structure Validation.">
+<link rel="canonical" href="https://thiennp.github.io/">
+
+<meta property="og:type" content="profile">
+<meta property="og:site_name" content="Thien Nguyen">
+<meta property="og:title" content="Thien Nguyen — Lead Software Engineer & Agentic AI Architect">
+<meta property="og:description" content="Featured projects: Wishees, Guardz Ecosystem, Agent Witch, Structure Validation — all designed, built, and shipped solo.">
+<meta property="og:url" content="https://thiennp.github.io/">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Thien Nguyen — Lead Software Engineer & Agentic AI Architect">
+<meta name="twitter:description" content="Featured projects: Wishees, Guardz Ecosystem, Agent Witch, Structure Validation — all designed, built, and shipped solo.">
+
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap">
 <link rel="stylesheet" href="styles/site.css">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Person",
+  "name": "Thien Nguyen",
+  "jobTitle": "Lead Software Engineer & Agentic AI Architect",
+  "url": "https://thiennp.github.io/",
+  "sameAs": [
+    "https://www.linkedin.com/in/thiennp/",
+    "https://github.com/thiennp",
+    "https://nguyenphongthien.medium.com/",
+    "https://stackoverflow.com/users/7017861/nguyen-phong-thien"
+  ],
+  "knowsAbout": ["TypeScript", "Agentic AI", "Software Architecture", "Distributed Systems", "Developer Tooling"]
+}
+</script>
 </head>
 <body>
     <nav class="site-nav">
@@ -22,18 +49,18 @@
         </div>
     </nav>
 
-    <div class="page">
+    <main class="page">
         <div class="hero">
             <h1>Thien Nguyen</h1>
             <p class="eyebrow">Lead Software Engineer &middot; Software Architect &middot; Agentic AI Architect</p>
             <p class="tagline">Designing resilient distributed systems, agentic AI platforms, and developer tooling — end to end.</p>
         </div>
 
-        <div class="section">
-            <h2 class="section-title">Featured Projects</h2>
+        <section class="section" id="featured-projects" aria-labelledby="featured-projects-heading">
+            <h2 class="section-title" id="featured-projects-heading">Featured Projects</h2>
             <p class="section-note">Every project below was conceived, architected, and built solo — from first commit to live product.</p>
 
-            <div class="card">
+            <article class="card">
                 <h3 class="card-title"><img class="card-icon" src="assets/icons/wishees.svg" alt=""> Wishees.com</h3>
                 <p class="card-desc">
                     A free social network for wishes and wishlists: share what you&rsquo;d love, explore friends&rsquo; wishlists, and coordinate real gifts and support without guessing. Runs local-first — wishlist and friend-invite flows work straight from browser storage, then sync to an account once you sign up.
@@ -53,9 +80,9 @@
                 <div class="links">
                     <a href="https://www.wishees.com/" class="btn" target="_blank">Launch Wishees.com</a>
                 </div>
-            </div>
+            </article>
 
-            <div class="card">
+            <article class="card">
                 <h3 class="card-title"><span class="card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l7 3v6c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6l7-3z"></path><path d="M9 12l2 2 4-4"></path></svg></span> Guardz Ecosystem</h3>
                 <p class="card-desc">
                     A comprehensive suite of TypeScript development tools designed to improve code quality, developer productivity, and project maintainability. Features runtime type safety, validation, and development utilities.
@@ -80,9 +107,9 @@
                     <a href="https://www.npmjs.com/package/guardz-axios" class="btn btn-secondary" target="_blank">Axios</a>
                     <a href="https://www.npmjs.com/package/guardz-event" class="btn btn-secondary" target="_blank">Event</a>
                 </div>
-            </div>
+            </article>
 
-            <div class="card">
+            <article class="card">
                 <h3 class="card-title"><img class="card-icon" src="assets/icons/agentwitch.svg" alt=""> Agent Witch</h3>
                 <p class="card-desc">
                     A web control plane for running AI coding agents on your Mac (and Cursor Cloud), with team dispatch, run history, and shared agent capabilities — not only inside the IDE.
@@ -102,9 +129,9 @@
                 <div class="links">
                     <a href="https://agentwitch.com" class="btn" target="_blank">Launch Agent Witch</a>
                 </div>
-            </div>
+            </article>
 
-            <div class="card">
+            <article class="card">
                 <h3 class="card-title"><span class="card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="4" r="2"></circle><circle cx="5" cy="18" r="2"></circle><circle cx="19" cy="18" r="2"></circle><path d="M12 6v6m0 0l-6 4m6-4l6 4"></path></svg></span> Structure Validation</h3>
                 <p class="card-desc">
                     A TypeScript CLI tool for validating and maintaining project structure. Automatically updates imports when files are moved or renamed, ensuring code integrity.
@@ -126,11 +153,11 @@
                 <div class="links">
                     <a href="https://www.npmjs.com/package/structure-validation" class="btn btn-secondary" target="_blank">NPM Package</a>
                 </div>
-            </div>
-        </div>
+            </article>
+        </section>
 
-        <div class="section">
-            <h2 class="section-title">Development Philosophy</h2>
+        <section class="section" id="development-philosophy" aria-labelledby="development-philosophy-heading">
+            <h2 class="section-title" id="development-philosophy-heading">Development Philosophy</h2>
             <div class="prose-card">
                 <h3>Core Principles</h3>
                 <ul class="bullets">
@@ -143,7 +170,7 @@
                     <li><strong>Own It End to End:</strong> From architecture through implementation to a live, monitored product — as an engineer and as a founder</li>
                 </ul>
             </div>
-        </div>
-    </div>
+        </section>
+    </main>
 </body>
 </html>
