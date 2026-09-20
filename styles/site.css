@@ -1,0 +1,506 @@
+/* Shared design system for thiennp.github.io — matches resume.html's tokens. */
+
+:root {
+  --paper: #faf8f4;
+  --paper-raised: #ffffff;
+  --ink: #1c1e22;
+  --ink-soft: #3a3e45;
+  --muted: #6b7078;
+  --accent: #2f4a52;
+  --accent-soft: #3f6068;
+  --rule: #dcd7cc;
+  --pill-bg: #f0ede4;
+  --pill-border: #ddd7c8;
+  --link: #2f4a52;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper: #16181b;
+    --paper-raised: #1c1f23;
+    --ink: #ece9e2;
+    --ink-soft: #c9c6bd;
+    --muted: #93968f;
+    --accent: #8fb3ac;
+    --accent-soft: #a9c9c2;
+    --rule: #33362f;
+    --pill-bg: #23261f;
+    --pill-border: #383b32;
+    --link: #a9c9c2;
+  }
+}
+
+:root[data-theme="dark"] {
+  --paper: #16181b;
+  --paper-raised: #1c1f23;
+  --ink: #ece9e2;
+  --ink-soft: #c9c6bd;
+  --muted: #93968f;
+  --accent: #8fb3ac;
+  --accent-soft: #a9c9c2;
+  --rule: #33362f;
+  --pill-bg: #23261f;
+  --pill-border: #383b32;
+  --link: #a9c9c2;
+}
+
+* { box-sizing: border-box; }
+
+html, body { margin: 0; padding: 0; }
+
+body {
+  background: var(--paper);
+  color: var(--ink);
+  font-family: "Inter", system-ui, -apple-system, sans-serif;
+  font-size: 16px;
+  line-height: 1.6;
+}
+
+a { color: var(--link); }
+
+/* ---------- Nav ---------- */
+
+.site-nav {
+  background: var(--paper);
+  border-bottom: 1px solid var(--rule);
+  padding: 14px 0;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.site-nav .nav-container {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 0 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.site-nav .nav-logo {
+  font-family: "Fraunces", Georgia, serif;
+  font-weight: 600;
+  font-size: 19px;
+  color: var(--ink);
+  text-decoration: none;
+}
+
+.site-nav .nav-links {
+  display: flex;
+  gap: 22px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  flex-wrap: wrap;
+}
+
+.site-nav .nav-links a {
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-size: 11.5px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  text-decoration: none;
+  color: var(--muted);
+  transition: color 0.15s ease;
+}
+
+.site-nav .nav-links a:hover,
+.site-nav .nav-links a.active {
+  color: var(--accent);
+}
+
+/* ---------- Page shell ---------- */
+
+.page {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 0 20px 80px;
+}
+
+@media (max-width: 560px) {
+  .page { padding: 0 16px 60px; }
+}
+
+/* ---------- Hero ---------- */
+
+.hero {
+  text-align: center;
+  padding: 64px 0 44px;
+}
+
+.hero h1 {
+  font-family: "Fraunces", Georgia, serif;
+  font-optical-sizing: auto;
+  font-weight: 600;
+  font-size: clamp(32px, 5vw, 46px);
+  letter-spacing: 0.01em;
+  margin: 0 0 14px;
+  text-wrap: balance;
+  color: var(--ink);
+}
+
+.hero p.tagline {
+  font-size: 17px;
+  color: var(--muted);
+  max-width: 560px;
+  margin: 0 auto;
+}
+
+.hero-buttons {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-top: 26px;
+}
+
+/* ---------- Section headings ---------- */
+
+.section { margin-bottom: 50px; }
+.section:last-child { margin-bottom: 0; }
+
+h2.section-title {
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin: 0 0 20px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--rule);
+}
+
+/* ---------- Buttons ---------- */
+
+.btn {
+  display: inline-block;
+  font-family: "Inter", sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  padding: 11px 20px;
+  border-radius: 6px;
+  text-decoration: none;
+  cursor: pointer;
+  border: 1px solid var(--ink);
+  background: var(--ink);
+  color: var(--paper);
+  transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+
+.btn:hover {
+  background: transparent;
+  color: var(--ink);
+}
+
+.btn-secondary {
+  background: transparent;
+  color: var(--ink);
+  border: 1px solid var(--rule);
+}
+
+.btn-secondary:hover {
+  background: var(--pill-bg);
+  border-color: var(--ink);
+}
+
+/* ---------- Pills ---------- */
+
+.pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.pill {
+  font-size: 12.5px;
+  color: var(--ink-soft);
+  background: var(--pill-bg);
+  border: 1px solid var(--pill-border);
+  border-radius: 100px;
+  padding: 3px 11px;
+  white-space: nowrap;
+}
+
+/* ---------- Cards ---------- */
+
+.card {
+  background: var(--paper-raised);
+  border: 1px solid var(--rule);
+  border-radius: 8px;
+  padding: 32px;
+  margin-bottom: 24px;
+  transition: border-color 0.15s ease;
+}
+
+.card:last-child { margin-bottom: 0; }
+.card:hover { border-color: var(--accent-soft); }
+
+.card h3.card-title {
+  font-family: "Fraunces", Georgia, serif;
+  font-weight: 600;
+  font-size: 22px;
+  color: var(--ink);
+  margin: 0 0 12px;
+}
+
+.card p.card-desc {
+  color: var(--ink-soft);
+  font-size: 15px;
+  margin: 0 0 18px;
+}
+
+ul.bullets {
+  margin: 0 0 18px;
+  padding-left: 18px;
+}
+ul.bullets li {
+  color: var(--ink-soft);
+  font-size: 14.5px;
+  margin-bottom: 6px;
+}
+ul.bullets li:last-child { margin-bottom: 0; }
+ul.bullets li::marker { color: var(--rule); }
+
+.card .links,
+.button-group {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 18px;
+}
+
+/* ---------- Feature / model grids ---------- */
+
+.feature-grid,
+.model-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: 18px;
+}
+
+.feature-card,
+.model-card {
+  background: var(--paper-raised);
+  border: 1px solid var(--rule);
+  border-radius: 8px;
+  padding: 22px;
+}
+
+.feature-icon { font-size: 26px; margin-bottom: 10px; }
+
+.feature-title,
+.model-name {
+  font-weight: 600;
+  color: var(--ink);
+  margin-bottom: 6px;
+  font-size: 15.5px;
+}
+
+.feature-description,
+.model-description {
+  color: var(--muted);
+  font-size: 13.5px;
+  line-height: 1.6;
+}
+
+.model-card { text-align: center; }
+
+/* ---------- Command / code blocks ---------- */
+
+.command-list {
+  background: var(--pill-bg);
+  border: 1px solid var(--pill-border);
+  border-radius: 8px;
+  padding: 22px;
+  margin-bottom: 16px;
+}
+
+.command-list h4 {
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin: 0 0 12px;
+}
+
+.command-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 8px;
+}
+
+.command-item {
+  background: var(--paper-raised);
+  border: 1px solid var(--rule);
+  border-radius: 6px;
+  padding: 9px 12px;
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-size: 12.5px;
+  color: var(--ink-soft);
+}
+
+.code-block,
+.code-output {
+  background: var(--ink);
+  color: var(--paper);
+  padding: 20px;
+  border-radius: 8px;
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-size: 13px;
+  overflow-x: auto;
+  white-space: pre-wrap;
+}
+
+/* ---------- Forms ---------- */
+
+.form-group { margin-bottom: 20px; }
+
+.form-group label {
+  display: block;
+  margin-bottom: 6px;
+  color: var(--ink);
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.form-group input,
+.form-group textarea,
+.form-group select {
+  width: 100%;
+  padding: 11px 12px;
+  border: 1px solid var(--rule);
+  border-radius: 6px;
+  font-size: 14.5px;
+  font-family: inherit;
+  background: var(--paper-raised);
+  color: var(--ink);
+  transition: border-color 0.15s ease;
+}
+
+.form-group textarea { resize: vertical; min-height: 110px; }
+
+.form-group input:focus,
+.form-group textarea:focus,
+.form-group select:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+.form-group textarea#interfaceCode {
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-size: 13px;
+}
+
+.success-message,
+.error-message {
+  padding: 12px 14px;
+  border-radius: 6px;
+  margin-bottom: 16px;
+  font-size: 14px;
+  display: none;
+}
+
+.success-message { background: #e3efe8; color: #1f5c3a; }
+.error-message { background: #f6e6e4; color: #7a2b22; }
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .success-message { background: #1c2b21; color: #9fd6b3; }
+  :root:not([data-theme="light"]) .error-message { background: #2c1f1c; color: #e3a89c; }
+}
+:root[data-theme="dark"] .success-message { background: #1c2b21; color: #9fd6b3; }
+:root[data-theme="dark"] .error-message { background: #2c1f1c; color: #e3a89c; }
+
+/* ---------- Contact page specifics ---------- */
+
+.contact-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 32px;
+}
+
+@media (max-width: 720px) {
+  .contact-grid { grid-template-columns: 1fr; }
+}
+
+.contact-item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 14px;
+  padding: 14px;
+  background: var(--paper-raised);
+  border-radius: 8px;
+  border: 1px solid var(--rule);
+}
+
+.contact-icon {
+  width: 36px;
+  height: 36px;
+  flex: none;
+  background: var(--pill-bg);
+  border: 1px solid var(--pill-border);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+}
+
+.contact-details h4 {
+  color: var(--ink);
+  font-weight: 600;
+  font-size: 14px;
+  margin: 0 0 2px;
+}
+
+.contact-details p {
+  color: var(--muted);
+  font-size: 13px;
+  margin: 0;
+}
+
+.social-links {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 18px;
+}
+
+.social-link {
+  display: inline-block;
+  padding: 9px 16px;
+  background: var(--pill-bg);
+  border: 1px solid var(--pill-border);
+  color: var(--ink-soft);
+  text-decoration: none;
+  border-radius: 6px;
+  font-size: 13.5px;
+  font-weight: 500;
+  transition: background 0.15s ease;
+}
+
+.social-link:hover { background: var(--pill-border); }
+
+/* ---------- Prose section (philosophy / info blocks) ---------- */
+
+.prose-card {
+  background: var(--pill-bg);
+  border: 1px solid var(--pill-border);
+  border-radius: 8px;
+  padding: 32px;
+}
+
+.prose-card h3 {
+  font-family: "Fraunces", Georgia, serif;
+  font-weight: 600;
+  font-size: 19px;
+  color: var(--ink);
+  margin: 0 0 16px;
+}

@@ -1,511 +1,148 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Thien Nguyen - Software Engineer</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-            line-height: 1.6;
-            color: #1a1a1a;
-            background: #ffffff;
-            min-height: 100vh;
-            font-size: 16px;
-        }
-        
-        .container {
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 0 2rem;
-        }
-        
-        .navigation {
-            background: #ffffff;
-            border-bottom: 1px solid #e9ecef;
-            padding: 1rem 0;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-        }
-        
-        .nav-container {
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 0 2rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        
-        .nav-logo {
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: #1a1a1a;
-            text-decoration: none;
-        }
-        
-        .nav-links {
-            display: flex;
-            gap: 2rem;
-            list-style: none;
-        }
-        
-        .nav-links a {
-            text-decoration: none;
-            color: #6c757d;
-            font-weight: 500;
-            transition: color 0.3s ease;
-        }
-        
-        .nav-links a:hover {
-            color: #1a1a1a;
-        }
-        
-        .header {
-            text-align: center;
-            margin-bottom: 6rem;
-            padding: 4rem 0;
-            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-        }
-        
-        .header h1 {
-            font-size: 4rem;
-            margin-bottom: 1.5rem;
-            font-weight: 800;
-            color: #1a1a1a;
-            letter-spacing: -0.02em;
-        }
-        
-        .header p {
-            font-size: 1.4rem;
-            color: #6c757d;
-            max-width: 600px;
-            margin: 0 auto;
-            font-weight: 400;
-        }
-        
-        .content {
-            background: transparent;
-            padding: 0;
-            margin-bottom: 4rem;
-        }
-        
-        .section {
-            margin-bottom: 6rem;
-        }
-        
-        .section h2 {
-            color: #1a1a1a;
-            font-size: 2.5rem;
-            margin-bottom: 3rem;
-            font-weight: 700;
-            letter-spacing: -0.01em;
-            text-align: center;
-        }
-        
-        .project-card {
-            background: #ffffff;
-            border: 1px solid #e9ecef;
-            border-radius: 16px;
-            padding: 3rem;
-            margin-bottom: 3rem;
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .project-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 4px;
-            height: 100%;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        }
-        
-        .project-card:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 20px 40px rgba(0,0,0,0.08);
-            border-color: #667eea;
-        }
-        
-        .project-title {
-            font-size: 1.8rem;
-            font-weight: 700;
-            color: #1a1a1a;
-            margin-bottom: 1.5rem;
-            letter-spacing: -0.01em;
-        }
-        
-        .project-description {
-            color: #6c757d;
-            margin-bottom: 2rem;
-            font-size: 1.1rem;
-            line-height: 1.7;
-        }
-        
-        .project-features {
-            list-style: none;
-            margin-bottom: 2rem;
-        }
-        
-        .project-features li {
-            padding: 0.75rem 0;
-            color: #495057;
-            position: relative;
-            padding-left: 2rem;
-        }
-        
-        .project-features li::before {
-            content: "→";
-            position: absolute;
-            left: 0;
-            color: #667eea;
-            font-weight: 600;
-            font-size: 1.1rem;
-        }
-        
-        .tech-stack {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 0.75rem;
-            margin-bottom: 2rem;
-        }
-        
-        .tech-tag {
-            background: #f8f9fa;
-            color: #495057;
-            padding: 0.5rem 1rem;
-            border-radius: 25px;
-            font-size: 0.85rem;
-            font-weight: 500;
-            border: 1px solid #e9ecef;
-            transition: all 0.3s ease;
-        }
-        
-        .tech-tag:hover {
-            background: #667eea;
-            color: white;
-            border-color: #667eea;
-        }
-        
-        .links {
-            display: flex;
-            gap: 1rem;
-            flex-wrap: wrap;
-            margin-top: 1rem;
-        }
-        
-        .link {
-            display: inline-block;
-            padding: 0.75rem 1.5rem;
-            background: #1a1a1a;
-            color: white;
-            text-decoration: none;
-            border-radius: 8px;
-            font-weight: 500;
-            transition: all 0.3s ease;
-            border: 2px solid #1a1a1a;
-        }
-        
-        .link:hover {
-            background: transparent;
-            color: #1a1a1a;
-            transform: translateY(-2px);
-        }
-        
-        .about-section {
-            background: #f8f9fa;
-            border-radius: 16px;
-            padding: 3rem;
-            margin-bottom: 3rem;
-            border: 1px solid #e9ecef;
-        }
-        
-        .about-section h3 {
-            color: #1a1a1a;
-            margin-bottom: 1.5rem;
-            font-size: 1.5rem;
-            font-weight: 700;
-        }
-        
-        @media (max-width: 768px) {
-            .container {
-                padding: 1rem;
-            }
-            
-            .nav-container {
-                padding: 0 1rem;
-                flex-direction: column;
-                gap: 1rem;
-            }
-            
-            .nav-links {
-                gap: 1rem;
-            }
-            
-            .header {
-                padding: 2rem 0;
-                margin-bottom: 3rem;
-            }
-            
-            .header h1 {
-                font-size: 2.5rem;
-            }
-            
-            .header p {
-                font-size: 1.1rem;
-            }
-            
-            .section h2 {
-                font-size: 2rem;
-            }
-            
-            .project-card {
-                padding: 2rem;
-                margin-bottom: 2rem;
-            }
-            
-            .project-title {
-                font-size: 1.5rem;
-            }
-            
-            .tech-stack {
-                gap: 0.5rem;
-            }
-            
-            .tech-tag {
-                padding: 0.4rem 0.8rem;
-                font-size: 0.8rem;
-            }
-            
-            .links {
-                gap: 0.75rem;
-            }
-            
-            .link {
-                padding: 0.6rem 1.2rem;
-                font-size: 0.9rem;
-            }
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Thien Nguyen — Software Engineer</title>
+<meta name="description" content="Thien Nguyen — Lead Software Engineer & Architect. Projects: Wishees, Guardz Ecosystem, AI Bot Agent, Structure Validation.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap">
+<link rel="stylesheet" href="styles/site.css">
 </head>
 <body>
-    <nav class="navigation">
+    <nav class="site-nav">
         <div class="nav-container">
             <a href="index.html" class="nav-logo">Thien Nguyen</a>
             <ul class="nav-links">
                 <li><a href="resume.html">Resume</a></li>
-                <li><a href="blog.html">Blog</a></li>
-                <li><a href="index.html">Projects</a></li>
-                <li><a href="earning-hub.html">Earning Hub</a></li>
-                <li><a href="codex-automations/">Automations</a></li>
-                <li><a href="agents/.codex/skills/">Skills</a></li>
+                <li><a href="index.html" class="active">Projects</a></li>
+                <li><a href="https://nguyenphongthien.medium.com/" target="_blank" rel="noopener">Blog</a></li>
                 <li><a href="contact.html">Contact</a></li>
             </ul>
         </div>
     </nav>
 
-    <div class="container">
-        <div class="header">
+    <div class="page">
+        <div class="hero">
             <h1>Thien Nguyen</h1>
-            <p>Software Engineer & Front-end Architect</p>
+            <p class="tagline">Lead Software Engineer &amp; Architect — building agentic platforms, developer tooling, and products end to end.</p>
         </div>
-        
-        <div class="content">
-            <div class="section">
-                <h2>Featured Projects</h2>
 
-                <div class="project-card">
-                    <h3 class="project-title">💫 Wishees.com</h3>
-                    <p class="project-description">
-                        A fully serverless, highly interactive virtual wishing wall and custom greeting ecard generator designed for viral digital monetization. Built to run with exactly <strong>$0.00</strong> in operational costs by encoding card configurations directly inside base64-encoded URL parameters.
-                    </p>
-                    
-                    <h4>Key Features:</h4>
-                    <ul class="project-features">
-                        <li>Interactive wishing sky using real-time HTML5 Canvas particle systems</li>
-                        <li>Custom card wizard with occasions, visual templates, and predefined premium greetings</li>
-                        <li>Physical 3D envelope-opening animations and canvas confetti explosions for recipients</li>
-                        <li>Synthetic ambient pentatonic audio chimes synthesized on-the-fly using the Web Audio API</li>
-                        <li>Integrated monetization zones for Google AdSense banners and Amazon/Etsy affiliate programs</li>
-                    </ul>
-                    
-                    <div class="tech-stack">
-                        <span class="tech-tag">HTML5 Canvas</span>
-                        <span class="tech-tag">Web Audio API</span>
-                        <span class="tech-tag">Serverless Data Encoding</span>
-                        <span class="tech-tag">Monetization Ads</span>
-                        <span class="tech-tag">Glassmorphism UI</span>
-                    </div>
-                    
-                    <div class="links">
-                        <a href="wishees.html" class="link">Launch Wishees.com</a>
-                    </div>
-                </div>
+        <div class="section">
+            <h2 class="section-title">Featured Projects</h2>
 
-                <div class="project-card">
-                    <h3 class="project-title">Remote Earning Hub</h3>
-                    <p class="project-description">
-                        A practical earning experiment hub for remote research, AI evaluation, crowdtesting, digital products, and affiliate content. Includes an opportunity tracker and a hard avoid list for no-prepay work.
-                    </p>
-                    
-                    <h4>Key Features:</h4>
-                    <ul class="project-features">
-                        <li>Ranked application queue for low-upfront remote earning platforms</li>
-                        <li>Digital product and affiliate content plan for reusable assets</li>
-                        <li>Downloadable CSV tracker for applications, payouts, and risk notes</li>
-                    </ul>
-                    
-                    <div class="tech-stack">
-                        <span class="tech-tag">Remote Work</span>
-                        <span class="tech-tag">Affiliate Content</span>
-                        <span class="tech-tag">Digital Products</span>
-                        <span class="tech-tag">CSV Tracker</span>
-                    </div>
-                    
-                    <div class="links">
-                        <a href="earning-hub.html" class="link">Open Hub</a>
-                        <a href="assets/downloads/earning-opportunity-tracker.csv" class="link">Download Tracker</a>
-                        <a href="qa-review-service.html" class="link">QA Review Service</a>
-                    </div>
+            <div class="card">
+                <h3 class="card-title">💫 Wishees.com</h3>
+                <p class="card-desc">
+                    A fully serverless, highly interactive virtual wishing wall and custom greeting ecard generator designed for viral digital monetization. Built to run with exactly <strong>$0.00</strong> in operational costs by encoding card configurations directly inside base64-encoded URL parameters.
+                </p>
+                <ul class="bullets">
+                    <li>Interactive wishing sky using real-time HTML5 Canvas particle systems</li>
+                    <li>Custom card wizard with occasions, visual templates, and predefined premium greetings</li>
+                    <li>Physical 3D envelope-opening animations and canvas confetti explosions for recipients</li>
+                    <li>Synthetic ambient pentatonic audio chimes synthesized on-the-fly using the Web Audio API</li>
+                    <li>Integrated monetization zones for Google AdSense banners and Amazon/Etsy affiliate programs</li>
+                </ul>
+                <div class="pills">
+                    <span class="pill">HTML5 Canvas</span>
+                    <span class="pill">Web Audio API</span>
+                    <span class="pill">Serverless Data Encoding</span>
+                    <span class="pill">Monetization Ads</span>
+                    <span class="pill">Glassmorphism UI</span>
                 </div>
-                
-                <div class="project-card">
-                    <h3 class="project-title">🛡️ Guardz Ecosystem</h3>
-                    <p class="project-description">
-                        A comprehensive suite of TypeScript development tools designed to improve code quality, developer productivity, and project maintainability. Features runtime type safety, validation, and development utilities.
-                    </p>
-                    
-                    <h4>Key Features:</h4>
-                    <ul class="project-features">
-                        <li>Runtime type safety without schemas or boilerplate</li>
-                        <li>Type guards and validators for TypeScript</li>
-                        <li>Development tools for code quality</li>
-                        <li>Multiple packages: Guardz, Generator, Axios, Event</li>
-                        <li>Online tool for interactive development</li>
-                    </ul>
-                    
-                    <div class="tech-stack">
-                        <span class="tech-tag">TypeScript</span>
-                        <span class="tech-tag">Development Tools</span>
-                        <span class="tech-tag">Code Quality</span>
-                        <span class="tech-tag">Runtime Safety</span>
-                    </div>
-                    
-                    <div class="links">
-                        <a href="guardz-mcp.html" class="link">Online Tool</a>
-                        <a href="https://www.npmjs.com/package/guardz" class="link" target="_blank">Guardz</a>
-                        <a href="https://www.npmjs.com/package/guardz-generator" class="link" target="_blank">Generator</a>
-                        <a href="https://www.npmjs.com/package/guardz-axios" class="link" target="_blank">Axios</a>
-                        <a href="https://www.npmjs.com/package/guardz-event" class="link" target="_blank">Event</a>
-                    </div>
-                </div>
-                
-                <div class="project-card">
-                    <h3 class="project-title">🤖 AI Bot Agent</h3>
-                    <p class="project-description">
-                        A powerful command-line AI assistant with 7 local models and 30+ commands. Features include file operations, code debugging, optimization, and beautiful GUI interfaces.
-                    </p>
-                    
-                    <h4>Key Features:</h4>
-                    <ul class="project-features">
-                        <li>7 local AI models (CodeLlama, Mistral, Llama2, Phi3, Gemma)</li>
-                        <li>30+ commands for file operations, debugging, and development</li>
-                        <li>Three interface options: Desktop GUI, Web Interface, and CLI</li>
-                        <li>AI-powered file creation and editing with automatic backups</li>
-                        <li>Code debugging, optimization, and review assistance</li>
-                    </ul>
-                    
-                    <div class="tech-stack">
-                        <span class="tech-tag">Python</span>
-                        <span class="tech-tag">AI/ML</span>
-                        <span class="tech-tag">CLI</span>
-                        <span class="tech-tag">GUI</span>
-                        <span class="tech-tag">Local Models</span>
-                    </div>
-                    
-                    <div class="links">
-                        <a href="ai-bot-agent.html" class="link">View Project</a>
-                        <a href="https://pypi.org/project/ai-bot-agent/" class="link" target="_blank">PyPI</a>
-                    </div>
-                </div>
-                
-                <div class="project-card">
-                    <h3 class="project-title">📁 Structure Validation</h3>
-                    <p class="project-description">
-                        A TypeScript CLI tool for validating and maintaining project structure. Automatically updates imports when files are moved or renamed, ensuring code integrity.
-                    </p>
-                    
-                    <h4>Key Features:</h4>
-                    <ul class="project-features">
-                        <li>Declarative configuration with TypeScript support</li>
-                        <li>Automatic import updates when files are moved or renamed</li>
-                        <li>Auto-fix mode with smart file operations</li>
-                        <li>Git integration for staged, changed, or all files</li>
-                        <li>Pattern matching with glob patterns and variable placeholders</li>
-                    </ul>
-                    
-                    <div class="tech-stack">
-                        <span class="tech-tag">TypeScript</span>
-                        <span class="tech-tag">Node.js</span>
-                        <span class="tech-tag">CLI</span>
-                        <span class="tech-tag">Git Integration</span>
-                        <span class="tech-tag">File Operations</span>
-                    </div>
-                    
-                    <div class="links">
-                        <a href="https://www.npmjs.com/package/structure-validation" class="link" target="_blank">NPM Package</a>
-                    </div>
-                </div>
-                
-                <div class="project-card">
-                    <h3 class="project-title">🎸 ChordFlow</h3>
-                    <p class="project-description">
-                        Interactive chord and lyric practice: paste or import charts, transpose and capo, step or auto-play through songs with guitar and piano diagrams. Hosted on Vercel with full APIs.
-                    </p>
-                    
-                    <h4>Key Features:</h4>
-                    <ul class="project-features">
-                        <li>Paste and parse common chord-plus-lyric formats; edit before practice</li>
-                        <li>Practice mode with current and upcoming chords, sections, and optional loop</li>
-                        <li>Saved charts and AI-assisted generation where the hosted API is available</li>
-                    </ul>
-                    
-                    <div class="tech-stack">
-                        <span class="tech-tag">Next.js</span>
-                        <span class="tech-tag">TypeScript</span>
-                        <span class="tech-tag">React</span>
-                        <span class="tech-tag">Tailwind CSS</span>
-                    </div>
-                    
-                    <div class="links">
-                        <a href="https://chords-fp96.vercel.app/" class="link" target="_blank" rel="noopener noreferrer">Live app</a>
-                        <a href="https://github.com/thiennp/chords" class="link" target="_blank" rel="noopener noreferrer">Source</a>
-                    </div>
+                <div class="links">
+                    <a href="wishees.html" class="btn">Launch Wishees.com</a>
                 </div>
             </div>
-            
-            <div class="section">
-                <h2>Development Philosophy</h2>
-                <div class="about-section">
-                    <h3>Core Principles</h3>
-                    <ul class="project-features">
-                        <li><strong>Domain-Driven Design (DDD):</strong> Clean separation of concerns with domain, application, infrastructure, and presentation layers</li>
-                        <li><strong>Functional Programming:</strong> Prefer pure functions, immutable data structures, and composition over inheritance</li>
-                        <li><strong>SOLID Principles:</strong> Write maintainable, extensible, and testable code</li>
-                        <li><strong>Clean Architecture:</strong> Depend on abstractions, not concretions</li>
-                        <li><strong>Developer Experience:</strong> Create tools that make development more enjoyable and productive</li>
-                    </ul>
+
+            <div class="card">
+                <h3 class="card-title">🛡️ Guardz Ecosystem</h3>
+                <p class="card-desc">
+                    A comprehensive suite of TypeScript development tools designed to improve code quality, developer productivity, and project maintainability. Features runtime type safety, validation, and development utilities.
+                </p>
+                <ul class="bullets">
+                    <li>Runtime type safety without schemas or boilerplate</li>
+                    <li>Type guards and validators for TypeScript</li>
+                    <li>Development tools for code quality</li>
+                    <li>Multiple packages: Guardz, Generator, Axios, Event</li>
+                    <li>Online tool for interactive development</li>
+                </ul>
+                <div class="pills">
+                    <span class="pill">TypeScript</span>
+                    <span class="pill">Development Tools</span>
+                    <span class="pill">Code Quality</span>
+                    <span class="pill">Runtime Safety</span>
                 </div>
+                <div class="links">
+                    <a href="guardz-mcp.html" class="btn">Online Tool</a>
+                    <a href="https://www.npmjs.com/package/guardz" class="btn btn-secondary" target="_blank">Guardz</a>
+                    <a href="https://www.npmjs.com/package/guardz-generator" class="btn btn-secondary" target="_blank">Generator</a>
+                    <a href="https://www.npmjs.com/package/guardz-axios" class="btn btn-secondary" target="_blank">Axios</a>
+                    <a href="https://www.npmjs.com/package/guardz-event" class="btn btn-secondary" target="_blank">Event</a>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3 class="card-title">🤖 AI Bot Agent</h3>
+                <p class="card-desc">
+                    A powerful command-line AI assistant with 7 local models and 30+ commands. Features include file operations, code debugging, optimization, and beautiful GUI interfaces.
+                </p>
+                <ul class="bullets">
+                    <li>7 local AI models (CodeLlama, Mistral, Llama2, Phi3, Gemma)</li>
+                    <li>30+ commands for file operations, debugging, and development</li>
+                    <li>Three interface options: Desktop GUI, Web Interface, and CLI</li>
+                    <li>AI-powered file creation and editing with automatic backups</li>
+                    <li>Code debugging, optimization, and review assistance</li>
+                </ul>
+                <div class="pills">
+                    <span class="pill">Python</span>
+                    <span class="pill">AI/ML</span>
+                    <span class="pill">CLI</span>
+                    <span class="pill">GUI</span>
+                    <span class="pill">Local Models</span>
+                </div>
+                <div class="links">
+                    <a href="ai-bot-agent.html" class="btn">View Project</a>
+                    <a href="https://pypi.org/project/ai-bot-agent/" class="btn btn-secondary" target="_blank">PyPI</a>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3 class="card-title">📁 Structure Validation</h3>
+                <p class="card-desc">
+                    A TypeScript CLI tool for validating and maintaining project structure. Automatically updates imports when files are moved or renamed, ensuring code integrity.
+                </p>
+                <ul class="bullets">
+                    <li>Declarative configuration with TypeScript support</li>
+                    <li>Automatic import updates when files are moved or renamed</li>
+                    <li>Auto-fix mode with smart file operations</li>
+                    <li>Git integration for staged, changed, or all files</li>
+                    <li>Pattern matching with glob patterns and variable placeholders</li>
+                </ul>
+                <div class="pills">
+                    <span class="pill">TypeScript</span>
+                    <span class="pill">Node.js</span>
+                    <span class="pill">CLI</span>
+                    <span class="pill">Git Integration</span>
+                    <span class="pill">File Operations</span>
+                </div>
+                <div class="links">
+                    <a href="https://www.npmjs.com/package/structure-validation" class="btn btn-secondary" target="_blank">NPM Package</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2 class="section-title">Development Philosophy</h2>
+            <div class="prose-card">
+                <h3>Core Principles</h3>
+                <ul class="bullets">
+                    <li><strong>Domain-Driven Design (DDD):</strong> Clean separation of concerns with domain, application, infrastructure, and presentation layers</li>
+                    <li><strong>Functional Programming:</strong> Prefer pure functions, immutable data structures, and composition over inheritance</li>
+                    <li><strong>SOLID Principles:</strong> Write maintainable, extensible, and testable code</li>
+                    <li><strong>Clean Architecture:</strong> Depend on abstractions, not concretions</li>
+                    <li><strong>Developer Experience:</strong> Create tools that make development more enjoyable and productive</li>
+                </ul>
             </div>
         </div>
     </div>

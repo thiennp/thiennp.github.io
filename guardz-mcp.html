@@ -1,376 +1,37 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Guardz MCP - Thien Nguyen</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-            line-height: 1.6;
-            color: #1a1a1a;
-            background: #ffffff;
-            min-height: 100vh;
-            font-size: 16px;
-        }
-
-        .container {
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 0 2rem;
-        }
-        
-        .navigation {
-            background: #ffffff;
-            border-bottom: 1px solid #e9ecef;
-            padding: 1rem 0;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-        }
-        
-        .nav-container {
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 0 2rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        
-        .nav-logo {
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: #1a1a1a;
-            text-decoration: none;
-        }
-        
-        .nav-links {
-            display: flex;
-            gap: 2rem;
-            list-style: none;
-        }
-        
-        .nav-links a {
-            text-decoration: none;
-            color: #6c757d;
-            font-weight: 500;
-            transition: color 0.3s ease;
-        }
-        
-        .nav-links a:hover {
-            color: #1a1a1a;
-        }
-
-        .header {
-            text-align: center;
-            margin-bottom: 4rem;
-            padding: 4rem 0;
-            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-        }
-
-        .header h1 {
-            font-size: 4rem;
-            margin-bottom: 1.5rem;
-            font-weight: 800;
-            color: #1a1a1a;
-            letter-spacing: -0.02em;
-        }
-
-        .header p {
-            font-size: 1.4rem;
-            color: #6c757d;
-            max-width: 600px;
-            margin: 0 auto;
-            font-weight: 400;
-        }
-
-        .card {
-            background: #ffffff;
-            border: 1px solid #e9ecef;
-            border-radius: 16px;
-            padding: 3rem;
-            margin-bottom: 3rem;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 4px;
-            height: 100%;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        }
-
-        .card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 15px 35px rgba(0,0,0,0.08);
-            border-color: #667eea;
-        }
-
-        .card h2 {
-            color: #1a1a1a;
-            margin-bottom: 2rem;
-            font-size: 2rem;
-            font-weight: 700;
-            letter-spacing: -0.01em;
-        }
-
-        .form-group {
-            margin-bottom: 2rem;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 0.5rem;
-            font-weight: 600;
-            color: #1a1a1a;
-        }
-
-        .form-group input,
-        .form-group textarea,
-        .form-group select {
-            width: 100%;
-            padding: 1rem;
-            border: 1px solid #e9ecef;
-            border-radius: 8px;
-            font-size: 1rem;
-            transition: border-color 0.3s ease;
-        }
-
-        .form-group input:focus,
-        .form-group textarea:focus,
-        .form-group select:focus {
-            outline: none;
-            border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-        }
-
-        .form-group textarea {
-            min-height: 120px;
-            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
-            font-size: 0.9rem;
-            resize: vertical;
-        }
-
-        .btn {
-            background: #1a1a1a;
-            color: white;
-            padding: 1rem 2rem;
-            border: 2px solid #1a1a1a;
-            border-radius: 8px;
-            font-size: 1rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .btn:hover {
-            background: transparent;
-            color: #1a1a1a;
-            transform: translateY(-2px);
-        }
-
-        .btn-secondary {
-            background: transparent;
-            color: #1a1a1a;
-            border: 2px solid #1a1a1a;
-        }
-
-        .btn-secondary:hover {
-            background: #1a1a1a;
-            color: white;
-        }
-
-        .result-section {
-            margin-top: 2rem;
-            padding: 2rem;
-            background: #f8f9fa;
-            border-radius: 12px;
-            border: 1px solid #e9ecef;
-        }
-
-        .result-section h3 {
-            color: #1a1a1a;
-            margin-bottom: 1rem;
-            font-size: 1.3rem;
-            font-weight: 700;
-        }
-
-        .code-output {
-            background: #1a1a1a;
-            color: #ffffff;
-            padding: 1.5rem;
-            border-radius: 8px;
-            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
-            font-size: 0.9rem;
-            overflow-x: auto;
-            white-space: pre-wrap;
-            margin-top: 1rem;
-        }
-
-        .info-section {
-            background: #f8f9fa;
-            border-radius: 16px;
-            padding: 3rem;
-            margin: 4rem 0;
-            border: 1px solid #e9ecef;
-        }
-
-        .info-section h2 {
-            color: #1a1a1a;
-            font-size: 2rem;
-            margin-bottom: 1rem;
-            font-weight: 700;
-        }
-
-        .info-section p {
-            color: #6c757d;
-            font-size: 1.1rem;
-            margin-bottom: 2rem;
-        }
-
-        .feature-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 2rem;
-            margin-bottom: 3rem;
-        }
-
-        .feature-card {
-            background: #ffffff;
-            border: 1px solid #e9ecef;
-            border-radius: 12px;
-            padding: 2rem;
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .feature-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 4px;
-            height: 100%;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        }
-
-        .feature-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 15px 35px rgba(0,0,0,0.08);
-            border-color: #667eea;
-        }
-
-        .feature-icon {
-            font-size: 2.5rem;
-            margin-bottom: 1rem;
-        }
-
-        .feature-title {
-            font-size: 1.4rem;
-            font-weight: 700;
-            color: #1a1a1a;
-            margin-bottom: 1rem;
-        }
-
-        .feature-description {
-            color: #6c757d;
-            line-height: 1.7;
-        }
-
-        .button-group {
-            display: flex;
-            gap: 1rem;
-            flex-wrap: wrap;
-            margin-top: 2rem;
-        }
-
-        @media (max-width: 768px) {
-            .container {
-                padding: 1rem;
-            }
-            
-            .nav-container {
-                padding: 0 1rem;
-                flex-direction: column;
-                gap: 1rem;
-            }
-            
-            .nav-links {
-                gap: 1rem;
-            }
-            
-            .header {
-                padding: 2rem 0;
-            }
-            
-            .header h1 {
-                font-size: 2.5rem;
-            }
-            
-            .header p {
-                font-size: 1.1rem;
-            }
-            
-            .card {
-                padding: 2rem;
-            }
-            
-            .card h2 {
-                font-size: 1.8rem;
-            }
-            
-            .feature-grid {
-                grid-template-columns: 1fr;
-            }
-            
-            .info-section {
-                padding: 2rem;
-            }
-            
-            .button-group {
-                flex-direction: column;
-            }
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Guardz MCP — Thien Nguyen</title>
+<meta name="description" content="Generate TypeScript type guards and validators instantly with Guardz MCP.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap">
+<link rel="stylesheet" href="styles/site.css">
 </head>
 <body>
-    <nav class="navigation">
+    <nav class="site-nav">
         <div class="nav-container">
             <a href="index.html" class="nav-logo">Thien Nguyen</a>
             <ul class="nav-links">
                 <li><a href="resume.html">Resume</a></li>
-                <li><a href="blog.html">Blog</a></li>
                 <li><a href="index.html">Projects</a></li>
-                <li><a href="codex-automations/">Automations</a></li>
+                <li><a href="https://nguyenphongthien.medium.com/" target="_blank" rel="noopener">Blog</a></li>
                 <li><a href="contact.html">Contact</a></li>
             </ul>
         </div>
     </nav>
 
-    <div class="container">
-        <div class="header">
+    <div class="page">
+        <div class="hero">
             <h1>🛡️ Guardz MCP</h1>
-            <p>TypeScript Type Guard Generator & Runtime Type Safety Tool</p>
+            <p class="tagline">TypeScript Type Guard Generator &amp; Runtime Type Safety Tool</p>
         </div>
 
-        <div class="info-section">
-            <h2>About Guardz MCP</h2>
-            <p>Guardz MCP is a powerful tool for generating TypeScript type guards and validators. It helps you create runtime type safety without the boilerplate, making your TypeScript code more robust and reliable.</p>
-            
+        <div class="section">
+            <h2 class="section-title">About Guardz MCP</h2>
+            <p style="color:var(--ink-soft); margin-bottom:24px;">Guardz MCP is a powerful tool for generating TypeScript type guards and validators. It helps you create runtime type safety without the boilerplate, making your TypeScript code more robust and reliable.</p>
+
             <div class="feature-grid">
                 <div class="feature-card">
                     <div class="feature-icon">⚡</div>
@@ -379,7 +40,7 @@
                         Generate type guards and validators instantly from your TypeScript interfaces and types.
                     </div>
                 </div>
-                
+
                 <div class="feature-card">
                     <div class="feature-icon">🛡️</div>
                     <div class="feature-title">Runtime Safety</div>
@@ -387,7 +48,7 @@
                         Ensure your data matches your types at runtime with comprehensive validation.
                     </div>
                 </div>
-                
+
                 <div class="feature-card">
                     <div class="feature-icon">🔧</div>
                     <div class="feature-title">Zero Boilerplate</div>
@@ -395,7 +56,7 @@
                         No manual type guard writing required. Generate everything automatically.
                     </div>
                 </div>
-                
+
                 <div class="feature-card">
                     <div class="feature-icon">📦</div>
                     <div class="feature-title">Multiple Formats</div>
@@ -406,62 +67,66 @@
             </div>
         </div>
 
-        <div class="card">
-            <h2>Generate Type Guards</h2>
-            <form id="guardForm">
-                <div class="form-group">
-                    <label for="interfaceName">Interface Name:</label>
-                    <input type="text" id="interfaceName" name="interfaceName" value="User" required>
-                </div>
+        <div class="section">
+            <h2 class="section-title">Generate Type Guards</h2>
+            <div class="card">
+                <form id="guardForm">
+                    <div class="form-group">
+                        <label for="interfaceName">Interface Name:</label>
+                        <input type="text" id="interfaceName" name="interfaceName" value="User" required>
+                    </div>
 
-                <div class="form-group">
-                    <label for="interfaceCode">TypeScript Interface:</label>
-                    <textarea id="interfaceCode" name="interfaceCode" required>interface User {
+                    <div class="form-group">
+                        <label for="interfaceCode">TypeScript Interface:</label>
+                        <textarea id="interfaceCode" name="interfaceCode" required>interface User {
   id: number;
   name: string;
   email: string;
   age?: number;
   isActive: boolean;
 }</textarea>
-                </div>
+                    </div>
 
-                <div class="form-group">
-                    <label for="outputFormat">Output Format:</label>
-                    <select id="outputFormat" name="outputFormat">
-                        <option value="guard">Type Guard</option>
-                        <option value="validator">Validator</option>
-                        <option value="schema">JSON Schema</option>
-                        <option value="zod">Zod Schema</option>
-                    </select>
-                </div>
+                    <div class="form-group">
+                        <label for="outputFormat">Output Format:</label>
+                        <select id="outputFormat" name="outputFormat">
+                            <option value="guard">Type Guard</option>
+                            <option value="validator">Validator</option>
+                            <option value="schema">JSON Schema</option>
+                            <option value="zod">Zod Schema</option>
+                        </select>
+                    </div>
 
-                <div class="button-group">
-                    <button type="submit" class="btn">Generate Code</button>
-                    <button type="button" class="btn btn-secondary" onclick="clearForm()">Clear</button>
-                </div>
-            </form>
+                    <div class="button-group">
+                        <button type="submit" class="btn">Generate Code</button>
+                        <button type="button" class="btn btn-secondary" onclick="clearForm()">Clear</button>
+                    </div>
+                </form>
 
-            <div id="result" class="result-section" style="display: none;">
-                <h3>Generated Code:</h3>
-                <div id="codeOutput" class="code-output"></div>
-                <div class="button-group">
-                    <button class="btn" onclick="copyToClipboard()">Copy Code</button>
-                    <button class="btn btn-secondary" onclick="downloadCode()">Download</button>
+                <div id="result" style="display:none; margin-top:24px;">
+                    <h3 style="font-size:15px; margin-bottom:10px;">Generated Code:</h3>
+                    <div id="codeOutput" class="code-output"></div>
+                    <div class="button-group">
+                        <button class="btn" onclick="copyToClipboard()">Copy Code</button>
+                        <button class="btn btn-secondary" onclick="downloadCode()">Download</button>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <div class="card">
-            <h2>Examples</h2>
-            <div class="form-group">
-                <label for="exampleSelect">Choose an example:</label>
-                <select id="exampleSelect" onchange="loadExample()">
-                    <option value="">Select an example...</option>
-                    <option value="user">User Interface</option>
-                    <option value="product">Product Interface</option>
-                    <option value="api">API Response</option>
-                    <option value="config">Configuration</option>
-                </select>
+        <div class="section">
+            <h2 class="section-title">Examples</h2>
+            <div class="card">
+                <div class="form-group" style="margin-bottom:0;">
+                    <label for="exampleSelect">Choose an example:</label>
+                    <select id="exampleSelect" onchange="loadExample()">
+                        <option value="">Select an example...</option>
+                        <option value="user">User Interface</option>
+                        <option value="product">Product Interface</option>
+                        <option value="api">API Response</option>
+                        <option value="config">Configuration</option>
+                    </select>
+                </div>
             </div>
         </div>
     </div>
@@ -533,7 +198,7 @@
         function loadExample() {
             const select = document.getElementById('exampleSelect');
             const example = examples[select.value];
-            
+
             if (example) {
                 document.getElementById('interfaceName').value = example.name;
                 document.getElementById('interfaceCode').value = example.code;
@@ -564,15 +229,15 @@
 
         document.getElementById('guardForm').addEventListener('submit', function(e) {
             e.preventDefault();
-            
+
             const formData = new FormData(this);
             const interfaceName = formData.get('interfaceName');
             const interfaceCode = formData.get('interfaceCode');
             const outputFormat = formData.get('outputFormat');
-            
+
             // Generate code based on format
             let generatedCode = '';
-            
+
             switch(outputFormat) {
                 case 'guard':
                     generatedCode = generateTypeGuard(interfaceName, interfaceCode);
@@ -587,10 +252,10 @@
                     generatedCode = generateZodSchema(interfaceName, interfaceCode);
                     break;
             }
-            
+
             document.getElementById('codeOutput').textContent = generatedCode;
             document.getElementById('result').style.display = 'block';
-            
+
             // Scroll to result
             document.getElementById('result').scrollIntoView({ behavior: 'smooth' });
         });
@@ -621,32 +286,32 @@ if (is${interfaceName}(user)) {
             return `// Generated Validator for ${interfaceName}
 export function validate${interfaceName}(obj: any): { valid: boolean; errors: string[] } {
   const errors: string[] = [];
-  
+
   if (typeof obj !== 'object' || obj === null) {
     errors.push('Must be an object');
     return { valid: false, errors };
   }
-  
+
   if (typeof obj.id !== 'number') {
     errors.push('id must be a number');
   }
-  
+
   if (typeof obj.name !== 'string') {
     errors.push('name must be a string');
   }
-  
+
   if (typeof obj.email !== 'string') {
     errors.push('email must be a string');
   }
-  
+
   if (obj.age !== undefined && typeof obj.age !== 'number') {
     errors.push('age must be a number if provided');
   }
-  
+
   if (typeof obj.isActive !== 'boolean') {
     errors.push('isActive must be a boolean');
   }
-  
+
   return { valid: errors.length === 0, errors };
 }`;
         }
@@ -693,4 +358,4 @@ export type ${interfaceName} = z.infer<typeof ${interfaceName}Schema>;
         }
     </script>
 </body>
-</html> 
+</html>
