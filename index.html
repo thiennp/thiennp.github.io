@@ -60,6 +60,15 @@
             </div>
         </div>
 
+        <section class="section" id="about" aria-labelledby="about-heading">
+            <h2 class="section-title" id="about-heading">About Me</h2>
+            <div class="prose-card">
+                <p style="margin:0;">
+                    I&rsquo;m a lead software engineer and architect based in Munich, currently leading application architecture and AI-native tooling at CHECK24. My path here wasn&rsquo;t a straight line &mdash; gifted-track mathematics in high school, then a decade split between founding and running my own software company and shipping production code across frontend, full-stack, and now agentic AI systems. I care about the same thing at every scale: building things that actually work, and being able to prove it, not just claim it. Outside my day job, I build and maintain real, live products solo &mdash; the Guardz TypeScript ecosystem, Agent Witch, and Wishees.
+                </p>
+            </div>
+        </section>
+
         <section class="section" id="featured-projects" aria-labelledby="featured-projects-heading">
             <h2 class="section-title" id="featured-projects-heading">Featured Projects</h2>
             <p class="section-note">Every project below was conceived, architected, and built solo — from first commit to live product.</p>
@@ -163,6 +172,30 @@
             </article>
         </section>
 
+        <section class="section" id="lets-talk" aria-labelledby="lets-talk-heading">
+            <h2 class="section-title" id="lets-talk-heading">Let&rsquo;s Talk</h2>
+            <p class="card-desc" style="max-width:640px;">
+                I genuinely enjoy chatting about technical and AI topics &mdash; architecture decisions, agentic systems, TypeScript, whatever&rsquo;s on your mind. And if you&rsquo;re an engineer or architect stuck on a problem with your project, I&rsquo;m happy to look at it and talk through a solution with you, free of charge. Send me a message below and I&rsquo;ll reply by email.
+            </p>
+
+            <form class="card" id="chatForm" onsubmit="return sendChatMessage(event)">
+                <div class="form-group">
+                    <label for="chatTopic">Topic</label>
+                    <input type="text" id="chatTopic" name="topic" placeholder="e.g. Agentic workflow architecture" required>
+                </div>
+                <div class="form-group">
+                    <label for="chatMessage">Message</label>
+                    <textarea id="chatMessage" name="message" placeholder="What's on your mind, or what are you stuck on?" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="chatEmail">Your email (so I can reply)</label>
+                    <input type="email" id="chatEmail" name="email" placeholder="you@example.com" required>
+                </div>
+                <button type="submit" class="btn">Send Message</button>
+                <p class="section-note" style="margin:12px 0 0;">This opens your own email client with the message pre-filled &mdash; nothing is collected or sent from this page itself.</p>
+            </form>
+        </section>
+
         <section class="section" id="development-philosophy" aria-labelledby="development-philosophy-heading">
             <h2 class="section-title" id="development-philosophy-heading">Development Philosophy</h2>
             <div class="prose-card">
@@ -179,5 +212,21 @@
             </div>
         </section>
     </main>
+
+    <script>
+        function sendChatMessage(event) {
+            event.preventDefault();
+            const topic = document.getElementById('chatTopic').value.trim();
+            const message = document.getElementById('chatMessage').value.trim();
+            const email = document.getElementById('chatEmail').value.trim();
+
+            const subject = 'Let\'s talk: ' + topic;
+            const body = message + '\n\n---\nReply to: ' + email;
+            window.location.href = 'mailto:nguyenphongthien@gmail.com'
+                + '?subject=' + encodeURIComponent(subject)
+                + '&body=' + encodeURIComponent(body);
+            return false;
+        }
+    </script>
 </body>
 </html>
