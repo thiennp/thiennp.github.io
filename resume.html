@@ -5,8 +5,27 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Thien Nguyen — Resume</title>
 <meta name="description" content="Resume of Thien Nguyen — Lead Software Engineer & Architect, Guardz Maintainer">
+<link rel="canonical" href="https://thiennp.github.io/resume.html">
+<link rel="alternate" type="application/json" href="resume.json" title="Structured resume data (JSON Resume schema)">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Person",
+  "name": "Thien Nguyen",
+  "jobTitle": "Lead Software Engineer & Agentic AI Architect",
+  "url": "https://thiennp.github.io/",
+  "sameAs": [
+    "https://www.linkedin.com/in/thiennp/",
+    "https://github.com/thiennp",
+    "https://nguyenphongthien.medium.com/",
+    "https://stackoverflow.com/users/7017861/nguyen-phong-thien"
+  ],
+  "worksFor": { "@type": "Organization", "name": "CHECK24 Vergleichsportal GmbH" },
+  "knowsAbout": ["TypeScript", "Agentic AI", "Software Architecture", "Distributed Systems", "Developer Tooling"]
+}
+</script>
 <style>
   :root {
     --paper: #faf8f4;
@@ -85,6 +104,14 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  .toolbar-actions {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
   }
 
   .home-link {
@@ -107,9 +134,28 @@
     border-radius: 4px;
     padding: 7px 14px;
     cursor: pointer;
+    text-decoration: none;
+    display: inline-block;
   }
   .print-btn:hover { background: var(--pill-bg); }
   .print-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+  .download-btn {
+    font-family: "Inter", sans-serif;
+    font-size: 12.5px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    color: var(--paper);
+    background: var(--ink);
+    border: 1px solid var(--ink);
+    border-radius: 4px;
+    padding: 7px 14px;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-block;
+  }
+  .download-btn:hover { background: transparent; color: var(--ink); }
+  .download-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 
   header.head {
     text-align: center;
@@ -354,7 +400,11 @@
 
 <div class="toolbar">
   <a class="home-link" href="/">&larr; thiennp.github.io</a>
-  <button class="print-btn" onclick="window.print()">Print / Save as PDF</button>
+  <div class="toolbar-actions">
+    <a class="download-btn" href="Thien_Nguyen_Resume.pdf" download="Thien_Nguyen_Resume.pdf">Download PDF</a>
+    <button class="print-btn" onclick="window.print()">Print / Save as PDF</button>
+    <a class="print-btn" href="resume.json" title="Structured resume data for tools and agents">JSON</a>
+  </div>
 </div>
 
 <main class="sheet">
