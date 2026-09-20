@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Agent Witch — Architecture Case Study</title>
+<meta name="description" content="How Agent Witch's Cloud Control Plane, durable workflow state machine, and Mac bridge security actually work — verified against the source.">
+<link rel="canonical" href="https://thiennp.github.io/agent-witch-case-study.html">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap">
+<link rel="stylesheet" href="styles/site.css">
+<style>
+  .diagram {
+    background: var(--paper-raised);
+    border: 1px solid var(--rule);
+    border-radius: 8px;
+    padding: 24px;
+    margin: 0 0 24px;
+  }
+  .diagram svg { width: 100%; height: auto; display: block; }
+  .diagram text { font-family: "IBM Plex Mono", ui-monospace, monospace; }
+  .callout {
+    background: var(--pill-bg);
+    border: 1px solid var(--pill-border);
+    border-radius: 8px;
+    padding: 18px 22px;
+    margin: 0 0 24px;
+    font-size: 14px;
+    color: var(--ink-soft);
+  }
+  .callout strong { color: var(--ink); }
+  article h2.section-title { margin-top: 40px; }
+  article h2.section-title:first-child { margin-top: 0; }
+</style>
+</head>
+<body>
+    <nav class="site-nav">
+        <div class="nav-container">
+            <a href="index.html" class="nav-logo">Thien Nguyen</a>
+            <ul class="nav-links">
+                <li><a href="resume.html">Resume</a></li>
+                <li><a href="index.html">Projects</a></li>
+                <li><a href="https://nguyenphongthien.medium.com/" target="_blank" rel="noopener">Blog</a></li>
+                <li><a href="contact.html">Contact</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <main class="page">
+        <div class="hero">
+            <p class="eyebrow">Architecture Case Study</p>
+            <h1>Agent Witch</h1>
+            <p class="tagline">A control plane for running AI coding agents on real hardware — not only inside the IDE.</p>
+        </div>
+
+        <article class="section">
+            <h2 class="section-title">The Problem</h2>
+            <p class="card-desc">
+                Most AI coding agents run wherever the IDE happens to be open. That's fine for a solo developer, but it breaks down for a team: there's no shared run history, no way to dispatch a task to a teammate's machine, no audit trail, and no policy layer over who can run what. Agent Witch exists to give a team a single place to trigger trusted agent runs on real hardware &mdash; a Mac they own, not a shared cloud sandbox &mdash; with the same rigor you'd expect from any internal platform: authentication, approvals, and a record of what happened.
+            </p>
+
+            <div class="diagram">
+                <svg viewBox="0 0 720 200" xmlns="http://www.w3.org/2000/svg">
+                    <rect x="20" y="60" width="180" height="80" rx="8" fill="none" stroke="#2f4a52" stroke-width="1.6"/>
+                    <text x="110" y="95" text-anchor="middle" font-size="13" fill="#1c1e22" font-weight="600">Browser</text>
+                    <text x="110" y="113" text-anchor="middle" font-size="11" fill="#6b7078">www.agentwitch.com</text>
+
+                    <rect x="270" y="60" width="180" height="80" rx="8" fill="none" stroke="#2f4a52" stroke-width="1.6"/>
+                    <text x="360" y="88" text-anchor="middle" font-size="13" fill="#1c1e22" font-weight="600">AWC</text>
+                    <text x="360" y="105" text-anchor="middle" font-size="11" fill="#6b7078">Cloud Control Plane</text>
+                    <text x="360" y="120" text-anchor="middle" font-size="10" fill="#6b7078">Next.js + WebSocketServer</text>
+
+                    <rect x="520" y="60" width="180" height="80" rx="8" fill="none" stroke="#2f4a52" stroke-width="1.6"/>
+                    <text x="610" y="88" text-anchor="middle" font-size="13" fill="#1c1e22" font-weight="600">AWL / AWB</text>
+                    <text x="610" y="105" text-anchor="middle" font-size="11" fill="#6b7078">Mac client + local bridge</text>
+                    <text x="610" y="120" text-anchor="middle" font-size="10" fill="#6b7078">runs the writer CLI</text>
+
+                    <line x1="200" y1="100" x2="270" y2="100" stroke="#3f6068" stroke-width="1.6" marker-end="url(#arrow)"/>
+                    <line x1="450" y1="100" x2="520" y2="100" stroke="#3f6068" stroke-width="1.6" marker-end="url(#arrow)"/>
+                    <text x="235" y="90" text-anchor="middle" font-size="10" fill="#3f6068">HTTPS</text>
+                    <text x="485" y="90" text-anchor="middle" font-size="10" fill="#3f6068">WSS</text>
+
+                    <defs>
+                        <marker id="arrow" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+                            <path d="M0,0 L8,4 L0,8 z" fill="#3f6068"/>
+                        </marker>
+                    </defs>
+                </svg>
+            </div>
+            <p class="section-note" style="margin:-8px 0 0;">Deployable names (AWC/AWL/AWB/AWI) as used internally &mdash; a console, a Mac-local app, a Mac loopback bridge, and the install bundle.</p>
+        </article>
+
+        <article class="section">
+            <h2 class="section-title">Realtime Bridge &amp; Security</h2>
+            <p class="card-desc">
+                The browser talks to a centralized Cloud Control Plane (AWC), which stays decoupled from the actual worker: each Mac runs its own client and a local bridge that dispatch and stream terminal output back over a WebSocket connection, not a plain REST poll. That connection is deliberately hardened at the transport layer rather than left to application-level checks: the server rejects any upgrade unless the request came in over HTTPS in production, and it checks the request's <code>Origin</code> header against an allow-list derived from the app's own configured host before ever handing the socket to the application. A duplicate or spoofed origin never reaches the dispatch logic at all &mdash; it's refused at the upgrade handshake.
+            </p>
+        </article>
+
+        <article class="section">
+            <h2 class="section-title">Durable Workflow &amp; Human-in-the-Loop</h2>
+            <p class="card-desc">
+                Longer workflows aren't modeled as one monolithic prompt. They're a persisted step graph that alternates <strong>operator checkpoints</strong> &mdash; a human approves or edits before the next step &mdash; with bounded agent dispatches, so a multi-hour operation can survive a browser refresh or a laptop closing. At the level of a single run, the same idea shows up as a mid-run input protocol: when the agent's output contains a specific marker asking a question, the run pauses, the pending state is written to disk, and the browser is asked to answer over the socket. Nothing about the run's accumulated output is lost while it waits &mdash; the process is stopped cleanly and resumed with full context once an answer arrives, rather than starting over.
+            </p>
+        </article>
+
+        <article class="section">
+            <h2 class="section-title">Operational Hardening</h2>
+            <p class="card-desc">
+                A Mac is meant to run exactly one bridge process per install. To enforce that without a heavier coordination service, the client walks the local process table (<code>ps -axo pid=,command=</code>), matches other processes against the exact bundled script path for that install directory, excludes its own ancestor chain so it never signals its own parent, and sends a graceful termination to any sibling it finds. A watchdog LaunchAgent checks every 60 seconds that the client is still alive and restarts it if not, and a separate self-update LaunchAgent checks hourly for a new install bundle &mdash; so a stale or crashed client on someone's Mac doesn't sit broken until they notice.
+            </p>
+        </article>
+
+        <article class="section">
+            <h2 class="section-title">Trade-offs I&rsquo;d Call Out</h2>
+            <div class="callout">
+                <strong>Origin allow-listing over mTLS:</strong> checking the <code>Origin</code> header is cheap and easy to reason about, but it's an application-layer control, not a cryptographic one. A compromised browser extension that can forge headers is a threat model this doesn't fully cover &mdash; mutual TLS between AWC and each Mac client would close that gap at the cost of a much heavier install/rotation story.
+            </div>
+            <div class="callout">
+                <strong>Process-table matching over a lockfile:</strong> scanning <code>ps</code> output to find duplicate clients is portable and needs no extra state, but it's inherently best-effort &mdash; a renamed binary or a container boundary could evade the match. A PID file with an flock would be more precise, at the cost of one more thing that can go stale on a hard crash.
+            </div>
+            <p class="card-desc">
+                Neither is wrong for what this system needs today &mdash; a small number of trusted company Macs, not an adversarial multi-tenant fleet &mdash; but they're the first two things I'd revisit if Agent Witch's threat model grew.
+            </p>
+        </article>
+
+        <article class="section">
+            <div class="links">
+                <a href="https://agentwitch.com" class="btn" target="_blank">Launch Agent Witch</a>
+                <a href="index.html#featured-projects" class="btn btn-secondary">&larr; Back to Projects</a>
+            </div>
+        </article>
+    </main>
+</body>
+</html>

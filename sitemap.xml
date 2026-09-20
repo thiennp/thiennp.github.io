@@ -21,6 +21,11 @@
     <priority>0.6</priority>
   </url>
   <url>
+    <loc>https://thiennp.github.io/agent-witch-case-study.html</loc>
+    <changefreq>yearly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
     <loc>https://thiennp.github.io/wishees.html</loc>
     <changefreq>yearly</changefreq>
     <priority>0.5</priority>

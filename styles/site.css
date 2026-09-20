@@ -294,6 +294,19 @@ span.card-icon svg {
   margin: 0 0 18px;
 }
 
+.card p.stat-line {
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-size: 12px;
+  letter-spacing: 0.02em;
+  color: var(--accent);
+  background: var(--pill-bg);
+  border: 1px solid var(--pill-border);
+  border-radius: 6px;
+  display: inline-block;
+  padding: 5px 12px;
+  margin: 0 0 18px;
+}
+
 ul.bullets {
   margin: 0 0 18px;
   padding-left: 18px;
