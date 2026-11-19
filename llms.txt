@@ -1,0 +1,16 @@
+# Thien Nguyen
+
+> Resume site: https://thiennp.github.io/
+
+## Pages
+
+- Resume (HTML): https://thiennp.github.io/resume.html
+- Resume (PDF): https://thiennp.github.io/Thien_Nguyen_Resume.pdf
+- Structured data: https://thiennp.github.io/resume.json
+- Contact: https://thiennp.github.io/contact.html
+
+## Contact
+
+- Email: nguyenphongthien@gmail.com
+- LinkedIn: https://www.linkedin.com/in/thiennp
+- GitHub: https://github.com/thiennp

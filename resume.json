@@ -1,0 +1,191 @@
+{
+  "$schema": "https://raw.githubusercontent.com/jsonresume/resume-schema/master/schema.json",
+  "basics": {
+    "name": "Thien Nguyen",
+    "label": "Lead Software Engineer & Agentic AI Architect",
+    "email": "nguyenphongthien@gmail.com",
+    "phone": "+49 176 32434863",
+    "url": "https://thiennp.github.io/",
+    "summary": "Lead Software Engineer & Architect with 10+ years designing resilient distributed systems, enterprise platforms, and developer tooling. Currently leads application architecture and engineering-effectiveness frameworks at CHECK24, where systems close 30,000+ contracts daily, scaling task-execution velocity 3-10x by engineering multi-agent orchestration layers (Cursor, Codex, automated feedback loops) across the SDLC. A hands-on technical lead and mentor with a founder's track record (Guardz, Wishees, Kim Tuoc Software), pairing a gifted mathematics background with strict engineering discipline: type-safe boundaries, SOLID design, and contract-first APIs.",
+    "location": {
+      "city": "Munich",
+      "region": "Greater Munich Metropolitan Area",
+      "countryCode": "DE"
+    },
+    "profiles": [
+      { "network": "LinkedIn", "username": "thiennp", "url": "https://www.linkedin.com/in/thiennp" },
+      { "network": "GitHub", "username": "thiennp", "url": "https://github.com/thiennp" },
+      { "network": "Medium", "username": "nguyenphongthien", "url": "https://nguyenphongthien.medium.com/" },
+      { "network": "StackOverflow", "username": "nguyen-phong-thien", "url": "https://stackoverflow.com/users/7017861/nguyen-phong-thien" }
+    ]
+  },
+  "work": [
+    {
+      "name": "CHECK24 Vergleichsportal GmbH",
+      "position": "Lead Developer",
+      "location": "Munich, Germany",
+      "startDate": "2025-04-01",
+      "url": "https://www.check24.de/",
+      "highlights": [
+        "AI-Native SDLC Architecture: designed and deployed a multi-agent orchestration control plane (Cursor, Codex, model pipelines) that automates code review, behavioral audits, and PR triage - a 3-10x task-velocity lift across engineering teams.",
+        "Architectural Stewardship: scaled enterprise frontend systems via micro-frontends and Feature-Sliced Design (FSD), holding near-zero bug density and production integrity for millions of weekly users.",
+        "Context Retrieval Infrastructure: built a localized lexical RAG system with token-bounded context windows for internal architecture docs, cutting inference token costs while maximizing retrieval accuracy.",
+        "Engineering Mentorship & Governance: anchored engineering craft through global code reviews, advanced TypeScript adoption, and formal ADRs; mentored developers on distributed system design through organizational restructuring.",
+        "Cross-Functional Knowledge Automation: built translation workflows that turn complex architectural state into structured insight for product management, accelerating alignment and surfacing technical debt earlier."
+      ]
+    },
+    {
+      "name": "CHECK24 Vergleichsportal GmbH",
+      "position": "Senior Software Engineer",
+      "location": "Munich, Germany",
+      "startDate": "2023-05-01",
+      "endDate": "2025-04-01",
+      "url": "https://www.check24.de/",
+      "highlights": [
+        "State & Stream Management: established a reactive architecture (Zustand + RxJS) powering high-frequency UI updates for complex pricing engines at peak performance.",
+        "Resilient Data Layer: designed type-safe API integration with a type-guard + tolerance-handling pattern - the technical foundation that became the open-source Guardz library.",
+        "Quality Gates & Performance: enforced rigorous Vitest test coverage and fixed rendering/store-access bottlenecks, eliminating regressions across long-living production modules.",
+        "Core Product Delivery: shipped the Real-Time Pricing Calculator and Dynamic Tariff Comparison system, handling high-traffic flows and intricate business logic."
+      ]
+    },
+    {
+      "name": "Wagawin",
+      "position": "Senior Front-end Engineer / Technical Lead",
+      "location": "Munich, Germany",
+      "startDate": "2017-09-01",
+      "endDate": "2023-04-01",
+      "highlights": [
+        "Platform Architecture: architected and launched the Campaign Management & Analytics Center from the ground up, defining the core application structure and internal API contracts.",
+        "Team Leadership & Mentorship: acted as functional lead for the front-end team, ran weekly planning and daily briefings, and led interviewing and onboarding of new engineers.",
+        "Interactive Ad Tech: engineered a high-performance 'Living Ads' engine turning static ads into interactive, game-based experiences for major European publishers.",
+        "Quality Assurance: built the automated E2E testing strategy (TypeScript, Selenium, Cucumber) for business-critical campaign reporting."
+      ]
+    },
+    {
+      "name": "Fiverr (Freelance)",
+      "position": "Full-Stack Engineer",
+      "startDate": "2013-12-01",
+      "endDate": "2017-09-01",
+      "highlights": [
+        "Delivered 50+ client projects (React, Angular, RxJS, React Native) with a consistent 5-star rating; advised startups on CI/CD and dev-environment setup."
+      ]
+    },
+    {
+      "name": "Assignar",
+      "position": "Software Engineer",
+      "location": "Remote / Australia",
+      "startDate": "2015-02-01",
+      "endDate": "2016-05-01",
+      "highlights": [
+        "Built full-stack features and hybrid mobile UI for a construction-operations platform (AngularJS, MySQL, DynamoDB, PHP/Slim)."
+      ]
+    },
+    {
+      "name": "Open Digital Ltd",
+      "position": "Front-End Team Manager / Project Manager",
+      "startDate": "2013-09-01",
+      "endDate": "2015-05-01",
+      "highlights": [
+        "Managed the front-end team and client project delivery end to end; mentored junior developers, architected client PoCs, and standardized the agency's engineering blueprint."
+      ]
+    },
+    {
+      "name": "Viet Wedding Invitation",
+      "position": "Co-Founder & Full-Stack Developer",
+      "startDate": "2011-08-01",
+      "endDate": "2013-12-01",
+      "highlights": [
+        "Founded and built an e-commerce platform and internal management system (AngularJS, Laravel) end to end."
+      ]
+    },
+    {
+      "name": "Kim Tuoc Software Co., Ltd",
+      "position": "Executive Director & Lead Architect, Co-Owner",
+      "startDate": "2007-07-01",
+      "endDate": "2013-09-01",
+      "highlights": [
+        "Founded and led a software development firm - set engineering standards and hiring, and served as Lead Architect across all major client projects."
+      ]
+    },
+    {
+      "name": "VMG & Lam Tung Photo Lab",
+      "position": "Graphic Designer & Game Developer / Photo Editor",
+      "startDate": "2003-01-01",
+      "endDate": "2007-01-01",
+      "highlights": [
+        "Visual design and production roots (Flash advertising, interactive games, brand systems, photo restoration) preceding the transition into software engineering."
+      ]
+    }
+  ],
+  "education": [
+    {
+      "institution": "Post and Telecommunications Institute of Technology",
+      "location": "Hanoi, Vietnam",
+      "area": "Information Technology",
+      "studyType": "Engineer's Degree",
+      "startDate": "2007-01-01",
+      "endDate": "2012-01-01"
+    },
+    {
+      "institution": "High School for Gifted Students, Hanoi University of Science",
+      "location": "Hanoi, Vietnam",
+      "area": "Mathematics (Specialized Track)",
+      "studyType": "High School Diploma",
+      "startDate": "1997-01-01",
+      "endDate": "2000-01-01"
+    },
+    {
+      "institution": "Hanoi University of Civil Engineering",
+      "location": "Hanoi, Vietnam",
+      "area": "Information Technology",
+      "endDate": "2000-01-01"
+    }
+  ],
+  "skills": [
+    { "name": "AI & Agentic Systems", "keywords": ["Agent Orchestration", "Durable State Machines", "Tool Calling", "Evaluation Pipelines", "Inference Routing", "Prompt Lifecycle Management", "RAG / Context Retrieval", "Agentic RBAC"] },
+    { "name": "Architecture & Systems Design", "keywords": ["Platform Engineering", "Domain-Driven Design", "Event-Driven Architecture", "Micro-frontends", "Feature-Sliced Design", "Contract-First APIs", "High-Throughput Distributed Systems"] },
+    { "name": "Leadership & Delivery", "keywords": ["Technical Leadership", "Mentorship & Hiring", "Architectural Governance (ADRs)", "Cross-Functional Alignment", "Founder / Executive Leadership"] },
+    { "name": "Languages & Frameworks", "keywords": ["TypeScript", "JavaScript", "Python", "Node.js", "React", "Angular", "Next.js", "Express", "RxJS", "Zustand", "Symfony", "Laravel", "WebSockets", "REST", "GraphQL", "Vitest", "Playwright"] }
+  ],
+  "languages": [
+    { "language": "English", "fluency": "Full Professional" },
+    { "language": "German", "fluency": "Professional Working" },
+    { "language": "Vietnamese", "fluency": "Native" }
+  ],
+  "projects": [
+    {
+      "name": "Agent Witch",
+      "description": "A web control plane for running AI coding agents on your Mac (and Cursor Cloud), with team dispatch, run history, and shared agent capabilities.",
+      "highlights": [
+        "Cloud Control Plane decoupled from distributed Mac worker nodes via secure, origin-verified WebSocket connections",
+        "Durable, persisted workflow state machine with Human-in-the-Loop checkpoints",
+        "HTTPS-only WebSocket upgrades, origin allow-listing, and automatic single-instance process supervision"
+      ],
+      "keywords": ["TypeScript", "Next.js", "WebSockets", "Multi-Agent Orchestration"],
+      "startDate": "2025-01-01",
+      "url": "https://agentwitch.com",
+      "roles": ["Creator", "Systems Architect"]
+    },
+    {
+      "name": "Guardz Ecosystem",
+      "description": "A zero-dependency TypeScript runtime-validation library, extended into an ecosystem (guardz-generator, guardz-axios, guardz-event, an MCP server for AI-assisted type-guard generation).",
+      "keywords": ["TypeScript", "Runtime Type Safety", "Developer Tooling"],
+      "startDate": "2024-01-01",
+      "url": "https://www.npmjs.com/package/guardz",
+      "roles": ["Creator", "Maintainer"]
+    },
+    {
+      "name": "Wishees",
+      "description": "A free social network for wishes and wishlists - share what you'd love, explore friends' wishlists, and coordinate real gifts and support without guessing. Local-first data model syncing to Neon Postgres.",
+      "keywords": ["Next.js", "React", "Neon Postgres", "Local-First"],
+      "startDate": "2026-01-01",
+      "url": "https://www.wishees.com/",
+      "roles": ["Founder", "Lead Engineer"]
+    }
+  ],
+  "meta": {
+    "canonical": "https://thiennp.github.io/resume.json",
+    "version": "v1.0.0",
+    "lastModified": "2026-09-20"
+  }
+}

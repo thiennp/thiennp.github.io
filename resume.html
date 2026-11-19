@@ -1,0 +1,693 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Thien Nguyen — Resume</title>
+<meta name="description" content="Resume of Thien Nguyen — Lead Software Engineer & Architect, Guardz Maintainer">
+<link rel="canonical" href="https://thiennp.github.io/resume.html">
+<link rel="alternate" type="application/json" href="resume.json" title="Structured resume data (JSON Resume schema)">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Person",
+  "name": "Thien Nguyen",
+  "jobTitle": "Lead Software Engineer & Agentic AI Architect",
+  "url": "https://thiennp.github.io/",
+  "sameAs": [
+    "https://www.linkedin.com/in/thiennp/",
+    "https://github.com/thiennp",
+    "https://nguyenphongthien.medium.com/",
+    "https://stackoverflow.com/users/7017861/nguyen-phong-thien"
+  ],
+  "worksFor": { "@type": "Organization", "name": "CHECK24 Vergleichsportal GmbH" },
+  "knowsAbout": ["TypeScript", "Agentic AI", "Software Architecture", "Distributed Systems", "Developer Tooling"]
+}
+</script>
+<style>
+  :root {
+    --paper: #faf8f4;
+    --paper-raised: #ffffff;
+    --ink: #1c1e22;
+    --ink-soft: #3a3e45;
+    --muted: #6b7078;
+    --accent: #2f4a52;
+    --accent-soft: #3f6068;
+    --rule: #dcd7cc;
+    --pill-bg: #f0ede4;
+    --pill-border: #ddd7c8;
+    --link: #2f4a52;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --paper: #16181b;
+      --paper-raised: #1c1f23;
+      --ink: #ece9e2;
+      --ink-soft: #c9c6bd;
+      --muted: #93968f;
+      --accent: #8fb3ac;
+      --accent-soft: #a9c9c2;
+      --rule: #33362f;
+      --pill-bg: #23261f;
+      --pill-border: #383b32;
+      --link: #a9c9c2;
+    }
+  }
+
+  :root[data-theme="dark"] {
+    --paper: #16181b;
+    --paper-raised: #1c1f23;
+    --ink: #ece9e2;
+    --ink-soft: #c9c6bd;
+    --muted: #93968f;
+    --accent: #8fb3ac;
+    --accent-soft: #a9c9c2;
+    --rule: #33362f;
+    --pill-bg: #23261f;
+    --pill-border: #383b32;
+    --link: #a9c9c2;
+  }
+
+  * { box-sizing: border-box; }
+
+  html, body { margin: 0; padding: 0; }
+
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: "Inter", system-ui, -apple-system, sans-serif;
+    font-size: 15px;
+    line-height: 1.55;
+    padding-inline: 16px;
+    padding-block: 40px;
+  }
+
+  .sheet {
+    max-width: 760px;
+    margin: 0 auto;
+    background: var(--paper-raised);
+    border: 1px solid var(--rule);
+    border-radius: 4px;
+    padding: 52px 56px 56px;
+  }
+
+  @media (max-width: 560px) {
+    .sheet { padding: 32px 20px 36px; }
+  }
+
+  .toolbar {
+    max-width: 760px;
+    margin: 0 auto 14px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  .toolbar-actions {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .home-link {
+    font-family: "Inter", sans-serif;
+    font-size: 12.5px;
+    font-weight: 600;
+    color: var(--muted);
+    text-decoration: none;
+  }
+  .home-link:hover { color: var(--accent); }
+
+  .print-btn {
+    font-family: "Inter", sans-serif;
+    font-size: 12.5px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    color: var(--accent);
+    background: transparent;
+    border: 1px solid var(--rule);
+    border-radius: 4px;
+    padding: 7px 14px;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-block;
+  }
+  .print-btn:hover { background: var(--pill-bg); }
+  .print-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+  .download-btn {
+    font-family: "Inter", sans-serif;
+    font-size: 12.5px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    color: var(--paper);
+    background: var(--ink);
+    border: 1px solid var(--ink);
+    border-radius: 4px;
+    padding: 7px 14px;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-block;
+  }
+  .download-btn:hover { background: transparent; color: var(--ink); }
+  .download-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+  header.head {
+    text-align: center;
+    margin-bottom: 30px;
+  }
+
+  h1.name {
+    font-family: "Fraunces", Georgia, serif;
+    font-optical-sizing: auto;
+    font-weight: 600;
+    font-size: clamp(30px, 6vw, 40px);
+    letter-spacing: 0.01em;
+    margin: 0 0 4px;
+    text-wrap: balance;
+  }
+
+  .title-line {
+    font-size: 14.5px;
+    color: var(--accent-soft);
+    font-weight: 600;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+
+  .contact {
+    font-size: 13px;
+    color: var(--muted);
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 4px 10px;
+  }
+  .contact span.sep { color: var(--rule); }
+  .contact a { color: var(--link); text-decoration: none; }
+  .contact a:hover { text-decoration: underline; }
+
+  section { margin-bottom: 26px; }
+  section:last-child { margin-bottom: 0; }
+
+  h2.section-title {
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: 11.5px;
+    font-weight: 500;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin: 0 0 10px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid var(--rule);
+  }
+
+  p.summary {
+    color: var(--ink-soft);
+    font-size: 14.5px;
+    margin: 0;
+  }
+
+  .skill-row {
+    display: grid;
+    grid-template-columns: 150px 1fr;
+    gap: 4px 14px;
+    margin-bottom: 10px;
+    align-items: baseline;
+  }
+  .skill-row:last-child { margin-bottom: 0; }
+  @media (max-width: 560px) {
+    .skill-row { grid-template-columns: 1fr; gap: 4px; }
+  }
+
+  .skill-label {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--ink-soft);
+    letter-spacing: 0.01em;
+  }
+
+  .pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .pill {
+    font-size: 12.5px;
+    color: var(--ink-soft);
+    background: var(--pill-bg);
+    border: 1px solid var(--pill-border);
+    border-radius: 100px;
+    padding: 3px 10px;
+    white-space: nowrap;
+  }
+
+  .entry { margin-bottom: 18px; }
+  .entry:last-child { margin-bottom: 0; }
+
+  .entry-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  .entry-title {
+    font-weight: 700;
+    font-size: 15px;
+    color: var(--ink);
+  }
+  .entry-title a { color: var(--ink); text-decoration: none; border-bottom: 1px solid var(--rule); }
+  .entry-title a:hover { color: var(--link); border-color: var(--link); }
+
+  .entry-url {
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-weight: 400;
+    font-size: 11.5px;
+    font-style: normal;
+    color: var(--muted);
+    margin-left: 2px;
+  }
+
+  .entry-date {
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: 11.5px;
+    color: var(--muted);
+    white-space: nowrap;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .entry-sub {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 12px;
+    flex-wrap: wrap;
+    font-size: 13px;
+    color: var(--accent-soft);
+    font-style: italic;
+    margin-bottom: 6px;
+  }
+  .entry-sub .loc { color: var(--muted); font-style: italic; }
+
+  ul.bullets {
+    margin: 0;
+    padding-left: 18px;
+  }
+  ul.bullets li {
+    color: var(--ink-soft);
+    font-size: 13.8px;
+    margin-bottom: 4px;
+  }
+  ul.bullets li:last-child { margin-bottom: 0; }
+  ul.bullets li::marker { color: var(--rule); }
+  ul.bullets li strong { color: var(--ink); font-weight: 600; }
+
+  .earlier-note {
+    font-size: 12px;
+    color: var(--muted);
+    margin: -4px 0 12px;
+    font-style: italic;
+  }
+
+  .compact-entry {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 14px;
+    padding: 9px 0;
+    border-bottom: 1px solid var(--rule);
+    flex-wrap: wrap;
+  }
+  .compact-entry:last-child { border-bottom: none; padding-bottom: 0; }
+  .compact-entry:first-child { padding-top: 0; }
+
+  .compact-main { flex: 1 1 400px; min-width: 0; }
+
+  .compact-title {
+    font-weight: 700;
+    font-size: 13.2px;
+    color: var(--ink);
+  }
+  .compact-co {
+    font-weight: 400;
+    font-style: italic;
+    color: var(--accent-soft);
+  }
+
+  .compact-desc {
+    font-size: 12.5px;
+    color: var(--muted);
+    margin-top: 2px;
+  }
+
+  .compact-date {
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: 11px;
+    color: var(--muted);
+    white-space: nowrap;
+    padding-top: 2px;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .edu-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  .edu-row + .edu-row { margin-top: 12px; }
+  .edu-school { font-weight: 700; font-size: 14.5px; color: var(--ink); }
+  .edu-loc { font-size: 12.5px; color: var(--muted); }
+  .edu-degree { font-size: 13px; color: var(--accent-soft); font-style: italic; }
+  .edu-date {
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: 11.5px;
+    color: var(--muted);
+    white-space: nowrap;
+  }
+
+  @media print {
+    body { background: #fff; padding: 0; font-size: 12.5px; }
+    .toolbar { display: none; }
+    .sheet { border: none; box-shadow: none; padding: 0.25in 0.5in; max-width: 100%; }
+    a { color: inherit !important; text-decoration: none !important; }
+    .compact-entry, .edu-row, .skill-row {
+      break-inside: avoid;
+      page-break-inside: avoid;
+    }
+    h2.section-title, .entry-top, .entry-sub {
+      break-after: avoid;
+      page-break-after: avoid;
+    }
+    ul.bullets li {
+      break-inside: avoid;
+      page-break-inside: avoid;
+    }
+  }
+</style>
+<script src="/assets/analytics.js" defer></script>
+</head>
+<body>
+
+<div class="toolbar">
+  <a class="home-link" href="/">&larr; thiennp.github.io</a>
+  <div class="toolbar-actions">
+    <a class="download-btn" href="Thien_Nguyen_Resume.pdf" download="Thien_Nguyen_Resume.pdf">Download PDF</a>
+    <button class="print-btn" onclick="window.print()">Print / Save as PDF</button>
+    <a class="print-btn" href="resume.json" title="Structured resume data for tools and agents">JSON</a>
+  </div>
+</div>
+
+<main class="sheet">
+
+  <header class="head">
+    <h1 class="name">Thien Nguyen</h1>
+    <div class="title-line">Lead Software Engineer &middot; Software Architect &middot; Agentic AI Architect</div>
+    <div class="contact">
+      <span>Greater Munich Metropolitan Area</span>
+      <span class="sep">&middot;</span>
+      <span>+49 176 32434863</span>
+      <span class="sep">&middot;</span>
+      <a href="mailto:nguyenphongthien@gmail.com">nguyenphongthien@gmail.com</a>
+      <span class="sep">&middot;</span>
+      <a href="https://www.linkedin.com/in/thiennp">linkedin.com/in/thiennp</a>
+      <span class="sep">&middot;</span>
+      <a href="https://nguyenphongthien.medium.com/">medium.com/@nguyenphongthien</a>
+    </div>
+  </header>
+
+  <section>
+    <h2 class="section-title">Summary</h2>
+    <p class="summary">
+      Lead Software Engineer &amp; Architect with 10+ years designing resilient distributed systems, enterprise
+      platforms, and developer tooling. Currently leads application architecture and engineering-effectiveness
+      frameworks at CHECK24, where systems close 30,000+ contracts daily &mdash; scaling task-execution velocity
+      3&ndash;10x by engineering multi-agent orchestration layers (Cursor, Codex, automated feedback loops) across
+      the SDLC. A hands-on technical lead and mentor with a founder&rsquo;s track record (Guardz, Wishees, Kim Tuoc
+      Software), pairing a gifted mathematics background with strict engineering discipline: type-safe boundaries,
+      SOLID design, and contract-first APIs.
+    </p>
+  </section>
+
+  <section>
+    <h2 class="section-title">Technical Skills &amp; Architectural Competencies</h2>
+
+    <div class="skill-row">
+      <div class="skill-label">AI &amp; Agentic Systems</div>
+      <div class="pills">
+        <span class="pill">Agent Orchestration</span>
+        <span class="pill">Durable State Machines</span>
+        <span class="pill">Tool Calling</span>
+        <span class="pill">Evaluation Pipelines</span>
+        <span class="pill">Inference Routing</span>
+        <span class="pill">Prompt Lifecycle Mgmt</span>
+        <span class="pill">RAG / Context Retrieval</span>
+        <span class="pill">MicroVM Sandboxing</span>
+        <span class="pill">Agentic RBAC</span>
+      </div>
+    </div>
+
+    <div class="skill-row">
+      <div class="skill-label">Architecture &amp; Systems Design</div>
+      <div class="pills">
+        <span class="pill">Platform Engineering</span>
+        <span class="pill">Domain-Driven Design</span>
+        <span class="pill">Event-Driven Architecture</span>
+        <span class="pill">Micro-frontends</span>
+        <span class="pill">Feature-Sliced Design</span>
+        <span class="pill">Contract-First APIs</span>
+        <span class="pill">High-Throughput Distributed Systems</span>
+      </div>
+    </div>
+
+    <div class="skill-row">
+      <div class="skill-label">Leadership &amp; Delivery</div>
+      <div class="pills">
+        <span class="pill">Technical Leadership</span>
+        <span class="pill">Mentorship &amp; Hiring</span>
+        <span class="pill">Architectural Governance (ADRs)</span>
+        <span class="pill">Cross-Functional Alignment</span>
+        <span class="pill">Founder / Executive Leadership</span>
+      </div>
+    </div>
+
+    <div class="skill-row">
+      <div class="skill-label">Languages &amp; Frameworks</div>
+      <div class="pills">
+        <span class="pill">TypeScript</span>
+        <span class="pill">JavaScript</span>
+        <span class="pill">Python</span>
+        <span class="pill">Node.js</span>
+        <span class="pill">React</span>
+        <span class="pill">Angular</span>
+        <span class="pill">Next.js</span>
+        <span class="pill">Express</span>
+        <span class="pill">RxJS</span>
+        <span class="pill">Zustand</span>
+        <span class="pill">Symfony</span>
+        <span class="pill">Laravel</span>
+        <span class="pill">WebSockets</span>
+        <span class="pill">REST</span>
+        <span class="pill">GraphQL</span>
+        <span class="pill">Vitest</span>
+        <span class="pill">Playwright</span>
+      </div>
+    </div>
+
+    <div class="skill-row">
+      <div class="skill-label">Spoken Languages</div>
+      <div class="pills">
+        <span class="pill">English &mdash; Full Professional</span>
+        <span class="pill">German &mdash; Professional Working</span>
+        <span class="pill">Vietnamese &mdash; Native</span>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2 class="section-title">Key Ventures &amp; Platforms</h2>
+
+    <div class="entry">
+      <div class="entry-top">
+        <div class="entry-title"><a href="https://agentwitch.com">Agent Witch</a> <span class="entry-url">agentwitch.com</span></div>
+        <div class="entry-date">2025 &ndash; Present</div>
+      </div>
+      <div class="entry-sub">Creator &amp; Systems Architect</div>
+      <ul class="bullets">
+        <li>Designed and implemented an enterprise agentic workflow platform decoupling a centralized Cloud Control Plane (AWC) from distributed Mac-based worker nodes via secure, origin-verified WebSocket connections.</li>
+        <li>Engineered a durable, persisted workflow state machine that alternates human operator checkpoints with bounded agent dispatches, including mid-run Human-in-the-Loop (HITL) input requests that suspend and resume runs without losing context.</li>
+        <li>Hardened the Mac&ndash;Cloud bridge with HTTPS-only WebSocket upgrades and origin allow-listing, plus automatic single-instance process supervision that detects and gracefully terminates duplicate bridge processes per install.</li>
+      </ul>
+    </div>
+
+    <div class="entry">
+      <div class="entry-top">
+        <div class="entry-title"><a href="https://www.npmjs.com/package/guardz">Guardz Ecosystem</a> <span class="entry-url">npmjs.com/package/guardz</span></div>
+        <div class="entry-date">2024 &ndash; Present</div>
+      </div>
+      <div class="entry-sub">Creator &amp; Maintainer &middot; TypeScript Runtime Validation</div>
+      <ul class="bullets">
+        <li>Authored and maintain <strong>Guardz</strong>, a zero-dependency TypeScript runtime-validation library (npm), extended into an ecosystem &mdash; <strong>guardz-generator</strong>, <strong>guardz-axios</strong>, <strong>guardz-event</strong>, and an MCP server for AI-assisted type-guard generation.</li>
+        <li>Published architectural methodologies on runtime safety and resilient typing on Medium, reaching thousands of senior engineering readers.</li>
+      </ul>
+    </div>
+
+    <div class="compact-entry">
+      <div class="compact-main">
+        <div class="compact-title"><a href="https://www.wishees.com/">Wishees</a> <span class="entry-url">wishees.com</span> <span class="compact-co">&mdash; Founder &amp; Lead Engineer</span></div>
+        <div class="compact-desc">Founded a free wishlist and gift-intent social network (Next.js, Neon Postgres) with a local-first data model and CI-gated architecture guardrails, from concept to public launch.</div>
+      </div>
+      <div class="compact-date">2026 &ndash; Present</div>
+    </div>
+  </section>
+
+  <section>
+    <h2 class="section-title">Professional Experience</h2>
+
+    <div class="entry">
+      <div class="entry-top">
+        <div class="entry-title">CHECK24 Vergleichsportal GmbH</div>
+        <div class="entry-date">Apr. 2025 &ndash; Present</div>
+      </div>
+      <div class="entry-sub"><span>Lead Developer</span><span class="loc">Munich, Germany</span></div>
+      <ul class="bullets">
+        <li><strong>AI-Native SDLC Architecture:</strong> designed and deployed a multi-agent orchestration control plane (Cursor, Codex, model pipelines) that automates code review, behavioral audits, and PR triage &mdash; a 3&ndash;10x task-velocity lift across engineering teams.</li>
+        <li><strong>Architectural Stewardship:</strong> scaled enterprise frontend systems via micro-frontends and Feature-Sliced Design (FSD), holding near-zero bug density and production integrity for millions of weekly users.</li>
+        <li><strong>Context Retrieval Infrastructure:</strong> built a localized lexical RAG system with token-bounded context windows for internal architecture docs, cutting inference token costs while maximizing retrieval accuracy.</li>
+        <li><strong>Engineering Mentorship &amp; Governance:</strong> anchored engineering craft through global code reviews, advanced TypeScript adoption, and formal ADRs; mentored developers on distributed system design through organizational restructuring.</li>
+        <li><strong>Cross-Functional Knowledge Automation:</strong> built translation workflows that turn complex architectural state into structured insight for product management, accelerating alignment and surfacing technical debt earlier.</li>
+      </ul>
+    </div>
+
+    <div class="entry">
+      <div class="entry-top">
+        <div class="entry-title">CHECK24 Vergleichsportal GmbH</div>
+        <div class="entry-date">May 2023 &ndash; Apr. 2025</div>
+      </div>
+      <div class="entry-sub"><span>Senior Software Engineer</span><span class="loc">Munich, Germany</span></div>
+      <ul class="bullets">
+        <li><strong>State &amp; Stream Management:</strong> established a reactive architecture (Zustand + RxJS) powering high-frequency UI updates for complex pricing engines at peak performance.</li>
+        <li><strong>Resilient Data Layer:</strong> designed type-safe API integration with a type-guard + tolerance-handling pattern &mdash; the technical foundation that became the open-source Guardz library.</li>
+        <li><strong>Quality Gates &amp; Performance:</strong> enforced rigorous Vitest test coverage and fixed rendering/store-access bottlenecks, eliminating regressions across long-living production modules.</li>
+        <li><strong>Core Product Delivery:</strong> shipped the Real-Time Pricing Calculator and Dynamic Tariff Comparison system, handling high-traffic flows and intricate business logic.</li>
+      </ul>
+    </div>
+
+    <div class="entry">
+      <div class="entry-top">
+        <div class="entry-title">Wagawin</div>
+        <div class="entry-date">Sep. 2017 &ndash; Apr. 2023</div>
+      </div>
+      <div class="entry-sub"><span>Senior Front-end Engineer / Technical Lead</span><span class="loc">Munich, Germany</span></div>
+      <ul class="bullets">
+        <li><strong>Platform Architecture:</strong> architected and launched the Campaign Management &amp; Analytics Center from the ground up, defining the core application structure and internal API contracts.</li>
+        <li><strong>Team Leadership &amp; Mentorship:</strong> acted as functional lead for the front-end team &mdash; ran weekly planning and daily briefings, and led interviewing and onboarding of new engineers.</li>
+        <li><strong>Interactive Ad Tech:</strong> engineered a high-performance &ldquo;Living Ads&rdquo; engine turning static ads into interactive, game-based experiences for major European publishers.</li>
+        <li><strong>Quality Assurance:</strong> built the automated E2E testing strategy (TypeScript, Selenium, Cucumber) for business-critical campaign reporting.</li>
+      </ul>
+    </div>
+  </section>
+
+  <section>
+    <h2 class="section-title">Earlier Experience</h2>
+    <div class="earlier-note">Condensed &mdash; full detail available on request.</div>
+
+    <div class="compact-entry">
+      <div class="compact-main">
+        <div class="compact-title">Full-Stack Engineer <span class="compact-co">&mdash; Fiverr (Freelance)</span></div>
+        <div class="compact-desc">Delivered 50+ client projects (React, Angular, RxJS, React Native) with a consistent 5-star rating; advised startups on CI/CD and dev-environment setup.</div>
+      </div>
+      <div class="compact-date">Dec 2013 &ndash; Sep 2017</div>
+    </div>
+
+    <div class="compact-entry">
+      <div class="compact-main">
+        <div class="compact-title">Software Engineer <span class="compact-co">&mdash; Assignar</span></div>
+        <div class="compact-desc">Built full-stack features and hybrid mobile UI for a construction-operations platform (AngularJS, MySQL, DynamoDB, PHP/Slim).</div>
+      </div>
+      <div class="compact-date">Feb 2015 &ndash; May 2016</div>
+    </div>
+
+    <div class="compact-entry">
+      <div class="compact-main">
+        <div class="compact-title">Front-End Team Manager / Project Manager <span class="compact-co">&mdash; Open Digital Ltd</span></div>
+        <div class="compact-desc">Managed the front-end team and client project delivery end to end; mentored junior developers, architected client PoCs, and standardized the agency&rsquo;s engineering blueprint.</div>
+      </div>
+      <div class="compact-date">Sep 2013 &ndash; May 2015</div>
+    </div>
+
+    <div class="compact-entry">
+      <div class="compact-main">
+        <div class="compact-title">Co-Founder &amp; Full-Stack Developer <span class="compact-co">&mdash; Viet Wedding Invitation</span></div>
+        <div class="compact-desc">Founded and built an e-commerce platform and internal management system (AngularJS, Laravel) end to end.</div>
+      </div>
+      <div class="compact-date">Aug 2011 &ndash; Dec 2013</div>
+    </div>
+
+    <div class="compact-entry">
+      <div class="compact-main">
+        <div class="compact-title">Executive Director &amp; Lead Architect, Co-Owner <span class="compact-co">&mdash; Kim Tuoc Software Co., Ltd</span></div>
+        <div class="compact-desc">Founded and led a software development firm &mdash; set engineering standards and hiring, and served as Lead Architect across all major client projects.</div>
+      </div>
+      <div class="compact-date">Jul 2007 &ndash; Sep 2013</div>
+    </div>
+
+    <div class="compact-entry">
+      <div class="compact-main">
+        <div class="compact-title">Graphic Designer &amp; Game Developer / Photo Editor <span class="compact-co">&mdash; VMG &amp; Lam Tung Photo Lab</span></div>
+        <div class="compact-desc">Visual design and production roots (Flash advertising, interactive games, brand systems, photo restoration) preceding the transition into software engineering.</div>
+      </div>
+      <div class="compact-date">2003 &ndash; 2007</div>
+    </div>
+  </section>
+
+  <section>
+    <h2 class="section-title">Education</h2>
+
+    <div class="edu-row">
+      <div>
+        <div class="edu-school">Post and Telecommunications Institute of Technology</div>
+        <div class="edu-degree">Engineer&rsquo;s Degree in Information Technology</div>
+      </div>
+      <div style="text-align:right;">
+        <div class="edu-loc">Hanoi, Vietnam</div>
+        <div class="edu-date">2007 &ndash; 2012</div>
+      </div>
+    </div>
+
+    <div class="edu-row">
+      <div>
+        <div class="edu-school">High School for Gifted Students, Hanoi University of Science</div>
+        <div class="edu-degree">High School Diploma in Mathematics (Specialized Track)</div>
+      </div>
+      <div style="text-align:right;">
+        <div class="edu-loc">Hanoi, Vietnam</div>
+        <div class="edu-date">1997 &ndash; 2000</div>
+      </div>
+    </div>
+
+    <div class="edu-row">
+      <div>
+        <div class="edu-school">Hanoi University of Civil Engineering</div>
+        <div class="edu-degree">Information Technology</div>
+      </div>
+      <div style="text-align:right;">
+        <div class="edu-loc">Hanoi, Vietnam</div>
+        <div class="edu-date">2000</div>
+      </div>
+    </div>
+  </section>
+
+</main>
+</body>
+</html>
